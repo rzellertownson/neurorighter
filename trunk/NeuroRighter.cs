@@ -39,6 +39,8 @@ using NationalInstruments.Analysis.Dsp;
 using NationalInstruments.Analysis.Dsp.Filters;
 using NationalInstruments.Analysis.Math;
 using NationalInstruments.Analysis.SignalGeneration;
+using csmatio.types;
+using csmatio.io;
 
 namespace NeuroRighter
 {
@@ -2947,6 +2949,7 @@ namespace NeuroRighter
          * IMPEDANCE TEST
          * ***********************************/
         private double[][] impedance; //Stores impedances for each channel, for multiple frequencies
+        private double[] freqs;
         private const int IMPEDANCE_SAMPLING_RATE = 1000000;  //9-24-08: noted that higher sampling rate improves accuracy
 
         private void button_impedanceTest_Click(object sender, EventArgs e)
@@ -2955,7 +2958,7 @@ namespace NeuroRighter
             double startFreq = Convert.ToDouble(numericUpDown_impStartFreq.Value);
             double stopFreq = Convert.ToDouble(numericUpDown_impStopFreq.Value);
             double numPeriods = Convert.ToDouble(numericUpDown_impNumPeriods.Value);
-            double[] freqs;
+            //double[] freqs;
             if (startFreq == stopFreq)
                 freqs = new double[1];
             else
@@ -3212,13 +3215,41 @@ namespace NeuroRighter
         //Send recorded impedance values to Matlab
         private void button_impedanceSendToMatlab_Click(object sender, EventArgs e)
         {
-            MLApp.MLAppClass matlab = new MLApp.MLAppClass();
+            //MLApp.MLAppClass matlab = new MLApp.MLAppClass();
 
-            Array pr = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
-            Array pi = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
-            for (int i = 0; i < pr.GetLength(0); ++i)
-                pr.SetValue(impedance[(int)numericUpDown_impChannel.Value - 1][i], i);
-            matlab.PutFullMatrix("impedance", "base", pr, pi);
+            //Array pr = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
+            //Array pi = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
+            //for (int i = 0; i < pr.GetLength(0); ++i)
+            //    pr.SetValue(impedance[(int)numericUpDown_impChannel.Value - 1][i], i);
+            //matlab.PutFullMatrix("impedance", "base", pr, pi);
+        }
+
+
+        private void button_impedanceSaveAsMAT_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "MAT files (*.mat)|*.mat|All files (*.*)|*.*";
+            saveFileDialog.DefaultExt = "mat";
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filename = saveFileDialog.FileName;
+
+                List<MLArray> mlList = new List<MLArray>();
+                MLStructure structure = new MLStructure("imp", new int[] { 1, 1 });
+                structure["f", 0] = new MLDouble("", freqs, freqs.Length);
+                structure["z", 0] = new MLDouble("", impedance);
+                mlList.Add(structure);
+
+                try
+                {
+                    MatFileWriter mfw = new MatFileWriter(filename, mlList, true);
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show("There was an error when creating the MAT-file: \n" + err.ToString(),
+                        "MAT-File Creation Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
         }
 
         private void button_impedanceCopyDataToClipboard_Click(object sender, EventArgs e)
@@ -3740,6 +3771,5 @@ ch = 1;
                     break;
             }
         }
-
     }
 }

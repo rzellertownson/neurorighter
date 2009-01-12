@@ -21,6 +21,8 @@ namespace NeuroRighter.Plotting
         private float penWidth = 1;
         private int numRows = 4;
         private int numCols = 4;
+        private double xScale;
+        private double yScale;
 
         private Graphics offScreenG;
         private Bitmap offScreenBMP;
@@ -52,6 +54,8 @@ namespace NeuroRighter.Plotting
             this.maxY = maxY;
             dX = maxX - minX;
             dY = maxY - minY;
+            xScale = this.Width / dX;
+            yScale = this.Height / dY;
         }
         internal void setNumRowCols(int numRows, int numCols) { this.numRows = numRows; this.numCols = numCols; }
 
@@ -61,9 +65,6 @@ namespace NeuroRighter.Plotting
         }
         internal void plotY(double[] data, double firstX, double incrementX, Pen p)
         {
-            double xScale = this.Width / dX;
-            double yScale = this.Height / dY;
-
             Point[] pts = new Point[data.GetLength(0)];
             for (int i = 0; i < pts.GetLength(0); ++i)
             {
@@ -80,9 +81,6 @@ namespace NeuroRighter.Plotting
         }
         internal void plotX(double[] data, double firstY, double incrementY, Pen p)
         {
-            double xScale = this.Width / dX;
-            double yScale = this.Height / dY;
-
             Point[] pts = new Point[data.GetLength(0)];
             for (int i = 0; i < pts.GetLength(0); ++i)
             {
@@ -106,7 +104,10 @@ namespace NeuroRighter.Plotting
 
             offScreenBMP = new Bitmap(this.Width, this.Height);
             offScreenG = Graphics.FromImage(offScreenBMP);
-            
+
+            xScale = this.Width / dX;
+            yScale = this.Height / dY;
+
             plotGridLines();
         }
 

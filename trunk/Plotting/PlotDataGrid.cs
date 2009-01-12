@@ -75,10 +75,6 @@ namespace NeuroRighter
                                 temp = boxHeight / 2.0;
                             else if (temp < -boxHeight / 2.0)
                                 temp = -boxHeight / 2.0;
-                            if (temp == 0)
-                            {
-                                int a = 0;
-                                a += 100;                            }
                             //Translate data down and into output buffer
                             outputData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
                         }

@@ -94,12 +94,6 @@
     <Compile Include="NeuroRighter.Designer.cs">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plotting\GridGraph.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plotting\GridGraph.Designer.cs">
-      <DependentUpon>GridGraph.cs</DependentUpon>
-    </Compile>
     <Compile Include="Plotting\SpikeWaveformGraph.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -147,10 +141,6 @@
     <EmbeddedResource Include="licenses.licx" />
     <EmbeddedResource Include="NeuroRighter.resx">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plotting\GridGraph.resx">
-      <DependentUpon>GridGraph.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Plotting\SpikeWaveformGraph.resx">
@@ -222,6 +212,12 @@
       <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSMatIO\src\csmatio.csproj">
+      <Project>{D6EB17BF-9074-484F-9950-E06169A3C39D}</Project>
+      <Name>csmatio</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

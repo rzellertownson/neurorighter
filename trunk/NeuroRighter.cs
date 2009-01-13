@@ -3870,7 +3870,7 @@ ch = 1;
                     //lfpGraph.Visible = true;
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
-                    //eegGraph.Visible = false;
+                    eegGraph.Visible = false;
                     break;
                 case 3: //EEG Graph
                     //eegGraph.Visible = true;

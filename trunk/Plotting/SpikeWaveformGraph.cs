@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace NeuroRighter.Plotting
+namespace NeuroRighter
 {
     public partial class SpikeWaveformGraph : UserControl
     {

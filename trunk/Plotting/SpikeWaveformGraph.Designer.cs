@@ -1,4 +1,4 @@
-﻿namespace NeuroRighter.Plotting
+﻿namespace NeuroRighter
 {
     partial class SpikeWaveformGraph
     {

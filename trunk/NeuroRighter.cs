@@ -149,7 +149,7 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.1; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
@@ -994,6 +994,9 @@ namespace NeuroRighter
                             finalLFPData[i][j] -= finalLFPData[refChan][j];
                 }
 
+                //Do IISZapper stuff
+                if (IISDetected != null) IISDetected(this, finalLFPData);
+
                 //Post to PlotData buffer
                 lfpPlotData.write(finalLFPData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
@@ -1130,6 +1133,7 @@ namespace NeuroRighter
 
         internal delegate void spikesAcquiredHandler(object sender, bool inTrigger);
         internal event spikesAcquiredHandler spikesAcquired;
+
 
         //*************************
         //bwSpikes_RunWorkerCompleted
@@ -2098,13 +2102,56 @@ namespace NeuroRighter
         }
 
         //Compute the RMS of an array.  Use this rather than a stock method, since it has no error checking and is faster.  Error checking is for pansies!
-        private static double rootMeanSquared(double[] data)
+        internal static double rootMeanSquared(double[] data)
         {
             double rms = 0;
             for (int i = 0; i < data.Length; ++i)
                 rms += data[i] * data[i];
             rms /= data.Length;
             return Math.Sqrt(rms);
+        }
+
+        private void toolStripMenuItem_DisplaySettings_Click(object sender, EventArgs e)
+        {
+            DisplaySettings ds = new DisplaySettings();
+            ds.ShowDialog();
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (tabControl.SelectedIndex)
+            {
+                case 0: //Spike graph
+                    spikeGraph.Visible = true;
+                    spkWfmGraph.Visible = false;
+                    //lfpGraph.Visible = false;
+                    //eegGraph.Visible = false;
+                    break;
+                case 1: //Waveform graph
+                    spkWfmGraph.Visible = true;
+                    spikeGraph.Visible = false;
+                    //lfpGraph.Visible = false;
+                    //eegGraph.Visible = false;
+                    break;
+                case 2: //LFP Graph
+                    //lfpGraph.Visible = true;
+                    spikeGraph.Visible = false;
+                    spkWfmGraph.Visible = false;
+                    eegGraph.Visible = false;
+                    break;
+                case 3: //EEG Graph
+                    //eegGraph.Visible = true;
+                    spikeGraph.Visible = false;
+                    spkWfmGraph.Visible = false;
+                    //lfpGraph.Visible = false;
+                    break;
+                default:
+                    spikeGraph.Visible = false;
+                    spkWfmGraph.Visible = false;
+                    //lfpGraph.Visible = false;
+                    //eegGraph.Visible = false;
+                    break;
+            }
         }
 
         /*******************************************************
@@ -3844,47 +3891,32 @@ ch = 1;
             button_closedLoopLearningStop.Enabled = false;
         }
 
-        private void toolStripMenuItem_DisplaySettings_Click(object sender, EventArgs e)
+        #region IISZapper (Experimental)
+
+        internal delegate void IISDetectedHandler(object sender, double[][] lfpData);
+        internal event IISDetectedHandler IISDetected;
+        private IISZapper iisZap;
+
+        private void button_IISZapper_start_Click(object sender, EventArgs e)
         {
-            DisplaySettings ds = new DisplaySettings();
-            ds.ShowDialog();
+            button_IISZapper_start.Enabled = false;
+            iisZap = new IISZapper((int)numericUpDown_IISZapper_phaseWidth.Value,
+                (double)numericUpDown_IISZapper_voltage.Value, (int)numericUpDown_IISZapper_channel.Value,
+                (int)numericUpDown_IISZapper_pulsePerTrain.Value, (double)numericUpDown_IISZapper_rate.Value,
+                stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter, DEVICE_REFRESH,
+                this);
+
+            iisZap.start(this);
+            button_IISZapper_stop.Enabled = true;
         }
 
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        private void button_IISZapper_stop_Click(object sender, EventArgs e)
         {
-            switch (tabControl.SelectedIndex)
-            {
-                case 0: //Spike graph
-                    spikeGraph.Visible = true;
-                    spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
-                    break;
-                case 1: //Waveform graph
-                    spkWfmGraph.Visible = true;
-                    spikeGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
-                    break;
-                case 2: //LFP Graph
-                    //lfpGraph.Visible = true;
-                    spikeGraph.Visible = false;
-                    spkWfmGraph.Visible = false;
-                    eegGraph.Visible = false;
-                    break;
-                case 3: //EEG Graph
-                    //eegGraph.Visible = true;
-                    spikeGraph.Visible = false;
-                    spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    break;
-                default:
-                    spikeGraph.Visible = false;
-                    spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
-                    break;
-            }
+            button_IISZapper_stop.Enabled = false;
+            iisZap.stop(this);
+            button_IISZapper_start.Enabled = true;
         }
+        #endregion //IISZapper
+
     }
 }

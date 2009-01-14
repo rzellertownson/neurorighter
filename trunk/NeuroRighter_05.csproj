@@ -130,6 +130,7 @@
     <Compile Include="SpikeDetection\SpikeDetector.cs" />
     <Compile Include="SpikeDetection\SpikeWaveform.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
+    <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
   </ItemGroup>
@@ -156,7 +157,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gpl.txt" />
+    <Content Include="gpl.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon\Slide1.PNG" />
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

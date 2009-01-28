@@ -198,14 +198,14 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds
-            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //hours, minutes, seconds
+            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);
             TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);
-            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0);
+            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 1, 0);
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
 
             //Print file header info
-            outputFileWriter.WriteLine("Closed-loop Learning Experiment\n\nProgrammed by John Rolston (rolston2@gmail.com)\n\n");
+            outputFileWriter.WriteLine("Closed-loop Learning Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");
 
             //Get starting time
             outputFileWriter.WriteLine("Starting time: " + DateTime.Now);
@@ -235,6 +235,9 @@ namespace NeuroRighter
             #region Closed-loop_Training
             List<double> desiredDirections = new List<double>(4);
             desiredDirections.Add(Math.PI / 4);
+            desiredDirections.Add(3 * Math.PI / 4);
+            desiredDirections.Add(5 * Math.PI / 4);
+            desiredDirections.Add(7 * Math.PI / 4);
 
             for (int d = 0; d < desiredDirections.Count; ++d)
             {

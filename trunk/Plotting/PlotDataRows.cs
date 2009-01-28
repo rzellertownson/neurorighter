@@ -32,7 +32,7 @@ namespace NeuroRighter
     {
         private Double plotLength; //Total length of plot, in seconds
 
-        internal PlotDataRows(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, Double boxHeight,
+        internal PlotDataRows(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
             Double refresh, Double plotLength)
             : base(numChannels, downsample, bufferLength, samplingRate, boxHeight,
                 numChannels, 1, refresh, "invivo") //Only 1 column
@@ -42,7 +42,7 @@ namespace NeuroRighter
             //Have to update outputData
             int numSamplesPerPlot = (int)(plotLength * (samplingRate / downsample));
             int numSamplesPerRefresh = (int)(refreshTime * (samplingRate / downsample));
-            for (int i = 0; i < numRows; ++i) outputData[i] = new RawType[numCols * numSamplesPerPlot];
+            for (int i = 0; i < numRows; ++i) outputData[i] = new float[numCols * numSamplesPerPlot];
 
             //Readhead needs to be pushed back to account for difference between refreshtime and plotlength
             readHead = bufferLength - (numSamplesPerPlot - numSamplesPerRefresh);
@@ -51,11 +51,11 @@ namespace NeuroRighter
         //******************
         //READ
         //******************
-        internal override RawType[][] read()
+        internal override float[][] read()
         {
             lock (this)
             {
-                double temp;
+                float temp;
                 int numSamplesPerPlot = (int)(plotLength * (samplingRate / downsample));
                 int numSamplesPerUpdate = (int)(refreshTime * (samplingRate / downsample));
                 for (int i = 0; i < numChannels; ++i) //row
@@ -64,10 +64,10 @@ namespace NeuroRighter
                     {
                         //Adjust for display gain and overshoots
                         temp = data[i][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                        if (temp > boxHeight / 2.0)
-                            temp = boxHeight / 2.0;
-                        else if (temp < -boxHeight / 2.0)
-                            temp = -boxHeight / 2.0;
+                        if (temp > boxHeight * 0.5F)
+                            temp = boxHeight * 0.5F;
+                        else if (temp < -boxHeight * 0.5F)
+                            temp = -boxHeight * 0.5F;
                         //Translate data down and into output buffer
                         outputData[i][k] = temp - i * boxHeight;
                     }

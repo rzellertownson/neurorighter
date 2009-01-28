@@ -135,6 +135,10 @@ namespace NeuroRighter
         private EventPlotData waveformPlotData;
 
 
+        //Plots
+        private GridGraph spikeGraph;
+        private GridGraph spkWfmGraph;
+
         private FileOutput rawFile;
         private FileOutput lfpFile;
         private SpikeDetector spikeDetector;
@@ -149,7 +153,7 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.1; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
@@ -198,6 +202,22 @@ namespace NeuroRighter
             updateSettings();
 
             setSpikeDetector();
+
+
+            //Create plots
+            spikeGraph = new GridGraph();
+            spikeGraph.setup(4, 4, 100, false);
+            spikeGraph.Resize += new EventHandler(spikeGraph.resize);
+            spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
+            spikeGraph.Parent = tabPage_spikes;
+            spikeGraph.Dock = DockStyle.Fill;
+
+            resetSpkWfm();
+            //spkWfmGraph = new GridGraph();
+            //spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
+            //spkWfmGraph.setup(4, 4, 100, true);
+            //spkWfmGraph.Parent = tabPage_waveforms;
+            //spkWfmGraph.Dock = DockStyle.Fill;
         }
         #endregion
 
@@ -429,9 +449,11 @@ namespace NeuroRighter
                     lfpGraph.Plots.RemoveAll();
                     //spikeGraph.ClearData();
                     //spikeGraph.Plots.RemoveAll();
-                    spikeGraph.clear();
+                    //spikeGraph.clear();
+                    //spkWfmGraph.clear();
 
-                    spkWfmGraph.clear();
+                    
+
                     
                     if (Properties.Settings.Default.UseEEG)
                     {
@@ -472,18 +494,31 @@ namespace NeuroRighter
                             downsample = 5;
                             break;
                     }
+
+                    if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
+                    spikeGraph = new GridGraph();
+                    spikeGraph.Resize += new EventHandler(spikeGraph.resize);
+                    spikeGraph.SizeChanged += new EventHandler(spikeGraph.resize);
+                    spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
+                    spikeGraph.setup(numRows, numCols, (int)(spikeplotlength * spikeSamplingRate / downsample), false);
+                    spikeGraph.setMinMax(1F / Convert.ToSingle(textBox_spikeSamplingRate.Text), (float)(numCols * spikeplotlength), 
+                        (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
+                    spikeGraph.Dock = DockStyle.Fill;
+                    spikeGraph.Parent = tabPage_spikes;
+                    resetSpkWfm(); //Take care of spike waveform graph
+
                     spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
-                        spikeTask[0].AIChannels.All.RangeHigh * 2.0, numRows, numCols, spikeplotlength, Properties.Settings.Default.ChannelMapping);
+                        (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength, Properties.Settings.Default.ChannelMapping);
                     spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
 
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            lfpTask.AIChannels.All.RangeHigh * 2.0, 0.5, 5);
+                            (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5);
                     else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            spikeTask[0].AIChannels.All.RangeHigh * 2.0, 0.5, 5);
+                            (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5);
                     lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
 
-                    waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, spikeTask[0].AIChannels.All.RangeHigh * 2.0,
+                    waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
                         numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
                     waveformPlotData.dataAcquired += new EventPlotData.dataAcquiredHandler(waveformPlotData_dataAcquired);
                     waveformPlotData.start();
@@ -510,8 +545,8 @@ namespace NeuroRighter
                     //Change gridline color
                     //for (int i = numRows + 1; i <= spikeGraph.Plots.Count; ++i)
                     //    spikeGraph.Plots.Item(i).LineColor = Int32.MaxValue;
-                    spikeGraph.setNumRowCols(numRows, numCols);
-                    spikeGraph.setMinMax(1 / Convert.ToDouble(textBox_spikeSamplingRate.Text), numCols * spikeplotlength, spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh);
+                    //spikeGraph.setNumRowCols(numRows, numCols);
+                    
                     //spikeGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_spikeSamplingRate.Text), numCols * spikeplotlength); //fixed at 250ms
                     //spikeGraph.Plots.Item(1).YAxis.SetMinMax(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh);
 
@@ -520,8 +555,6 @@ namespace NeuroRighter
                     //    spikeGraph.Plots.Item(r + numRows + 1).PlotY(new double[] { spikeTask[0].AIChannels.All.RangeLow + r * 2 * spikeTask[0].AIChannels.All.RangeLow, spikeTask[0].AIChannels.All.RangeLow + r * 2 * spikeTask[0].AIChannels.All.RangeLow }, 1 / Convert.ToDouble(textBox_spikeSamplingRate.Text), numCols * spikeplotlength);
                     //for (int c = 0; c < numCols - 1; ++c)
                     //    spikeGraph.Plots.Item(c + 2 * numRows).PlotXvsY(new double[] { (c + 1) * spikeplotlength, (c + 1) * spikeplotlength }, new double[] { spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh });
-
-                    resetSpkWfm(); //Take care of spike waveform graph
 
                     if (Properties.Settings.Default.UseEEG)
                     {
@@ -1026,8 +1059,14 @@ namespace NeuroRighter
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
+            {
+                //System.Threading.Parallel.For(numChannelsPerDev * taskNumber, numChannelsPerDev * (taskNumber + 1), delegate(int i)
+                //{
+                //    spikeFilter[i].filterData(filtSpikeData[i]);
+                //});
                 for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
                     spikeFilter[i].filterData(filtSpikeData[i]);
+            }
             #endregion
 
             #region SpikeDetection
@@ -1161,13 +1200,13 @@ namespace NeuroRighter
                 PlotData pd = (PlotData)sender;
                 if (spikeGraph.Visible && !checkBox_freeze.Checked)
                 {
-                    spikeGraph.clear();
-                    rawType[][] data = pd.read();
+                    //spikeGraph.clear();
+                    float[][] data = pd.read();
                     for (int i = 0; i < data.Length; ++i)
                         //spikeGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)spikeSamplingRate,
                         //    (double)pd.downsample / (double)spikeSamplingRate);
-                        spikeGraph.plotY(data[i], (double)pd.downsample / (double)spikeSamplingRate,
-                            (double)pd.downsample / (double)spikeSamplingRate);
+                        spikeGraph.plotY(data[i], (float)pd.downsample / (float)spikeSamplingRate,
+                            (float)pd.downsample / (float)spikeSamplingRate, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
                     //spikeGraph.Invalidate();
                     //spikeGraph.refresh();
                     spikeGraph.Invalidate();
@@ -1215,8 +1254,8 @@ namespace NeuroRighter
                             channel = (MEAChannelMappings.ch2rc[channel, 0]-1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
                         //spkWfmGraph.Plots.Item(++numSpkWfms[channel] + channel * maxWaveforms + spkWfmGridlines).PlotY(wfms[i].waveform,
                         //    pd.horizontalOffset(channel), 1);
-                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1);
-                        
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, Microsoft.Xna.Framework.Graphics.Color.Lime,
+                            numSpkWfms[channel]++ + channel * maxWaveforms);
                         numSpkWfms[channel] %= maxWaveforms;
                     }
                     spkWfmGraph.Invalidate();
@@ -1297,7 +1336,7 @@ namespace NeuroRighter
                 PlotData pd = (PlotData)sender;
                 if (lfpGraph.Visible && !checkBox_freeze.Checked)
                 {
-                    rawType[][] data = pd.read();
+                    float[][] data = pd.read();
                     for (int i = 0; i < data.Length; ++i)
                         lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
                             (double)pd.downsample / (double)lfpSamplingRate);
@@ -1701,7 +1740,7 @@ namespace NeuroRighter
         {
             numSpkWfms = new int[numChannels];
             for (int i = 0; i < numSpkWfms.Length; ++i)
-                numSpkWfms[i] = 1; //Set to 1
+                numSpkWfms[i] = 0; //Set to 1
 
             int numCols, numRows;
             switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
@@ -1715,14 +1754,23 @@ namespace NeuroRighter
                 default:
                     numRows = numCols = 4; break;
             }
-            spkWfmGraph.setNumRowCols(numRows, numCols);
-
-            //Add plots for gridlines and waveforms
+            if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
+            spkWfmGraph = new GridGraph();
+            spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true);
+            spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
+            spkWfmGraph.SizeChanged += new EventHandler(spkWfmGraph.resize);
+            spkWfmGraph.VisibleChanged += new EventHandler(spkWfmGraph.resize);
+            spkWfmGraph.Parent = tabPage_waveforms;
+            spkWfmGraph.BringToFront();
+            spkWfmGraph.Dock = DockStyle.Fill;
 
             //Adjust ranges
-            double wfmLength = numPre + numPost + 1;
-            spkWfmGraph.setMinMax(1, numCols * wfmLength, spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh);
-            spkWfmGraph.clear();
+            if (spikeTask != null && spikeTask[0] != null)
+            {
+                double wfmLength = numPre + numPost + 1;
+                spkWfmGraph.setMinMax(1, (float)(numCols * wfmLength), (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
+            }
+            //spkWfmGraph.clear();
         }
 
         private void checkBox_SALPA_CheckedChanged(object sender, EventArgs e)
@@ -1810,13 +1858,13 @@ namespace NeuroRighter
             switch (tabControl.SelectedIndex)
             {
                 case 0:
-                    spikePlotData.setGain(spikePlotData.getGain() / 2);
+                    spikePlotData.setGain(spikePlotData.getGain() / 2F);
                     break;
                 case 1:
                     waveformPlotData.setGain(waveformPlotData.getGain() / 2);
                     break;
                 case 2:
-                    lfpPlotData.setGain(lfpPlotData.getGain() / 2);
+                    lfpPlotData.setGain(lfpPlotData.getGain() / 2F);
                     break;
                 case 3:
                     eegDisplayGain /= 2;
@@ -1854,13 +1902,13 @@ namespace NeuroRighter
             switch (tabControl.SelectedIndex)
             {
                 case 0:
-                    spikePlotData.setGain(1.0);
+                    spikePlotData.setGain(1F);
                     break;
                 case 1:
-                    waveformPlotData.setGain(1.0);
+                    waveformPlotData.setGain(1F);
                     break;
                 case 2:
-                    lfpPlotData.setGain(1.0);
+                    lfpPlotData.setGain(1F);
                     break;
                 case 3:
                     eegDisplayGain = 1;
@@ -2062,13 +2110,15 @@ namespace NeuroRighter
             switch (comboBox_spikeDetAlg.SelectedIndex)
             {
                 case 0:  //RMS Adaptive
-                    spikeDetector = new RMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value));
+                    spikeDetector = new RMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, 
+                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
                     break;
                 case 1:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value));
                     break;
                 case 2:  //Median method
-                    spikeDetector = new MedianThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value));
+                    spikeDetector = new MedianThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, 
+                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
                     break;
                 case 3:  //LimAda
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), Convert.ToInt32(textBox_spikeSamplingRate.Text));
@@ -2090,7 +2140,7 @@ namespace NeuroRighter
 
         private void button_clearSpkWfms_Click(object sender, EventArgs e)
         {
-            resetSpkWfm();
+            spkWfmGraph.clear();
         }
 
         private void switch_record_StateChanged(object sender, ActionEventArgs e)
@@ -3198,7 +3248,7 @@ namespace NeuroRighter
                     textBox_impedanceResults.Text += "Channel " + c.ToString() + "\r\n\tFrequency (Hz)\tImpedance (Ohms)\r\n";
                     for (int f = 0; f < freqs.GetLength(0); ++f)
                     {
-                        textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + impedance[c - 1][f] + "\r\n";
+                        textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + string.Format("{0:0.000}", impedance[c - 1][f]) + "\r\n";
                     }
                     textBox_impedanceResults.Text += "\r\n";
                 }
@@ -3229,17 +3279,56 @@ namespace NeuroRighter
 
             double[] data = impedanceReader.EndReadMultiSample(ar);
 
+            //Remove DC offset
             double mData = 0;
             for (int i = 0; i < data.Length; ++i) mData += data[i];
             mData /= data.Length;
-
             for (int i = 0; i < data.Length; ++i) data[i] -= mData;
 
-            //Filter data to bring out pure tone
+            //Filter data with Butterworth, if checked
             if (checkBox_impBandpassFilter.Checked)
             {
                 ButterworthBandpassFilter bwfilt = new ButterworthBandpassFilter(1, IMPEDANCE_SAMPLING_RATE, f - f / 4, f + f / 4);
                 data = bwfilt.FilterData(data);
+            }
+
+            //Use matched filter to reduce noise, if checked (slow)
+            if (checkBox_impUseMatchedFilter.Checked)
+            {
+                //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                
+                SineSignal wave = new SineSignal(f, 1.0);  //Create a sine wave at test frequency of amplitude 1
+                double[] h; //filter
+                //If data is very long, subsample by an order of magnitude
+                if (data.Length > 1E6)
+                {
+                    double[] dataNew = new double[(int)Math.Floor((double)data.Length / 10)];
+                    for (int i = 0; i < dataNew.Length; ++i) dataNew[i] = data[i * 10];
+                    data = dataNew;
+                    dataNew = null;
+                    h = wave.Generate(IMPEDANCE_SAMPLING_RATE / 10, (long)Math.Round((double)IMPEDANCE_SAMPLING_RATE / (f * 10))); //Generate one period
+                }
+
+                else
+                {
+                    h = wave.Generate(IMPEDANCE_SAMPLING_RATE, (long)Math.Round((double)IMPEDANCE_SAMPLING_RATE / f)); //Generate one period
+                }
+                wave = null;
+                //GC.Collect(); //this uses a lot of memory
+                //Compute filter power
+                double phh = 0.0;
+                for (int i = 0; i < h.Length; ++i) phh += h[i] * h[i];
+                //Normalize filter so power is 1
+                for (int i = 0; i < h.Length; ++i) h[i] /= phh;
+
+                //sw.Start();
+                double[] x = NationalInstruments.Analysis.Dsp.SignalProcessing.Convolve(data, h);
+                //sw.Stop();
+                //TimeSpan ts = sw.Elapsed;
+                //System.Diagnostics.Debug.WriteLine("ms = " + ts.Milliseconds + "\t s = " + ts.Seconds + "\t min = " + ts.Minutes);
+
+                int offset = (int)(h.Length / 2);
+                for (int i = 0; i < data.Length; ++i) data[i] = x[i + offset]; //Take center values
             }
 
             double rms = rootMeanSquared(data);
@@ -3447,8 +3536,6 @@ namespace NeuroRighter
         }
 
         #endregion
-
-        
 
         #region diagnostics
         /*********************************************************************

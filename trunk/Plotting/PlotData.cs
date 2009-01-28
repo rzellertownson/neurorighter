@@ -30,16 +30,16 @@ namespace NeuroRighter
     {
         internal readonly Int32 downsample;
         protected Int32 bufferLength;
-        protected RawType[][] data;
-        protected RawType[][] outputData;
-        protected double gain;
+        protected float[][] data;
+        protected float[][] outputData;
+        protected float gain;
         protected Int32[] writeHead; //Index of next sample to write
         protected Int32 readHead;  //Index of next sample to read
         protected Int32 numChannels;
         protected Int32[] numWrites; //Num samples written since last read
         protected Int32 samplingRate;
         protected Double refreshTime; //In Seconds
-        protected Double boxHeight; //Height (amplitude) of each graph box
+        protected float boxHeight; //Height (amplitude) of each graph box
         protected Int32 numRows;  //For display data
         protected Int32 numCols;
         protected String channelMapping;
@@ -47,7 +47,7 @@ namespace NeuroRighter
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
 
-        internal PlotData(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, Double boxHeight,
+        internal PlotData(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
             Int32 numRows, Int32 numCols, Double refreshTime, String channelMapping)
         {
             this.numChannels = numChannels;
@@ -60,13 +60,13 @@ namespace NeuroRighter
             this.refreshTime = refreshTime;
             this.channelMapping = channelMapping;
 
-            gain = 1.0;
+            gain = 1F;
 
             int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
-            data = new RawType[numChannels][];
-            outputData = new RawType[numRows][];
-            for (int i = 0; i < numChannels; ++i) data[i] = new RawType[bufferLength];
-            for (int i = 0; i < numRows; ++i) outputData[i] = new RawType[numCols * numSamplesPerPlot];
+            data = new float[numChannels][];
+            outputData = new float[numRows][];
+            for (int i = 0; i < numChannels; ++i) data[i] = new float[bufferLength];
+            for (int i = 0; i < numRows; ++i) outputData[i] = new float[numCols * numSamplesPerPlot];
             writeHead = new Int32[numChannels];
             numWrites = new Int32[numChannels];
         }
@@ -82,7 +82,7 @@ namespace NeuroRighter
             {
                 for (int s = 0; s < input[c].Length; s += downsample)
                 {
-                    data[startChannel + c][writeHead[startChannel + c]++] = input[c + startChannel][s];
+                    data[startChannel + c][writeHead[startChannel + c]++] = (float)input[c + startChannel][s];
                     //Check to see if we've wrapped around
                     if (writeHead[startChannel + c] >= bufferLength) writeHead[startChannel + c] = 0;
                 }
@@ -117,9 +117,9 @@ namespace NeuroRighter
         //******************
         //READ
         //******************
-        internal virtual RawType[][] read()
+        internal virtual float[][] read()
         {
-            double temp;
+            float temp;
             int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
             if (numChannels == 16 || numChannels == 64)
             {
@@ -136,10 +136,10 @@ namespace NeuroRighter
                         {
                             //Adjust for display gain and overshoots
                             temp = data[channel][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                            if (temp > boxHeight / 2.0)
-                                temp = boxHeight / 2.0;
-                            else if (temp < -boxHeight / 2.0)
-                                temp = -boxHeight / 2.0;
+                            if (temp > boxHeight * 0.5F)
+                                temp = boxHeight * 0.5F;
+                            else if (temp < -boxHeight *0.5F)
+                                temp = -boxHeight * 0.5F;
                             //Translate data down and into output buffer
                             outputData[i][numSamplesPerPlot * j + k] = temp - i * boxHeight;
                         }
@@ -156,10 +156,10 @@ namespace NeuroRighter
                         {
                             //Adjust for display gain and overshoots
                             temp = data[i * numRows + j][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                            if (temp > boxHeight / 2.0)
-                                temp = boxHeight / 2.0;
-                            else if (temp < -boxHeight / 2.0)
-                                temp = -boxHeight / 2.0;
+                            if (temp > boxHeight * 0.5F)
+                                temp = boxHeight * 0.5F;
+                            else if (temp < -boxHeight * 0.5F)
+                                temp = -boxHeight * 0.5F;
                             //Translate data down and into output buffer
                             outputData[i][numSamplesPerPlot * j + k] = temp - i * boxHeight;
                         }
@@ -172,12 +172,12 @@ namespace NeuroRighter
                     {
                         //Adjust for display gain and overshoots
                         temp = data[i + 30][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                        if (temp > boxHeight / 2.0)
-                            temp = boxHeight / 2.0;
-                        else if (temp < -boxHeight / 2.0)
-                            temp = -boxHeight / 2.0;
+                        if (temp > boxHeight * 0.5F)
+                            temp = boxHeight * 0.5F;
+                        else if (temp < -boxHeight * 0.5F)
+                            temp = -boxHeight * 0.5F;
                         //Translate data down and into output buffer
-                        outputData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5 * boxHeight;
+                        outputData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5F * boxHeight;
                     }
                 }
             }
@@ -197,7 +197,7 @@ namespace NeuroRighter
         }
 
 
-        internal void setGain(double gain) { this.gain = gain; }
-        internal double getGain() { return gain; }
+        internal void setGain(float gain) { this.gain = gain; }
+        internal float getGain() { return gain; }
     }
 }

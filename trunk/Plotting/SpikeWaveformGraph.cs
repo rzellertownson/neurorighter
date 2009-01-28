@@ -9,20 +9,20 @@ using System.Windows.Forms;
 
 namespace NeuroRighter
 {
-    public partial class SpikeWaveformGraph : UserControl
+    sealed public partial class SpikeWaveformGraph : UserControl
     {
-        private double minX = 0.0;
-        private double minY = 0.0;
-        private double maxX = 1.0;
-        private double maxY = 1.0;
-        private double dX = 1.0;
-        private double dY = 1.0;
+        private float minX = 0F;
+        private float minY = 0F;
+        private float maxX = 1F;
+        private float maxY = 1F;
+        private float dX = 1F;
+        private float dY = 1F;
         private Color lineColor = Color.Lime;
         private float penWidth = 1;
         private int numRows = 4;
         private int numCols = 4;
-        private double xScale;
-        private double yScale;
+        private float xScale;
+        private float yScale;
 
         private Graphics offScreenG;
         private Bitmap offScreenBMP;
@@ -46,82 +46,98 @@ namespace NeuroRighter
             SetStyle(ControlStyles.UserPaint, true);
         }
 
-        internal void setMinMax(double minX, double maxX, double minY, double maxY)
+        internal void setMinMax(float minX, float maxX, float minY, float maxY)
         {
-            this.minX = minX;
-            this.minY = minY;
-            this.maxX = maxX;
-            this.maxY = maxY;
-            dX = maxX - minX;
-            dY = maxY - minY;
-            xScale = this.Width / dX;
-            yScale = this.Height / dY;
+            lock (this)
+            {
+                this.minX = minX;
+                this.minY = minY;
+                this.maxX = maxX;
+                this.maxY = maxY;
+                dX = maxX - minX;
+                dY = maxY - minY;
+                xScale = (float)this.Width / dX;
+                yScale = -(float)this.Height / dY;
+            }
         }
         internal void setNumRowCols(int numRows, int numCols) { this.numRows = numRows; this.numCols = numCols; }
 
-        internal void plotY(double[] data, double firstX, double incrementX)
+        internal void plotY(float[] data, float firstX, float incrementX)
         {
             plotY(data, firstX, incrementX, tracePen);
         }
-        internal void plotY(double[] data, double firstX, double incrementX, Pen p)
+        internal void plotY(float[] data, float firstX, float incrementX, Pen p)
         {
             Point[] pts = new Point[data.GetLength(0)];
             for (int i = 0; i < pts.GetLength(0); ++i)
             {
                 pts[i].X = Convert.ToInt32(xScale * (firstX + incrementX * i - minX));
-                pts[i].Y = Convert.ToInt32(yScale * (data[i] - minY));
+                pts[i].Y = Convert.ToInt32(yScale * (data[i] - maxY));
             }
-
-            offScreenG.DrawLines(p, pts);
+            lock (this)
+            {
+                offScreenG.DrawLines(p, pts);
+            }
         }
 
-        internal void plotX(double[] data, double firstY, double incrementY)
+        internal void plotX(float[] data, float firstY, float incrementY)
         {
             plotX(data, firstY, incrementY, tracePen);
         }
-        internal void plotX(double[] data, double firstY, double incrementY, Pen p)
+        internal void plotX(float[] data, float firstY, float incrementY, Pen p)
         {
             Point[] pts = new Point[data.GetLength(0)];
             for (int i = 0; i < pts.GetLength(0); ++i)
             {
                 pts[i].X = Convert.ToInt32(xScale * (data[i] - minX));
-                pts[i].Y = Convert.ToInt32(yScale * (firstY + incrementY * i - minY));
+                pts[i].Y = Convert.ToInt32(yScale * (firstY + incrementY * i - maxY));
             }
-
-            offScreenG.DrawLines(p, pts);
+            lock (this)
+            {
+                offScreenG.DrawLines(p, pts);
+            }
         }
 
         internal void clear()
         {
-            offScreenG.Clear(Color.Black);
+            lock (this)
+            {
+                offScreenG.Clear(Color.Black);
+            }
             plotGridLines();
         }
 
         private void Graph_Resize(object sender, EventArgs e)
         {
-            offScreenBMP.Dispose();
-            offScreenG.Dispose();
+            if (this.Width != 0 && this.Height != 0)
+            {
+                lock (this)
+                {
+                    offScreenBMP.Dispose();
+                    offScreenG.Dispose();
 
-            offScreenBMP = new Bitmap(this.Width, this.Height);
-            offScreenG = Graphics.FromImage(offScreenBMP);
+                    offScreenBMP = new Bitmap(this.Width, this.Height);
+                    offScreenG = Graphics.FromImage(offScreenBMP);
 
-            xScale = this.Width / dX;
-            yScale = this.Height / dY;
+                    xScale = (float)this.Width / dX;
+                    yScale = -(float)this.Height / dY;
+                }
 
-            plotGridLines();
+                plotGridLines();
+            }
         }
 
         private void plotGridLines()
         {
-            double boxHeight = dY / numRows;
-            double boxWidth = dX / numCols;
+            float boxHeight = dY / numRows;
+            float boxWidth = dX / numCols;
 
             //Plot gridlines
             for (int r = 1; r <= numRows - 1; ++r)
-                plotY(new double[] { boxHeight * r + minY, boxHeight * r + minY },
+                plotY(new float[] { boxHeight * r + minY, boxHeight * r + minY },
                     minX, dX, gridPen);
             for (int c = 1; c <= numCols - 1; ++c)
-                plotX(new double[] { boxWidth * c + minX, boxWidth * c + minX },
+                plotX(new float[] { boxWidth * c + minX, boxWidth * c + minX },
                     minY, dY, gridPen);
         }
 
@@ -132,7 +148,10 @@ namespace NeuroRighter
 
         private void SpikeWaveformGraph_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImageUnscaled(offScreenBMP, 0, 0);
+            lock (this)
+            {
+                e.Graphics.DrawImageUnscaled(offScreenBMP, 0, 0);
+            }
         }
 
     }

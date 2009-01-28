@@ -23,14 +23,12 @@ using System.Text;
 
 namespace NeuroRighter
 {
-    using RawType = System.Double;
-
     internal sealed class PlotSpikeWaveform
     {
         public Int16 channel;
-        public RawType[] waveform;
+        public float[] waveform;
 
-        public PlotSpikeWaveform(int channel, RawType[] waveform)
+        public PlotSpikeWaveform(int channel, float[] waveform)
         {
             this.channel = (short)channel;
             this.waveform = waveform;

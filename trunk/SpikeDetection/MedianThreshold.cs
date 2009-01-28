@@ -26,15 +26,23 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
-    class MedianThreshold : SpikeDetector
+    sealed class MedianThreshold : SpikeDetector
     {
         rawType[] stData; //Scaled and translated data
+        private const double WINDOW = 0.25; //in seconds, how much data to average over
+        private List<List<double>> MedianList;
+        private readonly int numReadsPerWindow;
 
-        public MedianThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult) : 
+        public MedianThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, 
+            int numPostIn, int numPreIn, rawType threshMult, double deviceRefresh) : 
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult)
         {
             threshold = new rawType[1, numChannels];
             stData = new rawType[spikeBufferLength / downsample]; //Scaled and translated data
+            numReadsPerWindow = (int)Math.Round(WINDOW / deviceRefresh);
+            if (numReadsPerWindow < 1) numReadsPerWindow = 1;
+            MedianList = new List<List<double>>(numChannelsIn);
+            for (int i = 0; i < numChannelsIn; ++i) MedianList.Add(new List<double>(numReadsPerWindow));
         }
 
         protected override void updateThreshold(rawType[] data, int channel)
@@ -50,8 +58,13 @@ namespace NeuroRighter
             }
             //thr[i] = Statistics.Median(stData) * thrMult;
             Array.Sort(stData);
-            //threshold[0,channel] = (rawType)(Statistics.Median(stData) * thresholdMultiplier / 0.6745);
-            threshold[0, channel] = stData[(int)(stData.Length/2)] * thresholdMultiplier / (rawType)0.6745;
+
+            if (numReadsPerWindow == MedianList[channel].Count) MedianList[channel].RemoveAt(0);
+            MedianList[channel].Add(stData[(int)(stData.Length / 2)] * thresholdMultiplier * 1.4826);
+            double avg = 0.0;
+            for (int i = 0; i < MedianList[channel].Count; ++i) avg += MedianList[channel][i];
+
+            threshold[0, channel] = avg / MedianList[channel].Count;
         }
 
     }

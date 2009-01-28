@@ -31,8 +31,8 @@ namespace NeuroRighter
     {
         private List<PlotSpikeWaveform> waveforms;
         private Int32 waveformLength; //Num samples
-        private Double boxHeight;
-        private RawType gain;
+        private float boxHeight;
+        private float gain;
         private Int32 numRows;
         private Int32 numCols;
         private BackgroundWorker bgWorker;
@@ -44,7 +44,7 @@ namespace NeuroRighter
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
 
-        internal EventPlotData(Int32 numChannels, Int32 waveformLength, Double boxHeight, Int32 numRows, 
+        internal EventPlotData(Int32 numChannels, Int32 waveformLength, Single boxHeight, Int32 numRows, 
             Int32 numCols, Int32 maxWaveforms, String channelMapping)
         {
             this.waveformLength = waveformLength;
@@ -54,7 +54,7 @@ namespace NeuroRighter
             this.maxWaveforms = maxWaveforms;
             this.channelMapping = channelMapping;
 
-            gain = 1.0;
+            gain = 1F;
             waveforms = new List<PlotSpikeWaveform>(10);
             numWfmsStored = new Int32[numChannels];
 
@@ -109,17 +109,17 @@ namespace NeuroRighter
                 {
                     if (numWfmsStored[newWaveforms[i].channel] <= maxWaveforms)
                     {
-                        RawType[] wfmDataOffset = new RawType[waveformLength];
-                        double offset;
+                        float[] wfmDataOffset = new float[waveformLength];
+                        float offset;
                         if (numRows == 8 && channelMapping == "invitro")
                             offset = -(MEAChannelMappings.ch2rc[newWaveforms[i].channel, 0] - 1) * boxHeight;
                         else
                             offset = -(newWaveforms[i].channel / numRows) * boxHeight;
                         for (int k = 0; k < waveformLength; ++k)
                         {
-                            RawType temp = newWaveforms[i].waveform[k] * gain;
-                            if (temp > boxHeight / 2) temp = boxHeight / 2;
-                            else if (temp < -boxHeight / 2) temp = -boxHeight / 2;
+                            float temp = (float)(newWaveforms[i].waveform[k]) * gain;
+                            if (temp > boxHeight * 0.5F) temp = boxHeight * 0.5F;
+                            else if (temp < -boxHeight * 0.5F) temp = -boxHeight * 0.5F;
 
                             wfmDataOffset[k] = temp + offset;
                         }
@@ -152,12 +152,12 @@ namespace NeuroRighter
             }
         }
 
-        internal Double horizontalOffset(Int32 channel) //Displacement of channel's display in samples
+        internal float horizontalOffset(Int32 channel) //Displacement of channel's display in samples
         {
-            return (channel % numCols) * waveformLength + 1;
+            return (channel % numCols) * waveformLength + 1F;
         }
 
-        internal Double getGain() { return gain; }
-        internal void setGain(double gain) { this.gain = gain; }
+        internal float getGain() { return gain; }
+        internal void setGain(float gain) { this.gain = gain; }
     }
 }

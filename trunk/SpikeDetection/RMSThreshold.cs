@@ -25,14 +25,22 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
-    class RMSThreshold : SpikeDetector
+    sealed class RMSThreshold : SpikeDetector
     {
         private rawType tempData;
+        private const double WINDOW = 0.25; //in seconds, how much data to average over
+        private List<List<double>> RMSList;
+        private readonly int numReadsPerWindow;
 
-        public RMSThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult) :
+        public RMSThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, 
+            int numPostIn, int numPreIn, rawType threshMult, double deviceRefresh) :
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult) 
         {
             threshold = new rawType[1,numChannels];
+            numReadsPerWindow = (int)Math.Round(WINDOW / deviceRefresh);
+            if (numReadsPerWindow < 1) numReadsPerWindow = 1;
+            RMSList = new List<List<double>>(numChannelsIn);
+            for (int i = 0; i < numChannelsIn; ++i) RMSList.Add(new List<double>(numReadsPerWindow));
         }
 
         protected override void updateThreshold(rawType[] data, int channel)
@@ -41,7 +49,13 @@ namespace NeuroRighter
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
                 tempData += data[j * downsample] * data[j * downsample]; //Square data
             tempData /= (spikeBufferLength / downsample);
-            threshold[0, channel] = Math.Sqrt(tempData) * _thresholdMultiplier;
+            if (RMSList[channel].Count == numReadsPerWindow)
+                RMSList[channel].RemoveAt(0);
+            RMSList[channel].Add(Math.Sqrt(tempData) * _thresholdMultiplier);
+            //threshold[0, channel] = Math.Sqrt(tempData) * _thresholdMultiplier;
+            double avg = 0.0;
+            for (int i = 0; i < RMSList[channel].Count; ++i) avg += RMSList[channel][i];
+            threshold[0, channel] = avg / RMSList[channel].Count;
         }
     }
 }

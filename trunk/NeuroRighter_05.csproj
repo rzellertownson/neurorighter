@@ -75,6 +75,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="Matlab\loadraw.mexw32" />
+    <None Include="Matlab\loadspike.mexw32" />
+    <None Include="Matlab\loadstim.mexw32" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
@@ -168,6 +171,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon\Slide1.PNG" />
+    <Content Include="Matlab\loadraw.c" />
+    <Content Include="Matlab\loadraw.m" />
+    <Content Include="Matlab\loadspike.c" />
+    <Content Include="Matlab\loadspike.m" />
+    <Content Include="Matlab\loadstim.c" />
+    <Content Include="Matlab\loadstim.m" />
+    <Content Include="Matlab\Readme.txt" />
+    <Content Include="Miscellaneous\NeuroRighter_Disclaimer.txt" />
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

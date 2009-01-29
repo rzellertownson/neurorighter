@@ -31,17 +31,19 @@ namespace NeuroRighter
     internal sealed class PlotDataRows : PlotData
     {
         private Double plotLength; //Total length of plot, in seconds
+        private Double deviceRefreshRate;
 
         internal PlotDataRows(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
-            Double refresh, Double plotLength)
+            Double refresh, Double plotLength, double deviceRefreshRate)
             : base(numChannels, downsample, bufferLength, samplingRate, boxHeight,
-                numChannels, 1, refresh, "invivo") //Only 1 column
+                numChannels, 1, refresh, "invivo", deviceRefreshRate) //Only 1 column
         {
             this.plotLength = plotLength;
+            this.deviceRefreshRate = deviceRefreshRate;
 
             //Have to update outputData
-            int numSamplesPerPlot = (int)(plotLength * (samplingRate / downsample));
-            int numSamplesPerRefresh = (int)(refreshTime * (samplingRate / downsample));
+            int numSamplesPerPlot = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (plotLength / deviceRefreshRate));
+            int numSamplesPerRefresh = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (refreshTime / deviceRefreshRate));
             for (int i = 0; i < numRows; ++i) outputData[i] = new float[numCols * numSamplesPerPlot];
 
             //Readhead needs to be pushed back to account for difference between refreshtime and plotlength
@@ -56,8 +58,8 @@ namespace NeuroRighter
             lock (this)
             {
                 float temp;
-                int numSamplesPerPlot = (int)(plotLength * (samplingRate / downsample));
-                int numSamplesPerUpdate = (int)(refreshTime * (samplingRate / downsample));
+                int numSamplesPerPlot = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (plotLength / deviceRefreshRate));
+                int numSamplesPerRefresh = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (refreshTime / deviceRefreshRate)); 
                 for (int i = 0; i < numChannels; ++i) //row
                 {
                     for (int k = 0; k < numSamplesPerPlot; ++k) //sample
@@ -72,9 +74,9 @@ namespace NeuroRighter
                         outputData[i][k] = temp - i * boxHeight;
                     }
                 }
-                readHead += numSamplesPerUpdate;
+                readHead += numSamplesPerRefresh;
                 readHead %= bufferLength;
-                for (int i = 0; i < numChannels; ++i) numWrites[i] -= numSamplesPerUpdate;
+                for (int i = 0; i < numChannels; ++i) numWrites[i] -= numSamplesPerRefresh;
 
                 return outputData;
             }

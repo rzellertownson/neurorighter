@@ -5,9 +5,10 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+
 namespace NeuroRighter
 {
-    sealed internal class GridGraph : GraphicsDeviceControl
+    sealed internal class RowGraph : GraphicsDeviceControl
     {
         private float minX = 0F;
         private float maxX = 1F;
@@ -19,62 +20,29 @@ namespace NeuroRighter
         private float yScale;
 
         private int numRows;
-        private int numCols;
         private int numSamplesPerPlot;
-        private bool _isSpikeWaveformPlot;
-        internal bool isSpikeWaveformPlot
-        {
-            get { return _isSpikeWaveformPlot; }
-        }
-    
-
         private Color gridColor = Color.White;
 
         BasicEffect effect;
         VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
-        List<VertexPositionColor[]> gridLines; //Grid lines
         int[] idx; //Index to points in 'lines'
-        short[] gridIdx = { 0, 1 }; //Index to points in gridLines
 
-        private const int NUM_WAVEFORMS_PER_PLOT = 10;
-
-        internal void setup(int numRows, int numColumns, int numSamplesPerPlot, bool isSpikeWaveformPlot)
+        internal void setup(int numRows, int numSamplesPerPlot)
         {
-            this.numRows = numRows; this.numCols = numColumns; this._isSpikeWaveformPlot = isSpikeWaveformPlot;
+            this.numRows = numRows;
             this.numSamplesPerPlot = numSamplesPerPlot;
-            if (!isSpikeWaveformPlot)
-            {
-                lines = new List<VertexPositionColor[]>(numRows);
-                for (int i = 0; i < numRows; ++i) lines.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
-                idx = new int[numSamplesPerPlot * numCols];
-            }
-            else 
-            {
-                lines = new List<VertexPositionColor[]>(numCols * numRows * NUM_WAVEFORMS_PER_PLOT);
-                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i) 
-                    lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-                idx = new int[numSamplesPerPlot];
-            }
-            gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
+            lines = new List<VertexPositionColor[]>(numRows);
+            for (int i = 0; i < numRows; ++i) lines.Add(new VertexPositionColor[numSamplesPerPlot]);
+            idx = new int[numSamplesPerPlot];
 
-            for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
             for (int i = 0; i < idx.Length; ++i) idx[i] = i;
         }
 
         internal void clear()
         {
-            if (!_isSpikeWaveformPlot)
-            {
-                lines.Clear();
-                for (int i = 0; i < numRows; ++i) lines.Add(new VertexPositionColor[numSamplesPerPlot * numCols]);
-            }
-            else
-            {
-                lines.Clear();
-                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
-                    lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-            }
+            lines.Clear();
+            for (int i = 0; i < numRows; ++i) lines.Add(new VertexPositionColor[numSamplesPerPlot]);
         }
 
         protected override void Initialize()
@@ -96,7 +64,7 @@ namespace NeuroRighter
                 xScale = (float)this.Width / dX;
                 yScale = -(float)this.Height / dY;
 
-                plotGridLines();
+                //plotGridLines();
             }
         }
 
@@ -129,9 +97,6 @@ namespace NeuroRighter
             effect.Begin();
             effect.CurrentTechnique.Passes[0].Begin();
 
-            for (int i = 0; i < gridLines.Count; ++i)
-                GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
-                    gridLines[i], 0, 2, gridIdx, 0, 1);
             for (int i = 0; i < lines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
@@ -140,27 +105,27 @@ namespace NeuroRighter
             effect.End();
         }
 
-        private void plotGridLines()
-        {
-            float boxHeight = (float)this.Height / numRows;
-            float boxWidth = (float)this.Width / numCols;
+        //private void plotGridLines()
+        //{
+        //    float boxHeight = (float)this.Height / numRows;
+        //    float boxWidth = (float)this.Width / numCols;
 
-            //Draw horz. lines
-            for (short i = 0; i < numRows - 1; ++i)
-            {
-                gridLines[i][0] = new VertexPositionColor(new Vector3(0F, boxHeight * (i + 1), 0F),
-                    gridColor);
-                gridLines[i][1] = new VertexPositionColor(new Vector3(this.Width, boxHeight * (i + 1), 0F),
-                    gridColor);
-            }
-            //Draw vert. lines
-            for (short i = 0; i < numCols - 1; ++i)
-            {
-                gridLines[i + numRows - 1][0] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
-                    0F, 0F), gridColor);
-                gridLines[i + numCols - 1][1] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
-                    this.Height, 0F), gridColor);
-            }
-        }
+        //    //Draw horz. lines
+        //    for (short i = 0; i < numRows - 1; ++i)
+        //    {
+        //        gridLines[i][0] = new VertexPositionColor(new Vector3(0F, boxHeight * (i + 1), 0F),
+        //            gridColor);
+        //        gridLines[i][1] = new VertexPositionColor(new Vector3(this.Width, boxHeight * (i + 1), 0F),
+        //            gridColor);
+        //    }
+        //    //Draw vert. lines
+        //    for (short i = 0; i < numCols - 1; ++i)
+        //    {
+        //        gridLines[i + numRows - 1][0] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
+        //            0F, 0F), gridColor);
+        //        gridLines[i + numCols - 1][1] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
+        //            this.Height, 0F), gridColor);
+        //    }
+        //}
     }
 }

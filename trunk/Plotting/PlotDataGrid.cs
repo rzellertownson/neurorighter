@@ -30,12 +30,12 @@ namespace NeuroRighter
     //****************************************
     internal sealed class PlotDataGrid : PlotData
     {
-        internal PlotDataGrid(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
-            Int32 numRows, Int32 numCols, Double plotLength, String channelMapping)
-            : base(numChannels, downsample, bufferLength, samplingRate, boxHeight, numRows, numCols, plotLength, channelMapping)
+        internal PlotDataGrid(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, Single boxHeight,
+            Int32 numRows, Int32 numCols, Double plotLength, String channelMapping, Double deviceRefreshRate)
+            : base(numChannels, downsample, bufferLength, samplingRate, boxHeight, numRows, numCols, plotLength, channelMapping, deviceRefreshRate)
         {
             //Write NaN values for some graphs
-            int numSamplesPerPlot = (int)(plotLength * (samplingRate / downsample));
+            int numSamplesPerPlot = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (refreshTime / deviceRefreshRate));
             if (numChannels == 32)
             {
                 for (int i = 0; i < 2 * numSamplesPerPlot; ++i)
@@ -52,7 +52,6 @@ namespace NeuroRighter
         internal override float[][] read()
         {
             float temp;
-            int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
             if (numChannels == 16 || numChannels == 64)
             {
                 for (int i = 0; i < numRows; ++i) //row
@@ -67,16 +66,44 @@ namespace NeuroRighter
                             outCol = MEAChannelMappings.ch2rc[i * numRows + j, 1] - 1;
                         }
 
-                        for (int k = 0; k < numSamplesPerPlot; ++k) //sample
+                        if (readHead + numSamplesPerPlot < bufferLength)
                         {
-                            //Adjust for display gain and overshoots
-                            temp = data[i * numRows + j][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                            if (temp > boxHeight * 0.5F)
-                                temp = boxHeight * 0.5F;
-                            else if (temp < -boxHeight * 0.5F)
-                                temp = -boxHeight * 0.5F;
-                            //Translate data down and into output buffer
-                            outputData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            for (int k = 0; k < numSamplesPerPlot; ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = data[i * numRows + j][k + readHead] * gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
+                        }
+                        else
+                        {
+                            for (int k = 0; k < bufferLength - readHead; ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = data[i * numRows + j][k + readHead] * gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
+                            for (int k = 0; k < numSamplesPerPlot - (bufferLength - readHead); ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = data[i * numRows + j][k] * gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
                         }
                     }
                 }
@@ -91,10 +118,10 @@ namespace NeuroRighter
                         {
                             //Adjust for display gain and overshoots
                             temp = data[i * numRows + j][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                            if (temp > boxHeight * 0.5F)
-                                temp = boxHeight * 0.5F;
-                            else if (temp < -boxHeight * 0.5F)
-                                temp = -boxHeight * 0.5F;
+                            if (temp > halfBoxHeight)
+                                temp = halfBoxHeight;
+                            else if (temp < -halfBoxHeight)
+                                temp = -halfBoxHeight;
                             //Translate data down and into output buffer
                             outputData[i][numSamplesPerPlot * j + k] = temp - i * boxHeight;
                         }
@@ -107,10 +134,10 @@ namespace NeuroRighter
                     {
                         //Adjust for display gain and overshoots
                         temp = data[i + 30][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
-                        if (temp > boxHeight * 0.5F)
-                            temp = boxHeight * 0.5F;
-                        else if (temp < -boxHeight * 0.5F)
-                            temp = -boxHeight * 0.5F;
+                        if (temp > halfBoxHeight)
+                            temp = halfBoxHeight;
+                        else if (temp < -halfBoxHeight)
+                            temp = -halfBoxHeight;
                         //Translate data down and into output buffer
                         outputData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5F * boxHeight;
                     }

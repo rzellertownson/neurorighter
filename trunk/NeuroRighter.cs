@@ -138,6 +138,7 @@ namespace NeuroRighter
         //Plots
         private GridGraph spikeGraph;
         private GridGraph spkWfmGraph;
+        private RowGraph lfpGraph;
 
         private FileOutput rawFile;
         private FileOutput lfpFile;
@@ -153,7 +154,7 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.010; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
@@ -213,11 +214,6 @@ namespace NeuroRighter
             spikeGraph.Dock = DockStyle.Fill;
 
             resetSpkWfm();
-            //spkWfmGraph = new GridGraph();
-            //spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
-            //spkWfmGraph.setup(4, 4, 100, true);
-            //spkWfmGraph.Parent = tabPage_waveforms;
-            //spkWfmGraph.Dock = DockStyle.Fill;
         }
         #endregion
 
@@ -227,6 +223,7 @@ namespace NeuroRighter
         private void button_BrowseOutputFile_Click(object sender, EventArgs e)
         {
             // Set dialog's default properties
+            SaveFileDialog saveFileDialog_OutputFile = new SaveFileDialog();
             saveFileDialog_OutputFile.DefaultExt = "*.ncl";         //default extension is for "neuroControl"
             saveFileDialog_OutputFile.FileName = filenameOutput;    //default file name
             saveFileDialog_OutputFile.Filter = "NeuroControl Files|*.ncl|All Files|*.*";
@@ -444,17 +441,6 @@ namespace NeuroRighter
                     /**************************************************
                     /*   Setup plotting
                     /**************************************************/
-                    //Begin by clearing graphs
-                    lfpGraph.ClearData();
-                    lfpGraph.Plots.RemoveAll();
-                    //spikeGraph.ClearData();
-                    //spikeGraph.Plots.RemoveAll();
-                    //spikeGraph.clear();
-                    //spkWfmGraph.clear();
-
-                    
-
-                    
                     if (Properties.Settings.Default.UseEEG)
                     {
                         eegGraph.ClearData();
@@ -474,7 +460,7 @@ namespace NeuroRighter
                     //Make PlotData buffers
                     //***********************
                     int downsample, numRows, numCols;
-                    const double spikeplotlength = 0.25;
+                    const double spikeplotlength = 0.25; //in seconds
                     switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
                     {
                         case 16:
@@ -495,27 +481,46 @@ namespace NeuroRighter
                             break;
                     }
 
+                    //Initialize graphs
                     if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
                     spikeGraph = new GridGraph();
                     spikeGraph.Resize += new EventHandler(spikeGraph.resize);
                     spikeGraph.SizeChanged += new EventHandler(spikeGraph.resize);
                     spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
-                    spikeGraph.setup(numRows, numCols, (int)(spikeplotlength * spikeSamplingRate / downsample), false);
-                    spikeGraph.setMinMax(1F / Convert.ToSingle(textBox_spikeSamplingRate.Text), (float)(numCols * spikeplotlength), 
+                    int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
+                    spikeGraph.setup(numRows, numCols, samplesPerPlot, false);
+                    spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1, 
                         (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
                     spikeGraph.Dock = DockStyle.Fill;
                     spikeGraph.Parent = tabPage_spikes;
+
+                    if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                    lfpGraph = new RowGraph();
+                    lfpGraph.Resize += new EventHandler(lfpGraph.resize);
+                    lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
+                    lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
+                    lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH));
+                    if (Properties.Settings.Default.SeparateLFPBoard)
+                        lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
+                            (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
+                    else
+                        lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                            (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
+                    lfpGraph.Dock = DockStyle.Fill;
+                    lfpGraph.Parent = tabPage_LFPs;
+
                     resetSpkWfm(); //Take care of spike waveform graph
 
                     spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
-                        (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength, Properties.Settings.Default.ChannelMapping);
+                        (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength, 
+                        Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
                     spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
 
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5);
+                            (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
                     else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5);
+                            (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
                     lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
 
                     waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
@@ -528,15 +533,15 @@ namespace NeuroRighter
                     lfpBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_lfpSamplingRate.Text));
                     
                     //Add LFP plots, change min/max
-                    for (int c = 0; c < numChannels; ++c)
-                        lfpGraph.Plots.Add();
-                    if (Properties.Settings.Default.SeparateLFPBoard)
-                        lfpGraph.Plots.Item(1).YAxis.SetMinMax(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1), 
-                            lfpTask.AIChannels.All.RangeHigh);
-                    else
-                        lfpGraph.Plots.Item(1).YAxis.SetMinMax(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1), 
-                            spikeTask[0].AIChannels.All.RangeHigh);
-                    lfpGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_lfpSamplingRate.Text), 5);
+                    //for (int c = 0; c < numChannels; ++c)
+                    //    lfpGraph.Plots.Add();
+                    //if (Properties.Settings.Default.SeparateLFPBoard)
+                    //    lfpGraph.Plots.Item(1).YAxis.SetMinMax(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1), 
+                    //        lfpTask.AIChannels.All.RangeHigh);
+                    //else
+                    //    lfpGraph.Plots.Item(1).YAxis.SetMinMax(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1), 
+                    //        spikeTask[0].AIChannels.All.RangeHigh);
+                    //lfpGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_lfpSamplingRate.Text), 5);
 
 
                     //Add plots for gridlines and plots of spikeGraph
@@ -1200,15 +1205,11 @@ namespace NeuroRighter
                 PlotData pd = (PlotData)sender;
                 if (spikeGraph.Visible && !checkBox_freeze.Checked)
                 {
-                    //spikeGraph.clear();
                     float[][] data = pd.read();
                     for (int i = 0; i < data.Length; ++i)
                         //spikeGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)spikeSamplingRate,
                         //    (double)pd.downsample / (double)spikeSamplingRate);
-                        spikeGraph.plotY(data[i], (float)pd.downsample / (float)spikeSamplingRate,
-                            (float)pd.downsample / (float)spikeSamplingRate, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
-                    //spikeGraph.Invalidate();
-                    //spikeGraph.refresh();
+                        spikeGraph.plotY(data[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
                     spikeGraph.Invalidate();
                 }
                 else { pd.skipRead(); }
@@ -1327,23 +1328,24 @@ namespace NeuroRighter
         //******************************
         void lfpPlotData_dataAcquired(object sender)
         {
-            if (lfpGraph.InvokeRequired)
-            {
-                lfpGraph.BeginInvoke(new plotData_dataAcquiredDelegate(lfpPlotData_dataAcquired), sender);
-            }
-            else
-            {
+            //if (lfpGraph.InvokeRequired)
+            //{
+            //    lfpGraph.BeginInvoke(new plotData_dataAcquiredDelegate(lfpPlotData_dataAcquired), sender);
+            //}
+            //else
+            //{
                 PlotData pd = (PlotData)sender;
                 if (lfpGraph.Visible && !checkBox_freeze.Checked)
                 {
                     float[][] data = pd.read();
                     for (int i = 0; i < data.Length; ++i)
-                        lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
-                            (double)pd.downsample / (double)lfpSamplingRate);
+                        //lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
+                        //    (double)pd.downsample / (double)lfpSamplingRate);
+                        lfpGraph.plotY(data[i], 0F, 1F, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
                     lfpGraph.Invalidate();
                 }
                 else { pd.skipRead(); }
-            }
+            //}
         }
         #endregion  //End LFP acquisition
 
@@ -1479,6 +1481,10 @@ namespace NeuroRighter
                 stimIvsV.Stop();
                 stimIvsV.Dispose();
             }
+
+            if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
+            if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+            if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
         }
 
         //Set gain for channels
@@ -1532,6 +1538,7 @@ namespace NeuroRighter
             if (spikeOutTask != null) spikeOutTask.Dispose();
             if (stimTimeTask != null) stimTimeTask.Dispose();
             if (triggerTask != null) triggerTask.Dispose();
+
 
             buttonStop.Enabled = false;
             buttonStart.Enabled = true;
@@ -2101,6 +2108,10 @@ namespace NeuroRighter
                 stimIvsV.Stop();
                 stimIvsV.Dispose();
             }
+
+            if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
+            if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+            if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
 
             this.Close();
         }

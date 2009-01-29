@@ -111,13 +111,10 @@
     <Compile Include="Plotting\GridGraph.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Plotting\RowGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Plotting\ServiceContainer.cs" />
-    <Compile Include="Plotting\SpikeWaveformGraph.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plotting\SpikeWaveformGraph.Designer.cs">
-      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
-    </Compile>
     <Compile Include="Plotting\EventPlotData.cs" />
     <Compile Include="Plotting\PlotData.cs" />
     <Compile Include="Plotting\PlotDataGrid.cs" />
@@ -160,10 +157,6 @@
     <EmbeddedResource Include="licenses.licx" />
     <EmbeddedResource Include="NeuroRighter.resx">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plotting\SpikeWaveformGraph.resx">
-      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

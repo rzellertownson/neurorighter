@@ -32,7 +32,7 @@ namespace NeuroRighter
         protected Int32 bufferLength;
         protected float[][] data;
         protected float[][] outputData;
-        protected float gain;
+        protected float gain = 1F;
         protected Int32[] writeHead; //Index of next sample to write
         protected Int32 readHead;  //Index of next sample to read
         protected Int32 numChannels;
@@ -43,26 +43,28 @@ namespace NeuroRighter
         protected Int32 numRows;  //For display data
         protected Int32 numCols;
         protected String channelMapping;
+        protected int numSamplesPerPlot;
+        protected float halfBoxHeight;
 
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
 
         internal PlotData(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
-            Int32 numRows, Int32 numCols, Double refreshTime, String channelMapping)
+            Int32 numRows, Int32 numCols, Double refreshTime, String channelMapping, double deviceRefreshRate)
         {
             this.numChannels = numChannels;
             this.downsample = downsample;
             this.bufferLength = bufferLength;
             this.samplingRate = samplingRate;
             this.boxHeight = boxHeight;
+            this.halfBoxHeight = 0.5F * boxHeight;
             this.numRows = numRows;
             this.numCols = numCols;
             this.refreshTime = refreshTime;
             this.channelMapping = channelMapping;
 
-            gain = 1F;
-
-            int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
+            numSamplesPerPlot = (int)(Math.Ceiling(deviceRefreshRate * samplingRate / downsample) * (refreshTime / deviceRefreshRate));
+            //this.numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
             data = new float[numChannels][];
             outputData = new float[numRows][];
             for (int i = 0; i < numChannels; ++i) data[i] = new float[bufferLength];
@@ -86,7 +88,7 @@ namespace NeuroRighter
                     //Check to see if we've wrapped around
                     if (writeHead[startChannel + c] >= bufferLength) writeHead[startChannel + c] = 0;
                 }
-                numWrites[startChannel + c] += input[c].Length / downsample; //integer division is floor by default
+                numWrites[startChannel + c] += (int)Math.Ceiling((double)input[c].Length / downsample); //integer division is floor by default
             }
 
             lock (this)
@@ -95,14 +97,13 @@ namespace NeuroRighter
                 Int32 minWrites = Int32.MaxValue;
                 //Find minimum number of writes that have been made across all channels
                 for (int i = 0; i < numChannels; ++i) minWrites = (numWrites[i] < minWrites ? numWrites[i] : minWrites);
-                if (minWrites >= refreshTime * (samplingRate / downsample))
+                if (minWrites >= numSamplesPerPlot)
                 {
                     //Check for missed buffer reads
                     Int32 maxWrites = 0;
                     for (int i = 0; i < numChannels; ++i) maxWrites = (numWrites[i] > maxWrites ? numWrites[i] : maxWrites);
                     if (maxWrites > bufferLength) //We've written too much, and aren't reading, so we'll have to clear some buffer
                     {
-                        int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
                         readHead += numSamplesPerPlot * (int)Math.Ceiling((double)((maxWrites - bufferLength) / numSamplesPerPlot));
                         readHead %= bufferLength;
                         //System.Windows.Forms.MessageBox.Show("Plot Data Buffer Overrun");
@@ -120,7 +121,6 @@ namespace NeuroRighter
         internal virtual float[][] read()
         {
             float temp;
-            int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
             if (numChannels == 16 || numChannels == 64)
             {
                 for (int i = 0; i < numRows; ++i) //row
@@ -190,7 +190,6 @@ namespace NeuroRighter
 
         internal void skipRead()
         {
-            int numSamplesPerPlot = (int)(refreshTime * (samplingRate / downsample));
             readHead += numSamplesPerPlot;
             readHead = readHead % bufferLength;
             for (int i = 0; i < numChannels; ++i) numWrites[i] -= numSamplesPerPlot;

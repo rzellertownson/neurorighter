@@ -167,7 +167,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gpl.txt">
+    <Content Include="Miscellaneous\gpl.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon\Slide1.PNG" />

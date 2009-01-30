@@ -24,6 +24,8 @@ using NationalInstruments.DAQmx;
 
 namespace NeuroRighter
 {
+
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     class StimPulse
     {
         internal int width1; //Width of first phase of pulse, in microseconds

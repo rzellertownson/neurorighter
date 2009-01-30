@@ -33,6 +33,8 @@ using System.Threading;
 
 namespace NeuroRighter
 {
+
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class BakkumExpt
     {
         private StimTrain CPS;

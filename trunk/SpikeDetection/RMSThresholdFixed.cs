@@ -25,6 +25,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     class RMSThresholdFixed : SpikeDetector
     {
         private const int TOTAL_NUM_UPDATES = 4;

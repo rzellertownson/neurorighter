@@ -25,6 +25,7 @@ namespace NeuroRighter
 {
     using RawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal sealed class SpikeWaveform
     {
         public Int16 channel;

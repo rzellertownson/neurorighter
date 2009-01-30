@@ -24,6 +24,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     sealed class SALPA2
     {
         /*call in matlab would be: [filtData, myfit] = SALPAmex(V, numElectrodes, rails, NPrePeg, salpathresh)*/

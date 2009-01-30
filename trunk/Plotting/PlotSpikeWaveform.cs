@@ -23,6 +23,10 @@ using System.Text;
 
 namespace NeuroRighter
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal sealed class PlotSpikeWaveform
     {
         public Int16 channel;

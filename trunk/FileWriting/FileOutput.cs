@@ -28,6 +28,8 @@ using System.ComponentModel;
 
 namespace NeuroRighter
 {
+
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class FileOutput
     {
         protected short[,] _buffer; //To store data to be written

@@ -27,6 +27,7 @@ namespace NeuroRighter
 {
     using RawType = System.Double;
 
+    ///<author>John Rolston</author>
     internal class EventPlotData
     {
         private List<PlotSpikeWaveform> waveforms;

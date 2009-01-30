@@ -23,6 +23,8 @@ using System.Text;
 
 namespace NeuroRighter
 {
+
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class StimTrain
     {
         private List<Int32> width1; //in microseconds

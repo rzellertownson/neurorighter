@@ -25,9 +25,8 @@ namespace NeuroRighter
 {
     using RawType = System.Double;
 
-    //******************************
-    //PlotDataRows for data like LFPs
-    //******************************
+    ///<summary>PlotDataRows for data like LFPs</summary>
+    ///<author>John Rolston</author>
     internal sealed class PlotDataRows : PlotData
     {
         private Double plotLength; //Total length of plot, in seconds

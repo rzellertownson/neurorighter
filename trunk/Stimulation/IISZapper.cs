@@ -9,6 +9,7 @@ using NationalInstruments.DAQmx;
 
 namespace NeuroRighter
 {
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class IISZapper
     {
         private Task stimDigitalTask, stimAnalogTask;

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace NeuroRighter
 {
+    ///<author>John Rolston</author>
     sealed internal class GridGraph : GraphicsDeviceControl
     {
         private float minX = 0F;

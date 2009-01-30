@@ -28,6 +28,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal sealed class ButterworthFilter
     {
         private rawType[] dcof;  //Filter's d coefficients

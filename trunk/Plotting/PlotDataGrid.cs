@@ -25,9 +25,8 @@ namespace NeuroRighter
 {
     using RawType = System.Double;
 
-    //****************************************
-    //PlotDataGrid is for grid displayed data
-    //****************************************
+    ///<summary>PlotDataGrid is for grid displayed data</summary>
+    ///<author>John Rolston</author>
     internal sealed class PlotDataGrid : PlotData
     {
         internal PlotDataGrid(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, Single boxHeight,

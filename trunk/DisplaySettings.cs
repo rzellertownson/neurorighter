@@ -27,6 +27,8 @@ using System.Windows.Forms;
 
 namespace NeuroRighter
 {
+
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     public partial class DisplaySettings : Form
     {
         public DisplaySettings()

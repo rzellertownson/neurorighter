@@ -25,7 +25,8 @@ namespace NeuroRighter
 {
     using RawType = System.Double;
 
-    //PLOTDATA Stores a portion of data, posting to plots when appropriate
+    ///<summary>PlotData: Stores a portion of data, posting to plots when appropriate</summary>
+    ///<author>John Rolston</author>
     internal class PlotData
     {
         internal readonly Int32 downsample;

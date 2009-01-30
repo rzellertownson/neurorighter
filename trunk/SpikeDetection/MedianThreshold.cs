@@ -26,6 +26,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     sealed class MedianThreshold : SpikeDetector
     {
         rawType[] stData; //Scaled and translated data

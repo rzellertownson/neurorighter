@@ -28,6 +28,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     sealed class SALPA
     {
         private int N;  //Half width of filter

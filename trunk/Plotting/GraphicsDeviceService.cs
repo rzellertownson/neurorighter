@@ -3,7 +3,9 @@
 // GraphicsDeviceService.cs
 //
 // Microsoft XNA Community Game Platform
-// Copyright (C) Microsoft Corporation. All rights reserved.
+// 
+// Distributed under the Microsoft Permissive License (Ms-PL).
+//
 //-----------------------------------------------------------------------------
 #endregion
 

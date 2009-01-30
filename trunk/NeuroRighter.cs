@@ -46,6 +46,8 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    ///<summary>Main Form for NeuroRighter application.</summary>
+    ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
         #region Private_Variables

@@ -25,6 +25,7 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
+    /// <author>John Rolston (rolston2@gmail.com)</author>
     sealed class RMSThreshold : SpikeDetector
     {
         private rawType tempData;

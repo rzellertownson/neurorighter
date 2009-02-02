@@ -200,10 +200,10 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //hours, minutes, seconds
-            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds
+            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);
             TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);
-            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 1, 0);
+            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0);
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
 
             //Print file header info

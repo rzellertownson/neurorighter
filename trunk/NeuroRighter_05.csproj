@@ -12,6 +12,15 @@
     <FileAlignment>512</FileAlignment>
     <RootNamespace>NeuroRighter</RootNamespace>
     <ApplicationIcon>NeuroRighter_v04.ico</ApplicationIcon>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,17 +33,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,6 +80,8 @@
     <None Include="Matlab\loadspike.mexw32" />
     <None Include="Matlab\loadstim.mexw32" />
     <None Include="Miscellaneous\Microsoft Permissive License.rtf" />
+    <None Include="Miscellaneous\National_Instruments_software_license_agreement.pdf" />
+    <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
@@ -238,6 +240,9 @@
       <Project>{D6EB17BF-9074-484F-9950-E06169A3C39D}</Project>
       <Name>csmatio</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

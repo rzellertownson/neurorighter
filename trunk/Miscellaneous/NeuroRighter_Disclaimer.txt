@@ -2,7 +2,10 @@ NeuroRighter Disclaimer
 
 The NeuroRighter software is open-source, free software, released under the GNU Public License 
 (http://www.gnu.org/licenses/gpl.txt), a copy of which is included in the source code and in the 
-application directory, where the program is installed.
+application directory, where the program is installed.  This software uses libraries from 
+Microsoft and National Instruments.  These libraries should not be reverse engineered and are 
+not covered under the GPL.  Please see National_Instruments_software_license_agreement.pdf
+and the Microsoft Permissive Liscense for additional licensing information.
 
 NeuroRighter was written by John Rolston (rolston2@gmail.com) in the course of his PhD thesis at 
 Emory University and Georgia Tech.  It was written for a particular class of experiments (closed loop 

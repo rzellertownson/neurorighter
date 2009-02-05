@@ -226,9 +226,9 @@ namespace NeuroRighter
         {
             // Set dialog's default properties
             SaveFileDialog saveFileDialog_OutputFile = new SaveFileDialog();
-            saveFileDialog_OutputFile.DefaultExt = "*.ncl";         //default extension is for "neuroControl"
+            saveFileDialog_OutputFile.DefaultExt = "*.spk";         //default extension is for spike files
             saveFileDialog_OutputFile.FileName = filenameOutput;    //default file name
-            saveFileDialog_OutputFile.Filter = "NeuroControl Files|*.ncl|All Files|*.*";
+            saveFileDialog_OutputFile.Filter = "NeuroRighter Files|*.spk|All Files|*.*";
 
             // Display Save File Dialog (Windows forms control)
             DialogResult result = saveFileDialog_OutputFile.ShowDialog();
@@ -258,6 +258,18 @@ namespace NeuroRighter
         {
             if (!taskRunning)
             {
+                //Ensure that, if recording is setup, that it has been done properly
+                if (switch_record.Value)
+                {
+                    if (filenameBase == null) //user hasn't specified a file
+                        button_BrowseOutputFile_Click(null, null); //call file selection routine
+                    if (filenameBase == null) //this happens if the user pressed cancel for the dialog
+                    {
+                        MessageBox.Show("An output file must be selected before recording."); //display an error message
+                        return;
+                    }
+                }
+
                 try
                 {
                     // Modify the UI, so user doesn't try running multiple instances of tasks
@@ -2264,7 +2276,6 @@ namespace NeuroRighter
                 spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising, 
                     SampleQuantityMode.ContinuousSamples,
                     Convert.ToInt32(spikeSamplingRate / 2));
-            //AnalogMultiChannelReader reader = new AnalogMultiChannelReader(spikeTask.Stream);
             List<AnalogMultiChannelReader> readers = new List<AnalogMultiChannelReader>(spikeTask.Count);
             for (int i = 0; i < spikeTask.Count; ++i)
                 readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));

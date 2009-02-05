@@ -133,7 +133,10 @@ namespace NeuroRighter
             comboBox_progRefSerialPort.Enabled = Properties.Settings.Default.UseProgRef;
             checkBox_useEEG.Checked = Properties.Settings.Default.UseEEG;
             comboBox_EEG.Enabled = Properties.Settings.Default.UseEEG;
+            comboBox_analogInputDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_useSecondBoard.Checked = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
+            checkBox_sepLFPBoard2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
+            comboBox_LFPDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -257,6 +260,35 @@ namespace NeuroRighter
         {
             if (radioButton_32bit.Checked)
                 radioButton_8bit.Checked = false;
+        }
+
+        private void checkBox_useSecondBoard_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_analogInputDevice2.Enabled = checkBox_useSecondBoard.Checked;
+            comboBox_LFPDevice2.Enabled = checkBox_useSecondBoard.Checked;
+            checkBox_sepLFPBoard2.Enabled = checkBox_useSecondBoard.Checked;
+        }
+
+        private void checkBox_useStimulator_CheckedChanged_1(object sender, EventArgs e)
+        {
+            comboBox_stimulatorDevice.Enabled = checkBox_useStimulator.Checked;
+            if (!checkBox_useStimulator.Checked) checkBox_recordStimulationInfo.Checked = false;
+            checkBox_recordStimulationInfo.Enabled = checkBox_useStimulator.Checked;
+            comboBox_stimInfoDevice.Enabled = checkBox_useStimulator.Checked;
+            radioButton_16Mux.Enabled = checkBox_useStimulator.Checked;
+            radioButton_32bit.Enabled = checkBox_useStimulator.Checked;
+            radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
+            radioButton_8Mux.Enabled = checkBox_useStimulator.Checked;
+        }
+
+        private void checkBox_useCineplex_CheckedChanged_1(object sender, EventArgs e)
+        {
+            comboBox_cineplexDevice.Enabled = checkBox_useCineplex.Checked;
+        }
+
+        private void checkBox_useProgRef_CheckedChanged_1(object sender, EventArgs e)
+        {
+            comboBox_progRefSerialPort.Enabled = checkBox_useProgRef.Checked;
         }
     }
 }

@@ -142,6 +142,7 @@ namespace NeuroRighter
             this.checkBox_useProgRef.TabIndex = 7;
             this.checkBox_useProgRef.Text = "Enable Plexon Programmable Referencing";
             this.checkBox_useProgRef.UseVisualStyleBackColor = true;
+            this.checkBox_useProgRef.CheckedChanged += new System.EventHandler(this.checkBox_useProgRef_CheckedChanged_1);
             // 
             // label5
             // 
@@ -182,6 +183,7 @@ namespace NeuroRighter
             this.checkBox_useCineplex.TabIndex = 0;
             this.checkBox_useCineplex.Text = "Use Cineplex (video recording)";
             this.checkBox_useCineplex.UseVisualStyleBackColor = true;
+            this.checkBox_useCineplex.CheckedChanged += new System.EventHandler(this.checkBox_useCineplex_CheckedChanged_1);
             // 
             // label3
             // 
@@ -336,6 +338,7 @@ namespace NeuroRighter
             this.checkBox_useStimulator.TabIndex = 7;
             this.checkBox_useStimulator.Text = "Use Stimulator";
             this.checkBox_useStimulator.UseVisualStyleBackColor = true;
+            this.checkBox_useStimulator.CheckedChanged += new System.EventHandler(this.checkBox_useStimulator_CheckedChanged_1);
             // 
             // comboBox_stimulatorDevice
             // 
@@ -390,6 +393,7 @@ namespace NeuroRighter
             this.checkBox_useSecondBoard.TabIndex = 7;
             this.checkBox_useSecondBoard.Text = "Use Second Board";
             this.checkBox_useSecondBoard.UseVisualStyleBackColor = true;
+            this.checkBox_useSecondBoard.CheckedChanged += new System.EventHandler(this.checkBox_useSecondBoard_CheckedChanged);
             // 
             // groupBox8
             // 
@@ -442,6 +446,7 @@ namespace NeuroRighter
             // 
             // comboBox_analogInputDevice2
             // 
+            this.comboBox_analogInputDevice2.Enabled = false;
             this.comboBox_analogInputDevice2.FormattingEnabled = true;
             this.comboBox_analogInputDevice2.Location = new System.Drawing.Point(174, 41);
             this.comboBox_analogInputDevice2.Name = "comboBox_analogInputDevice2";
@@ -474,6 +479,7 @@ namespace NeuroRighter
             // 
             // comboBox_EEG
             // 
+            this.comboBox_EEG.Enabled = false;
             this.comboBox_EEG.FormattingEnabled = true;
             this.comboBox_EEG.Location = new System.Drawing.Point(174, 38);
             this.comboBox_EEG.Name = "comboBox_EEG";

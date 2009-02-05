@@ -131,29 +131,30 @@ namespace NeuroRighter
                 oldData[i] = new rawType[numSamples + PRE + POST];
             }
         }
-
-        private void W_recursive(int n_c, double[] V, int channel)
-        {
-            //double[] oldW = new double[3]; //Change to stackalloc (static array)
-            //oldW[0] = W[channel][0];
-            //oldW[1] = W[channel][1];
-            //oldW[2] = W[channel][2];
-            //W[channel][0] = oldW[0] + V[n_c + N] - V[n_c - N - 1];
-            //W[channel][1] = -oldW[0] + oldW[1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
-            //W[channel][2] = oldW[0] - 2 * oldW[1] + oldW[2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
-            //W[channel][3] = -oldW[0] + 3 * oldW[1] - 3 * oldW[2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
+        
+        //Commented out on 2/5/09: Not used, but useful to understand code
+        //private void W_recursive(int n_c, double[] V, int channel)
+        //{
+        //    //double[] oldW = new double[3]; //Change to stackalloc (static array)
+        //    //oldW[0] = W[channel][0];
+        //    //oldW[1] = W[channel][1];
+        //    //oldW[2] = W[channel][2];
+        //    //W[channel][0] = oldW[0] + V[n_c + N] - V[n_c - N - 1];
+        //    //W[channel][1] = -oldW[0] + oldW[1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
+        //    //W[channel][2] = oldW[0] - 2 * oldW[1] + oldW[2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
+        //    //W[channel][3] = -oldW[0] + 3 * oldW[1] - 3 * oldW[2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
             
-            //W[channel][3] = -W[channel][0] + 3 * W[channel][1] - 3 * W[channel][2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
-            //W[channel][2] = W[channel][0] - 2 * W[channel][1] + W[channel][2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
-            //W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
-            //W[channel][0] = W[channel][0] + V[n_c + N] - V[n_c - N - 1];
+        //    //W[channel][3] = -W[channel][0] + 3 * W[channel][1] - 3 * W[channel][2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
+        //    //W[channel][2] = W[channel][0] - 2 * W[channel][1] + W[channel][2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
+        //    //W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
+        //    //W[channel][0] = W[channel][0] + V[n_c + N] - V[n_c - N - 1];
 
-            W[channel][3] = -W[channel][0] + 3 * W[channel][1] - 3 * W[channel][2] + W[channel][3] + N * N * N * V[n_c + N] + (N + 1) * (N + 1) * (N + 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
-            W[channel][2] = W[channel][0] - 2 * W[channel][1] + W[channel][2] + N * N * V[n_c + N] - (N + 1) * (N + 1) * V[n_c - N - 1];
-            W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] + (N + 1) * V[n_c - N - 1];
-            W[channel][0] = W[channel][0] + V[n_c + N] - V[n_c - N - 1];
-        }
-
+        //    W[channel][3] = -W[channel][0] + 3 * W[channel][1] - 3 * W[channel][2] + W[channel][3] + N * N * N * V[n_c + N] + (N + 1) * (N + 1) * (N + 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
+        //    W[channel][2] = W[channel][0] - 2 * W[channel][1] + W[channel][2] + N * N * V[n_c + N] - (N + 1) * (N + 1) * V[n_c - N - 1];
+        //    W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] + (N + 1) * V[n_c - N - 1];
+        //    W[channel][0] = W[channel][0] + V[n_c + N] - V[n_c - N - 1];
+        //} 
+    
         private void W_nonRecursive(int n_c, double[] V, int channel)
         {
             W[channel][0] = W[channel][1] = W[channel][2] = W[channel][3] = 0.0;

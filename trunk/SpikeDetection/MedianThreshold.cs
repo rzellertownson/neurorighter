@@ -31,19 +31,28 @@ namespace NeuroRighter
     {
         rawType[] stData; //Scaled and translated data
         private const double WINDOW = 0.25; //in seconds, how much data to average over
-        private List<List<double>> MedianList;
+        //private List<List<double>> MedianList;
+        private double[][] buffer;
+        private double[] sortedBuffer;
+        private int[] writeIndex;
         private readonly int numReadsPerWindow;
+        private int numReads;
 
         public MedianThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, 
-            int numPostIn, int numPreIn, rawType threshMult, double deviceRefresh) : 
+            int numPostIn, int numPreIn, rawType threshMult, double deviceRefresh, double samplingRate) : 
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult)
         {
             threshold = new rawType[1, numChannels];
             stData = new rawType[spikeBufferLength / downsample]; //Scaled and translated data
+            buffer = new rawType[numChannels][];
+            for (int i = 0; i < numChannels; ++i)
+                buffer[i] = new rawType[(int)(WINDOW * samplingRate / downsample)];
+            sortedBuffer = new rawType[(int)(WINDOW * samplingRate / downsample)];
+            writeIndex = new int[numChannels];
             numReadsPerWindow = (int)Math.Round(WINDOW / deviceRefresh);
             if (numReadsPerWindow < 1) numReadsPerWindow = 1;
-            MedianList = new List<List<double>>(numChannelsIn);
-            for (int i = 0; i < numChannelsIn; ++i) MedianList.Add(new List<double>(numReadsPerWindow));
+            //MedianList = new List<List<double>>(numChannelsIn);
+            //for (int i = 0; i < numChannelsIn; ++i) MedianList.Add(new List<double>(numReadsPerWindow));
         }
 
         protected override void updateThreshold(rawType[] data, int channel)
@@ -53,19 +62,49 @@ namespace NeuroRighter
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
             {
                 //stData[j] = data[i][j * downsample] / 0.6745;
-                stData[j] = data[j * downsample];
-                if (stData[j] < 0)
-                    stData[j] *= -1; //Invert sign if negative
+                //stData[j] = data[j * downsample];
+                buffer[channel][writeIndex[channel]] = data[j * downsample];
+                if (buffer[channel][writeIndex[channel]] < 0.0)
+                    buffer[channel][writeIndex[channel]] *= -1.0;
+                ++writeIndex[channel];
+                if (writeIndex[channel] >= buffer[channel].Length) writeIndex[channel] = 0;
+                //if (stData[j] < 0)
+                //    stData[j] *= -1; //Invert sign if negative
             }
-            //thr[i] = Statistics.Median(stData) * thrMult;
-            Array.Sort(stData);
 
-            if (numReadsPerWindow == MedianList[channel].Count) MedianList[channel].RemoveAt(0);
-            MedianList[channel].Add(stData[(int)(stData.Length / 2)] * thresholdMultiplier * 1.4826);
-            double avg = 0.0;
-            for (int i = 0; i < MedianList[channel].Count; ++i) avg += MedianList[channel][i];
+            if (numReads >= numReadsPerWindow)
+            {
+                //Array.Sort(stData);
 
-            threshold[0, channel] = avg / MedianList[channel].Count;
+                //Copy into sorting array
+                for (int i = 0; i < sortedBuffer.Length; ++i)
+                    sortedBuffer[i] = buffer[channel][i];
+
+                //Sort buffer
+                Array.Sort(sortedBuffer);
+
+                threshold[0, channel] = sortedBuffer[(int)(sortedBuffer.Length / 2)] * thresholdMultiplier * 1.4826;
+
+                //if (numReadsPerWindow == MedianList[channel].Count) MedianList[channel].RemoveAt(0);
+                //MedianList[channel].Add(stData[(int)(stData.Length / 2)] * thresholdMultiplier * 1.4826);
+                //double avg = 0.0;
+                //for (int i = 0; i < MedianList[channel].Count; ++i) avg += MedianList[channel][i];
+                //threshold[0, channel] = avg / MedianList[channel].Count;
+            }
+            else //We haven't written the full buffer yet, so we need to watch out for those zeros
+            {
+                ++numReads;
+
+                double[] tempSortedBuffer = new double[numReads * spikeBufferLength / downsample];
+                //Copy into sorting array
+                for (int i = 0; i < tempSortedBuffer.Length; ++i)
+                    tempSortedBuffer[i] = buffer[channel][i];
+
+                //Sort buffer
+                Array.Sort(tempSortedBuffer);
+
+                threshold[0, channel] = tempSortedBuffer[(int)(tempSortedBuffer.Length / 2)] * thresholdMultiplier * 1.4826;
+            }
         }
 
     }

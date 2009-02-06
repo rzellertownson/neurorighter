@@ -2155,7 +2155,7 @@ namespace NeuroRighter
                     break;
                 case 2:  //Median method
                     spikeDetector = new MedianThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, 
-                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
+                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH, spikeSamplingRate);
                     break;
                 case 3:  //LimAda
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), Convert.ToInt32(textBox_spikeSamplingRate.Text));

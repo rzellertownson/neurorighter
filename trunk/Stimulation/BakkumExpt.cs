@@ -301,9 +301,16 @@ namespace NeuroRighter
                 outputFileWriter.WriteLine("Measured CAs, during pre-experiment (x,y):");
                 for (int i = 0; i < CAList.Count; ++i)
                 {
-                    offsetX += CAList[i].x;
-                    offsetY += CAList[i].y;
-                    outputFileWriter.WriteLine("\t" + i + ": " + CAList[i].x + ", " + CAList[i].y);
+                    if (Double.IsNaN(CAList[i].x) || Double.IsNaN(CAList[i].y))
+                    {
+                        outputFileWriter.WriteLine("\t" + i + ": NaN (ignored)");
+                    }
+                    else
+                    {
+                        offsetX += CAList[i].x;
+                        offsetY += CAList[i].y;
+                        outputFileWriter.WriteLine("\t" + i + ": " + CAList[i].x + ", " + CAList[i].y);
+                    }
                 }
                 outputFileWriter.WriteLine("\n");
                 offsetX /= CAList.Count;

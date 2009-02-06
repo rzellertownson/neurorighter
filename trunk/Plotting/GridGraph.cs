@@ -86,6 +86,7 @@ namespace NeuroRighter
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
             GraphicsDevice.RenderState.CullMode = CullMode.None;
+            
             vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
         }
 

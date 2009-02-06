@@ -208,14 +208,22 @@ namespace NeuroRighter
 
 
             //Create plots
-            spikeGraph = new GridGraph();
-            spikeGraph.setup(4, 4, 100, false);
-            spikeGraph.Resize += new EventHandler(spikeGraph.resize);
-            spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
-            spikeGraph.Parent = tabPage_spikes;
-            spikeGraph.Dock = DockStyle.Fill;
+            try
+            {
+                spikeGraph = new GridGraph();
+                spikeGraph.setup(4, 4, 100, false);
+                spikeGraph.Resize += new EventHandler(spikeGraph.resize);
+                spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
+                spikeGraph.Parent = tabPage_spikes;
+                spikeGraph.Dock = DockStyle.Fill;
 
-            resetSpkWfm();
+                resetSpkWfm();
+            }
+            catch (InvalidOperationException e)
+            {
+                MessageBox.Show("Your graphics card is unsupported. Recording will be disabled.");
+                buttonStart.Enabled = false;
+            }
         }
         #endregion
 
@@ -282,6 +290,8 @@ namespace NeuroRighter
                     settingsToolStripMenuItem.Enabled = false;
                     comboBox_SpikeGain.Enabled = false;
                     button_Train.Enabled = false;
+                    checkBox_SaveRawSpikes.Enabled = false;
+                    switch_record.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
@@ -1563,6 +1573,8 @@ namespace NeuroRighter
             settingsToolStripMenuItem.Enabled = true;
             comboBox_SpikeGain.Enabled = true;
             button_Train.Enabled = true;
+            checkBox_SaveRawSpikes.Enabled = true;
+            switch_record.Enabled = true;
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegNumChannels.Enabled = true;

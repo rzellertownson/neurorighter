@@ -16,6 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter v0.04.  If not, see <http://www.gnu.org/licenses/>.
 
+//#define DEBUG
+#define USE_HIGHPASS
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -35,7 +38,6 @@ namespace NeuroRighter
         private rawType[][] oldDataPrev;
         private rawType[,] SInv;    //S' matrix
         private rawType[][] W;
-        //private rawType[] a;
         private rawType[][] A;
         private rawType[] rails;
         private int prePeg;
@@ -53,8 +55,17 @@ namespace NeuroRighter
 
         private static int PRE;
         private static int POST;
-       
-        public SALPA2():this(75, 5, 2, -5, 5, 5, 16, 5, 250)
+
+#if (USE_HIGHPASS)
+        #region Variables for High-pass Filter
+        private double[] lastOutputs;
+        private double[] lastInputs;
+        private const double ALPHA = 0.16 / (0.16 + (1 / 25E3));  //RC = 1.5 yields a 0.1 Hz high -3 dB point.  25E3 is the typical sampling rate
+        #endregion
+#endif
+
+        public SALPA2()
+            : this(75, 5, 2, -5, 5, 5, 16, 5, 250)
         {
             //Default halfWidth of 75
         }
@@ -68,8 +79,8 @@ namespace NeuroRighter
             for (int i = 0; i < 2 * N + 1; ++i)
                 n[i] = i - N;
             for (int i = 0; i < 7; ++i)
-                for (int j = 0; j < 2*N+1; ++j)
-                    T[i] += Math.Pow(n[j],i);
+                for (int j = 0; j < 2 * N + 1; ++j)
+                    T[i] += Math.Pow(n[j], i);
 
             double[,] S = new double[5, 5]; //This should really be 4,4, but the matrix inversion stuff uses 1-based indexing
             for (int i = 1; i < 5; ++i)
@@ -90,7 +101,7 @@ namespace NeuroRighter
 
             startPeg = new int[numElectrodes];
             stopPeg = new int[numElectrodes];
-            
+
             rails = new double[2];
             rails[0] = railLow;
             rails[1] = railHigh;
@@ -98,7 +109,7 @@ namespace NeuroRighter
             this.prePeg = prePeg;
             this.postPeg = postPeg;
             this.postPegZero = postPegZero;
-            
+
             this.delta = delta;
 
             PEGGING = new bool[numElectrodes];
@@ -126,12 +137,19 @@ namespace NeuroRighter
             oldData = new rawType[numElectrodes][];
             oldDataPrev = new rawType[numElectrodes][];
 
-            for (int i = 0; i < numElectrodes; ++i) {
+            for (int i = 0; i < numElectrodes; ++i)
+            {
                 oldDataPrev[i] = new rawType[PRE + POST];
                 oldData[i] = new rawType[numSamples + PRE + POST];
             }
+
+#if (USE_HIGHPASS)
+            lastInputs = new double[numElectrodes];
+            lastOutputs = new double[numElectrodes];
+#endif
+
         }
-        
+
         //Commented out on 2/5/09: Not used, but useful to understand code
         //private void W_recursive(int n_c, double[] V, int channel)
         //{
@@ -143,7 +161,7 @@ namespace NeuroRighter
         //    //W[channel][1] = -oldW[0] + oldW[1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
         //    //W[channel][2] = oldW[0] - 2 * oldW[1] + oldW[2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
         //    //W[channel][3] = -oldW[0] + 3 * oldW[1] - 3 * oldW[2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
-            
+
         //    //W[channel][3] = -W[channel][0] + 3 * W[channel][1] - 3 * W[channel][2] + W[channel][3] + N * N * N * V[n_c + N] - (-N - 1) * (-N - 1) * (-N - 1) * V[n_c - N - 1];  /* not sure about indexing for V's  */
         //    //W[channel][2] = W[channel][0] - 2 * W[channel][1] + W[channel][2] + N * N * V[n_c + N] - (-N - 1) * (-N - 1) * V[n_c - N - 1];
         //    //W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] - (-N - 1) * V[n_c - N - 1];
@@ -154,7 +172,7 @@ namespace NeuroRighter
         //    W[channel][1] = -W[channel][0] + W[channel][1] + N * V[n_c + N] + (N + 1) * V[n_c - N - 1];
         //    W[channel][0] = W[channel][0] + V[n_c + N] - V[n_c - N - 1];
         //} 
-    
+
         private void W_nonRecursive(int n_c, double[] V, int channel)
         {
             W[channel][0] = W[channel][1] = W[channel][2] = W[channel][3] = 0.0;
@@ -205,32 +223,41 @@ namespace NeuroRighter
         /*
         /* StimTimes allows you to automatically blank at a stimulus pulse, regardless of railing.  This should be in terms of indices, not seconds
         /******************************************************************/
-        public void filter(ref rawType[][] filtData, int startChannel, int numChannels, rawType[] thresh, List<NeuroRighter.StimTick> stimIndicesIn) {
-            
+        public void filter(ref rawType[][] filtData, int startChannel, int numChannels, rawType[] thresh,
+            List<NeuroRighter.StimTick> stimIndicesIn)
+        {
+            #region Deal With Stimultation Indices (times)
             //convert the stimindices input into something easier to search
             List<int> stimIndices = new List<int>(stimIndicesIn.Count);
             for (int i = 0; i < stimIndicesIn.Count; ++i)
                 stimIndices.Add((int)(stimIndicesIn[i].index));
-            
+            #endregion
+
             //Start by organizing data
-            for (int channel = startChannel; channel < startChannel + numChannels; ++channel) {
+            for (int channel = startChannel; channel < startChannel + numChannels; ++channel)
+            {
+                #region Organize Data In Buffers
+                //Copy tail of last buffer 
                 for (int i = 0; i < PRE + POST; ++i)
                     oldData[channel][i] = oldDataPrev[channel][i];
-                //Copy old data into a buffer
+                //Copy new data into a buffer
                 for (int i = PRE + POST; i < numSamples + PRE + POST; ++i)
                     oldData[channel][i] = filtData[channel][i - (PRE + POST)];
                 //Copy tail of recent buffer into oldDataPrev
                 for (int i = 0; i < PRE + POST; ++i)
                     oldDataPrev[channel][i] = filtData[channel][numSamples - (PRE + POST) + i];
+                #endregion
 
                 FULL_LOOK[channel] = true; /* says whether you need to look at all 1:N future samples for rails (true), or just the Nth future sample (false) */
                 int j = PRE;
 
+                #region Check for Unfinished Pegging/Railing
                 /********************************
                  * check unfinished pegging
                  ********************************/
                 if (PEGGING_UNFINISHED[channel])
                 {
+                    //Calibrate pegs to new buffer's indices
                     startPeg[channel] -= numSamples;
                     stopPeg[channel] -= numSamples;
 
@@ -313,7 +340,9 @@ namespace NeuroRighter
                         }
                     }
                 }
+                #endregion
 
+                #region Check for Unfinished Fit
                 //*********************************
                 // Check fit unfinished
                 //*********************************
@@ -326,34 +355,48 @@ namespace NeuroRighter
                     ++j;
                     FIT_UNFINISHED[channel] = false;
                 }
+                #endregion
 
+                #region Main Algorithm for a Single Channel
                 /*******************************************************************************
                  * Proceed through a single channel, checking for pegging, and subtracting fits
                  *******************************************************************************/
-                while(j < numSamples + PRE) {
+                while (j < numSamples + PRE)
+                {
+                    #region Look ahead in data for pegging
                     /* this  section of code looks ahead for pegging */
                     int startPegii, stopPegii;
                     startPeg[channel] = stopPeg[channel] = -1;
                     if (FULL_LOOK[channel])
                     {
-                        for (int k = j; k <= j+N; ++k) {
+                        for (int k = j; k <= j + N; ++k)
+                        {
                             if (stimIndices.Contains(k - PRE - POST) || oldData[channel][k] <= rails[0] || oldData[channel][k] >= rails[1])
                             {
-                                if (startPeg[channel] == -1) {
+                                if (startPeg[channel] == -1)
+                                {
                                     startPeg[channel] = k;
                                     stopPeg[channel] = k;
-                                } else {
+                                }
+                                else
+                                {
                                     stopPeg[channel] = k;
                                 }
                             }
                         }
-                    } else {  /* no full look-ahead */
+                    }
+                    else
+                    {  /* no full look-ahead */
                         if (stimIndices.Contains(j + N - PRE - POST) || oldData[channel][j + N] <= rails[0] || oldData[channel][j + N] >= rails[1])
                         {
                             startPeg[channel] = stopPeg[channel] = j + N;
                         }
                     }
-                    if (startPeg[channel] >= 0) {  /* we've detected pegging */
+                    #endregion
+
+                    #region Deal with Pegging
+                    if (startPeg[channel] >= 0)
+                    {  /* we've detected pegging */
                         //Make sure we don't overshoot data
                         if (stopPeg[channel] + postPeg + postPegZero >= numSamples + PRE)
                         {
@@ -364,7 +407,7 @@ namespace NeuroRighter
                             stopPegii = stopPeg[channel] + postPeg;
 
                         if (!PEGGING[channel]) //If we were not previously pegging
-                        {  
+                        {
                             A[channel] = new double[N + 1];
                             /*check to make sure start index is valid*/
                             if (startPeg[channel] - prePeg < PRE)
@@ -403,14 +446,18 @@ namespace NeuroRighter
                         PEGGING[channel] = true; /* declare that we're pegging */
                         DEPEGGING[channel] = false;
                         j = stopPegii + 1; /* move to the next data point after peg */
+
                         FULL_LOOK[channel] = true;  /* because we jumped ahead, we need to ensure we check for rails thoroughly */
                         if (j < numSamples + PRE) { }
                         else { continue; }
-                    } else {
-                        FULL_LOOK[channel] = false;  /* now, we know there is no pegging for the next N pts. */
-//WE ARE SETTING THIS TOO MANY TIMES...
                     }
-                /* this ends peg checking */
+                    else
+                    {
+                        FULL_LOOK[channel] = false;  /* now, we know there is no pegging for the next N pts. */
+                        //WE ARE SETTING THIS TOO MANY TIMES...
+                    }
+                    #endregion //End of peg checking
+
 
                     if (!PEGGING[channel] && !DEPEGGING[channel])
                     {  /* now, it's the normal algorithm */
@@ -430,22 +477,24 @@ namespace NeuroRighter
                         continue;
                     }
 
-                    if (PEGGING[channel]) {
-                    /* we were just at a rail, now we're trying to fit data */
+                    if (PEGGING[channel])
+                    {
+                        /* we were just at a rail, now we're trying to fit data */
                         A[channel] = new double[N + 1];
                         PEGGING[channel] = false;
 
                         int n_c = j + N;  /* start the fit N samples away */
 
-                    /*obscure case where we attempt to start a fit, but there isn't enough data to do it. This can happen when I have very long RC
-                     *constants, but the trial ends.  */
+                        /*obscure case where we attempt to start a fit, but there isn't enough data to do it. This can happen when I have very long RC
+                         *constants, but the trial ends.  */
                         W_nonRecursive(n_c, oldData[channel], channel);
 
                         A_n(A[channel], j, N + 1, n_c, channel);
                         if (D_n(n_c, oldData[channel], A[channel]) < thresh[channel])
                         {
-                        /* satisfies fit criterion */
-                            for (int k = 0; k < postPegZero; ++k) {
+                            /* satisfies fit criterion */
+                            for (int k = 0; k < postPegZero; ++k)
+                            {
                                 filtData[channel][k + j - PRE] = 0.0;
                             }
                             //Check for overrun
@@ -454,9 +503,10 @@ namespace NeuroRighter
                                     filtData[channel][k + j - PRE] = oldData[channel][k + j] - A[channel][k]; /* subtract out fit */
                             else
                             {
-                                for (int k = j + postPegZero; k < numSamples - PRE; ++k)
-                                    filtData[channel][k - PRE] = oldData[channel][k] - A[channel][k - j]; // subtract out fit, till end of data
-                                
+                                //[JDR] 09/02/06: fixed indexing error (only affected short device refresh rates
+                                for (int k = j + postPegZero; k < numSamples + PRE; ++k)
+                                    filtData[channel][k - PRE] = oldData[channel][k] - A[channel][k - (j + postPegZero)]; // subtract out fit, till end of data
+
                                 FIT_UNFINISHED[channel] = true;
                                 double[] ANew = new double[j - PRE + N - numSamples];
                                 for (int k = 0; k < ANew.Length; ++k)
@@ -465,7 +515,9 @@ namespace NeuroRighter
                             }
                             j = n_c + 1;  /* jump ahead to end of fit */
                             continue;
-                        } else {  /* fit wasn't good enough */
+                        }
+                        else
+                        {  /* fit wasn't good enough */
                             filtData[channel][j - PRE] = 0.0; /* set pt. to zero, since the fit was too crappy */
                             ++j;  /* go to next pt. */
                             DEPEGGING[channel] = true;
@@ -482,7 +534,7 @@ namespace NeuroRighter
                         A_n(A[channel], j, N + 1, n_c, channel);
                         if (D_n(n_c, oldData[channel], A[channel]) < thresh[channel])
                         {
-                        /* satisfies fit criterion */
+                            /* satisfies fit criterion */
                             if (j + postPegZero < numSamples - PRE)
                                 for (int k = 0; k < postPegZero; ++k)
                                     filtData[channel][k + j - PRE] = 0.0;
@@ -514,7 +566,9 @@ namespace NeuroRighter
 
                             j = n_c + 1;  /* jump ahead to end of fit */
                             DEPEGGING[channel] = false;
-                        } else {  /* fit wasn't good enough */
+                        }
+                        else
+                        {  /* fit wasn't good enough */
                             filtData[channel][j - PRE] = 0.0; /* set pt. to zero, since the fit was too crappy */
                             ++j;  /* go to next pt. */
                             //if (j >= numSamples + PRE)
@@ -522,7 +576,36 @@ namespace NeuroRighter
                         }
                     }
                 } //Done with a single channel's worth of pegging/fitting
-            } 
+                #endregion
+
+#if(USE_HIGHPASS)
+                #region High-pass filter (1-pole)
+                //This was added to deal with round-off error of long experiments.
+                //The error caused a baseline drift on some channels.
+                //J.D.R. Feb. 6, 2009
+
+                double lastX = filtData[channel][0];
+                filtData[channel][0] = ALPHA * (lastOutputs[channel]) + ALPHA * (filtData[channel][0] - lastInputs[channel]);
+                for (int i = 1; i < filtData[channel].Length; ++i)
+                {
+                    double temp = filtData[channel][i];
+                    filtData[channel][i] = ALPHA * (filtData[channel][i - 1]) + ALPHA * (filtData[channel][i] - lastX);
+                    lastX = temp;
+                }
+                lastInputs[channel] = lastX;
+                lastOutputs[channel] = filtData[channel][filtData[channel].Length - 1];
+                #endregion
+#endif
+                //For debugging
+                //for (int i = 0; i < filtData[channel].Length; ++i)
+                //{
+                //    if (filtData[channel][i] < -0.002)
+                //    {
+                //        int a = 1;
+                //        a += 1;
+                //    }
+                //}
+            }
         }
     }
 }

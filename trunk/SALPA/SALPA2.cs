@@ -314,7 +314,7 @@ namespace NeuroRighter
                         while (j < PRE)
                         {
                             n_c = j + N;
-                            W_nonRecursive(n_c, oldData[channel], channel); //This was W_recursive before... which is right?
+                            W_nonRecursive(n_c, oldData[channel], channel);
                             A_n(A[channel], j, N + 1, n_c, channel);
                             if (D_n(n_c, oldData[channel], A[channel]) < thresh[channel])
                             {

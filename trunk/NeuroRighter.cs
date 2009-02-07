@@ -170,6 +170,10 @@ namespace NeuroRighter
         {
             InitializeComponent();
 
+            //Set version number
+            this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.Text += " (BETA)";
+
             //Set default values for certain controls
             this.comboBox_SpikeGain.SelectedIndex = 3;  //Default gain of 10x
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
@@ -210,8 +214,10 @@ namespace NeuroRighter
             //Create plots
             try
             {
+                double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
+
                 spikeGraph = new GridGraph();
-                spikeGraph.setup(4, 4, 100, false);
+                spikeGraph.setup(4, 4, 100, false, 1 / 4.0, gain);
                 spikeGraph.Resize += new EventHandler(spikeGraph.resize);
                 spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
                 spikeGraph.Parent = tabPage_spikes;
@@ -508,11 +514,11 @@ namespace NeuroRighter
                     //Initialize graphs
                     if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
                     spikeGraph = new GridGraph();
-                    spikeGraph.Resize += new EventHandler(spikeGraph.resize);
-                    spikeGraph.SizeChanged += new EventHandler(spikeGraph.resize);
-                    spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
+                    //spikeGraph.Resize += new EventHandler(spikeGraph.resize);
+                    //spikeGraph.SizeChanged += new EventHandler(spikeGraph.resize);
+                    //spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
                     int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
-                    spikeGraph.setup(numRows, numCols, samplesPerPlot, false);
+                    spikeGraph.setup(numRows, numCols, samplesPerPlot, false, 1 / 4.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                     spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1, 
                         (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
                     spikeGraph.Dock = DockStyle.Fill;
@@ -520,10 +526,11 @@ namespace NeuroRighter
 
                     if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
                     lfpGraph = new RowGraph();
-                    lfpGraph.Resize += new EventHandler(lfpGraph.resize);
-                    lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
-                    lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
-                    lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH));
+                    //lfpGraph.Resize += new EventHandler(lfpGraph.resize);
+                    //lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
+                    //lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
+                    lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH), 
+                        5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
                             (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
@@ -1789,10 +1796,16 @@ namespace NeuroRighter
             }
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
             spkWfmGraph = new GridGraph();
-            spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true);
-            spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
-            spkWfmGraph.SizeChanged += new EventHandler(spkWfmGraph.resize);
-            spkWfmGraph.VisibleChanged += new EventHandler(spkWfmGraph.resize);
+            if (spikeTask != null && spikeTask[0] != null)
+                spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
+            else
+            {
+                double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
+                spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, gain);
+            }
+            //spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
+            //spkWfmGraph.SizeChanged += new EventHandler(spkWfmGraph.resize);
+            //spkWfmGraph.VisibleChanged += new EventHandler(spkWfmGraph.resize);
             spkWfmGraph.Parent = tabPage_waveforms;
             spkWfmGraph.BringToFront();
             spkWfmGraph.Dock = DockStyle.Fill;
@@ -1891,13 +1904,16 @@ namespace NeuroRighter
             switch (tabControl.SelectedIndex)
             {
                 case 0:
-                    spikePlotData.setGain(spikePlotData.getGain() / 2F);
+                    spikePlotData.setGain(spikePlotData.getGain() * 0.5F);
+                    spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
                 case 1:
                     waveformPlotData.setGain(waveformPlotData.getGain() / 2);
+                    spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
                 case 2:
                     lfpPlotData.setGain(lfpPlotData.getGain() / 2F);
+                    lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
                 case 3:
                     eegDisplayGain /= 2;
@@ -1913,13 +1929,16 @@ namespace NeuroRighter
             switch (tabControl.SelectedIndex)
             {
                 case 0:
-                    spikePlotData.setGain(spikePlotData.getGain() * 2);
+                    spikePlotData.setGain(spikePlotData.getGain() * 2F);
+                    spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
                 case 1:
-                    waveformPlotData.setGain(waveformPlotData.getGain() * 2);
+                    waveformPlotData.setGain(waveformPlotData.getGain() * 2F);
+                    spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
                 case 2:
-                    lfpPlotData.setGain(lfpPlotData.getGain() * 2);
+                    lfpPlotData.setGain(lfpPlotData.getGain() * 2F);
+                    lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
                 case 3:
                     eegDisplayGain *= 2;
@@ -1936,12 +1955,15 @@ namespace NeuroRighter
             {
                 case 0:
                     spikePlotData.setGain(1F);
+                    spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
                 case 1:
                     waveformPlotData.setGain(1F);
+                    spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
                 case 2:
                     lfpPlotData.setGain(1F);
+                    lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
                 case 3:
                     eegDisplayGain = 1;
@@ -4040,6 +4062,12 @@ ch = 1;
             button_IISZapper_start.Enabled = true;
         }
         #endregion //IISZapper
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox ab = new AboutBox();
+            ab.ShowDialog();
+        }
 
     }
 }

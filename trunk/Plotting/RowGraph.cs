@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 
 namespace NeuroRighter
@@ -28,7 +29,19 @@ namespace NeuroRighter
         List<VertexPositionColor[]> lines; //Lines to be plotted
         int[] idx; //Index to points in 'lines'
 
-        internal void setup(int numRows, int numSamplesPerPlot)
+        //Constants for text rendering
+        private ContentManager content;
+        private SpriteBatch spriteBatch;
+        private SpriteFont font;
+        private Dictionary<int, Vector2> channelNumberLocations;
+        private Dictionary<int, String> channelNumberText;
+        private String voltageTimeLabel;
+        private double displayGain = 1;
+        private double voltageRange; //in volts
+        private double timeRange; //in seconds
+        private Vector2 voltageTimeLabelCoords;
+
+        internal void setup(int numRows, int numSamplesPerPlot, double timeRange, double voltageRange)
         {
             this.numRows = numRows;
             this.numSamplesPerPlot = numSamplesPerPlot;
@@ -37,6 +50,9 @@ namespace NeuroRighter
             idx = new int[numSamplesPerPlot];
 
             for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+
+            this.timeRange = timeRange;
+            this.voltageRange = voltageRange;
         }
 
         internal void clear()
@@ -54,6 +70,14 @@ namespace NeuroRighter
 
             GraphicsDevice.RenderState.CullMode = CullMode.None;
             vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
+
+            content = new ContentManager(Services, "Content");
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            font = content.Load<SpriteFont>("Arial");
+
+            this.Resize += new EventHandler(resize);
+            this.SizeChanged += new EventHandler(resize);
+            this.VisibleChanged += new EventHandler(resize);
         }
 
         internal void resize(object sender, System.EventArgs e)
@@ -64,7 +88,8 @@ namespace NeuroRighter
                 xScale = (float)this.Width / dX;
                 yScale = -(float)this.Height / dY;
 
-                //plotGridLines();
+                updateChannelNumbers();
+                updateVoltageTime();
             }
         }
 
@@ -94,6 +119,10 @@ namespace NeuroRighter
         {
             GraphicsDevice.Clear(Color.Black);
             GraphicsDevice.VertexDeclaration = vDec;
+
+            plotChannelNumbers();
+            plotVoltageTime();
+
             effect.Begin();
             effect.CurrentTechnique.Passes[0].Begin();
 
@@ -105,27 +134,86 @@ namespace NeuroRighter
             effect.End();
         }
 
-        //private void plotGridLines()
-        //{
-        //    float boxHeight = (float)this.Height / numRows;
-        //    float boxWidth = (float)this.Width / numCols;
+        private void plotChannelNumbers()
+        {
+            spriteBatch.Begin();
+            for (int i = 1; i <= channelNumberText.Count; ++i)
+            {
+                spriteBatch.DrawString(font, channelNumberText[i], channelNumberLocations[i], Color.White);
+            }
+            spriteBatch.End();
+        }
 
-        //    //Draw horz. lines
-        //    for (short i = 0; i < numRows - 1; ++i)
-        //    {
-        //        gridLines[i][0] = new VertexPositionColor(new Vector3(0F, boxHeight * (i + 1), 0F),
-        //            gridColor);
-        //        gridLines[i][1] = new VertexPositionColor(new Vector3(this.Width, boxHeight * (i + 1), 0F),
-        //            gridColor);
-        //    }
-        //    //Draw vert. lines
-        //    for (short i = 0; i < numCols - 1; ++i)
-        //    {
-        //        gridLines[i + numRows - 1][0] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
-        //            0F, 0F), gridColor);
-        //        gridLines[i + numCols - 1][1] = new VertexPositionColor(new Vector3(boxWidth * (i + 1),
-        //            this.Height, 0F), gridColor);
-        //    }
-        //}
+        private void updateChannelNumbers()
+        {
+            float boxHeight = (float)this.Height / numRows;
+
+            const int MARGIN = 5; //Pixels from vert/horz grid for each label
+            //labels will be in upper left of each box
+
+            if (channelNumberLocations == null)
+                channelNumberLocations = new Dictionary<int, Vector2>(numRows);
+            else channelNumberLocations.Clear();
+
+            if (channelNumberText == null)
+                channelNumberText = new Dictionary<int, string>(numRows);
+            else channelNumberText.Clear();
+
+            int i = 1;
+            for (int r = 0; r < numRows; ++r)
+            {
+                channelNumberLocations.Add(i, new Vector2(MARGIN, boxHeight * r + MARGIN));
+                channelNumberText.Add(i, i.ToString());
+                ++i;
+            }
+        }
+
+        private void plotVoltageTime()
+        {
+            spriteBatch.Begin();
+            lock (voltageTimeLabelLock)
+            {
+                spriteBatch.DrawString(font, voltageTimeLabel, voltageTimeLabelCoords, Color.White);
+            }
+            spriteBatch.End();
+        }
+
+        private object voltageTimeLabelLock = new object();
+        private void updateVoltageTime()
+        {
+            const int VERTICAL_MARGIN = 5;
+            const int HORIZONTAL_MARGIN = 5;
+
+            double displayVoltage = voltageRange / displayGain;
+
+            lock (voltageTimeLabelLock)
+            {
+                if (displayVoltage >= 1)
+                    voltageTimeLabel = displayVoltage + " V, ";
+                else if (displayVoltage * 1000 >= 1)
+                    voltageTimeLabel = displayVoltage * 1000 + " mV, ";
+                else if (displayVoltage * 1E6 >= 1)
+                    voltageTimeLabel = displayVoltage * 1E6 + " uV, ";
+
+                voltageTimeLabel += timeRange + " s";
+
+                Vector2 stringExtent = font.MeasureString(voltageTimeLabel);
+                voltageTimeLabelCoords = new Vector2(this.Width - stringExtent.X - HORIZONTAL_MARGIN, this.Height - stringExtent.Y - VERTICAL_MARGIN);
+            }
+        }
+
+        internal void setDisplayGain(double gain)
+        {
+            displayGain = gain;
+            updateVoltageTime();
+        }
+
+
+        protected override void Dispose(bool disposing)
+        {
+            if (content != null)
+                content.Unload();
+            base.Dispose(disposing);
+        }
     }
 }

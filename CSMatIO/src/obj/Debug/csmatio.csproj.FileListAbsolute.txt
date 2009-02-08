@@ -1,0 +1,7 @@
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Debug\csmatio.dll
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Debug\csmatio.pdb
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Debug\csmatio.xml
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Debug\zlib.net.dll
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\csmatio.dll
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\csmatio.pdb

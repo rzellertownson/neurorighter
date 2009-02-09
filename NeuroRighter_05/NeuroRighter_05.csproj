@@ -86,7 +86,7 @@
     <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +135,12 @@
     <Compile Include="Plotting\PlotDataGrid.cs" />
     <Compile Include="Plotting\PlotDataRows.cs" />
     <Compile Include="Plotting\PlotSpikeWaveform.cs" />
+    <Compile Include="ProcessingSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProcessingSettings.Designer.cs">
+      <DependentUpon>ProcessingSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources1.Designer.cs">
@@ -142,17 +148,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="SALPA\inv.cs" />
     <Compile Include="SALPA\lu.cs" />
     <Compile Include="SALPA\SALPA.cs" />
     <Compile Include="SALPA\SALPA2.cs" />
     <Compile Include="SALPA\trinverse.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="SpikeDetection\LimAda.cs" />
     <Compile Include="SpikeDetection\MedianThreshold.cs" />
     <Compile Include="SpikeDetection\RMSThreshold.cs" />
@@ -180,6 +186,10 @@
     <EmbeddedResource Include="licenses.licx" />
     <EmbeddedResource Include="NeuroRighter.resx">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProcessingSettings.resx">
+      <DependentUpon>ProcessingSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

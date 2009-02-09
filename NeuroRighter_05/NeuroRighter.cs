@@ -191,7 +191,7 @@ namespace NeuroRighter
             this.numPre = Convert.ToInt32(numPreSamples.Value);
 
             //Setup default filename
-            this.filenameOutput = "test0001.ncl";
+            this.filenameOutput = "test0001";
 
             this.comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
             if (Properties.Settings.Default.SeparateLFPBoard)
@@ -298,6 +298,7 @@ namespace NeuroRighter
                     button_Train.Enabled = false;
                     checkBox_SaveRawSpikes.Enabled = false;
                     switch_record.Enabled = false;
+                    processingSettingsToolStripMenuItem.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
@@ -324,7 +325,7 @@ namespace NeuroRighter
                         -10.0, 10.0, AOVoltageUnits.Volts);
 
                     //Add LFP channels, if configured
-                    if (Properties.Settings.Default.SeparateLFPBoard)
+                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpTask = new Task("lfpTask");
                         for (int i = 0; i < Convert.ToInt32(comboBox_numChannels.SelectedItem); ++i)
@@ -401,7 +402,7 @@ namespace NeuroRighter
                     spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                     spikeOutTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
                         SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
-                    if (Properties.Settings.Default.SeparateLFPBoard)
+                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                         lfpTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
@@ -423,7 +424,7 @@ namespace NeuroRighter
                                 spikeSamplingRate, SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,
                                 Convert.ToInt32(spikeSamplingRate/4));
                         }
-                        if (Properties.Settings.Default.SeparateLFPBoard)
+                        if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         {
                             lfpTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" +
                                 Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger",
@@ -524,21 +525,24 @@ namespace NeuroRighter
                     spikeGraph.Dock = DockStyle.Fill;
                     spikeGraph.Parent = tabPage_spikes;
 
-                    if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
-                    lfpGraph = new RowGraph();
-                    //lfpGraph.Resize += new EventHandler(lfpGraph.resize);
-                    //lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
-                    //lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
-                    lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH), 
-                        5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
-                    if (Properties.Settings.Default.SeparateLFPBoard)
-                        lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
-                            (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
-                    else
-                        lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
-                            (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
-                    lfpGraph.Dock = DockStyle.Fill;
-                    lfpGraph.Parent = tabPage_LFPs;
+                    if (Properties.Settings.Default.UseLFPs)
+                    {
+                        if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                        lfpGraph = new RowGraph();
+                        //lfpGraph.Resize += new EventHandler(lfpGraph.resize);
+                        //lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
+                        //lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
+                        lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
+                            5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
+                        if (Properties.Settings.Default.SeparateLFPBoard)
+                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
+                                (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
+                        else
+                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                                (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
+                        lfpGraph.Dock = DockStyle.Fill;
+                        lfpGraph.Parent = tabPage_LFPs;
+                    }
 
                     resetSpkWfm(); //Take care of spike waveform graph
 
@@ -547,12 +551,15 @@ namespace NeuroRighter
                         Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
                     spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
 
-                    if (Properties.Settings.Default.SeparateLFPBoard)
-                        lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
-                    else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                            (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
-                    lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
+                    if (Properties.Settings.Default.UseLFPs)
+                    {
+                        if (Properties.Settings.Default.SeparateLFPBoard)
+                            lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
+                                (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                        else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
+                                (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                        lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
+                    }
 
                     waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
                         numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
@@ -625,10 +632,13 @@ namespace NeuroRighter
                             fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
                             fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
 
-                            if (Properties.Settings.Default.SeparateLFPBoard)
-                                lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp");
-                            else //Using spikes A/D card to capture LFP data, too.
-                                lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                            if (Properties.Settings.Default.UseLFPs)
+                            {
+                                if (Properties.Settings.Default.SeparateLFPBoard)
+                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp");
+                                else //Using spikes A/D card to capture LFP data, too.
+                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                            }
 
                             if (Properties.Settings.Default.UseStimulator)
                             {
@@ -674,7 +684,7 @@ namespace NeuroRighter
                     #region Setup_Filters
                     //Setup filters, based on user's input
                     resetSpikeFilter();
-                    resetLFPFilter();
+                    if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
                     resetEEGFilter();
                     #endregion
 
@@ -685,8 +695,18 @@ namespace NeuroRighter
                     numSpikeReads = new int[spikeTask.Count];
 
                     filtSpikeData = new rawType[numChannels][];
-                    filtLFPData = new rawType[numChannels][];
-                    finalLFPData = new rawType[numChannels][];
+                    if (Properties.Settings.Default.UseLFPs)
+                    {
+                        filtLFPData = new rawType[numChannels][];
+                        finalLFPData = new rawType[numChannels][];
+                        for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
+                        {
+                            if (Properties.Settings.Default.SeparateLFPBoard)
+                                filtLFPData[i] = new rawType[lfpBufferLength];
+                            else
+                                filtLFPData[i] = new rawType[spikeBufferLength];
+                        }
+                    }
                     if (Properties.Settings.Default.UseEEG)
                     {
                         filtEEGData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)][];
@@ -698,11 +718,12 @@ namespace NeuroRighter
                     for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
                     {
                         filtSpikeData[i] = new rawType[spikeBufferLength];
-                        if (Properties.Settings.Default.SeparateLFPBoard)
-                            filtLFPData[i] = new rawType[lfpBufferLength];
-                        else
-                            filtLFPData[i] = new rawType[spikeBufferLength];
-                        finalLFPData[i] = new rawType[lfpBufferLength];
+                        //if (Properties.Settings.Default.SeparateLFPBoard)
+                        //    filtLFPData[i] = new rawType[lfpBufferLength];
+                        //else
+                        //    filtLFPData[i] = new rawType[spikeBufferLength];
+                        if (Properties.Settings.Default.UseLFPs)
+                            finalLFPData[i] = new rawType[lfpBufferLength];
                     }
                     if (Properties.Settings.Default.UseStimulator)
                     {
@@ -739,7 +760,7 @@ namespace NeuroRighter
                         stimTimeReader = new AnalogMultiChannelReader(stimTimeTask.Stream);
                     }
 
-                    if (Properties.Settings.Default.SeparateLFPBoard)
+                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpReader = new AnalogUnscaledReader(lfpTask.Stream);
                         lfpReader.SynchronizeCallbacks = true;
@@ -781,13 +802,13 @@ namespace NeuroRighter
                     }
                     if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                         stimTimeTask.Start();
-                    if (Properties.Settings.Default.SeparateLFPBoard)
+                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         lfpTask.Start();
                     if (Properties.Settings.Default.UseEEG)
                         eegTask.Start();
                     for (int i = spikeTask.Count - 1; i >= 0; --i) spikeTask[i].Start(); //Start first task last, since it has master clock
-                    
-                    if (Properties.Settings.Default.SeparateLFPBoard)
+
+                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         lfpReader.BeginReadInt16(lfpBufferLength, lfpCallback, lfpReader);
                     if (Properties.Settings.Default.UseEEG)
                         eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
@@ -1007,7 +1028,7 @@ namespace NeuroRighter
 
             #region LFP_Filtering
             //Filter for LFPs
-            if (!Properties.Settings.Default.SeparateLFPBoard)
+            if (!Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
             {
                 //Copy to new array
                 for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
@@ -1582,6 +1603,7 @@ namespace NeuroRighter
             button_Train.Enabled = true;
             checkBox_SaveRawSpikes.Enabled = true;
             switch_record.Enabled = true;
+            processingSettingsToolStripMenuItem.Enabled = true;
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegNumChannels.Enabled = true;
@@ -4067,6 +4089,12 @@ ch = 1;
         {
             AboutBox ab = new AboutBox();
             ab.ShowDialog();
+        }
+
+        private void processingSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessingSettings ps = new ProcessingSettings();
+            ps.ShowDialog();
         }
 
     }

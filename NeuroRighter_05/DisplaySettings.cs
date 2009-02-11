@@ -31,6 +31,9 @@ namespace NeuroRighter
     /// <author>John Rolston (rolston2@gmail.com)</author>
     public partial class DisplaySettings : Form
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public DisplaySettings()
         {
             InitializeComponent();

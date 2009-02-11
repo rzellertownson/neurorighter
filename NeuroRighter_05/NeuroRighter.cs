@@ -16,6 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter v0.04.  If not, see <http://www.gnu.org/licenses/>.
 
+//#define USE_LOG_FILE
 //#define DEBUG
 
 using System;
@@ -106,7 +107,6 @@ namespace NeuroRighter
         private int spikeSamplingRate;
         private int lfpSamplingRate;
         private int eegSamplingRate;
-        //private int spkWfmGridlines; //Keeps track of how many gridlines are on the spkWfm display
         private int[] numSpikeReads; //Number of times the spike buffer has been read (for adding time stamps)
         private List<int> numStimReads;
         private double stimJump;  //Num. of indices to jump ahead during stim reads (make sure to round before using)
@@ -149,14 +149,14 @@ namespace NeuroRighter
         #endregion
 
         #region DebugVariables
-#if (DEBUG)
+#if (USE_LOG_FILE)
         internal StreamWriter logFile; //internal so other classes can access
 #endif
     
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.010; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
@@ -532,10 +532,10 @@ namespace NeuroRighter
                         //lfpGraph.Resize += new EventHandler(lfpGraph.resize);
                         //lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
                         //lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
-                        lfpGraph.setup(numChannels, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
+                        lfpGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
                             5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                         if (Properties.Settings.Default.SeparateLFPBoard)
-                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH),
+                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
                                 (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
                         else
                             lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
@@ -819,9 +819,9 @@ namespace NeuroRighter
                     if (checkBox_video.Checked)
                         triggerTask.Dispose();
 
-#if (DEBUG)
-    logFile = new StreamWriter("log.txt");
-    logFile.WriteLine("NeuroRighter Log File\n" + DateTime.Now + "\n\n");
+#if (USE_LOG_FILE)
+                    logFile = new StreamWriter("log.txt");
+    logFile.WriteLine("NeuroRighter Log File\r\n" + DateTime.Now + "\r\n\r\n");
 #endif
 
                     this.Cursor = Cursors.Default;
@@ -938,7 +938,7 @@ namespace NeuroRighter
                                             triggerStopTime = double.PositiveInfinity; //Do this to ensure that we capture spikes till 
                                             inTrigger = true;
 
-#if (DEBUG)
+#if (DEBUG1)
                                             logFile.WriteLine("Trigger start time: " + triggerStartTime);
 #endif
                                             break;
@@ -953,7 +953,7 @@ namespace NeuroRighter
                                         {
                                             triggerStopTime = i + numStimReads[taskNumber] * spikeBufferLength;
                                             inTrigger = false;
-#if (DEBUG)
+#if (DEBUG1)
                                             logFile.WriteLine("Trigger stop time: " + triggerStopTime);
 #endif
                                             break;
@@ -1053,6 +1053,9 @@ namespace NeuroRighter
                             finalLFPData[i][j] = filtLFPData[i][(int)(Math.Round(dsFactor * j))];
                 }
 
+                //Do IISZapper stuff
+                if (IISDetected != null) IISDetected(this, finalLFPData, numSpikeReads[taskNumber]);
+
                 #region WriteLFPFile
                 if (switch_record.Value) //Convert to 16-bit ints, then write to file
                 {
@@ -1083,9 +1086,6 @@ namespace NeuroRighter
                         for (int j = 0; j < lfpBufferLength; ++j)
                             finalLFPData[i][j] -= finalLFPData[refChan][j];
                 }
-
-                //Do IISZapper stuff
-                if (IISDetected != null) IISDetected(this, finalLFPData);
 
                 //Post to PlotData buffer
                 lfpPlotData.write(finalLFPData, taskNumber * numChannelsPerDev, numChannelsPerDev);
@@ -1200,7 +1200,7 @@ namespace NeuroRighter
                         if (newWaveforms[i].index + startTime >= triggerStartTime && newWaveforms[i].index + startTime <= triggerStopTime)
                         {
                             _waveforms.Add(newWaveforms[i]);
-#if (DEBUG)
+#if (DEBUG1)
                             logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
 #endif
                         }
@@ -1505,9 +1505,9 @@ namespace NeuroRighter
          * Caretaking Routines
          ************************************/
 
-        private void buttonStop_Click(object sender, EventArgs e) { if (taskRunning) reset(); 
-#if (DEBUG)
-    logFile.Flush();
+        private void buttonStop_Click(object sender, EventArgs e) { if (taskRunning) reset();
+#if (USE_LOG_FILE)
+        logFile.Flush();
     logFile.Close();
     logFile.Dispose();
 #endif
@@ -4060,7 +4060,7 @@ ch = 1;
 
         #region IISZapper (Experimental)
 
-        internal delegate void IISDetectedHandler(object sender, double[][] lfpData);
+        internal delegate void IISDetectedHandler(object sender, double[][] lfpData, int numReads);
         internal event IISDetectedHandler IISDetected;
         private IISZapper iisZap;
 
@@ -4095,6 +4095,7 @@ ch = 1;
         {
             ProcessingSettings ps = new ProcessingSettings();
             ps.ShowDialog();
+            updateSettings();
         }
 
     }

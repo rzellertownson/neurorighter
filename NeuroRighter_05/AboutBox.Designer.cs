@@ -1,5 +1,9 @@
 ﻿namespace NeuroRighter
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <author>John Rolston (rolston2@gmail.com</author>
     partial class AboutBox
     {
         /// <summary>

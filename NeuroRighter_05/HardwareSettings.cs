@@ -34,6 +34,9 @@ namespace NeuroRighter
     /// <author>John Rolston (rolston2@gmail.com)</author>
     public partial class HardwareSettings : Form
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public HardwareSettings()
         {
             InitializeComponent();

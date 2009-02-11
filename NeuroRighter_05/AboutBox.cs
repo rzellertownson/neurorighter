@@ -11,6 +11,9 @@ namespace NeuroRighter
 {
     public partial class AboutBox : Form
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public AboutBox()
         {
             InitializeComponent();

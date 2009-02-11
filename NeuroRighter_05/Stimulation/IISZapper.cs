@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define USE_LOG_FILE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,9 +26,9 @@ namespace NeuroRighter
         private int numReadsRefractory;
         internal readonly int channel; //0-based
 
-        private const double thresholdMult = 7.5;
+        private const double thresholdMult = 3;
         private const double numSecondsTraining = 3.0;
-        private const double refractory = 3.0; // in seconds
+        private const double refractory = 0.25; // in seconds
 
         internal IISZapper(int phaseWidth, double amplitude, int channel, int numPulses, double rate,
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
@@ -57,34 +59,23 @@ namespace NeuroRighter
 
         private void zap()
         {
-            lock (this)
-            {
+            //lock (this)
+            //{
                 stimAnalogWriter.WriteMultiSample(true, sp.analogPulse);
-                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                //if (Properties.Settings.Default.StimPortBandwidth == 32)
                     stimDigitalWriter.WriteMultiSamplePort(true, sp.digitalData);
-                else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                    stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sp.digitalData));
+                //else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                //    stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sp.digitalData));
                 stimDigitalTask.WaitUntilDone();
                 stimAnalogTask.WaitUntilDone();
                 stimAnalogTask.Stop();
                 stimDigitalTask.Stop();
-            }
+            //}
         }
 
-        
-        private void IISDetector(object sender, double[][] lfpData)
+        private void IISDetector(object sender, double[][] lfpData, int numReads)
         {
-            if (isTraining)
-            {
-                threshold += NeuroRighter.rootMeanSquared(lfpData[channel]);
-                if (++numReadsTraining >= totalNumReadsTraining)
-                {
-                    isTraining = false;
-                    threshold /= totalNumReadsTraining;
-                    threshold *= thresholdMult;
-                }
-            }
-            else
+            if (!isTraining)
             {
                 if (numReadsRefractory >= totalNumReadsRefractory)
                 {
@@ -94,6 +85,13 @@ namespace NeuroRighter
                         {
                             zap();
                             numReadsRefractory = 1;
+
+#if(USE_LOG_FILE)
+                            NeuroRighter nr = (NeuroRighter)sender;
+                            //nr.logFile.WriteLine("Zap trigger at index, buffer read (buffer length): " + i + " " + numReads + " (" + lfpData[channel].Length + ")");
+                            nr.logFile.Write(((i / 2000.0) + numReads * 0.003).ToString() + " ");
+#endif
+
                             break; //automatically stop checking, supposing we're in refractory
                             //this will break down if the device refresh rate is long
                         }
@@ -101,9 +99,19 @@ namespace NeuroRighter
                 }
                 else ++numReadsRefractory;
             }
+            else
+            {
+                threshold += NeuroRighter.rootMeanSquared(lfpData[channel]);
+                if (++numReadsTraining >= totalNumReadsTraining)
+                {
+                    isTraining = false;
+                    threshold /= totalNumReadsTraining;
+                    threshold *= thresholdMult;
+                }
+            }
         }
 
         internal void start(NeuroRighter sender) { sender.IISDetected += new NeuroRighter.IISDetectedHandler(IISDetector); }
-        internal void stop(NeuroRighter sender) { sender.IISDetected -= new NeuroRighter.IISDetectedHandler(IISDetector); }
+        internal void stop(NeuroRighter sender)  { sender.IISDetected -= new NeuroRighter.IISDetectedHandler(IISDetector); }
     }
 }

@@ -25,9 +25,25 @@ using System.IO;
 
 namespace NeuroRighter
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface LoadRawSignature
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="channels"></param>
+        /// <param name="times"></param>
+        /// <returns></returns>
         double[,] loadRaw(String filename, double[,] channels, double[,] times);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="times"></param>
+        /// <returns></returns>
         double[] loadRawTimes(String filename, double[,] times);
     }
 

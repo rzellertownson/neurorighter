@@ -16,6 +16,9 @@ namespace NeuroRighter
     /// <author>John Rolston (rolston2@gmail.com)</author>
     public partial class ProcessingSettings : Form
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public ProcessingSettings()
         {
             InitializeComponent();

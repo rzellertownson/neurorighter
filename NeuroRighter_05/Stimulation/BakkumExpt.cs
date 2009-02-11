@@ -299,6 +299,7 @@ namespace NeuroRighter
                 double scaleX = 0;
                 double scaleY = 0;
                 outputFileWriter.WriteLine("Measured CAs, during pre-experiment (x,y):");
+                int usedCAs = 0;
                 for (int i = 0; i < CAList.Count; ++i)
                 {
                     if (Double.IsNaN(CAList[i].x) || Double.IsNaN(CAList[i].y))
@@ -310,19 +311,20 @@ namespace NeuroRighter
                         offsetX += CAList[i].x;
                         offsetY += CAList[i].y;
                         outputFileWriter.WriteLine("\t" + i + ": " + CAList[i].x + ", " + CAList[i].y);
+                        ++usedCAs;
                     }
                 }
                 outputFileWriter.WriteLine("\n");
-                offsetX /= CAList.Count;
-                offsetY /= CAList.Count;
+                offsetX /= usedCAs;
+                offsetY /= usedCAs;
 
                 for (int i = 0; i < CAList.Count; ++i)
                 {
                     scaleX += Math.Abs(CAList[i].x - offsetX);
                     scaleY += Math.Abs(CAList[i].y - offsetY);
                 }
-                scaleX /= CAList.Count;
-                scaleY /= CAList.Count;
+                scaleX /= usedCAs;
+                scaleY /= usedCAs;
 
                 T[0] = 1 / scaleX;
                 T[1] = -offsetX; //this differs from Doug's code a bit
@@ -530,7 +532,7 @@ namespace NeuroRighter
                         }
                     }
                 }
-                else
+                else //Direction was not correct
                 {
                     if (probabilities[index] > MIN_PROBABILITY)
                     {

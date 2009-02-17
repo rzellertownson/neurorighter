@@ -320,15 +320,18 @@ namespace NeuroRighter
 
                 for (int i = 0; i < CAList.Count; ++i)
                 {
-                    scaleX += Math.Abs(CAList[i].x - offsetX);
-                    scaleY += Math.Abs(CAList[i].y - offsetY);
+                    if (!(Double.IsNaN(CAList[i].x)) && !(Double.IsNaN(CAList[i].y)))
+                    {
+                        scaleX += Math.Abs(CAList[i].x - offsetX);
+                        scaleY += Math.Abs(CAList[i].y - offsetY);
+                    }
                 }
                 scaleX /= usedCAs;
                 scaleY /= usedCAs;
 
-                T[0] = 1 / scaleX;
+                T[0] = 1.0 / scaleX;
                 T[1] = -offsetX; //this differs from Doug's code a bit
-                T[2] = 1 / scaleY;
+                T[2] = 1.0 / scaleY;
                 T[3] = -offsetY;
 
                 outputFileWriter.WriteLine("Transform matrix, T = " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3] + "\n");
@@ -490,8 +493,11 @@ namespace NeuroRighter
 
         private void updateProbabilities(bool isCorrect, int index)
         {
+            outputFileWriter.WriteLine("\tPTS Index: " + index);
+            
             if (index >= 0)
             {
+                outputFileWriter.WriteLine("\t\tPrior probability: " + probabilities[index]);
                 if (isCorrect)
                 {
                     if (probabilities[index] < MAX_PROBABILITY)
@@ -572,6 +578,7 @@ namespace NeuroRighter
                         }
                     }
                 }
+                outputFileWriter.WriteLine("\t\tNew probability: " + probabilities[index]);
             }
         }
 

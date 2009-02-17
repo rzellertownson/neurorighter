@@ -90,7 +90,8 @@ namespace NeuroRighter
                     if (VLo < 0)
                         tempThreshold = -alpha * VLo + (1 - alpha) * limAdaPrevious[channel];
                     else
-                        tempThreshold = alpha * VLo + (1 - alpha) * limAdaPrevious[channel];
+                        //tempThreshold = alpha * VLo + (1 - alpha) * limAdaPrevious[channel];
+                        tempThreshold = limAdaPrevious[channel] + alpha * (VLo - limAdaPrevious[channel]);
                 }
                 else
                 {

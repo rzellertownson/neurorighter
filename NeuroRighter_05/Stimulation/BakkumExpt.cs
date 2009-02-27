@@ -200,10 +200,10 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds
-            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);
-            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);
-            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0);
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds, usually 4 hrs
+            TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
+            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
+            TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
 
             //Print file header info
@@ -448,6 +448,8 @@ namespace NeuroRighter
                 //Wait for intertrain time
                 System.Threading.Thread.Sleep(PTSInterTrainIntervals[index][i]);
             }
+
+            lastPTSIndex = -1; //This makes it so that probability updates don't do anything when the last stim sequence was an SBS
         }
 
         private void deliverPTS()
@@ -457,7 +459,7 @@ namespace NeuroRighter
             double r = rand.NextDouble();
 
             //Now, cycle through probabilities, till we exceed the drawn number
-            double currPD = 0; //current probability density, as in how much we've covered of the PDF so far
+            double currPD = 0.0; //current probability density, as in how much we've covered of the PDF so far
             int index = -1; //This refers to selected PTS
             while (currPD < r)
                 currPD += probabilities[++index];
@@ -495,7 +497,7 @@ namespace NeuroRighter
         {
             outputFileWriter.WriteLine("\tPTS Index: " + index);
             
-            if (index >= 0)
+            if (index >= 0) //Prevents updates if last pulse train was an SBS
             {
                 outputFileWriter.WriteLine("\t\tPrior probability: " + probabilities[index]);
                 if (isCorrect)

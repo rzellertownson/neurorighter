@@ -27,6 +27,7 @@
  *
  */
 
+#include "io64.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -36,21 +37,23 @@
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
-    int len; /* File length in bytes */
-    int numRecs; /* Num records in file */
+    int64_T len; /* File length in bytes */
+    int64_T numRecs; /* Num records in file */
     char *filename;
     FILE *fp;
     double *V;
     double *t;
-    int i, j;  /* Loop indices */
+    int64_T i, j;  /* Loop indices */
     short numChannels;
     int freq; /* Sampling rate */
     short gain;
     short* dt; /* Date and time */
     double scalingCoeffs[4]; /* Scaling coefficients to convert raw digital values to voltages */
     double* timeSpan; /* start and stop times to retrieve from file */
-    int outN; /* number of time pts. for output vectors */
-    int* timeSpanIdx;
+    int64_T outN; /* number of time pts. for output vectors */
+    int64_T* timeSpanIdx;
+    int64_T position; /* current position of file */
+    int64_T offset; /* offset for next file jump */
     
     
     /* Variables for temp storage of input */
@@ -86,6 +89,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     /* Get channel to extract (optional) */
     if (nrhs > 1) {
         if (!mxIsNumeric(prhs[1])) {
+            fclose(fp);
             mexErrMsgTxt("Channel number or time span must be numeric.");
         }
         else {
@@ -95,10 +99,13 @@ void mexFunction(int nlhs, mxArray *plhs[],
                 ch = (int)(mxGetScalar(prhs[1]));    
             else if (numMembers == 2) {
                 timeSpan = mxGetPr(prhs[1]);
-                if (timeSpan[1] < timeSpan[0])
+                if (timeSpan[1] < timeSpan[0]) {
+                    fclose(fp);
                     mexErrMsgTxt("First element of time span (i.e., start time) must be less than second (i.e., stop time).");
+                }
             }
             else {
+                fclose(fp);
                 mexErrMsgTxt("Too many elements in second argument.");
             }
         }
@@ -107,26 +114,43 @@ void mexFunction(int nlhs, mxArray *plhs[],
     /* Get times to extract (optional) */
     if (nrhs > 2) {
         if (!mxIsNumeric(prhs[2])) {
+            fclose(fp);
             mexErrMsgTxt("Time span must be numeric.");
         }
         else {
             int numMembers;
             numMembers = mxGetNumberOfElements(prhs[2]);
-            if (numMembers != 2)
+            if (numMembers != 2) {
+                fclose(fp);
                 mexErrMsgTxt("Time span must have start and stop times.");
+            }
             else {
                 timeSpan = mxGetPr(prhs[2]);
-                if (timeSpan[1] < timeSpan[0])
+                if (timeSpan[1] < timeSpan[0]) {
+                    fclose(fp);
                     mexErrMsgTxt("First element of time span (i.e., start time) must be less than second (i.e., stop time).");
+                }
             }
         }
     }
     
-    /* Get file length */
-    fseek(fp,0,SEEK_END); /* Seek from end of file */
-    len = ftell(fp); /* Where am I? */
-    fseek(fp,0,SEEK_SET); /* Return to beginning of file */
-    fflush(fp);
+    /* Get file length */  
+/*    fseek(fp,0,SEEK_END); /* Seek from end of file */
+/*    len = ftell(fp); /* Where am I? */
+/*    fseek(fp,0,SEEK_SET); /* Return to beginning of file */
+/*    fflush(fp);
+ */
+    /* Deal with large files */
+    {
+        structStat statbuf;
+        int64_T fileSize = 0;
+
+        if (0 == getFileFstat(fileno(fp), &statbuf))
+        {
+            len = statbuf.st_size;
+            mexPrintf("File size is %" FMT64 "d bytes\n", len);
+        }
+    }
     
     /* There are 54 bytes in the header, then each record */
     fread(&numChannels,2,1,fp); /* Read numChannels */
@@ -137,7 +161,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     fread(dt,2,7,fp); /* Read date and time */
 
     /* Compute #records */
-    numRecs = (len - 54) / (2 * numChannels);
+    numRecs = (len - 54) / (2 * (int64_T)numChannels);
 
     /* Print summary (header) data */
     mexPrintf("#chs: %i\nsampling rate: %i\ngain: %i\n", numChannels, freq, gain);
@@ -145,16 +169,17 @@ void mexFunction(int nlhs, mxArray *plhs[],
     mexPrintf("\nTotal num. samples per channel: %i\n", numRecs);
 
     /* Compute start and stop indices, if time span was specified */
-    timeSpanIdx = mxCalloc(2, sizeof(int)); /* Allocate memory for start/stop indices */
+    timeSpanIdx = mxCalloc(2, sizeof(int64_T)); /* Allocate memory for start/stop indices */
     if (nrhs == 3) {
-        timeSpanIdx[0] = (int)(ceil(timeSpan[0] * (double)freq));
-        timeSpanIdx[1] = (int)(ceil(timeSpan[1] * (double)freq));
+        timeSpanIdx[0] = (int64_T)(ceil(timeSpan[0] * (double)freq));
+        timeSpanIdx[1] = (int64_T)(ceil(timeSpan[1] * (double)freq));
         ++timeSpanIdx[1];
         /* Take care of over/underrun */
         if (timeSpanIdx[0] < 0) {
             timeSpanIdx[0] = 0;
         }
         else if (timeSpanIdx[0] >= numRecs || timeSpanIdx[1] < 0) {
+            fclose(fp);
             mexErrMsgTxt("No records in indicated time span.");
         }
         if (timeSpanIdx[1] >= numRecs) {
@@ -174,8 +199,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
     if (ch < 0) /* default, all channels */
         plhs[0] = mxCreateDoubleMatrix(numChannels,outN,mxREAL);
     else { /* just the specified channel */
-        if (ch > numChannels - 1)
+        if (ch > numChannels - 1) {
+            fclose(fp);
             mexErrMsgTxt("Specified extraction channel does not exist in dataset.");
+        }
         plhs[0] = mxCreateDoubleMatrix(1,outN,mxREAL);
     }
     V = mxGetPr(plhs[0]);
@@ -187,7 +214,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
     }
     
     /* Seek to start of time span, if specified */
-    fseek(fp, 2*numChannels*timeSpanIdx[0], SEEK_CUR);
+    getFilePos(fp, (fpos_T*) &position);
+    offset = position + (int64_T)(2*numChannels*timeSpanIdx[0]);
+    setFilePos(fp, (fpos_T*) &offset);
+    /*fseek(fp, 2*numChannels*timeSpanIdx[0], SEEK_CUR);*/
     
     /* Read each record */
     for (i = 0; i < outN; ++i) {
@@ -202,12 +232,18 @@ void mexFunction(int nlhs, mxArray *plhs[],
             } /* NB: Matlab's indices go down each column, then to the next row */
         }
         else { /* just extract one channel */
-            fseek(fp, 2*ch, SEEK_CUR); /* advance to next time channel appears */
+            getFilePos(fp, (fpos_T*) &position);
+            offset = position + (int64_T)(2*ch);
+            setFilePos(fp, (fpos_T*) &offset);
+            /*fseek(fp, 2*ch, SEEK_CUR); /* advance to next time channel appears */
             fread(&val,2,1,fp); /* Read value */
             V[i] = scalingCoeffs[0] + scalingCoeffs[1] * (double)val +
                 scalingCoeffs[2] * scalingCoeffs[2] * (double)val +
                 scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)val;
-            fseek(fp, 2*(numChannels - 1 - ch), SEEK_CUR); /* skip past remaining channels */
+            getFilePos(fp, (fpos_T*) &position);
+            offset = position + (int64_T)(2*(numChannels - 1 -ch));
+            setFilePos(fp, (fpos_T*) &offset);
+            /*fseek(fp, 2*(numChannels - 1 - ch), SEEK_CUR); /* skip past remaining channels */
             /* NB: We could just do one initial seek, then always seek ahead by all channels,
              * but that code would be harder to read and not a whole lot faster */
         }

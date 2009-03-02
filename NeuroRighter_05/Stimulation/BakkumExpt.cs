@@ -129,9 +129,7 @@ namespace NeuroRighter
 
             //Declare vars
             PTS = new List<StimTrain>(NUM_PTS_TRAINS);
-            probabilities = new List<double>(NUM_PTS_TRAINS);
-            for (int i = 0; i < NUM_PTS_TRAINS; ++i)
-                probabilities.Add(1.0 / (double)NUM_PTS_TRAINS);
+            resetProbabilities();
             SBS = new List<StimTrain>(NUM_PTS_TRAINS);
             PTSInterTrainIntervals = new List<List<Int32>>(NUM_PTS_TRAINS);
             for (int i = 0; i < NUM_PTS_TRAINS; ++i)
@@ -376,6 +374,9 @@ namespace NeuroRighter
                     outputFileWriter.Flush();
                     if (DateTime.Now > endTime) isDone = true;
                 }
+
+                //Reset probabilities of each PTS, since we're done with this experiment
+                resetProbabilities();
                 #endregion
 
                 #region Post-Closed-loop_SBS
@@ -491,6 +492,16 @@ namespace NeuroRighter
                 //outputFileWriter.Flush();
             }
             lastPTSIndex = index;
+        }
+
+        private void resetProbabilities()
+        {
+            if (probabilities == null)
+                probabilities = new List<double>(NUM_PTS_TRAINS);
+            else
+                probabilities.Clear();
+            for (int i = 0; i < NUM_PTS_TRAINS; ++i)
+                probabilities.Add(1.0 / (double)NUM_PTS_TRAINS);
         }
 
         private void updateProbabilities(bool isCorrect, int index)

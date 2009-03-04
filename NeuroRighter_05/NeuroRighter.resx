@@ -124,8 +124,8 @@
   <data name="checkBox_freeze.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAYAAAA6RwvCAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOvgAA
-        Dr4B6kKxwAAAAutJREFUWEftl11IU2EYx98gYqOCLpp5/NjOPs7mzs7Ujs5AnTk/oQjcSc0Kqe61m+qi
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOuwAA
+        DrsBx/jUNgAAAutJREFUWEftl11IU2EYx98gYqOCLpp5/NjOPs7mzs7Ujs5AnTk/oQjcSc0Kqe61m+qi
         boIJUn6gc+YW6EVRLaIipObmdybOC8VSCxOji8K8yeMXTdzk6ZwOEUSyi0k7Fzvw533gfXjPj//zvIfn
         7AEAJIqHBxGDRAHxqypicCMG8q8qhC2Nx+OhHj142NjtftbYaXfZnE0Om6vZYXO2tNfbW+2XJyYnJFvB
         rf39/QNXn9x333p6z13f/fh5fVeby+ZqctQ5HR03bXU2JlwLhAVxdjjrZFjcNqZTbGNaRRAj5EF+lSni
@@ -143,8 +143,8 @@
   <data name="button_scaleReset.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtwAA
-        DrcBHI9bQQAACIlJREFUSEu1VgtQlNcZPfsQBNkX7+W5D3aXzbKwy/JmWXARWGRBXJblIY8F0ZBoYhFF
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtAAA
+        DrQBsTZ6LAAACIlJREFUSEu1VgtQlNcZPfsQBNkX7+W5D3aXzbKwy/JmWXARWGRBXJblIY8F0ZBoYhFF
         QBABJVg1JJFokjqRaevY0AmiBhsxxqh9zbQ28ZU4jVYbOqbT1jR10HaK7e39fwYHBZx2pi5zZv9Zdu+5
         3/ede+7hjI6OgsvlYmhoCCMjIzCZTLh37x6mpqYgD4/0uXb1aqxGrcmPMRkyT3/y0ZRIKObmZy27P3H7
         q9Nnzn48FhwqvTn54D4JDAzEhQsXwOFwUFVVBbVaza6x4IshPn78OBwOB/udxMREaDXRPImX8Hk/ddgd
@@ -186,8 +186,8 @@
   <data name="button_scaleDown.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtwAA
-        DrcBHI9bQQAACF9JREFUSEu1lgtQVOcVx/+wCyvILruy7C7s+83KLuyysAsLi7zkoSxvVtSogBg1SPBB
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtAAA
+        DrQBsTZ6LAAACF9JREFUSEu1lgtQVOcVx/+wCyvILruy7C7s+83KLuyysAsLi7zkoSxvVtSogBg1SPBB
         QAGLEaUwjcO0xkcyTmLNZGzTCRpTo6JGbetYO0nbtOo4qY5OpJmMrYnaPKZi+/X77hbHBnCSmboz/7mX
         y7339517zvc/J+zw4cMIDw/H/v37MTIyArfbjfv372N8fBx6tTbm8qVLKVaLtczuds45eebUA41GE5lq
         tX/xwYWLo7c+HTshlcuu/+OrL0lcXBx27NiBzMxMfKcfAx85cgQ1NTXc/RkZGbBZk3iSKNHKOIvq07CA
@@ -229,8 +229,8 @@
   <data name="button_scaleUp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAfCAYAAADwbH0HAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtwAA
-        DrcBHI9bQQAACUBJREFUSEu1VwlQ03cW/hICiJAQCCQEQi4gJIGEJFwGEQyIHCKnnEG5QcTiQVdc1LXe
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOtAAA
+        DrQBsTZ6LAAACUBJREFUSEu1VwlQ03cW/hICiJAQCCQEQi4gJIGEJFwGEQyIHCKnnEG5QcTiQVdc1LXe
         eGzX1q3i1rPb2mPUWopt7apYcNup9lJ3bevsdndndqyzs3YdR6cebX/7fkFrFZ3dnVkz84bwzz//7/e9
         977vvQgOHToEoVCIPXv24ODBg0hMTMTVq1dx69YtREdF4dwnZwJyXNkpRUXFWS+/8vK3ERERmFZQcGX/
         gQMjR4eHzoaGyXHt2jUoFAqMjIxAIBCgrq4OBoMBt2/fxiNfHHhgYABlZWWee5KSkmCMjYUyWB4fo9Xv

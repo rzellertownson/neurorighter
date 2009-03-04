@@ -1,20 +1,20 @@
-// NeuroRighter v0.04
-// Copyright (c) 2008 John Rolston
+// NeuroRighter
+// Copyright (c) 2008-2009 John Rolston
 //
-// This file is part of NeuroRighter v0.04.
+// This file is part of NeuroRighter.
 //
-// NeuroRighter v0.04 is free software: you can redistribute it and/or modify
+// NeuroRighter is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// NeuroRighter v0.04 is distributed in the hope that it will be useful,
+// NeuroRighter is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with NeuroRighter v0.04.  If not, see <http://www.gnu.org/licenses/>.
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 
 //#define USE_LOG_FILE
 //#define DEBUG
@@ -135,6 +135,7 @@ namespace NeuroRighter
         private PlotData spikePlotData;
         private PlotData lfpPlotData;
         private EventPlotData waveformPlotData;
+        private Filters.CommonAverageReferencing commonAvgReferncer;
 
 
         //Plots
@@ -175,7 +176,6 @@ namespace NeuroRighter
             this.Text += " (BETA)";
 
             //Set default values for certain controls
-            this.comboBox_SpikeGain.SelectedIndex = 3;  //Default gain of 10x
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
 
             //comboBox_numChannels.SelectedIndex = comboBox_numChannels.Items.IndexOf((int)Properties.Settings.Default.DefaultNumChannels);
@@ -230,6 +230,9 @@ namespace NeuroRighter
                 MessageBox.Show("Your graphics card is unsupported. Recording will be disabled.");
                 buttonStart.Enabled = false;
             }
+
+            //Load gain settings
+            comboBox_SpikeGain.SelectedIndex = Properties.Settings.Default.Gain;
         }
         #endregion
 
@@ -1095,8 +1098,7 @@ namespace NeuroRighter
             //NEED TO FIX FOR MULTI DEVS
             #region Digital_Referencing_Spikes
             //Digital ref spikes signals
-            if (!checkBox_digRefSpikes.Checked) { }
-            else
+            if (checkBox_digRefSpikes.Checked)
             {
                 int refChan = Convert.ToInt16(numericUpDown_digRefSpikes.Value) - 1;
                 for (int i = 0; i < refChan; ++i)
@@ -1105,6 +1107,13 @@ namespace NeuroRighter
                 for (int i = refChan + 1; i < numChannels; ++i)
                     for (int j = 0; j < spikeBufferLength; ++j)
                         filtSpikeData[i][j] -= filtSpikeData[refChan][j];
+            }
+
+            //Common average referencing
+            if (checkBox_spikesCommonAvgReferencing.Checked)
+            {
+                lock (this)
+                    commonAvgReferncer.reference(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
             #endregion
 
@@ -1537,6 +1546,10 @@ namespace NeuroRighter
             if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
             if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
+
+            //Save gain settings
+            Properties.Settings.Default.Gain = comboBox_SpikeGain.SelectedIndex;
+            Properties.Settings.Default.Save();
         }
 
         //Set gain for channels
@@ -4096,6 +4109,17 @@ ch = 1;
             ProcessingSettings ps = new ProcessingSettings();
             ps.ShowDialog();
             updateSettings();
+        }
+
+        private void checkBox_spikesCommonAvgReferencing_CheckedChanged(object sender, EventArgs e)
+        {
+            lock (this)
+            {
+                if (checkBox_spikesCommonAvgReferencing.Checked)
+                    commonAvgReferncer = new Filters.CommonAverageReferencing(spikeBufferLength);
+                else
+                    commonAvgReferncer = null;
+            }
         }
 
     }

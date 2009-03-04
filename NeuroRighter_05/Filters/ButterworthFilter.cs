@@ -1,20 +1,20 @@
-// NeuroRighter v0.04
-// Copyright (c) 2008 John Rolston
+// NeuroRighter
+// Copyright (c) 2008-2009 John Rolston
 //
-// This file is part of NeuroRighter v0.04.
+// This file is part of NeuroRighter.
 //
 // NeuroRighter v0.04 is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// NeuroRighter v0.04 is distributed in the hope that it will be useful,
+// NeuroRighter is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with NeuroRighter v0.04.  If not, see <http://www.gnu.org/licenses/>.
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 //
 // Some filtering code is based on C/C++ code from Exstrom Laboratories, LLC.
 // The code from Extrom Laboratories LLC is licensed under the GNU Public License, version 2:
@@ -59,7 +59,7 @@ namespace NeuroRighter
             }
         }
 
-        public void filterData(rawType[] data)
+        unsafe public void filterData(rawType[] data)
         {
             lock (this)
             {
@@ -81,38 +81,47 @@ namespace NeuroRighter
                 //    lastInput[0] = temp;
                 //    lastOutput[0] = data[i];
                 //}
-                for (int i = 0; i < data.Length; ++i)
-                    oldData[i] = data[i];
-
-                for (int i = 0; i < ccof.Length; ++i)
+                fixed (double* pData = data)
                 {
-                    temp = data[i];
-
-                    data[i] *= ccof[0];
-                    for (int j = 1; j < ccof.Length; ++j)
-                        data[i] += ccof[j] * lastInput[j - 1] - dcof[j] * lastOutput[j - 1];
-
-                    //Update lastInput and lastOutput
-                    for (int j = lastInput.Length - 1; j > 0; --j)
+                    fixed (double* pOldData = oldData)
                     {
-                        lastInput[j] = lastInput[j - 1];
-                        lastOutput[j] = lastOutput[j - 1];
+                        //for (int i = 0; i < data.Length; ++i)
+                        //    oldData[i] = data[i];
+                        for (int i = 0; i < data.Length; ++i)
+                            pOldData[i] = pData[i];
                     }
-                    lastInput[0] = temp;
-                    lastOutput[0] = data[i];
-                }
 
-                for (int i = ccof.Length; i < data.Length; ++i)
-                {
-                    data[i] *= ccof[0];
-                    for (int j = 1; j < ccof.Length; ++j)
-                        data[i] += ccof[j] * oldData[i - j] - dcof[j] * data[i - j];
-                }
 
-                for (int i = 0; i < lastOutput.Length; ++i)
-                {
-                    lastOutput[i] = data[data.Length - 1 - i];
-                    lastInput[i] = oldData[oldData.Length - 1 - i];
+                    for (int i = 0; i < ccof.Length; ++i)
+                    {
+                        temp = pData[i];
+
+                        pData[i] *= ccof[0];
+                        for (int j = 1; j < ccof.Length; ++j)
+                            pData[i] += ccof[j] * lastInput[j - 1] - dcof[j] * lastOutput[j - 1];
+
+                        //Update lastInput and lastOutput
+                        for (int j = lastInput.Length - 1; j > 0; --j)
+                        {
+                            lastInput[j] = lastInput[j - 1];
+                            lastOutput[j] = lastOutput[j - 1];
+                        }
+                        lastInput[0] = temp;
+                        lastOutput[0] = pData[i];
+                    }
+
+                    for (int i = ccof.Length; i < data.Length; ++i)
+                    {
+                        pData[i] *= ccof[0];
+                        for (int j = 1; j < ccof.Length; ++j)
+                            pData[i] += ccof[j] * oldData[i - j] - dcof[j] * pData[i - j];
+                    }
+
+                    for (int i = 0; i < lastOutput.Length; ++i)
+                    {
+                        lastOutput[i] = pData[data.Length - 1 - i];
+                        lastInput[i] = oldData[oldData.Length - 1 - i];
+                    }
                 }
             }
         }

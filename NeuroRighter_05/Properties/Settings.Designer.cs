@@ -252,5 +252,17 @@ namespace NeuroRighter.Properties {
                 this["UseLFPs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int Gain {
+            get {
+                return ((int)(this["Gain"]));
+            }
+            set {
+                this["Gain"] = value;
+            }
+        }
     }
 }

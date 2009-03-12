@@ -108,12 +108,12 @@ namespace NeuroRighter
                 UInt32 temp = channel2MUX((double)inCh[i]); //Get data bits lined up to control MUXes
 
                 //v1 and v2 encode channel number
-                int actChannel;
+                int actChannel = inCh[i];
                 if (Properties.Settings.Default.ChannelMapping == "invitro")
-                    actChannel = MEAChannelMappings.ch2stimChannel[(short)(--channel)];
+                    actChannel = MEAChannelMappings.ch2stimChannel[(short)(inCh[i] - 1)];
                 double v1, v2;
-                v1 = Math.Ceiling((double)inCh[i] / 8.0);
-                v2 = (double)((inCh[i] - 1) % 8) + 1.0;
+                v1 = Math.Ceiling((double)actChannel / 8.0);
+                v2 = (double)((actChannel - 1) % 8) + 1.0;
 
                 //Setup digital waveform
                 UInt32 temp_noEn = channel2MUX_noEN((double)inCh[i]);
@@ -162,9 +162,9 @@ namespace NeuroRighter
             //two since the pulse is biphasic, add padding to both sides
 
             //v1 and v2 encode channel number
-            int actChannel;
+            int actChannel = channel;
             if (Properties.Settings.Default.ChannelMapping == "invitro")
-                actChannel = MEAChannelMappings.ch2stimChannel[(short)(--channel)];
+                actChannel = MEAChannelMappings.ch2stimChannel[(short)(channel - 1)];
             double v1 = Math.Ceiling((double)actChannel / 8.0);
             double v2 = (double)((actChannel - 1) % 8) + 1.0;
 

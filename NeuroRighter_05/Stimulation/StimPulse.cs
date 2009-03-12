@@ -1,20 +1,20 @@
-// NeuroRighter v0.04
-// Copyright (c) 2008 John Rolston
+// NeuroRighter
+// Copyright (c) 2008-2009 John Rolston
 //
-// This file is part of NeuroRighter v0.04.
+// This file is part of NeuroRighter.
 //
-// NeuroRighter v0.04 is free software: you can redistribute it and/or modify
+// NeuroRighter is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// NeuroRighter v0.04 is distributed in the hope that it will be useful,
+// NeuroRighter is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with NeuroRighter v0.04.  If not, see <http://www.gnu.org/licenses/>.
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
@@ -108,9 +108,12 @@ namespace NeuroRighter
                 UInt32 temp = channel2MUX((double)inCh[i]); //Get data bits lined up to control MUXes
 
                 //v1 and v2 encode channel number
+                int actChannel = inCh[i];
+                if (Properties.Settings.Default.ChannelMapping == "invitro")
+                    actChannel = MEAChannelMappings.ch2stimChannel[(short)(inCh[i] - 1)];
                 double v1, v2;
-                v1 = Math.Ceiling((double)inCh[i] / 8.0);
-                v2 = (double)((inCh[i] - 1) % 8) + 1.0;
+                v1 = Math.Ceiling((double)actChannel / 8.0);
+                v2 = (double)((actChannel - 1) % 8) + 1.0;
 
                 //Setup digital waveform
                 UInt32 temp_noEn = channel2MUX_noEN((double)inCh[i]);
@@ -159,8 +162,11 @@ namespace NeuroRighter
             //two since the pulse is biphasic, add padding to both sides
 
             //v1 and v2 encode channel number
-            double v1 = Math.Ceiling((double)channel / 8.0);
-            double v2 = (double)((channel - 1) % 8) + 1.0;
+            int actChannel = channel;
+            if (Properties.Settings.Default.ChannelMapping == "invitro")
+                actChannel = MEAChannelMappings.ch2stimChannel[(short)(channel - 1)];
+            double v1 = Math.Ceiling((double)actChannel / 8.0);
+            double v2 = (double)((actChannel - 1) % 8) + 1.0;
 
             UInt32 temp_noEn = channel2MUX_noEN((double)channel);
             UInt32 temp_blankOnly = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));

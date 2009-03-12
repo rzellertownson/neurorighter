@@ -293,5 +293,10 @@ namespace NeuroRighter
         {
             comboBox_progRefSerialPort.Enabled = checkBox_useProgRef.Checked;
         }
+
+        private void checkBox_recordStimulationInfo_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

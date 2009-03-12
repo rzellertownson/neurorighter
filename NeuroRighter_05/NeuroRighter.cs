@@ -3019,7 +3019,9 @@ namespace NeuroRighter
                 {
                     stimIvsV = new Task("stimIvsV");
                     stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
-                        ChannelLineGrouping.OneChannelForAllLines);
+                        ChannelLineGrouping.OneChannelForAllLines);  // WAFA_CHANGE1 (back to original)
+                    //stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line24:31", "",
+                      //  ChannelLineGrouping.OneChannelForAllLines); // JEFF_CHANGE1
                     stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                     stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
                         SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
@@ -3046,7 +3048,9 @@ namespace NeuroRighter
                     //this line goes high (TTL-wise) when we're doing current-controlled stim, low for voltage-controlled
                     stimIvsV = new Task("stimIvsV");
                     stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
-                        ChannelLineGrouping.OneChannelForAllLines);
+                        ChannelLineGrouping.OneChannelForAllLines);  //WAFA_CHANGE1 (back to original)
+                    //stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line24:31", "",
+                      //  ChannelLineGrouping.OneChannelForAllLines); // JEFF_CHANGE1
                     stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                     stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
                         SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);

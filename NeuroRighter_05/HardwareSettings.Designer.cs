@@ -258,6 +258,7 @@ namespace NeuroRighter
             this.checkBox_recordStimulationInfo.TabIndex = 15;
             this.checkBox_recordStimulationInfo.Text = "Record stimulation information";
             this.checkBox_recordStimulationInfo.UseVisualStyleBackColor = true;
+            this.checkBox_recordStimulationInfo.CheckedChanged += new System.EventHandler(this.checkBox_recordStimulationInfo_CheckedChanged);
             // 
             // groupBox9
             // 

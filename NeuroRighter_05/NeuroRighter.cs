@@ -4051,6 +4051,12 @@ ch = 1;
         BakkumExpt expt;
         private void button_closedLoopLearningStart_Click(object sender, EventArgs e)
         {
+            if (!radioButton_stimVoltageControlled.Checked)
+            {
+                MessageBox.Show("You should prolly enable voltage-controlled stimulation!");
+                return;
+            }
+            
             button_closedLoopLearningStart.Enabled = false;
             button_closedLoopLearningStop.Enabled = true;
 
@@ -4126,5 +4132,11 @@ ch = 1;
             }
         }
 
+        private void radioButton_stimVoltageControlled_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }

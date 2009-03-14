@@ -198,10 +198,13 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds, usually 4 hrs
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(2, 0, 0); //hours, minutes, seconds, usually 4 hrs
             TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
-            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
+            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //DEBUG
+            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);  //DEBUG
+            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min (was 1hr)
             TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
+            //TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 5, 0); //DEBUG
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
 
             //Print file header info
@@ -218,6 +221,8 @@ namespace NeuroRighter
 
             #region SBS_Pre-experiment
             //SBS-pre-experiment
+            outputFileWriter.WriteLine("We have begun SBS-pre-experiment" + DateTime.Now + "\n");
+            outputFileWriter.Flush();
             while (!isDone && !isCancelled)
             {
                 //Deliver SBS
@@ -234,20 +239,24 @@ namespace NeuroRighter
 
             #region Closed-loop_Training
             List<double> desiredDirections = new List<double>(4);
-            desiredDirections.Add(Math.PI / 4);
-            desiredDirections.Add(3 * Math.PI / 4);
-            desiredDirections.Add(5 * Math.PI / 4);
-            desiredDirections.Add(7 * Math.PI / 4);
+            desiredDirections.Add(Math.PI / 4); //45
+            desiredDirections.Add(3 * Math.PI / 4); //135
+            desiredDirections.Add(5 * Math.PI / 4); //225
+            //desiredDirections.Add(7 * Math.PI / 4);
 
             for (int d = 0; d < desiredDirections.Count; ++d)
             {
                 //Set a goal direction
                 desiredDirection = desiredDirections[d];
+                outputFileWriter.WriteLine("We have begun closed loop direction: " + desiredDirection + "\n");
+                outputFileWriter.Flush();
 
                 #region Pre-Closed-loop_SBS
                 //Do pre-CL SBS
                 endTime = DateTime.Now + SBS_PRE_CL_LENGTH;
                 isDone = false;
+                outputFileWriter.WriteLine("We have begun Pre-Closed-Loop_SBS: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
                 while (!isDone && !isCancelled)
                 {
                     //Deliver SBS
@@ -266,7 +275,8 @@ namespace NeuroRighter
 
                 endTime = DateTime.Now + SBS_ONLY_MEASURE_T;
                 isDone = false;
-
+                outputFileWriter.WriteLine("We have begun SBS_Measure_T: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
                 CPS.unpopulate();
                 CPS.populate(true); //populate so that it measures CA
 
@@ -285,6 +295,16 @@ namespace NeuroRighter
 
                     //Measure CA
                     CAList.Add(CA(false));
+
+                    if (Double.IsNaN(CAList[CAList.Count - 1].x) || Double.IsNaN(CAList[CAList.Count - 1].y))
+                    {
+                        outputFileWriter.WriteLine("\t: NaN (ignored)");
+                    }
+                    else
+                    {
+                        outputFileWriter.WriteLine("\t: Happy" + CAList[CAList.Count - 1].x + "\t" + CAList[CAList.Count - 1].y + "\n");
+                    }
+                    outputFileWriter.Flush();
 
                     //Check to see if time's up
                     if (DateTime.Now > endTime) isDone = true;
@@ -334,14 +354,18 @@ namespace NeuroRighter
 
                 outputFileWriter.WriteLine("Transform matrix, T = " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3] + "\n");
 
+                // If any of the transform matrix elements are NaN, fail miserably
+                if (Double.IsNaN(T[0]) || Double.IsNaN(T[1]) || Double.IsNaN(T[2]) || Double.IsNaN(T[3]))
+                    MessageBox.Show("Life sucks. Transform matrix: " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3], "Crappery", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                outputFileWriter.Flush();
                 //Clear CAList
                 CAList.Clear();
                 #endregion
 
                 #region Closed-loop
                 //Do closed-loop portion
+                outputFileWriter.WriteLine("We have begun Closed-Loop_Training: " + DateTime.Now + "\n");
                 outputFileWriter.WriteLine("Training Round " + d + ", Desired Direction (rads) = " + desiredDirection);
-                outputFileWriter.WriteLine("Time = " + DateTime.Now + "\n");
                 outputFileWriter.Flush();
 
                 endTime = DateTime.Now + CL_LENGTH;
@@ -379,10 +403,14 @@ namespace NeuroRighter
                 resetProbabilities();
                 #endregion
 
+                MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+
                 #region Post-Closed-loop_SBS
                 //Do post-closed-loop SBS
                 endTime = DateTime.Now + SBS_POST_CL_LENGTH;
                 isDone = false;
+                outputFileWriter.WriteLine("We have begun Post-Closed-Loop_SBS: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
                 while (!isDone && !isCancelled)
                 {
                     //Deliver SBS

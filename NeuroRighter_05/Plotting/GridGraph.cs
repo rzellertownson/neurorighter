@@ -147,7 +147,7 @@ namespace NeuroRighter
         {
             for (int i = 0; i < data.GetLength(0); ++i)
                 lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                    yScale * ((float)data[i] - maxY), 0), c);
+                    yScale * ((float)data[i] - maxY), 0), c);   // Crash
         }
 
         protected override void Draw()

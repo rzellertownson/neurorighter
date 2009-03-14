@@ -200,12 +200,12 @@ namespace NeuroRighter
         {
             TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(2, 0, 0); //hours, minutes, seconds, usually 4 hrs
             TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
-            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //DEBUG
-            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);  //DEBUG
-            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min (was 1hr)
             TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
             //TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 5, 0); //DEBUG
+            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //DEBUG
+            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);  //DEBUG
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
+            TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min (was 1hr)
 
             //Print file header info
             outputFileWriter.WriteLine("Closed-loop Learning Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");

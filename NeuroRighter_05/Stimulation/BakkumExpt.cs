@@ -403,7 +403,7 @@ namespace NeuroRighter
                 resetProbabilities();
                 #endregion
 
-                //MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
 
                 #region Post-Closed-loop_SBS
                 //Do post-closed-loop SBS

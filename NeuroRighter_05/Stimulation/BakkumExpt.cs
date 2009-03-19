@@ -403,7 +403,7 @@ namespace NeuroRighter
                 resetProbabilities();
                 #endregion
 
-                MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                //MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
 
                 #region Post-Closed-loop_SBS
                 //Do post-closed-loop SBS
@@ -693,7 +693,7 @@ namespace NeuroRighter
             {
                 xy = CA(true); //true since we want to account for transform
             }
-            double currDirection = Math.Atan(xy.y / xy.x);
+            double currDirection = Math.Atan2(xy.y , xy.x);
             if (currDirection < 0) currDirection += 2 * Math.PI; //ensure range is [0, 2PI)
             outputFileWriter.WriteLine("Current direction (rads) = " + currDirection);
 

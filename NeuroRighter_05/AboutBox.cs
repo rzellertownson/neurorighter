@@ -28,7 +28,7 @@ namespace NeuroRighter
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to open link that was clicked.");
+                MessageBox.Show("Unable to open link that was clicked.  Details: " + ex.Message);
             }
         }
         private void VisitLink()
@@ -49,7 +49,7 @@ namespace NeuroRighter
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to open link that was clicked.");
+                MessageBox.Show("Unable to open link that was clicked.  Details: " + ex.Message);
             }
         }
 

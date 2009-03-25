@@ -1590,7 +1590,8 @@ namespace NeuroRighter
         {
             //Grab display gains for later use
             Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
-            Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
+            if (Properties.Settings.Default.UseLFPs)
+                Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
             Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
 
             taskRunning = false;
@@ -4167,10 +4168,26 @@ ch = 1;
             }
 
             Stimulation.StimulatorShowcaser ss = new Stimulation.StimulatorShowcaser(stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
-            ss.makeSampleWaveforms();
+            //ss.makeSampleWaveforms();
+
+            radioButton_impCurrent.Checked = true;
+            radioButton_stimCurrentControlled.Checked = true;
+            radioButton_impVoltage.Checked = false;
+            radioButton_stimVoltageControlled.Checked = false;
+            radioButton_stimCurrentControlled_Click(null, null);
+            ss.makeDualVIWaveforms(true);
+
+            System.Threading.Thread.Sleep(1000); //Rest a little to let things discharge
+
+            radioButton_impCurrent.Checked = false;
+            radioButton_stimCurrentControlled.Checked = false;
+            radioButton_impVoltage.Checked = true;
+            radioButton_stimVoltageControlled.Checked = true;
+            radioButton_stimVoltageControlled_Click(null, null);
+            ss.makeDualVIWaveforms(false);
+
 
             updateSettings();
         }
-
     }
 }

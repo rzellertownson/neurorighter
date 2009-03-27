@@ -622,8 +622,13 @@ namespace NeuroRighter
                             fsSpks = new FileStream(filenameSpks, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
                             if (Properties.Settings.Default.UseStimulator)
                                 fsStim = new FileStream(filenameStim, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
-                            if (checkBox_SaveRawSpikes.Checked)  //If raw spike traces are to be saved
-                                rawFile = new FileOutput(filenameBase, numChannels, spikeSamplingRate, 1, spikeTask[0], ".raw");
+                            if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
+                            {
+                                if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
+                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, spikeSamplingRate, 1, spikeTask[0], ".raw");
+                                else
+                                    rawFile = new FileOutput(filenameBase, numChannels, spikeSamplingRate, 1, spikeTask[0], ".raw");
+                            }
 
                             //File for clipped waveforms and spike times
                             fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
@@ -643,7 +648,12 @@ namespace NeuroRighter
                                 if (Properties.Settings.Default.SeparateLFPBoard)
                                     lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp");
                                 else //Using spikes A/D card to capture LFP data, too.
-                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                {
+                                    if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
+                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                    else
+                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                }
                             }
 
                             if (Properties.Settings.Default.UseStimulator)
@@ -1194,21 +1204,44 @@ namespace NeuroRighter
             #endregion
 
             //Extract waveforms
-            for (int j = 0; j < newWaveforms.Count; ++j) //For each threshold crossing
+            if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
             {
-                #region WriteSpikeWfmsToFile
-                rawType[] waveformData = newWaveforms[j].waveform;
-                if (switch_record.Value)
+                for (int j = 0; j < newWaveforms.Count; ++j) //For each threshold crossing
                 {
-                    lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
+                    #region WriteSpikeWfmsToFile
+                    rawType[] waveformData = newWaveforms[j].waveform;
+                    if (switch_record.Value)
                     {
-                        fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
-                        fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
-                        for (int k = 0; k < numPre + numPost + 1; ++k)
-                            fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                        lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
+                        {
+                            fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
+                            fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
+                            for (int k = 0; k < numPre + numPost + 1; ++k)
+                                fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                        }
                     }
+                    #endregion
                 }
-                #endregion
+            }
+            else //in vitro mappings
+            {
+                for (int j = 0; j < newWaveforms.Count; ++j) //For each threshold crossing
+                {
+                    #region WriteSpikeWfmsToFile
+                    rawType[] waveformData = newWaveforms[j].waveform;
+                    if (switch_record.Value)
+                    {
+                        lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
+                        {
+                            //fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
+                            fsSpks.Write(BitConverter.GetBytes(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel)), 0, 2); //Write channel num.
+                            fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
+                            for (int k = 0; k < numPre + numPost + 1; ++k)
+                                fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                        }
+                    }
+                    #endregion
+                }
             }
 
             //Post to PlotData
@@ -1332,8 +1365,6 @@ namespace NeuroRighter
                         int channel = wfms[i].channel;
                         if (Properties.Settings.Default.ChannelMapping == "invitro")
                             channel = (MEAChannelMappings.ch2rc[channel, 0]-1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
-                        //spkWfmGraph.Plots.Item(++numSpkWfms[channel] + channel * maxWaveforms + spkWfmGridlines).PlotY(wfms[i].waveform,
-                        //    pd.horizontalOffset(channel), 1);
                         spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, Microsoft.Xna.Framework.Graphics.Color.Lime,
                             numSpkWfms[channel]++ + channel * maxWaveforms);
                         numSpkWfms[channel] %= maxWaveforms;

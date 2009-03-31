@@ -245,141 +245,218 @@ namespace NeuroRighter
             }
         }
 
-        internal static int channel2CR(int index)
+        /// <summary>
+        /// Takes the hardware channel and outputs the display channel number ((row-1)*8+col)
+        /// </summary>
+        /// <param name="index">0-based channel number to map</param>
+        /// <returns>0-based mapped channel number</returns>
+        internal static short channel2LinearCR(int index)
         {
             switch (index)
             {
-                case 0:
-                    return 44;
-                case 1:
-                    return 23; //21
-                case 2:
-                    return 25; //31
-                case 3:
-                    return 28; //41
-                case 4:
-                    return 31; //51
-                case 5:
-                    return 50; //61
-                case 6:
-                    return 52; //71
-                case 7:
-                    return 45;
-                case 8:
-                    return 20; //12
-                case 9:
-                    return 21; //22
-                case 10:
-                    return 24; //32
-                case 11:
-                    return 29; //42
-                case 12:
-                    return 30; //52
-                case 13:
-                    return 51; //62
-                case 14:
-                    return 54; //72
-                case 15:
-                    return 55; //82
-                case 16:
-                    return 18; //13
-                case 17:
-                    return 19; //23
-                case 18:
-                    return 22; //33
-                case 19:
-                    return 27; //43
-                case 20:
-                    return 48; //53
-                case 21:
-                    return 53; //63
-                case 22:
-                    return 56; //73
-                case 23:
-                    return 57; //83
-                case 24:
-                    return 15; //14
-                case 25:
-                    return 16; //24
-                case 26:
-                    return 17; //34
-                case 27:
-                    return 26; //44
-                case 28:
-                    return 49; //54
-                case 29:
-                    return 58; //64
-                case 30:
-                    return 59; //74
-                case 31:
-                    return 60; //84
-                case 32:
-                    return 14; //15
-                case 33:
-                    return 13; //25
-                case 34:
-                    return 12; //35
-                case 35:
-                    return 3; //45
-                case 36:
-                    return 40; //55
-                case 37:
-                    return 63; //65
-                case 38:
-                    return 62; //75
-                case 39:
-                    return 61; //85
-                case 40:
-                    return 11; //16
-                case 41:
-                    return 10; //26
-                case 42:
-                    return 7; //36
-                case 43:
-                    return 2; //46
-                case 44:
-                    return 41; //56
-                case 45:
-                    return 36; //66
-                case 46:
-                    return 33; //76
-                case 47:
-                    return 32; //86
-                case 48:
-                    return 9; //17
-                case 49:
-                    return 8; //27
-                case 50:
-                    return 5; //37
-                case 51:
-                    return 0; //47
-                case 52:
-                    return 43; //57
-                case 53:
-                    return 38; //67
-                case 54:
-                    return 35; //77
-                case 55:
-                    return 34; //87
-                case 56:
-                    return 46;
-                case 57:
-                    return 6; //28
-                case 58:
-                    return 4; //38
-                case 59:
-                    return 1; //48
-                case 60:
-                    return 42; //58
-                case 61:
-                    return 39; //68
-                case 62:
-                    return 37; //78
-                case 63:
-                    return 47;
-                default:
-                    return -1;
+                case 0: return 51;
+                case 1: return 59;
+                case 2: return 43;
+                case 3: return 35;
+                case 4: return 58;
+                case 5: return 50;
+                case 6: return 57;
+                case 7: return 42;
+                case 8: return 49;
+                case 9: return 48;
+                case 10: return 41;
+                case 11: return 40;
+                case 12: return 34;
+                case 13: return 33;
+                case 14: return 32;
+                case 15: return 24;
+                case 16: return 25;
+                case 17: return 26;
+                case 18: return 16;
+                case 19: return 17;
+                case 20: return 8;
+                case 21: return 9;
+                case 22: return 18;
+                case 23: return 1;
+                case 24: return 10;
+                case 25: return 2;
+                case 26: return 27;
+                case 27: return 19;
+                case 28: return 3;
+                case 29: return 11;
+                case 30: return 12;
+                case 31: return 4;
+                case 32: return 47;
+                case 33: return 46;
+                case 34: return 55;
+                case 35: return 54;
+                case 36: return 45;
+                case 37: return 62;
+                case 38: return 53;
+                case 39: return 61;
+                case 40: return 36;
+                case 41: return 44;
+                case 42: return 60;
+                case 43: return 52;
+                case 44: return 0;
+                case 45: return 7;
+                case 46: return 56;
+                case 47: return 63;
+                case 48: return 20;
+                case 49: return 28;
+                case 50: return 5;
+                case 51: return 13;
+                case 52: return 6;
+                case 53: return 21;
+                case 54: return 14;
+                case 55: return 15;
+                case 56: return 22;
+                case 57: return 23;
+                case 58: return 29;
+                case 59: return 30;
+                case 60: return 31;
+                case 61: return 39;
+                case 62: return 38;
+                case 63: return 37;
+                default: return -1;
             }
         }
+
+        //internal static int channel2CR(int index)
+        //{
+        //    switch (index)
+        //    {
+        //        case 0:
+        //            return 44;
+        //        case 1:
+        //            return 23; //21
+        //        case 2:
+        //            return 25; //31
+        //        case 3:
+        //            return 28; //41
+        //        case 4:
+        //            return 31; //51
+        //        case 5:
+        //            return 50; //61
+        //        case 6:
+        //            return 52; //71
+        //        case 7:
+        //            return 45;
+        //        case 8:
+        //            return 20; //12
+        //        case 9:
+        //            return 21; //22
+        //        case 10:
+        //            return 24; //32
+        //        case 11:
+        //            return 29; //42
+        //        case 12:
+        //            return 30; //52
+        //        case 13:
+        //            return 51; //62
+        //        case 14:
+        //            return 54; //72
+        //        case 15:
+        //            return 55; //82
+        //        case 16:
+        //            return 18; //13
+        //        case 17:
+        //            return 19; //23
+        //        case 18:
+        //            return 22; //33
+        //        case 19:
+        //            return 27; //43
+        //        case 20:
+        //            return 48; //53
+        //        case 21:
+        //            return 53; //63
+        //        case 22:
+        //            return 56; //73
+        //        case 23:
+        //            return 57; //83
+        //        case 24:
+        //            return 15; //14
+        //        case 25:
+        //            return 16; //24
+        //        case 26:
+        //            return 17; //34
+        //        case 27:
+        //            return 26; //44
+        //        case 28:
+        //            return 49; //54
+        //        case 29:
+        //            return 58; //64
+        //        case 30:
+        //            return 59; //74
+        //        case 31:
+        //            return 60; //84
+        //        case 32:
+        //            return 14; //15
+        //        case 33:
+        //            return 13; //25
+        //        case 34:
+        //            return 12; //35
+        //        case 35:
+        //            return 3; //45
+        //        case 36:
+        //            return 40; //55
+        //        case 37:
+        //            return 63; //65
+        //        case 38:
+        //            return 62; //75
+        //        case 39:
+        //            return 61; //85
+        //        case 40:
+        //            return 11; //16
+        //        case 41:
+        //            return 10; //26
+        //        case 42:
+        //            return 7; //36
+        //        case 43:
+        //            return 2; //46
+        //        case 44:
+        //            return 41; //56
+        //        case 45:
+        //            return 36; //66
+        //        case 46:
+        //            return 33; //76
+        //        case 47:
+        //            return 32; //86
+        //        case 48:
+        //            return 9; //17
+        //        case 49:
+        //            return 8; //27
+        //        case 50:
+        //            return 5; //37
+        //        case 51:
+        //            return 0; //47
+        //        case 52:
+        //            return 43; //57
+        //        case 53:
+        //            return 38; //67
+        //        case 54:
+        //            return 35; //77
+        //        case 55:
+        //            return 34; //87
+        //        case 56:
+        //            return 46;
+        //        case 57:
+        //            return 6; //28
+        //        case 58:
+        //            return 4; //38
+        //        case 59:
+        //            return 1; //48
+        //        case 60:
+        //            return 42; //58
+        //        case 61:
+        //            return 39; //68
+        //        case 62:
+        //            return 37; //78
+        //        case 63:
+        //            return 47;
+        //        default:
+        //            return -1;
+        //    }
+        //}
     }
 }

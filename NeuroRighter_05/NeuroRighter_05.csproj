@@ -96,6 +96,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileWriting\FileOutputRemapped.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />
     <Compile Include="DisplaySettings.cs">
       <SubType>Form</SubType>
@@ -104,7 +105,6 @@
       <DependentUpon>DisplaySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="FileWriting\FileOutput.cs" />
-    <Compile Include="FileWriting\FileOutputCompressed.cs" />
     <Compile Include="Filters\CommonAverageReferencer.cs" />
     <Compile Include="Filters\CommonMedianReferencer.cs" />
     <Compile Include="Filters\Referencer.cs" />

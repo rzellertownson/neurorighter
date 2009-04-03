@@ -382,17 +382,34 @@ namespace NeuroRighter
                     if (goingCorrectDirection())
                     {
                         outputFileWriter.WriteLine("O Moving in correct direction.");
+                        writeMovementMagnitude();
                         updateProbabilities(true, lastPTSIndex);
                         deliverSBS();
                     }
 
-                    //Else, it's incorrect: deliver PTS
+                    //Else, it's either moving in the wrong direction or there's no movement
                     else
                     {
-                        outputFileWriter.WriteLine("X Moving in incorrect direction.");
-                        updateProbabilities(false, lastPTSIndex);
-                        //Select and deliver PTS
-                        deliverPTS();
+                        MEAChannelMappings.Coords xy;
+                        lock (this)
+                        {
+                            xy = CA(true); //true since we want to account for transform
+                        }
+
+                        if (double.IsNaN(xy.x)) {
+                            // No movement detected
+                            outputFileWriter.Write("? No movement.");
+                            writeMovementMagnitude();
+                            // Don't update probabilities; no movement
+                            deliverPTS();
+                        } else {
+                            // Movement detected in incorrect direction 
+                            outputFileWriter.WriteLine("X Moving in incorrect direction.");
+                            writeMovementMagnitude();
+                            updateProbabilities(false, lastPTSIndex);
+                            // Select and deliver PTS
+                            deliverPTS();
+                        }
                     }
 
                     outputFileWriter.Flush();
@@ -403,7 +420,7 @@ namespace NeuroRighter
                 resetProbabilities();
                 #endregion
 
-                MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+                //MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
 
                 #region Post-Closed-loop_SBS
                 //Do post-closed-loop SBS
@@ -701,6 +718,20 @@ namespace NeuroRighter
                 return true;
             else
                 return false;
+        }
+
+        private void writeMovementMagnitude()
+        {
+            MEAChannelMappings.Coords xy;
+            lock (this)
+            {
+                xy = CA(true); //true since we want to account for transform
+            }
+            if (double.IsNaN(xy.x))
+                outputFileWriter.WriteLine("Magnitude: 0");
+            else
+                outputFileWriter.WriteLine("Magnitude: %f", Math.Sqrt(xy.x * xy.x + xy.y * xy.y));
+            return;
         }
     }
 }

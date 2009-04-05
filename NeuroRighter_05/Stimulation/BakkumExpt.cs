@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 
-//#define DEBUG
+//#define DEBUG_LOG
 
 using System;
 using System.Collections.Generic;
@@ -608,7 +608,7 @@ namespace NeuroRighter
                     while (nr.waveforms.Count > 0)
                     {
                         waveforms.Add(nr.waveforms[0]);
-#if (DEBUG)
+#if (DEBUG_LOG)
                         nr.logFile.WriteLine("[BakkumExpt] Waveform added, index: " + nr.waveforms[0].index);
                         nr.logFile.Flush();
 #endif

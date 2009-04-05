@@ -2604,6 +2604,9 @@ namespace NeuroRighter
                 button_stim.Refresh();
                 button_stimExpt.Refresh();
 
+                stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+                stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+
                 int[] channels = new int[listBox_exptStimChannels.SelectedIndices.Count]; //Only use these channels
                 for (int i = 0; i < listBox_exptStimChannels.SelectedIndices.Count; ++i)
                     channels[i] = Convert.ToInt32(listBox_exptStimChannels.SelectedItems[i]);
@@ -2626,43 +2629,12 @@ namespace NeuroRighter
                 exptParams.Add(channels); exptParams.Add(numTrials); exptParams.Add(voltages); exptParams.Add(pulsesPerTrain);
                 exptParams.Add(pulseWidths); exptParams.Add(trainRate);
 
-                //expt_Params ep = new expt_Params();
-                //ep.taskType = comboBox_exptType.SelectedIndex; //Set type of experiment
-                //ep.channels = new int[listBox_exptStimChannels.SelectedIndices.Count]; //Only use these channels
-                //for (int i = 0; i < listBox_exptStimChannels.SelectedIndices.Count; ++i)
-                //    ep.channels[i] = listBox_exptStimChannels.SelectedIndices[i] + 1; //+1 since the stimulator is 1-based
-                //switch (comboBox_exptType.SelectedIndex)
-                //{
-                //    //Cycle through all channels, using voltages 1-5 (in increments of 1V), 10 times each
-                //    case 0:
-                //        timer_expt.Interval = 1000; //In milliseconds: this is the time between pulses
-                //        break;
-                //    case 1:
-                //        timer_expt.Interval = 1000;
-                //        break;
-                //    default:
-                //        //Do nothing
-                //        button_stim.Enabled = true;
-                //        button_stimExpt.Enabled = true;
-                //        button_stopExpt.Enabled = false;
-                //        comboBox_exptType.Enabled = true;
-                //        listBox_exptStimChannels.Enabled = true;
-                //        listBox_stimChannels.Enabled = true;
-                //        break;
-                //}
                 //Run background thread for expt, set progress bar to 0
                 timer_expt.Interval = 1000; //In ms: this is the time between pulses or pulse trains
                 bw_genExpt.RunWorkerAsync(exptParams);
                 progressBar_stimExpt.Minimum = 0;
             }
         }
-
-        //private struct expt_Params
-        //{
-        //    //Store type of expt and channels involved, to send to threads
-        //    public int taskType;
-        //    public int[] channels;
-        //}
 
         private void bw_genExpt_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -2677,72 +2649,7 @@ namespace NeuroRighter
             int[] pulseWidths = (int[])exptParams[4];
             int trainRate = (int)exptParams[5];
 
-            //switch (ep.taskType)
-            //{
-            //    case 0:
-            //        //Why, you ask, would I make separate variables for different expts?  Because I don't want
-            //        //to specify the length for each one.  This makes it easier, and doesn't take any more lines
-            //        //of code.
-            //        //double[] voltages0 = { 0.1, 0.2, 0.5, 1.0, 2.0, 5.0 };
-            //        //double[] voltages0 = { -1, -2, -3, -4, -5 };
-            //        double[] voltages0 = { -0.2, -0.4, -0.6, -0.8, -1.0, -1.5, -2.0, -5.0 };
-            //        const int numTrials0 = 10;
-            //        const double pulseWidth = 400.0;  //Length of pulse in us
-            //        int size = Convert.ToInt32((pulseWidth / 1000000.0) * STIM_SAMPLING_FREQ * 2 + 2 * STIM_PADDING); //Num. pts. in pulse
-            //        stimPulseTask.Timing.SamplesPerChannel = size; //Set buffer to exact length of pulse
-            //        stimDigitalTask.Timing.SamplesPerChannel = size + 2 * StimPulse.NUM_SAMPLES_BLANKING + 4;
-            //        stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
-            //        stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
 
-            //        //Create stimList, full of stim pulses
-            //        stimList = new ArrayList(ep.channels.Length * voltages0.Length * numTrials0);
-            //        for (int i = 0; i < ep.channels.Length; ++i)
-            //        {
-            //            for (int v = 0; v < voltages0.Length; ++v)
-            //            {
-            //                for (int j = 0; j < numTrials0; ++j) //Repeat each test 5x
-            //                {
-            //                    StimPulse sp = new StimPulse(400, 400, voltages0[v], -voltages0[v], ep.channels[i], 
-            //                        0.0, 0, 100, 100, false); //Do not populate
-            //                    stimList.Add(sp);
-            //                }
-            //            }
-            //        }
-            //        break;
-
-                //case 1:
-                //    double[] voltages1 = { -1.0};
-                //    const int numTrials1 = 10;
-                //    int[] pulsesPerTrain1 = { 2, 5, 10 };
-                //    int[] pulseWidths1 = { 400 };  //Length of pulse in us
-                //    const int trainRate = 200; //200Hz = 5ms b/w pulses
-                //    int[] sizes = new int[pulseWidths1.Length];
-                //    stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
-                //    stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
-
-                    //Create stimList, full of stim pulses
-                    //stimList = new ArrayList(ep.channels.Length * voltages1.Length * numTrials1 * pulseWidths1.Length * pulsesPerTrain1.Length);
-                    //for (int i = 0; i < ep.channels.Length; ++i)
-                    //{
-                    //    for (int v = 0; v < voltages1.Length; ++v)
-                    //    {
-                    //        for (int ppt = 0; ppt < pulsesPerTrain1.Length; ++ppt)
-                    //        {
-                    //            for (int pw = 0; pw < pulseWidths1.Length; ++pw)
-                    //            {
-                    //                for (int j = 0; j < numTrials1; ++j) //Repeat each test 5x
-                    //                {
-                    //                    StimPulse sp = new StimPulse(pulseWidths1[pw], pulseWidths1[pw], voltages1[v], -voltages1[v], ep.channels[i], pulsesPerTrain1[ppt], trainRate, 0.0, 0, 100, 100, false);
-                    //                    stimList.Add(sp);
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
-            //        break;
-            //    default:
-            //        break;
-            //}
             stimList = new ArrayList(channels.Length * voltages.Length * numTrials * pulseWidths.Length * pulsesPerTrain.Length);
             for (int i = 0; i < channels.Length; ++i)
             {
@@ -2767,77 +2674,6 @@ namespace NeuroRighter
         Random randExpt;
         private void bw_genExpt_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //int idx;
-            //StimPulse sp;
-            //switch (comboBox_exptType.SelectedIndex)
-            //{
-            //    case 0:
-            //        progressBar_stimExpt.Maximum = stimList.Count;
-            //        timer_expt.Interval = 1000; //Time between pulses in expt. (in milliseconds)
-
-            //        randExpt = new Random();
-            //        idx = randExpt.Next(0, stimList.Count);
-            //        sp = (StimPulse)stimList[idx];
-            //        sp.populate();
-
-            //        stimPulseWriter.WriteMultiSample(true, sp.analogPulse);
-            //        //stimDigitalWriter.WriteWaveform(true, sp.digitalPulse);
-            //        if (Properties.Settings.Default.StimPortBandwidth == 32)
-            //            stimDigitalWriter.WriteMultiSamplePort(true, sp.digitalData);
-            //        else if (Properties.Settings.Default.StimPortBandwidth == 8)
-            //            stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sp.digitalData));
-            //        timer_expt.Enabled = true;
-            //        stimDigitalTask.WaitUntilDone();
-            //        stimPulseTask.WaitUntilDone();
-            //        stimPulseTask.Stop();
-            //        stimDigitalTask.Stop();
-
-            //        stimList.RemoveAt(idx);
-            //        progressBar_stimExpt.Increment(1);
-            //        progressBar_stimExpt.Refresh();
-            //        break;
-            //    case 1:
-            //        progressBar_stimExpt.Maximum = stimList.Count;
-            //        timer_expt.Interval = 1000; //Time between pulses in expt. (in milliseconds)
-
-            //        randExpt = new Random();
-            //        idx = randExpt.Next(0, stimList.Count);
-
-            //        sp = (StimPulse)stimList[idx];
-            //        sp.populate();
-
-            //        if (sp.numPulses > 1)
-            //        {
-            //            stimPulseTask.Timing.SamplesPerChannel = sp.numPulses * STIM_SAMPLING_FREQ / sp.rate; //Set buffer to exact length of pulse train
-            //            stimDigitalTask.Timing.SamplesPerChannel = sp.numPulses * STIM_SAMPLING_FREQ / sp.rate;
-            //        }
-            //        else
-            //        {
-            //            stimPulseTask.Timing.SamplesPerChannel = sp.analogPulse.GetLength(1); //Set buffer to exact length of pulse
-            //            stimDigitalTask.Timing.SamplesPerChannel = sp.digitalData.Length;
-            //        }
-
-
-            //        stimPulseWriter.WriteMultiSample(true, sp.analogPulse);
-            //        //stimDigitalWriter.WriteWaveform(true, sp.digitalPulse);
-            //        if (Properties.Settings.Default.StimPortBandwidth == 32)
-            //            stimDigitalWriter.WriteMultiSamplePort(true, sp.digitalData);
-            //        else if (Properties.Settings.Default.StimPortBandwidth == 8)
-            //            stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sp.digitalData));
-            //        timer_expt.Enabled = true;
-            //        stimDigitalTask.WaitUntilDone();
-            //        stimPulseTask.WaitUntilDone();
-            //        stimPulseTask.Stop();
-            //        stimDigitalTask.Stop();
-
-            //        stimList.RemoveAt(idx);
-            //        progressBar_stimExpt.Increment(1);
-            //        progressBar_stimExpt.Refresh();
-            //        break;
-            //    default:
-            //        break;
-            //}
-
             progressBar_stimExpt.Maximum = stimList.Count;
             
             randExpt = new Random();
@@ -2878,27 +2714,6 @@ namespace NeuroRighter
             int idx = randExpt.Next(0, stimList.Count);
             StimPulse sp = (StimPulse)stimList[idx];
             sp.populate();
-
-            //switch (comboBox_exptType.SelectedIndex)
-            //{
-            //    case 0:
-            //        //do nothing
-            //        break;
-            //    case 1:
-            //        if (sp.numPulses > 1)
-            //        {
-            //            stimPulseTask.Timing.SamplesPerChannel = sp.numPulses * STIM_SAMPLING_FREQ / sp.rate; //Set buffer to exact length of pulse
-            //            stimDigitalTask.Timing.SamplesPerChannel = sp.numPulses * STIM_SAMPLING_FREQ / sp.rate;
-            //        }
-            //        else
-            //        {
-            //            stimPulseTask.Timing.SamplesPerChannel = sp.analogPulse.GetLength(1); //Set buffer to exact length of pulse
-            //            stimDigitalTask.Timing.SamplesPerChannel = sp.digitalData.Length;
-            //        } 
-            //        break;
-            //    default:
-            //        break;
-            //}
 
             if (sp.numPulses > 1)
             {

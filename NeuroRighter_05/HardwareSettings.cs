@@ -126,6 +126,15 @@ namespace NeuroRighter
                 else 
                     comboBox_EEG.SelectedIndex = 0;
             }
+            comboBox_impedanceDevice.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_impedanceDevice.Items.Count > 0)
+            {
+                int idx = comboBox_impedanceDevice.Items.IndexOf(Properties.Settings.Default.ImpedanceDevice);
+                if (idx >= 0)
+                    comboBox_impedanceDevice.SelectedIndex = idx;
+                else
+                    comboBox_impedanceDevice.SelectedIndex = 0;
+            }
 
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -198,6 +207,7 @@ namespace NeuroRighter
             if (radioButton_8bit.Checked) { Properties.Settings.Default.StimPortBandwidth = 8; }
             else { Properties.Settings.Default.StimPortBandwidth = 32; }
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
+            Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
 
             Properties.Settings.Default.Save();
             this.Close();

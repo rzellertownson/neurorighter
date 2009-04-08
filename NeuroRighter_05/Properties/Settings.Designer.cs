@@ -300,5 +300,17 @@ namespace NeuroRighter.Properties {
                 this["LFPDisplayGain"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Dev1")]
+        public string ImpedanceDevice {
+            get {
+                return ((string)(this["ImpedanceDevice"]));
+            }
+            set {
+                this["ImpedanceDevice"] = value;
+            }
+        }
     }
 }

@@ -3022,7 +3022,12 @@ namespace NeuroRighter
             buttonStart.Refresh();
 
             impedanceRecord = new Task("Impedance Task");
-            impedanceRecord.AIChannels.CreateVoltageChannel(Properties.Settings.Default.CineplexDevice + "/ai2", "",
+            //Choose appropriate input for current/voltage-controlled stimulation
+            String inputChannel;
+            if (radioButton_impCurrent.Checked) inputChannel = "/ai2";
+            else inputChannel = "/ai3";
+
+            impedanceRecord.AIChannels.CreateVoltageChannel(Properties.Settings.Default.ImpedanceDevice + inputChannel, "",
                 AITerminalConfiguration.Rse, -5.0, 5.0, AIVoltageUnits.Volts);
 
 //try delaying sampling
@@ -3046,10 +3051,10 @@ namespace NeuroRighter
                     ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
             stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
 
-            stimPulseTask.Timing.ConfigureSampleClock("/" + Properties.Settings.Default.CineplexDevice + "/ai/SampleClock",
+            stimPulseTask.Timing.ConfigureSampleClock("/" + Properties.Settings.Default.ImpedanceDevice + "/ai/SampleClock",
                 IMPEDANCE_SAMPLING_RATE, SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
             stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" +
-                Properties.Settings.Default.CineplexDevice + "/ai/StartTrigger",
+                Properties.Settings.Default.ImpedanceDevice + "/ai/StartTrigger",
                 DigitalEdgeStartTriggerEdge.Rising);
             stimPulseTask.Timing.ReferenceClockSource = impedanceRecord.Timing.ReferenceClockSource;
             stimPulseTask.Timing.ReferenceClockRate = impedanceRecord.Timing.ReferenceClockRate;

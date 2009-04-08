@@ -74,6 +74,9 @@ namespace NeuroRighter
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_analogInputDevice1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.comboBox_impedanceDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_misc.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -88,6 +91,7 @@ namespace NeuroRighter
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_accept
@@ -112,6 +116,7 @@ namespace NeuroRighter
             // 
             // tabPage_misc
             // 
+            this.tabPage_misc.Controls.Add(this.groupBox11);
             this.tabPage_misc.Controls.Add(this.groupBox5);
             this.tabPage_misc.Controls.Add(this.groupBox2);
             this.tabPage_misc.Location = new System.Drawing.Point(4, 22);
@@ -579,6 +584,35 @@ namespace NeuroRighter
             this.tabControl1.Size = new System.Drawing.Size(308, 377);
             this.tabControl1.TabIndex = 16;
             // 
+            // groupBox11
+            // 
+            this.groupBox11.Controls.Add(this.label9);
+            this.groupBox11.Controls.Add(this.comboBox_impedanceDevice);
+            this.groupBox11.Location = new System.Drawing.Point(3, 143);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(286, 100);
+            this.groupBox11.TabIndex = 16;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "Impedance Measurements";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 22);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(227, 13);
+            this.label9.TabIndex = 8;
+            this.label9.Text = "NI-DAQ Device for Impedance Measurements:";
+            // 
+            // comboBox_impedanceDevice
+            // 
+            this.comboBox_impedanceDevice.FormattingEnabled = true;
+            this.comboBox_impedanceDevice.Location = new System.Drawing.Point(174, 38);
+            this.comboBox_impedanceDevice.Name = "comboBox_impedanceDevice";
+            this.comboBox_impedanceDevice.Size = new System.Drawing.Size(97, 21);
+            this.comboBox_impedanceDevice.TabIndex = 7;
+            this.comboBox_impedanceDevice.Text = "Dev1";
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -619,6 +653,8 @@ namespace NeuroRighter
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -671,5 +707,8 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_recordStimulationInfo;
         private System.Windows.Forms.ComboBox comboBox_stimInfoDevice;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox comboBox_impedanceDevice;
     }
 }

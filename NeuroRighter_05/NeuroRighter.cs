@@ -136,6 +136,8 @@ namespace NeuroRighter
         private PlotData lfpPlotData;
         private EventPlotData waveformPlotData;
         private Filters.Referencer referncer;
+        private DateTime experimentStartTime;
+        private Filters.ArtiFilt artiFilt;
 
 
         //Plots
@@ -234,6 +236,9 @@ namespace NeuroRighter
 
             //Load gain settings
             comboBox_SpikeGain.SelectedIndex = Properties.Settings.Default.Gain;
+
+            //Enable channel output button, if appropriate
+            channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
         }
         #endregion
 
@@ -320,13 +325,15 @@ namespace NeuroRighter
                                 "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
                         }
                     }
-                    spikeOutTask = new Task("spikeOutTask"); //For audio output
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutTask = new Task("spikeOutTask"); //For audio output
                     if (checkBox_video.Checked) //NB: This can't be checked unless video is enabled (no need to check properties)
                         triggerTask = new Task("triggerTask");
 
                     //Add channel to send one analog in channel to a BNC (e.g., for audio)
-                    spikeOutTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.AnalogInDevice[0] + "/ao0", "",
-                        -10.0, 10.0, AOVoltageUnits.Volts);
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.SingleChannelPlaybackDevice + "/ao0", "",
+                            -10.0, 10.0, AOVoltageUnits.Volts);
 
                     //Add LFP channels, if configured
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
@@ -367,7 +374,8 @@ namespace NeuroRighter
                     //Verify the Tasks
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Control(TaskAction.Verify);
-                    spikeOutTask.Control(TaskAction.Verify);
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutTask.Control(TaskAction.Verify);
                     
                     //Get sampling rates, set to private variables
                     spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
@@ -402,10 +410,13 @@ namespace NeuroRighter
                         spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
                             "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
                     }
-                    spikeOutTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                    spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-                    spikeOutTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                        SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    {
+                        spikeOutTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                        spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+                        spikeOutTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
+                            SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, spikeBufferLength);
+                    }
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
@@ -576,35 +587,6 @@ namespace NeuroRighter
                     spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
                     lfpBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_lfpSamplingRate.Text));
                     
-                    //Add LFP plots, change min/max
-                    //for (int c = 0; c < numChannels; ++c)
-                    //    lfpGraph.Plots.Add();
-                    //if (Properties.Settings.Default.SeparateLFPBoard)
-                    //    lfpGraph.Plots.Item(1).YAxis.SetMinMax(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1), 
-                    //        lfpTask.AIChannels.All.RangeHigh);
-                    //else
-                    //    lfpGraph.Plots.Item(1).YAxis.SetMinMax(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1), 
-                    //        spikeTask[0].AIChannels.All.RangeHigh);
-                    //lfpGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_lfpSamplingRate.Text), 5);
-
-
-                    //Add plots for gridlines and plots of spikeGraph
-                    //for (int i = 0; i < numRows + (numRows - 1) + (numCols - 1); ++i)
-                    //    spikeGraph.Plots.Add();
-                    //Change gridline color
-                    //for (int i = numRows + 1; i <= spikeGraph.Plots.Count; ++i)
-                    //    spikeGraph.Plots.Item(i).LineColor = Int32.MaxValue;
-                    //spikeGraph.setNumRowCols(numRows, numCols);
-                    
-                    //spikeGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_spikeSamplingRate.Text), numCols * spikeplotlength); //fixed at 250ms
-                    //spikeGraph.Plots.Item(1).YAxis.SetMinMax(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh);
-
-                    //Plot raw waveform girdlines
-                    //for (int r = 0; r < numRows - 1; ++r)
-                    //    spikeGraph.Plots.Item(r + numRows + 1).PlotY(new double[] { spikeTask[0].AIChannels.All.RangeLow + r * 2 * spikeTask[0].AIChannels.All.RangeLow, spikeTask[0].AIChannels.All.RangeLow + r * 2 * spikeTask[0].AIChannels.All.RangeLow }, 1 / Convert.ToDouble(textBox_spikeSamplingRate.Text), numCols * spikeplotlength);
-                    //for (int c = 0; c < numCols - 1; ++c)
-                    //    spikeGraph.Plots.Item(c + 2 * numRows).PlotXvsY(new double[] { (c + 1) * spikeplotlength, (c + 1) * spikeplotlength }, new double[] { spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1), spikeTask[0].AIChannels.All.RangeHigh });
-
                     if (Properties.Settings.Default.UseEEG)
                     {
                         eegGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_eegSamplingRate.Text), 5);
@@ -777,11 +759,13 @@ namespace NeuroRighter
                         spikeReader.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));
                         spikeReader[i].SynchronizeCallbacks = true;
                     }
-                    spikeOutWriter = new AnalogSingleChannelWriter(spikeOutTask.Stream);
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutWriter = new AnalogSingleChannelWriter(spikeOutTask.Stream);
                     if (checkBox_video.Checked)
                         triggerWriter = new DigitalSingleChannelWriter(triggerTask.Stream);
 
-                    spikeOutWriter.SynchronizeCallbacks = false; //These don't use UI, so they don't need to be synched
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutWriter.SynchronizeCallbacks = false; //These don't use UI, so they don't need to be synched
 
                     spikeCallback = new AsyncCallback(AnalogInCallback_spikes);
 
@@ -845,9 +829,17 @@ namespace NeuroRighter
                     for (int i = 0; i < spikeReader.Count; ++i)
                         spikeReader[i].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, i,
                             spikeData[i]);
-    
+
+                    //Set start time
+                    experimentStartTime = DateTime.Now;
+                    timer_timeElapsed.Enabled = true;
+                    
+
                     if (checkBox_video.Checked)
+                    {
+                        triggerTask.WaitUntilDone();
                         triggerTask.Dispose();
+                    }
 
 #if (USE_LOG_FILE)
                     logFile = new StreamWriter("log.txt");
@@ -873,6 +865,9 @@ namespace NeuroRighter
          ****************************************************/
         private List<BackgroundWorker> bwSpikes;
 
+        /// <summary>
+        /// Keeps track of when a stimulus pulse occurred
+        /// </summary>
         public struct StimTick
         {
             public int index;
@@ -1013,6 +1008,7 @@ namespace NeuroRighter
                     }
                     #endregion
 
+                    //Start background worker to process newly acquired data
                     bwSpikes[taskNumber].RunWorkerAsync(new Object[] { taskNumber, ar });
                 }
             }
@@ -1024,9 +1020,11 @@ namespace NeuroRighter
             }
         }
 
-        //*************************
-        //bwSpikes_DoWork
-        //*************************
+        /// <summary>
+        /// Process raw data (detect spikes, write to file, etc.)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
             Object[] state = (Object[])e.Argument;
@@ -1064,6 +1062,11 @@ namespace NeuroRighter
                 for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                     for (int j = 0; j < spikeBufferLength; ++j)
                         filtLFPData[i][j] = filtSpikeData[i][j];
+
+                #region ArtiFilt (interpolation filtering)
+                if (checkBox_artiFilt.Checked)
+                    artiFilt.filter(filtLFPData, stimIndices, taskNumber * numChannelsPerDev, numChannelsPerDev);
+                #endregion
 
                 if (checkBox_LFPsFilter.Checked)
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
@@ -1144,19 +1147,15 @@ namespace NeuroRighter
             }
             #endregion
 
-            #region Spikes_SALPA
+            #region SALPA Filtering
             if (checkBox_SALPA.Checked)
-                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices);
+                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
             #endregion
 
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
             {
-                //System.Threading.Parallel.For(numChannelsPerDev * taskNumber, numChannelsPerDev * (taskNumber + 1), delegate(int i)
-                //{
-                //    spikeFilter[i].filterData(filtSpikeData[i]);
-                //});
                 for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
                     spikeFilter[i].filterData(filtSpikeData[i]);
             }
@@ -1276,9 +1275,12 @@ namespace NeuroRighter
 
             #region BNC_Output
             //Send selected channel to BNC
-            //int ch = Convert.ToInt32(channelOut.Value);
-            //if (ch >= numChannelsPerDev * taskNumber && ch < numChannelsPerDev * (taskNumber + 1))
-            //    spikeOutWriter.BeginWriteMultiSample(true, filtSpikeData[ch - 1], null, null);
+            if (Properties.Settings.Default.UseSingleChannelPlayback)
+            {
+                int ch = Convert.ToInt32(channelOut.Value);
+                if (ch >= numChannelsPerDev * taskNumber && ch < numChannelsPerDev * (taskNumber + 1))
+                    spikeOutWriter.BeginWriteMultiSample(true, filtSpikeData[ch - 1], null, null);
+            }
             #endregion
 
             //Write to PlotData buffer
@@ -1670,8 +1672,11 @@ namespace NeuroRighter
             if (fsStim != null) fsStim.Close();
             if (fsEEG != null) fsEEG.Close();
             if (triggerWriter != null) triggerWriter = null;
+            channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
 
             led_recording.OnColor = Color.Lime;
+
+            timer_timeElapsed.Enabled = false;
         }
 
         #region FilterControls
@@ -4022,6 +4027,17 @@ ch = 1;
 
 
             updateSettings();
+        }
+
+        private void timer_timeElapsed_Tick(object sender, EventArgs e)
+        {
+            TimeSpan ts = DateTime.Now - experimentStartTime;
+            label_timeElapsed.Text = "Time elapsed: " + String.Format("{0:00}:{1:00}:{2:00}",(int)ts.TotalHours, ts.Minutes, ts.Seconds);
+        }
+
+        private void checkBox_artiFilt_CheckedChanged(object sender, EventArgs e)
+        {
+            artiFilt = new Filters.ArtiFilt(0.001, 0.002, spikeSamplingRate, numChannels, true);
         }
     }
 }

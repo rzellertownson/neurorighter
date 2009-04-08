@@ -135,6 +135,15 @@ namespace NeuroRighter
                 else
                     comboBox_impedanceDevice.SelectedIndex = 0;
             }
+            comboBox_singleChannelPlaybackDevice.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_singleChannelPlaybackDevice.Items.Count > 0)
+            {
+                int idx = comboBox_singleChannelPlaybackDevice.Items.IndexOf(Properties.Settings.Default.SingleChannelPlaybackDevice);
+                if (idx >= 0)
+                    comboBox_singleChannelPlaybackDevice.SelectedIndex = idx;
+                else
+                    comboBox_singleChannelPlaybackDevice.SelectedIndex = 0;
+            }
 
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -145,6 +154,8 @@ namespace NeuroRighter
             comboBox_progRefSerialPort.Enabled = Properties.Settings.Default.UseProgRef;
             checkBox_useEEG.Checked = Properties.Settings.Default.UseEEG;
             comboBox_EEG.Enabled = Properties.Settings.Default.UseEEG;
+            checkBox_useChannelPlayback.Checked = Properties.Settings.Default.UseSingleChannelPlayback;
+            comboBox_singleChannelPlaybackDevice.Enabled = (Properties.Settings.Default.UseSingleChannelPlayback ? true : false);
             comboBox_analogInputDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_useSecondBoard.Checked = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_sepLFPBoard2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
@@ -186,6 +197,9 @@ namespace NeuroRighter
             Properties.Settings.Default.SeparateLFPBoard = checkBox_sepLFPBoard1.Checked;
             Properties.Settings.Default.UseProgRef = checkBox_useProgRef.Checked;
             Properties.Settings.Default.UseEEG = checkBox_useEEG.Checked;
+            Properties.Settings.Default.UseSingleChannelPlayback = checkBox_useChannelPlayback.Checked;
+            if (checkBox_useChannelPlayback.Checked)
+                Properties.Settings.Default.SingleChannelPlaybackDevice = Convert.ToString(comboBox_singleChannelPlaybackDevice.SelectedItem);
             if (checkBox_sepLFPBoard1.Checked)
                 Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);
             //if (checkBox_sepLFPBoard2.Checked)
@@ -302,6 +316,11 @@ namespace NeuroRighter
         private void checkBox_useProgRef_CheckedChanged_1(object sender, EventArgs e)
         {
             comboBox_progRefSerialPort.Enabled = checkBox_useProgRef.Checked;
+        }
+
+        private void checkBox_useChannelPlayback_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_singleChannelPlaybackDevice.Enabled = checkBox_useChannelPlayback.Checked;
         }
     }
 }

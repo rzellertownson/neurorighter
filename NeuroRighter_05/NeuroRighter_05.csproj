@@ -97,6 +97,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="FileWriting\FileOutputRemapped.cs" />
+    <Compile Include="Filters\ArtiFilt.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />
     <Compile Include="DisplaySettings.cs">
       <SubType>Form</SubType>

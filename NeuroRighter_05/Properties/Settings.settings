@@ -77,5 +77,11 @@
     <Setting Name="ImpedanceDevice" Type="System.String" Scope="User">
       <Value Profile="(Default)">Dev1</Value>
     </Setting>
+    <Setting Name="UseSingleChannelPlayback" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SingleChannelPlaybackDevice" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dev1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

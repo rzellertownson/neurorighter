@@ -26,9 +26,9 @@ namespace NeuroRighter
         private int numReadsRefractory;
         internal readonly int channel; //0-based
 
-        private const double thresholdMult = 3;
+        private const double thresholdMult = 5;
         private const double numSecondsTraining = 3.0;
-        private const double refractory = 0.25; // in seconds
+        private const double refractory = 1; // in seconds
 
         internal IISZapper(int phaseWidth, double amplitude, int channel, int numPulses, double rate,
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,

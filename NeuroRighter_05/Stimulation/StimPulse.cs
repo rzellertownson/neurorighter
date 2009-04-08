@@ -122,8 +122,8 @@ namespace NeuroRighter
 
                 //v1 and v2 encode channel number
                 double v1, v2;
-                v1 = Math.Ceiling((double)channel / 8.0);
-                v2 = (double)((channel - 1) % 8) + 1.0;
+                v1 = Math.Ceiling((double)inCh[i] / 8.0);
+                v2 = (double)((inCh[i] - 1) % 8) + 1.0;
 
                 //Setup digital waveform
                 UInt32 temp_noEn = channel2MUX_noEN((double)inCh[i]);

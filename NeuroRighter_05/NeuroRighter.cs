@@ -625,9 +625,9 @@ namespace NeuroRighter
                             if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
                             {
                                 if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, spikeSamplingRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
                                 else
-                                    rawFile = new FileOutput(filenameBase, numChannels, spikeSamplingRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
                             }
 
                             //File for clipped waveforms and spike times
@@ -1308,39 +1308,30 @@ namespace NeuroRighter
         private short recordingLEDState = 0;
         private void spikePlotData_dataAcquired(object sender)
         {
-            //if (spikeGraph.InvokeRequired)
-            //{
-            //    spikeGraph.BeginInvoke(new plotData_dataAcquiredDelegate(spikePlotData_dataAcquired), sender);
-            //}
-            //else
-            //{
-                PlotData pd = (PlotData)sender;
-                if (spikeGraph.Visible && !checkBox_freeze.Checked)
-                {
-                    float[][] data = pd.read();
-                    for (int i = 0; i < data.Length; ++i)
-                        //spikeGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)spikeSamplingRate,
-                        //    (double)pd.downsample / (double)spikeSamplingRate);
-                        spikeGraph.plotY(data[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
-                    spikeGraph.Invalidate();
-                }
-                else { pd.skipRead(); }
+            PlotData pd = (PlotData)sender;
+            if (spikeGraph.Visible && !checkBox_freeze.Checked)
+            {
+                float[][] data = pd.read();
+                for (int i = 0; i < data.Length; ++i)
+                    spikeGraph.plotY(data[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                spikeGraph.Invalidate();
+            }
+            else { pd.skipRead(); }
 
-                #region Recording_LED
-                if (switch_record.Value)
+            #region Recording_LED
+            if (switch_record.Value)
+            {
+                //Toggle recording light
+                if (recordingLEDState++ == 1)
                 {
-                    //Toggle recording light
-                    if (recordingLEDState++ == 1)
-                    {
-                        if (led_recording.OnColor == Color.Red)
-                            led_recording.OnColor = Color.Lime;
-                        else
-                            led_recording.OnColor = Color.Red;
-                    }
-                    recordingLEDState %= 2;
+                    if (led_recording.OnColor == Color.Red)
+                        led_recording.OnColor = Color.Lime;
+                    else
+                        led_recording.OnColor = Color.Red;
                 }
-                #endregion
- //           }
+                recordingLEDState %= 2;
+            }
+            #endregion
         }
 
         //*******************************
@@ -1348,32 +1339,24 @@ namespace NeuroRighter
         //******************************
         private void waveformPlotData_dataAcquired(object sender)
         {
-            //if (spkWfmGraph.InvokeRequired)
-            //{
-            //    spkWfmGraph.BeginInvoke(new plotData_dataAcquiredDelegate(waveformPlotData_dataAcquired), sender);
-            //}
-            //else
-            //{
-                EventPlotData pd = (EventPlotData)sender;
-                if (spkWfmGraph.Visible && !checkBox_freeze.Checked)
-                {
-                    int maxWaveforms = pd.getMaxWaveforms();
+            EventPlotData pd = (EventPlotData)sender;
+            if (spkWfmGraph.Visible && !checkBox_freeze.Checked)
+            {
+                int maxWaveforms = pd.getMaxWaveforms();
 
-                    List<PlotSpikeWaveform> wfms = pd.read();
-                    for (int i = 0; i < wfms.Count; ++i)
-                    {
-                        int channel = wfms[i].channel;
-                        if (Properties.Settings.Default.ChannelMapping == "invitro")
-                            channel = (MEAChannelMappings.ch2rc[channel, 0]-1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
-                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, Microsoft.Xna.Framework.Graphics.Color.Lime,
-                            numSpkWfms[channel]++ + channel * maxWaveforms);
-                        numSpkWfms[channel] %= maxWaveforms;
-                    }
-                    spkWfmGraph.Invalidate();
-                    //spkWfmGraph.refresh();
+                List<PlotSpikeWaveform> wfms = pd.read();
+                for (int i = 0; i < wfms.Count; ++i)
+                {
+                    int channel = wfms[i].channel;
+                    if (Properties.Settings.Default.ChannelMapping == "invitro")
+                        channel = (MEAChannelMappings.ch2rc[channel, 0]-1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
+                    spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, Microsoft.Xna.Framework.Graphics.Color.Lime,
+                        numSpkWfms[channel]++ + channel * maxWaveforms);
+                    numSpkWfms[channel] %= maxWaveforms;
                 }
-                else { pd.skipRead(); }
-            //}
+                spkWfmGraph.Invalidate();
+            }
+            else { pd.skipRead(); }
         }
         #endregion //End spike acquisition
 

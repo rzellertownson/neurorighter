@@ -1578,6 +1578,24 @@ namespace NeuroRighter
                 stimIvsV.Stop();
                 stimIvsV.Dispose();
             }
+            if (Properties.Settings.Default.UseStimulator)
+            {
+                if (stimDigitalTask != null)
+                    stimDigitalTask.Dispose();
+                stimDigitalTask = new Task("stimDigitalTask_formClosing");
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+                bool[] fData = new bool[Properties.Settings.Default.StimPortBandwidth];
+                stimDigitalWriter.WriteSingleSampleMultiLine(true, fData);
+                stimDigitalTask.WaitUntilDone();
+                stimDigitalTask.Stop();
+            }
 
             if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
             if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }

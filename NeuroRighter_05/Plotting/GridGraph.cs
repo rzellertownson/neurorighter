@@ -37,7 +37,7 @@ namespace NeuroRighter
         List<VertexPositionColor[]> lines; //Lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
         int[] idx; //Index to points in 'lines'
-        short[] gridIdx = { 0, 1 }; //Index to points in gridLines
+        private static readonly short[] gridIdx = { 0, 1 }; //Index to points in gridLines
 
         //Constants for text rendering
         private ContentManager content;
@@ -200,9 +200,7 @@ namespace NeuroRighter
         {
             spriteBatch.Begin();
             for (int i = 1; i <= channelNumberText.Count; ++i)
-            {
                 spriteBatch.DrawString(font, channelNumberText[i], channelNumberLocations[i], Color.White);
-            }
             spriteBatch.End();
         }
 

@@ -300,5 +300,41 @@ namespace NeuroRighter.Properties {
                 this["LFPDisplayGain"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Dev1")]
+        public string ImpedanceDevice {
+            get {
+                return ((string)(this["ImpedanceDevice"]));
+            }
+            set {
+                this["ImpedanceDevice"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseSingleChannelPlayback {
+            get {
+                return ((bool)(this["UseSingleChannelPlayback"]));
+            }
+            set {
+                this["UseSingleChannelPlayback"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Dev1")]
+        public string SingleChannelPlaybackDevice {
+            get {
+                return ((string)(this["SingleChannelPlaybackDevice"]));
+            }
+            set {
+                this["SingleChannelPlaybackDevice"] = value;
+            }
+        }
     }
 }

@@ -23,3 +23,8 @@ C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterMainBranch\
 C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterMainBranch\csmatio\src\bin\Release\zlib.net.dll
 C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterMainBranch\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterMainBranch\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterAPV\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterAPV\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterAPV\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterAPV\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Dustin Li\Documents\Visual Studio 2008\Projects\NeuroRighterAPV\csmatio\src\obj\Release\csmatio.dll

@@ -206,6 +206,18 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:NeuroRighter.NeuroRighter.bwSpikes_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            Process raw data (detect spikes, write to file, etc.)
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:NeuroRighter.NeuroRighter.StimTick">
+            <summary>
+            Keeps track of when a stimulus pulse occurred
+            </summary>
+        </member>
         <member name="T:NeuroRighter.MEAChannelMappings">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
@@ -416,6 +428,22 @@
             <param name="prePadding">Duration before phase 1, set to offset voltage (microseconds)</param>
             <param name="postPadding">Duration after phase 2, set to offset voltage (microseconds)</param>
             <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
+        </member>
+        <member name="T:NeuroRighter.Filters.ArtiFilt">
+            <summary>
+            Filters data by clipping out stimulation artifacts and interpolating
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.Filters.ArtiFilt.#ctor(System.Double,System.Double,System.Double,System.Int32,System.Boolean)">
+            <summary>
+            Constructor for ArtiFilt filter
+            </summary>
+            <param name="timeBefore">Time (in seconds) before stim pulse to blank/interpolate</param>
+            <param name="timeAfter">Time (in seconds) after stim pulse to blank/interpolate</param>
+            <param name="samplingRate">Sampling frequency (in Hz)</param>
+            <param name="numChannels">Number of channels</param>
+            <param name="useInterpolation">True if linear interpolation, false if clipped samples are set to zero</param>
         </member>
     </members>
 </doc>

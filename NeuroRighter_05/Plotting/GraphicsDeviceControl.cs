@@ -257,9 +257,9 @@ namespace NeuroRighter
         /// </summary>
         protected virtual void PaintUsingSystemDrawing(Graphics graphics, string text)
         {
-            graphics.Clear(Color.CornflowerBlue);
+            graphics.Clear(Color.Black);
 
-            using (Brush brush = new SolidBrush(Color.Black))
+            using (Brush brush = new SolidBrush(Color.White))
             {
                 using (StringFormat format = new StringFormat())
                 {

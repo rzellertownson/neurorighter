@@ -27,8 +27,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Temper, LLC")]
-[assembly: AssemblyProduct("NeuroRighter_04.Properties")]
-[assembly: AssemblyCopyright("Copyright John Rolston 2008")]
+[assembly: AssemblyProduct("NeuroRighter")]
+[assembly: AssemblyCopyright("Copyright John Rolston 2009")]
 [assembly: AssemblyTrademark("NeuroRighter")]
 [assembly: AssemblyCulture("")]
 
@@ -47,5 +47,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.5.2.0")]
-[assembly: AssemblyFileVersion("0.5.2.0")]
+[assembly: AssemblyVersion("0.5.3.0")]
+[assembly: AssemblyFileVersion("0.5.3.0")]

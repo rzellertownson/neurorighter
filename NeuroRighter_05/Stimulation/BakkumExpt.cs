@@ -198,11 +198,17 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds, usually 4 hrs
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(2, 0, 0); //hours, minutes, seconds, usually 4 hrs
             TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
             TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
             TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
+
+            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //hours, minutes, seconds, usually 4 hrs
+            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);    //30 min
+            //TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
+            //TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 2, 0); //30 min
+            //TimeSpan CL_LENGTH = new TimeSpan(0, 59, 0);
 
             //Print file header info
             outputFileWriter.WriteLine("Closed-loop Learning Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");
@@ -218,6 +224,8 @@ namespace NeuroRighter
 
             #region SBS_Pre-experiment
             //SBS-pre-experiment
+            outputFileWriter.WriteLine("We have begun SBS-pre-experiment" + DateTime.Now + "\n");
+            outputFileWriter.Flush();
             while (!isDone && !isCancelled)
             {
                 //Deliver SBS
@@ -243,11 +251,16 @@ namespace NeuroRighter
             {
                 //Set a goal direction
                 desiredDirection = desiredDirections[d];
+                outputFileWriter.WriteLine("We have begun closed loop direction: " + desiredDirection + "\n");
+                outputFileWriter.Flush();
 
                 #region Pre-Closed-loop_SBS
                 //Do pre-CL SBS
                 endTime = DateTime.Now + SBS_PRE_CL_LENGTH;
                 isDone = false;
+                outputFileWriter.WriteLine("We have begun Pre-Closed-Loop_SBS: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
+
                 while (!isDone && !isCancelled)
                 {
                     //Deliver SBS
@@ -266,7 +279,8 @@ namespace NeuroRighter
 
                 endTime = DateTime.Now + SBS_ONLY_MEASURE_T;
                 isDone = false;
-
+                outputFileWriter.WriteLine("We have begun SBS_Measure_T: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
                 CPS.unpopulate();
                 CPS.populate(true); //populate so that it measures CA
 
@@ -285,6 +299,16 @@ namespace NeuroRighter
 
                     //Measure CA
                     CAList.Add(CA(false));
+
+                    if (Double.IsNaN(CAList[CAList.Count - 1].x) || Double.IsNaN(CAList[CAList.Count - 1].y))
+                    {
+                        outputFileWriter.WriteLine("\t: NaN (ignored)");
+                    }
+                    else
+                    {
+                        outputFileWriter.WriteLine("\t: Happy" + CAList[CAList.Count - 1].x + "\t" + CAList[CAList.Count - 1].y);
+                    }
+                    outputFileWriter.Flush();
 
                     //Check to see if time's up
                     if (DateTime.Now > endTime) isDone = true;
@@ -324,24 +348,55 @@ namespace NeuroRighter
                         scaleY += Math.Abs(CAList[i].y - offsetY);
                     }
                 }
+
+                // scalex and scaley are average deviation from the center of activity (represented by offsetX and offsetY)
                 scaleX /= usedCAs;
                 scaleY /= usedCAs;
 
-                T[0] = 1.0 / scaleX;
-                T[1] = -offsetX; //this differs from Doug's code a bit
-                T[2] = 1.0 / scaleY;
+                // This scales the movements such that average movement has magnitude 1 in both the X and Y directions
+                // Also adds offsets such that average center of activity is at (0,0)
+                // this differs from Doug's code a bit
+                if (scaleX > 0.1)
+                {
+                    T[0] = 1.0 / scaleX;
+                }
+                else
+                {
+                    T[0] = 10.0;
+                    outputFileWriter.WriteLine("Transform matrix, scaleX was very small (" + scaleX + ") and set to 0.1\n");
+                }
+                T[1] = -offsetX; 
+                if (scaleY > 0.1)
+                {
+                    T[2] = 1.0 / scaleY;
+                }
+                else
+                {
+                    T[2] = 10.0;
+                    outputFileWriter.WriteLine("Transform matrix, scaleY was very small (" + scaleY + ") and set to 0.1\n");
+                }
                 T[3] = -offsetY;
 
-                outputFileWriter.WriteLine("Transform matrix, T = " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3] + "\n");
+                // Maybe what we should be doing instead for the transform matrix:
+                //   * scaling factors should change average CA magnitude to center of MEA (sqrt(4.5^2 + 4.5^2))
+                //   * offsets should move
+                // We need to consult w/ Potter & Bakkum & Rolston about this
 
+                outputFileWriter.WriteLine("Transform matrix, T = " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3] + "\n");
+                outputFileWriter.Flush();
+
+                // If any of the transform matrix elements are NaN, fail miserably
+                if (Double.IsNaN(T[0]) || Double.IsNaN(T[1]) || Double.IsNaN(T[2]) || Double.IsNaN(T[3]))
+                    MessageBox.Show("Life sucks. Transform matrix: " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3], "Crappery", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                
                 //Clear CAList
                 CAList.Clear();
                 #endregion
 
                 #region Closed-loop
                 //Do closed-loop portion
+                outputFileWriter.WriteLine("We have begun Closed-Loop_Training: " + DateTime.Now + "\n");
                 outputFileWriter.WriteLine("Training Round " + d + ", Desired Direction (rads) = " + desiredDirection);
-                outputFileWriter.WriteLine("Time = " + DateTime.Now + "\n");
                 outputFileWriter.Flush();
 
                 endTime = DateTime.Now + CL_LENGTH;
@@ -354,21 +409,40 @@ namespace NeuroRighter
                     //Wait until measurement is done
                     _blockExecution.WaitOne();
 
+                    MEAChannelMappings.Coords xy;
+                    lock (this)
+                    {
+                        xy = CA(true); //true since we want to account for transform
+                    }
+
                     //Check output direction, after listening to 100 ms of spikes
-                    if (goingCorrectDirection())
+                    if (goingCorrectDirection(xy))
                     {
                         outputFileWriter.WriteLine("O Moving in correct direction.");
+                        writeMovementMagnitude(xy);
                         updateProbabilities(true, lastPTSIndex);
                         deliverSBS();
                     }
 
-                    //Else, it's incorrect: deliver PTS
+                    //Else, it's either moving in the wrong direction or there's no movement
                     else
                     {
-                        outputFileWriter.WriteLine("X Moving in incorrect direction.");
-                        updateProbabilities(false, lastPTSIndex);
-                        //Select and deliver PTS
-                        deliverPTS();
+                        if (double.IsNaN(xy.x))
+                        {
+                            // No movement detected
+                            outputFileWriter.WriteLine("? No movement.");
+                            // Don't update probabilities; no movement
+                            deliverPTS();
+                        }
+                        else
+                        {
+                            // Movement detected in incorrect direction 
+                            outputFileWriter.WriteLine("X Moving in incorrect direction.");
+                            writeMovementMagnitude(xy);
+                            updateProbabilities(false, lastPTSIndex);
+                            // Select and deliver PTS
+                            deliverPTS();
+                        }
                     }
 
                     outputFileWriter.Flush();
@@ -379,10 +453,14 @@ namespace NeuroRighter
                 resetProbabilities();
                 #endregion
 
+                //MessageBox.Show("The experiment is now paused!  Do stuff you fool.", "The do stuff message.", MessageBoxButtons.OK,MessageBoxIcon.Hand);
+
                 #region Post-Closed-loop_SBS
                 //Do post-closed-loop SBS
                 endTime = DateTime.Now + SBS_POST_CL_LENGTH;
                 isDone = false;
+                outputFileWriter.WriteLine("We have begun Post-Closed-Loop_SBS: " + DateTime.Now + "\n");
+                outputFileWriter.Flush();
                 while (!isDone && !isCancelled)
                 {
                     //Deliver SBS
@@ -506,8 +584,11 @@ namespace NeuroRighter
 
         private void updateProbabilities(bool isCorrect, int index)
         {
-            outputFileWriter.WriteLine("\tPTS Index: " + index);
-            
+            if (index != -1)
+                outputFileWriter.WriteLine("\tPTS Index: " + index);
+            else
+                outputFileWriter.WriteLine("\tSBS was sent");
+
             if (index >= 0) //Prevents updates if last pulse train was an SBS
             {
                 outputFileWriter.WriteLine("\t\tPrior probability: " + probabilities[index]);
@@ -627,7 +708,12 @@ namespace NeuroRighter
             double norm = 0; //sum of all firing rates, for normalization
             while (waveforms.Count > 0)
             {
-                ++firingRate[waveforms[0].channel]; //channels are 0-based
+                if (waveforms[0].channel == 6 || waveforms[0].channel == 15 || waveforms[0].channel == 14 || waveforms[0].channel == 7)
+                {
+                    // ignore spikes from corners (analog channels)
+                }
+                else
+                    ++firingRate[waveforms[0].channel]; //channels are 0-based
                 waveforms.RemoveAt(0);
             }
             for (int i = 0; i < MEAChannelMappings.usedChannels.Length; ++i)
@@ -658,21 +744,26 @@ namespace NeuroRighter
             return xy;
         }
 
-        private Boolean goingCorrectDirection()
+        private Boolean goingCorrectDirection(MEAChannelMappings.Coords xy)
         {
-            MEAChannelMappings.Coords xy;
-            lock (this)
-            {
-                xy = CA(true); //true since we want to account for transform
-            }
             double currDirection = Math.Atan2(xy.y , xy.x);
             if (currDirection < 0) currDirection += 2 * Math.PI; //ensure range is [0, 2PI)
-            outputFileWriter.WriteLine("Current direction (rads) = " + currDirection);
+            outputFileWriter.WriteLine("\n" + DateTime.Now + "Current direction (rads) = " + currDirection + ".\nTransformed CA = (" + xy.x + "," + xy.y + ")");
 
             if (currDirection < desiredDirection + DIRECTION_TOLERANCE && currDirection > desiredDirection - DIRECTION_TOLERANCE)
                 return true;
             else
                 return false;
         }
+
+        private void writeMovementMagnitude(MEAChannelMappings.Coords xy)
+        {
+            if (double.IsNaN(xy.x))
+                outputFileWriter.WriteLine("Magnitude: NaN");
+            else
+                outputFileWriter.WriteLine("Magnitude: " + Math.Sqrt(xy.x * xy.x + xy.y * xy.y));
+            return;
+        }
+
     }
 }

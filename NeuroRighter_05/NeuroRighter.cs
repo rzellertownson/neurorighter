@@ -3931,9 +3931,12 @@ ch = 1;
         BakkumExpt expt;
         private void button_closedLoopLearningStart_Click(object sender, EventArgs e)
         {
-            button_closedLoopLearningStart.Enabled = false;
-            button_closedLoopLearningStop.Enabled = true;
-
+            if (radioButton_stimCurrentControlled.Checked)
+            {
+                MessageBox.Show("Current-controlled stimulation is not allowed for this experiment.\nPlease enable voltage-controlled stimulation.");
+                return;
+            }
+            
             List<int> probeChannels = new List<int>();
             List<int> PTSChannels = new List<int>();
 
@@ -3941,6 +3944,14 @@ ch = 1;
                 probeChannels.Add(Convert.ToInt32(listBox_closedLoopLearningProbeElectrodes.SelectedItems[i]));
             for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.SelectedItems.Count; ++i)
                 PTSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningPTSElectrodes.SelectedItems[i]));
+            if (probeChannels.Count < 1 || PTSChannels.Count < 1)
+            {
+                MessageBox.Show("Please specify at least one probe channel and one PTS channel.");
+                return;
+            }
+
+            button_closedLoopLearningStart.Enabled = false;
+            button_closedLoopLearningStop.Enabled = true;
 
             expt = new BakkumExpt(PTSChannels, probeChannels, stimDigitalTask, stimPulseTask,
                 stimDigitalWriter, stimPulseWriter);
@@ -4057,6 +4068,11 @@ ch = 1;
         private void checkBox_artiFilt_CheckedChanged(object sender, EventArgs e)
         {
             artiFilt = new Filters.ArtiFilt(0.001, 0.002, spikeSamplingRate, numChannels, true);
+        }
+
+        private void NeuroRighter_Load(object sender, EventArgs e)
+        {
+
         }
 
         

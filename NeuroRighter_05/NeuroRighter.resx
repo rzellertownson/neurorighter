@@ -124,8 +124,8 @@
   <data name="checkBox_freeze.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACIAAAAiCAYAAAA6RwvCAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOqQAA
-        DqkB8RIHdQAAAutJREFUWEftl11IU2EYx98gYqOCLpp5/NjOPs7mzs7Ujs5AnTk/oQjcSc0Kqe61m+qi
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAOqAAA
+        DqgBI1XlkQAAAutJREFUWEftl11IU2EYx98gYqOCLpp5/NjOPs7mzs7Ujs5AnTk/oQjcSc0Kqe61m+qi
         boIJUn6gc+YW6EVRLaIipObmdybOC8VSCxOji8K8yeMXTdzk6ZwOEUSyi0k7Fzvw533gfXjPj//zvIfn
         7AEAJIqHBxGDRAHxqypicCMG8q8qhC2Nx+OhHj142NjtftbYaXfZnE0Om6vZYXO2tNfbW+2XJyYnJFvB
         rf39/QNXn9x333p6z13f/fh5fVeby+ZqctQ5HR03bXU2JlwLhAVxdjjrZFjcNqZTbGNaRRAj5EF+lSni
@@ -310,6 +310,9 @@
         gIAAAgAAAAAAAAAAAAAAAf///wABAAEAAQAAAAs=
 </value>
   </data>
+  <metadata name="textBox_diagnosticsResults.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="textBox_diagnosticsResults.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>

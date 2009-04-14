@@ -59,7 +59,7 @@ namespace NeuroRighter
         private Task eegTask;
         private Task videoTask;  //To synch up Cineplex system
         private Task triggerTask; //To trigger everything simultaneously, using AO
-        private Task spikeOutTask; //To send a channel to the oscilloscope
+        //private Task spikeOutTask; //To send a channel to the oscilloscope
         private Task stimDigitalTask;
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
@@ -71,7 +71,7 @@ namespace NeuroRighter
         private AnalogUnscaledReader eegReader;
         private AnalogSingleChannelReader impedanceReader;
         private DigitalSingleChannelWriter triggerWriter;
-        private AnalogSingleChannelWriter spikeOutWriter;
+        //private AnalogSingleChannelWriter spikeOutWriter;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimPulseWriter;
         private AnalogMultiChannelReader stimTimeReader;
@@ -138,6 +138,7 @@ namespace NeuroRighter
         private Filters.Referencer referncer;
         private DateTime experimentStartTime;
         private Filters.ArtiFilt artiFilt;
+        private ChannelOutput BNCOutput;
 
 
         //Plots
@@ -325,15 +326,15 @@ namespace NeuroRighter
                                 "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
                         }
                     }
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        spikeOutTask = new Task("spikeOutTask"); //For audio output
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //    spikeOutTask = new Task("spikeOutTask"); //For audio output
                     if (checkBox_video.Checked) //NB: This can't be checked unless video is enabled (no need to check properties)
                         triggerTask = new Task("triggerTask");
 
                     //Add channel to send one analog in channel to a BNC (e.g., for audio)
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        spikeOutTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.SingleChannelPlaybackDevice + "/ao0", "",
-                            -10.0, 10.0, AOVoltageUnits.Volts);
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //    spikeOutTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.SingleChannelPlaybackDevice + "/ao0", "",
+                    //        -10.0, 10.0, AOVoltageUnits.Volts);
 
                     //Add LFP channels, if configured
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
@@ -374,8 +375,8 @@ namespace NeuroRighter
                     //Verify the Tasks
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Control(TaskAction.Verify);
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        spikeOutTask.Control(TaskAction.Verify);
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //    spikeOutTask.Control(TaskAction.Verify);
                     
                     //Get sampling rates, set to private variables
                     spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
@@ -410,13 +411,13 @@ namespace NeuroRighter
                         spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
                             "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
                     }
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                    {
-                        spikeOutTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                        spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-                        spikeOutTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                            SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, spikeBufferLength);
-                    }
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //{
+                    //    spikeOutTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                    //    spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+                    //    spikeOutTask.Timing.ConfigureSampleClock("", spikeTask[0].Timing.SampleClockRate,
+                    //        SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, spikeBufferLength);
+                    //}
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
@@ -759,13 +760,13 @@ namespace NeuroRighter
                         spikeReader.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));
                         spikeReader[i].SynchronizeCallbacks = true;
                     }
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        spikeOutWriter = new AnalogSingleChannelWriter(spikeOutTask.Stream);
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //    spikeOutWriter = new AnalogSingleChannelWriter(spikeOutTask.Stream);
                     if (checkBox_video.Checked)
                         triggerWriter = new DigitalSingleChannelWriter(triggerTask.Stream);
 
-                    if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        spikeOutWriter.SynchronizeCallbacks = false; //These don't use UI, so they don't need to be synched
+                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
+                    //    spikeOutWriter.SynchronizeCallbacks = false; //These don't use UI, so they don't need to be synched
 
                     spikeCallback = new AsyncCallback(AnalogInCallback_spikes);
 
@@ -805,6 +806,12 @@ namespace NeuroRighter
                         for (int j = 0; j < numChannelsPerDev; ++j)
                             spikeData[i][j] = new AnalogWaveform<double>(spikeBufferLength);
                     }
+
+                    //Make channel playback task
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, DEVICE_REFRESH, spikeTask[0],
+                            Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
+
 
                     //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
                     if (checkBox_video.Checked)
@@ -932,10 +939,13 @@ namespace NeuroRighter
                                 //     the range of 1-8 volts
                                 for (int i = 0; i < spikeBufferLength; ++i)
                                 {
-                                    //Check if there's a spike time
+                                    //Check for stimIndices (this uses a different buffer, so it's synced to each buffer read
+                                    if (stimData[0,i] > 0.9) stimIndices.Add(new StimTick(i, numStimReads[taskNumber]));
+
+                                    //Get appropriate data and write to file
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)
                                     {
-                                        stimIndices.Add(new StimTick(i - STIM_BUFFER_LENGTH, numStimReads[taskNumber]));
+                                        //stimIndices.Add(new StimTick(i - STIM_BUFFER_LENGTH, numStimReads[taskNumber]));
                                         if (switch_record.Value)
                                         {
                                             fsStim.Write(BitConverter.GetBytes(startTimeStim + i), 0, 4); //Write time (index number)
@@ -1065,7 +1075,7 @@ namespace NeuroRighter
 
                 #region ArtiFilt (interpolation filtering)
                 if (checkBox_artiFilt.Checked)
-                    artiFilt.filter(filtLFPData, stimIndices, taskNumber * numChannelsPerDev, numChannelsPerDev);
+                    artiFilt.filter(ref filtLFPData, stimIndices, taskNumber * numChannelsPerDev, numChannelsPerDev, numStimReads[taskNumber] - 1);
                 #endregion
 
                 if (checkBox_LFPsFilter.Checked)
@@ -1277,9 +1287,11 @@ namespace NeuroRighter
             //Send selected channel to BNC
             if (Properties.Settings.Default.UseSingleChannelPlayback)
             {
-                int ch = Convert.ToInt32(channelOut.Value);
+                int ch = (int)(channelOut.Value) - 1;
                 if (ch >= numChannelsPerDev * taskNumber && ch < numChannelsPerDev * (taskNumber + 1))
-                    spikeOutWriter.BeginWriteMultiSample(true, filtSpikeData[ch - 1], null, null);
+                    //spikeOutWriter.BeginWriteMultiSample(true, filtSpikeData[ch], null, null);
+                    BNCOutput.write(filtSpikeData[ch]);
+                //spikeOutWriter.WriteMultiSample(true, filtSpikeData[ch - 1]);
             }
             #endregion
 
@@ -1561,10 +1573,12 @@ namespace NeuroRighter
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (taskRunning) { reset(); }
-            if (Properties.Settings.Default.UseCineplex)
+
+            if (Properties.Settings.Default.UseStimulator)
             {
+                //Deal with IvsV
                 stimIvsV = new Task("stimIvsV");
-                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
+                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
                     ChannelLineGrouping.OneChannelForAllLines);
                 stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                 stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
@@ -1577,9 +1591,7 @@ namespace NeuroRighter
                 stimIvsV.WaitUntilDone();
                 stimIvsV.Stop();
                 stimIvsV.Dispose();
-            }
-            if (Properties.Settings.Default.UseStimulator)
-            {
+
                 if (stimDigitalTask != null)
                     stimDigitalTask.Dispose();
                 stimDigitalTask = new Task("stimDigitalTask_formClosing");
@@ -1660,7 +1672,8 @@ namespace NeuroRighter
             if (waveformPlotData != null) waveformPlotData.stop();
             if (Properties.Settings.Default.SeparateLFPBoard && lfpTask != null) lfpTask.Dispose();
             if (Properties.Settings.Default.UseEEG && eegTask != null) eegTask.Dispose();
-            if (spikeOutTask != null) spikeOutTask.Dispose();
+            //if (spikeOutTask != null) spikeOutTask.Dispose();
+            if (BNCOutput != null) { BNCOutput.Dispose(); BNCOutput = null; }
             if (stimTimeTask != null) stimTimeTask.Dispose();
             if (triggerTask != null) triggerTask.Dispose();
 
@@ -2101,10 +2114,11 @@ namespace NeuroRighter
                     if (videoTask == null)
                     {
                         videoTask = new Task("videoTask");
-                        videoTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.CineplexDevice + "/ctr0", "", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, 1000, 0.5);
+                        videoTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.CineplexDevice + "/ctr0", "", 
+                            COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, 1000, 0.5);
                         videoTask.Control(TaskAction.Verify);
                         videoTask.Timing.ReferenceClockSource = "OnboardClock";
-                        videoTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, 250);
+                        videoTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples, 10);
                         videoTask.Start();
                     }
                     checkBox_video.Enabled = true;
@@ -2172,10 +2186,10 @@ namespace NeuroRighter
                             radioButton_stimVoltageControlled.Checked = false;
                         }
 
-                        if (Properties.Settings.Default.UseCineplex)
+                        if (Properties.Settings.Default.UseStimulator)
                         {
                             stimIvsV = new Task("stimIvsV");
-                            stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
+                            stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
                                 ChannelLineGrouping.OneChannelForAllLines);
                             stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                             stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
@@ -2237,10 +2251,10 @@ namespace NeuroRighter
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             reset();
-            if (Properties.Settings.Default.UseCineplex)
+            if (Properties.Settings.Default.UseStimulator)
             {
                 stimIvsV = new Task("stimIvsV");
-                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
+                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
                     ChannelLineGrouping.OneChannelForAllLines);
                 stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                 stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
@@ -2893,10 +2907,10 @@ namespace NeuroRighter
         {
             if (radioButton_stimCurrentControlled.Checked)
             {
-                if (Properties.Settings.Default.UseCineplex)
+                if (Properties.Settings.Default.UseStimulator)
                 {
                     stimIvsV = new Task("stimIvsV");
-                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
+                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
                         ChannelLineGrouping.OneChannelForAllLines);
                     stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                     stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
@@ -2919,11 +2933,11 @@ namespace NeuroRighter
         {
             if (radioButton_stimVoltageControlled.Checked)
             {
-                if (Properties.Settings.Default.UseCineplex)
+                if (Properties.Settings.Default.UseStimulator)
                 {
                     //this line goes high (TTL-wise) when we're doing current-controlled stim, low for voltage-controlled
                     stimIvsV = new Task("stimIvsV");
-                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line8:15", "",
+                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
                         ChannelLineGrouping.OneChannelForAllLines);
                     stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
                     stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
@@ -4055,7 +4069,22 @@ ch = 1;
 
         private void checkBox_artiFilt_CheckedChanged(object sender, EventArgs e)
         {
-            artiFilt = new Filters.ArtiFilt(0.001, 0.002, spikeSamplingRate, numChannels, true);
+            //artiFilt = new Filters.ArtiFilt(0.001, 0.002, spikeSamplingRate, numChannels);
+            artiFilt = new Filters.ArtiFilt_Interpolation(0.001, 0.002, spikeSamplingRate, numChannels);
         }
+
+        private void button_scaleUp_MouseEnter(object sender, EventArgs e) { mouseOver(sender, 1); }
+        private void button_scaleUp_MouseLeave(object sender, EventArgs e) { mouseOver(sender, 0); }
+        private void button_scaleDown_MouseEnter(object sender, EventArgs e) { mouseOver(sender, 3); }
+        private void button_scaleDown_MouseLeave(object sender, EventArgs e) { mouseOver(sender, 2); }
+        private void button_scaleReset_MouseEnter(object sender, EventArgs e) { mouseOver(sender, 5); }
+        private void button_scaleReset_MouseLeave(object sender, EventArgs e) { mouseOver(sender, 4); }
+        private void mouseOver(object sender, int imageNumber)
+        {
+           Button b = (Button)sender;
+           b.Image = imageList_zoomButtons.Images[imageNumber];
+        }
+
+ 
     }
 }

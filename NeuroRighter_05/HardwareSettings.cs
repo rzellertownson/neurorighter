@@ -144,6 +144,15 @@ namespace NeuroRighter
                 else
                     comboBox_singleChannelPlaybackDevice.SelectedIndex = 0;
             }
+            comboBox_IVControlDevice.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_IVControlDevice.Items.Count > 0)
+            {
+                int idx = comboBox_IVControlDevice.Items.IndexOf(Properties.Settings.Default.StimIvsVDevice);
+                if (idx >= 0)
+                    comboBox_IVControlDevice.SelectedIndex = idx;
+                else
+                    comboBox_IVControlDevice.SelectedIndex = 0;
+            }
 
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -222,6 +231,7 @@ namespace NeuroRighter
             else { Properties.Settings.Default.StimPortBandwidth = 32; }
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
             Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
+            Properties.Settings.Default.StimIvsVDevice = Convert.ToString(comboBox_IVControlDevice.SelectedItem);
 
             Properties.Settings.Default.Save();
             this.Close();

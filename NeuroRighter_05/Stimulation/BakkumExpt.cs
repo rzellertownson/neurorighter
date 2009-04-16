@@ -79,6 +79,21 @@ namespace NeuroRighter
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = "txt";
+            sfd.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            sfd.FileName = "Experiment001";
+
+            DialogResult dr = sfd.ShowDialog();
+            if (dr != DialogResult.OK)
+            {
+                isCancelled = true;
+                return; // user cancelled
+            }
+
+            // open a handle to the experiment log file
+            outputFileWriter = new StreamWriter(sfd.OpenFile());
+
             waveforms = new List<SpikeWaveform>(100);
 
             //Initialize random number generator
@@ -102,15 +117,19 @@ namespace NeuroRighter
             List<int> interpulseIntervals = new List<int>(NUM_CPS_PULSES);
 
             //Pick context electrodes
+            outputFileWriter.Write("CPS+probe: {");
             for (int i = 0; i < NUM_CPS_PULSES; ++i)
             {
                 int index = (int)Math.Floor(availableContextChannels.Count * rand.NextDouble());
                 CPSChannels.Add(availableContextChannels[index]);
+                outputFileWriter.Write(availableContextChannels[index] + " ");
                 availableContextChannels.RemoveAt(index); //To ensure no repeats, and to ensure PTSes don't include these electrodes
             }
 
             //Pick probe electrode
-            CPSChannels.Add(availableProbeChannels[(int)Math.Floor(availableProbeChannels.Count * rand.NextDouble())]);
+            int probeElectrode = availableProbeChannels[(int)Math.Floor(availableProbeChannels.Count * rand.NextDouble())];
+            CPSChannels.Add(probeElectrode);
+            outputFileWriter.Write(probeElectrode + "}\n");
 
             //Pick interpulse intervals
             int range = INTERPULSE_INTERVAL_RANGE[1] - INTERPULSE_INTERVAL_RANGE[0] + 1; //+1 since range is inclusive
@@ -144,12 +163,17 @@ namespace NeuroRighter
                 List<int> channels = new List<int>(NUM_PTS_PULSES);
 
                 for (int j = 0; j < NUM_PTS_PULSES; ++j)
-                    channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);
+                    channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);    // add a random channel
+
+                outputFileWriter.Write("PTS[" + i + "]: {");
+                for (int j = 0; j < NUM_PTS_PULSES; ++j)
+                    outputFileWriter.Write(channels[j] + " ");
+                outputFileWriter.Write("}\n");
 
                 PTS.Add(new StimTrain(PULSE_WIDTH, PULSE_AMPLITUDE, channels, withinPTSIntervals));
                 //Hold off on populating till later
                 SBS.Add(new StimTrain(PULSE_WIDTH, PULSE_AMPLITUDE, channels, withinPTSIntervals));
-                SBS[i].shuffleChannelOrder();
+                SBS[i].shuffleChannelOrder();   // do we really need a shuffle here?
 
                 //Make intervals
                 int total = 0;
@@ -167,24 +191,17 @@ namespace NeuroRighter
 
         //TODO: start function w/ switch statements for different experimental parts;
         //should be a finite state machine essentially
-        internal void start()
+        internal bool start()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.DefaultExt = "txt";
-            sfd.Filter = "Text files (*.txt)|*.txt";
-            sfd.FileName = "Experiment001";
+            if (isCancelled)
+                return false;
 
-            DialogResult dr = sfd.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                outputFileWriter = new StreamWriter(sfd.OpenFile());
-
-                bw = new BackgroundWorker();
-                bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-                bw.WorkerSupportsCancellation = true;
-                bw.RunWorkerAsync();
-            }
+            bw = new BackgroundWorker();
+            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+            bw.WorkerSupportsCancellation = true;
+            bw.RunWorkerAsync();
+            return true;
         }
 
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -198,17 +215,17 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(2, 0, 0); //hours, minutes, seconds, usually 4 hrs
+            TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(4, 0, 0); //hours, minutes, seconds, usually 4 hrs
             TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
             TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
             TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
             TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
 
-            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); //hours, minutes, seconds, usually 4 hrs
-            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);    //30 min
-            //TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
-            //TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 2, 0); //30 min
-            //TimeSpan CL_LENGTH = new TimeSpan(0, 59, 0);
+            //TimeSpan SBS_PRE_EXPT_LENGTH = new TimeSpan(0, 0, 0); 
+            //TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 0, 0);   
+            //TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(0, 0, 0);    
+            //TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 2, 0); 
+            //TimeSpan CL_LENGTH = new TimeSpan(0, 0, 1);
 
             //Print file header info
             outputFileWriter.WriteLine("Closed-loop Learning Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");
@@ -295,7 +312,7 @@ namespace NeuroRighter
                     deliverCPS();
 
                     //Wait until spikes are measured
-                    _blockExecution.WaitOne(); 
+                    _blockExecution.WaitOne();
 
                     //Measure CA
                     CAList.Add(CA(false));
@@ -386,8 +403,8 @@ namespace NeuroRighter
                 outputFileWriter.Flush();
 
                 // If any of the transform matrix elements are NaN, fail miserably
-                if (Double.IsNaN(T[0]) || Double.IsNaN(T[1]) || Double.IsNaN(T[2]) || Double.IsNaN(T[3]))
-                    MessageBox.Show("Life sucks. Transform matrix: " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3], "Crappery", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //if (Double.IsNaN(T[0]) || Double.IsNaN(T[1]) || Double.IsNaN(T[2]) || Double.IsNaN(T[3]))
+                //    MessageBox.Show("Life sucks. Transform matrix: " + T[0] + "\t" + T[1] + "\t" + T[2] + "\t" + T[3], "Crappery", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 
                 //Clear CAList
                 CAList.Clear();
@@ -432,6 +449,8 @@ namespace NeuroRighter
                             // No movement detected
                             outputFileWriter.WriteLine("? No movement.");
                             // Don't update probabilities; no movement
+                            outputFileWriter.WriteLine("\nSending PTS...");
+                            outputFileWriter.Flush();
                             deliverPTS();
                         }
                         else
@@ -441,6 +460,8 @@ namespace NeuroRighter
                             writeMovementMagnitude(xy);
                             updateProbabilities(false, lastPTSIndex);
                             // Select and deliver PTS
+                            outputFileWriter.WriteLine("\nSending SBS...");
+                            outputFileWriter.Flush();
                             deliverPTS();
                         }
                     }
@@ -528,6 +549,7 @@ namespace NeuroRighter
                 System.Threading.Thread.Sleep(PTSInterTrainIntervals[index][i]);
             }
 
+            outputFileWriter.WriteLine("\tSBS was sent");
             lastPTSIndex = -1; //This makes it so that probability updates don't do anything when the last stim sequence was an SBS
         }
 
@@ -570,6 +592,7 @@ namespace NeuroRighter
                 //outputFileWriter.Flush();
             }
             lastPTSIndex = index;
+            outputFileWriter.WriteLine("\tPTS Index: " + index);
         }
 
         private void resetProbabilities()
@@ -584,11 +607,6 @@ namespace NeuroRighter
 
         private void updateProbabilities(bool isCorrect, int index)
         {
-            if (index != -1)
-                outputFileWriter.WriteLine("\tPTS Index: " + index);
-            else
-                outputFileWriter.WriteLine("\tSBS was sent");
-
             if (index >= 0) //Prevents updates if last pulse train was an SBS
             {
                 outputFileWriter.WriteLine("\t\tPrior probability: " + probabilities[index]);
@@ -719,6 +737,17 @@ namespace NeuroRighter
             for (int i = 0; i < MEAChannelMappings.usedChannels.Length; ++i)
                 norm += firingRate[MEAChannelMappings.usedChannels[i]];
 
+            // Print raw spikes detected
+            outputFileWriter.Write("CA electrodes: ");
+            for (int i = 0; i < MEAChannelMappings.usedChannels.Length; i++)
+            {
+                if (firingRate[MEAChannelMappings.usedChannels[i]] > 0)
+                {
+                    outputFileWriter.Write("(" + meaMap.CoordFromChannel[MEAChannelMappings.usedChannels[i]].x + "," + meaMap.CoordFromChannel[MEAChannelMappings.usedChannels[i]].y + ")< " + firingRate[MEAChannelMappings.usedChannels[i]] + "> ");
+                }
+            }
+            outputFileWriter.Write("\n");
+
             //Calculate CA
             for (int i = 0; i < MEAChannelMappings.usedChannels.Length; ++i)
             {
@@ -748,7 +777,7 @@ namespace NeuroRighter
         {
             double currDirection = Math.Atan2(xy.y , xy.x);
             if (currDirection < 0) currDirection += 2 * Math.PI; //ensure range is [0, 2PI)
-            outputFileWriter.WriteLine("\n" + DateTime.Now + "Current direction (rads) = " + currDirection + ".\nTransformed CA = (" + xy.x + "," + xy.y + ")");
+            outputFileWriter.WriteLine(DateTime.Now + "\nCurrent direction (rads) = " + currDirection + ".\nTransformed CA = (" + xy.x + "," + xy.y + ")");
 
             if (currDirection < desiredDirection + DIRECTION_TOLERANCE && currDirection > desiredDirection - DIRECTION_TOLERANCE)
                 return true;

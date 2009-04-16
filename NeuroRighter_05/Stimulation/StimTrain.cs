@@ -190,6 +190,7 @@ namespace NeuroRighter
             analogPulse = null;
         }
 
+        // Shuffles the order of the channels in the StimTrain. Useful for SBS.
         internal void shuffleChannelOrder()
         {
             Random rand = new Random();

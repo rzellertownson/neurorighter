@@ -172,6 +172,21 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:NeuroRighter.Filters.ArtiFilt">
+            <summary>
+            Filters data by clipping out stimulation artifacts and setting samples to 0.0
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.Filters.ArtiFilt.#ctor(System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Constructor for ArtiFilt filter
+            </summary>
+            <param name="timeBefore">Time (in seconds) before stim pulse to blank/interpolate</param>
+            <param name="timeAfter">Time (in seconds) after stim pulse to blank/interpolate</param>
+            <param name="samplingRate">Sampling frequency (in Hz)</param>
+            <param name="numChannels">Number of channels</param>
+        </member>
         <member name="T:NeuroRighter.BakkumExpt">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
@@ -290,6 +305,16 @@
         </member>
         <member name="T:NeuroRighter.RMSThresholdFixed">
             <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.ChannelOutput">
+            <summary>
+            Class to handle playback of one channel to BNC or other output (useful for audio playback)
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ChannelOutput.Dispose">
+            <summary>
+            Dispose of tasks within object.
+            </summary>
         </member>
         <member name="T:NeuroRighter.IISZapper">
             <author>John Rolston (rolston2@gmail.com)</author>
@@ -428,22 +453,6 @@
             <param name="prePadding">Duration before phase 1, set to offset voltage (microseconds)</param>
             <param name="postPadding">Duration after phase 2, set to offset voltage (microseconds)</param>
             <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
-        </member>
-        <member name="T:NeuroRighter.Filters.ArtiFilt">
-            <summary>
-            Filters data by clipping out stimulation artifacts and interpolating
-            </summary>
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="M:NeuroRighter.Filters.ArtiFilt.#ctor(System.Double,System.Double,System.Double,System.Int32,System.Boolean)">
-            <summary>
-            Constructor for ArtiFilt filter
-            </summary>
-            <param name="timeBefore">Time (in seconds) before stim pulse to blank/interpolate</param>
-            <param name="timeAfter">Time (in seconds) after stim pulse to blank/interpolate</param>
-            <param name="samplingRate">Sampling frequency (in Hz)</param>
-            <param name="numChannels">Number of channels</param>
-            <param name="useInterpolation">True if linear interpolation, false if clipped samples are set to zero</param>
         </member>
     </members>
 </doc>

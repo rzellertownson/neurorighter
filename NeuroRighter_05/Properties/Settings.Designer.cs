@@ -336,5 +336,17 @@ namespace NeuroRighter.Properties {
                 this["SingleChannelPlaybackDevice"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Dev1")]
+        public string StimIvsVDevice {
+            get {
+                return ((string)(this["StimIvsVDevice"]));
+            }
+            set {
+                this["StimIvsVDevice"] = value;
+            }
+        }
     }
 }

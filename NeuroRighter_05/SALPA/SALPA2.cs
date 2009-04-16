@@ -18,10 +18,12 @@
 
 //#define DEBUG
 #define USE_HIGHPASS
+//#define DEBUG_JEFF
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace NeuroRighter
 {
@@ -62,6 +64,9 @@ namespace NeuroRighter
         private double[] lastInputs;
         private const double ALPHA = 0.16 / (0.16 + (1 / 25E3));  //RC = 1.5 yields a 0.1 Hz high -3 dB point.  25E3 is the typical sampling rate
         #endregion
+#endif
+#if (DEBUG_JEFF)
+        private StreamWriter debugLogFile;
 #endif
 
         public SALPA2()
@@ -147,6 +152,10 @@ namespace NeuroRighter
             lastInputs = new double[numElectrodes];
             lastOutputs = new double[numElectrodes];
 #endif
+#if (DEBUG_JEFF)
+            debugLogFile = new StreamWriter("salpa_log.txt");
+            debugLogFile.WriteLine("SALPA Log File\r\n" + DateTime.Now);
+#endif
 
         }
 
@@ -226,13 +235,28 @@ namespace NeuroRighter
         public void filter(ref rawType[][] filtData, int startChannel, int numChannels, rawType[] thresh,
             List<NeuroRighter.StimTick> stimIndicesIn, int numBufferReads)
         {
-            #region Deal With Stimultation Indices (times)
-            //convert the stimindices input into something easier to search
-            List<int> stimIndices = new List<int>(stimIndicesIn.Count);
-            for (int i = 0; i < stimIndicesIn.Count; ++i)
+            List<int> stimIndices;
+            lock (stimIndicesIn)
             {
-                if (stimIndicesIn[i].numStimReads == numBufferReads)
-                    stimIndices.Add(stimIndicesIn[i].index);
+#if (DEBUG_JEFF)
+                int minStimIndexReads = Int32.MaxValue;
+                for (int i = 0; i < stimIndicesIn.Count; ++i)
+                    if (stimIndicesIn[i].numStimReads < minStimIndexReads) minStimIndexReads = stimIndicesIn[i].numStimReads;
+
+                debugLogFile.WriteLine("[startChannel, numBufferReads, minStimIndexReads] " + startChannel + "\t" + numBufferReads + "\t" + minStimIndexReads);
+#endif
+
+                #region Deal With Stimultation Indices (times)
+                //convert the stimindices input into something easier to search
+                stimIndices = new List<int>(stimIndicesIn.Count);
+                for (int i = 0; i < stimIndicesIn.Count; ++i)
+                {
+                    if (stimIndicesIn[i].numStimReads == numBufferReads)
+                        stimIndices.Add(stimIndicesIn[i].index + PRE + POST);
+                    else if (stimIndicesIn[i].numStimReads == numBufferReads - 1 &&
+                        stimIndicesIn[i].index + POST >= numSamples)
+                        stimIndices.Add(stimIndicesIn[i].index + PRE + POST - numSamples);
+                }
             }
             #endregion
 
@@ -374,7 +398,7 @@ namespace NeuroRighter
                     {
                         for (int k = j; k <= j + N; ++k)
                         {
-                            if (stimIndices.Contains(k - PRE - POST) || oldData[channel][k] <= rails[0] || oldData[channel][k] >= rails[1])
+                            if (stimIndices.Contains(k) || oldData[channel][k] <= rails[0] || oldData[channel][k] >= rails[1])
                             {
                                 if (startPeg[channel] == -1)
                                 {
@@ -390,7 +414,7 @@ namespace NeuroRighter
                     }
                     else
                     {  /* no full look-ahead */
-                        if (stimIndices.Contains(j + N - PRE - POST) || oldData[channel][j + N] <= rails[0] || oldData[channel][j + N] >= rails[1])
+                        if (stimIndices.Contains(j + N) || oldData[channel][j + N] <= rails[0] || oldData[channel][j + N] >= rails[1])
                         {
                             startPeg[channel] = stopPeg[channel] = j + N;
                         }

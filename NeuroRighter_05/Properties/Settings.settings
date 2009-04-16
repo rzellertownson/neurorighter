@@ -83,5 +83,8 @@
     <Setting Name="SingleChannelPlaybackDevice" Type="System.String" Scope="User">
       <Value Profile="(Default)">Dev1</Value>
     </Setting>
+    <Setting Name="StimIvsVDevice" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dev1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

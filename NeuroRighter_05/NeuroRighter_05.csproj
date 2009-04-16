@@ -96,7 +96,9 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChannelOutput.cs" />
     <Compile Include="FileWriting\FileOutputRemapped.cs" />
+    <Compile Include="Filters\ArtiFilt_Interpolation.cs" />
     <Compile Include="Filters\ArtiFilt.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />
     <Compile Include="DisplaySettings.cs">
@@ -280,6 +282,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

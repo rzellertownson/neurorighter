@@ -393,7 +393,13 @@ namespace NeuroRighter
                     }
                     else
                     {
-                        spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                        if (!Properties.Settings.Default.UseStimulator)
+                            spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                        else
+                        {
+                            spikeTask[0].Timing.ReferenceClockSource = stimPulseTask.Timing.ReferenceClockSource;
+                            spikeTask[0].Timing.ReferenceClockRate = stimPulseTask.Timing.ReferenceClockRate;
+                        }
                         for (int i = 1; i < spikeTask.Count; ++i) //Set other analog in tasks to master clock
                         {
                             spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
@@ -2151,8 +2157,7 @@ namespace NeuroRighter
                             stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
                         }
 
-                        stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
-                            SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                       
                         if (Properties.Settings.Default.UseCineplex)
                         {
                             stimPulseTask.Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
@@ -2160,9 +2165,11 @@ namespace NeuroRighter
                         }
                         else
                         {
-                            stimPulseTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.AnalogInDevice[0] + "/10MHzRefClock";
-                            stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
+                            stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+                            //stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
                         }
+                        stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
+                           SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
                         stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
                         stimDigitalTask.SynchronizeCallbacks = false;
@@ -2848,6 +2855,10 @@ namespace NeuroRighter
 
         private void bw_openLoop_DoWork(object sender, DoWorkEventArgs e)
         {
+            //DEBUGGING
+            stimPulseTask.Control(TaskAction.Verify);
+            stimDigitalTask.Control(TaskAction.Verify);
+
             stim_params sp = (stim_params)e.Argument;
             //Create randomized list of channels
             int numStimChannels = sp.stimChannelList.GetLength(0);

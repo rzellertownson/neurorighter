@@ -1009,7 +1009,7 @@ namespace NeuroRighter
                                             oldestStimRead = numStimReads[i];
                                     }
                                     for (int i = stimIndices.Count - 1; i >= 0; --i)
-                                        if (stimIndices[i].numStimReads < oldestStimRead)
+                                        if (stimIndices[i].numStimReads < oldestStimRead - 1) //Add -1 to buy us some breating room
                                             stimIndices.RemoveAt(i);
                                 }
                                 ++numStimReads[taskNumber];

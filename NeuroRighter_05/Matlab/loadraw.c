@@ -16,12 +16,16 @@
  *     channel for the specified time range.  Setting ch = -1 extracts
  *     all channels.
  *
+ * y = LOADRAW(filename, ch, timespan, FLAG1, FLAG2, ...) uses FLAGs to
+ *     define additional options.  Available flags are:
+ *         1) SuppressText
+ *
  * [y, t] = LOADRAW(filename, ...) additionally returns the time stamps of
  *     the acquired samples in a 1xN vector (in seconds).
  * 
  * Created by: John Rolston (rolston2@gmail.com)
  * Created on: June 26, 2007
- * Last modified: January 29, 2009
+ * Last modified: April 21, 2009
  *
  * Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt
  *
@@ -31,8 +35,10 @@
 /*#include <stdio.h>*/
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "mex.h"
 #include "matrix.h"
+
 
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
@@ -40,6 +46,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     int64_T len; /* File length in bytes */
     int64_T numRecs; /* Num records in file */
     char *filename;
+    char *flag;
+    short suppressText; /* boolean */
     FILE *fp;
     double *V;
     double *t;
@@ -62,8 +70,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     int ch = -1; /* Channel num to extract (-1 if all channels, the default) */
     
     /* Check number of arguments */
-    if (nrhs > 3)
-        mexErrMsgTxt("Filename, channel number (optional), and timespan (optional) are only allowable arguments.");
+    if (nrhs > 4)
+        mexErrMsgTxt("Filename, channel number (optional), timespan (optional), and FLAGs (optional) are only allowable arguments.");
     if (nrhs < 1)
         mexErrMsgTxt("No input arguments. Include filename, channel number (optional), and timespan (optional).");
     if (nlhs > 2)
@@ -85,6 +93,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     fp = fopen(filename,"rb");
     if (fp == NULL)
         mexErrMsgTxt("Could not open file.");
+    mxFree(filename);
     
     /* Get channel to extract (optional) */
     if (nrhs > 1) {
@@ -134,6 +143,19 @@ void mexFunction(int nlhs, mxArray *plhs[],
         }
     }
     
+    /* Check whether text was suppressed */
+    suppressText = 0;
+    if (nrhs > 3) {
+        if (mxIsChar(prhs[3]) != 1)
+            mexErrMsgTxt("FLAGs must be strings.");
+        flag = mxArrayToString(prhs[0]);
+        if (flag == NULL)
+            mexErrMsgTxt("Could not convert FLAG input to string.");
+        if (strcmpi(flag, "suppresstext"))
+            suppressText = 1;
+        mxFree(flag);
+    }
+    
     /* Get file length */  
 /*    fseek(fp,0,SEEK_END); /* Seek from end of file */
 /*    len = ftell(fp); /* Where am I? */
@@ -148,7 +170,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
         if (0 == getFileFstat(fileno(fp), &statbuf))
         {
             len = statbuf.st_size;
-            mexPrintf("File size is %" FMT64 "d bytes\n", len);
+            if(!suppressText)
+                mexPrintf("File size is %" FMT64 "d bytes\n", len);
         }
     }
     
@@ -164,13 +187,15 @@ void mexFunction(int nlhs, mxArray *plhs[],
     numRecs = (len - 54) / (2 * (int64_T)numChannels);
 
     /* Print summary (header) data */
-    mexPrintf("#chs: %i\nsampling rate: %i\ngain: %i\n", numChannels, freq, gain);
-    mexPrintf("date/time: %i-%i-%i %i:%i:%i:%i\n", dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], dt[6]);
-    mexPrintf("\nTotal num. samples per channel: %i\n", numRecs);
+    if (!suppressText) {
+        mexPrintf("#chs: %i\nsampling rate: %i\ngain: %i\n", numChannels, freq, gain);
+        mexPrintf("date/time: %i-%i-%i %i:%i:%i:%i\n", dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], dt[6]);
+        mexPrintf("\nTotal num. samples per channel: %i\n", numRecs);
+    }
 
     /* Compute start and stop indices, if time span was specified */
     timeSpanIdx = mxCalloc(2, sizeof(int64_T)); /* Allocate memory for start/stop indices */
-    if (nrhs == 3) {
+    if (nrhs >= 3) {
         timeSpanIdx[0] = (int64_T)(ceil(timeSpan[0] * (double)freq));
         timeSpanIdx[1] = (int64_T)(ceil(timeSpan[1] * (double)freq));
         ++timeSpanIdx[1];

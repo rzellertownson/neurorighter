@@ -81,7 +81,7 @@ namespace NeuroRighter
                 for ( ; j < buffer[channel].Length - writeIndex[channel]; ++j)
                 {
                     //Copy data to local buffer
-                    buffer[channel][writeIndex[channel]] = data[j];
+                    buffer[channel][writeIndex[channel]] = data[j * downsample];
                     //Take absolute value
                     if (buffer[channel][writeIndex[channel]] < 0.0)
                         buffer[channel][writeIndex[channel]] *= -1.0;

@@ -455,10 +455,13 @@ namespace NeuroRighter
 
                             //ADDED 8/4/08: ensure center of fit is not near artifact
                             W_nonRecursive(startPegii - (N + 1), oldData[channel], channel);
-                            A_n(A[channel], j, startPegii - j, startPegii - (N + 1), channel);
-                            for (int k = j; k < startPegii; ++k)
+                            //ADDED 5/6/09: Make sure no A was calculated that included artifact
+                            int backtrackJ = startPegii - (N + 1);
+                            if (backtrackJ > j) backtrackJ = j;
+                            A_n(A[channel], backtrackJ, startPegii - backtrackJ, startPegii - (N + 1), channel);
+                            for (int k = backtrackJ; k < startPegii; ++k)
                             { /* prePeg should be number of samples needed to climb rail. I usually go conservative with 10*/
-                                filtData[channel][k - PRE] = oldData[channel][k] - A[channel][k - j];
+                                filtData[channel][k - PRE] = oldData[channel][k] - A[channel][k - backtrackJ];
                             }
                             /* zero out peg */
                             for (int k = startPegii; k <= stopPegii; ++k)

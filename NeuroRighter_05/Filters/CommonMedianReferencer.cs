@@ -35,7 +35,8 @@ namespace NeuroRighter.Filters
             {
                 for (int j = 0; j < bufferLength; ++j)
                 {
-                    double median = 0.5 * (meanData[j][startChannel + numChannels / 2] + meanData[j][startChannel + numChannels / 2 + 1]);
+                    //double median = 0.5 * (meanData[j][startChannel + numChannels / 2] + meanData[j][startChannel + numChannels / 2 + 1]);
+                    double median = 0.5 * (meanData[j][meanData[j].Length / 2] + meanData[j][meanData[j].Length / 2 + 1]);
                     for (int i = startChannel; i < startChannel + numChannels; ++i)
                         data[i][j] -= median;
                 }

@@ -167,6 +167,7 @@ namespace NeuroRighter
         private const int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
+        private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         #endregion
 
         #region Constructor
@@ -1141,6 +1142,20 @@ namespace NeuroRighter
             }
             #endregion
 
+            #region SALPA Filtering
+            if (checkBox_SALPA.Checked)
+                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
+            #endregion
+
+            #region SpikeFiltering
+            //Filter spike data
+            if (checkBox_spikesFilter.Checked)
+            {
+                for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
+                    spikeFilter[i].filterData(filtSpikeData[i]);
+            }
+            #endregion
+
             //NEED TO FIX FOR MULTI DEVS
             #region Digital_Referencing_Spikes
             //Digital ref spikes signals
@@ -1163,20 +1178,6 @@ namespace NeuroRighter
             }
             #endregion
 
-            #region SALPA Filtering
-            if (checkBox_SALPA.Checked)
-                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
-            #endregion
-
-            #region SpikeFiltering
-            //Filter spike data
-            if (checkBox_spikesFilter.Checked)
-            {
-                for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
-                    spikeFilter[i].filterData(filtSpikeData[i]);
-            }
-            #endregion
-
             #region SpikeDetection
             ++(numSpikeReads[taskNumber]);
 
@@ -1188,17 +1189,30 @@ namespace NeuroRighter
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 spikeDetector.detectSpikes(filtSpikeData[i], newWaveforms, i);
 
+            #region SpikeValidation
             const int numSamplesPeak = 10; //Number of samples to search for max peak after threshold crossing
             int numSamplesToSearch = 64;
             if ((numPre + numPost + 1) < numSamplesToSearch) numSamplesToSearch = (numPre + numPost + 1);
 
-            #region SpikeValidation
             if (checkBox_spikeValidation.Checked)
             {
                 for (int w = 0; w < newWaveforms.Count; ++w) //For each waveform
                 {
+                    //Ensure that first and last few samples aren't blanked (this happens with artifact suppressions sometimes)
+                    if ((newWaveforms[w].waveform[0] <= newWaveforms[w].waveform[1] + VOLTAGE_EPSILON && newWaveforms[w].waveform[0] >= newWaveforms[w].waveform[1] - VOLTAGE_EPSILON &&
+                        newWaveforms[w].waveform[1] <= newWaveforms[w].waveform[2] + VOLTAGE_EPSILON && newWaveforms[w].waveform[1] >= newWaveforms[w].waveform[2] - VOLTAGE_EPSILON) ||
+                        (newWaveforms[w].waveform[numPost + numPre] <= newWaveforms[w].waveform[numPost + numPre - 1] + VOLTAGE_EPSILON &&
+                        newWaveforms[w].waveform[numPost + numPre] >= newWaveforms[w].waveform[numPost + numPre - 1] - VOLTAGE_EPSILON &&
+                        newWaveforms[w].waveform[numPost + numPre - 1] <= newWaveforms[w].waveform[numPost + numPre - 2] + VOLTAGE_EPSILON &&
+                        newWaveforms[w].waveform[numPost + numPre - 1] >= newWaveforms[w].waveform[numPost + numPre - 2] - VOLTAGE_EPSILON))
+                    {
+                        newWaveforms.RemoveAt(w);
+                        --w;
+                        continue;
+                    }
+
                     //Find peak
-                    double maxVal = 0;
+                    double maxVal = 0.0;
                     for (int k = 0; k < numSamplesPeak; ++k)
                     {
                         if (Math.Abs(newWaveforms[w].waveform[k + numPre]) > maxVal)
@@ -1214,6 +1228,8 @@ namespace NeuroRighter
                             break;
                         }
                     }
+
+
                 }
             }
             #endregion
@@ -1941,9 +1957,9 @@ namespace NeuroRighter
             //if (comboBox_SpikeGain.SelectedIndex < 5) //I don't expect real signals to go over 200 mV, regardless of DAQ Gain
             //SALPAFilter = new SALPA(SALPA_WIDTH, 15, 5, 5, -0.05, 0.05, numElectrodes, 5);
             //else  //At higher gains, use the NI-DAQ's clipping to determine rails, with a small safety margin (e.g., 10 mV)
-            const double prepegSeconds = 0.002;
-            const double postpegSeconds = 0.003;
-            const double postpegZeroSeconds = 0.0002;
+            const double prepegSeconds = 0.0002;
+            const double postpegSeconds = 0.002;
+            const double postpegZeroSeconds = 0.0002; //0.0002 = 5 samples @ 25 kHz
 
             int prepeg = (int)Math.Round(prepegSeconds * spikeSamplingRate);
             int postpeg = (int)Math.Round(postpegSeconds * spikeSamplingRate);
@@ -2291,14 +2307,22 @@ namespace NeuroRighter
                     spikeDetector = new RMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, 
                         numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
                     break;
-                case 1:  //RMS Fixed
+                case 1:  //Improved RMS Adaptive
+                    spikeDetector = new SpikeDetection.StimSafeAdaptiveRMS(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre,
+                        Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
+                    break;
+                case 2:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value));
                     break;
-                case 2:  //Median method
+                case 3:  //Median method
                     spikeDetector = new MedianThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, 
                         numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH, spikeSamplingRate);
                     break;
-                case 3:  //LimAda
+                case 4:  //Improved Median
+                    spikeDetector = new SpikeDetection.StimSafeMedian(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre,
+                        (double)thresholdMultiplier.Value, DEVICE_REFRESH, spikeSamplingRate);
+                    break;
+                case 5:  //LimAda
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), Convert.ToInt32(textBox_spikeSamplingRate.Text));
                     break;
                 default:
@@ -4041,6 +4065,17 @@ ch = 1;
             }
         }
 
+        private void checkBox_spikesCommonMedianLocalReferencing_CheckedChanged(object sender, EventArgs e)
+        {
+            lock (this)
+            {
+                if (checkBox_spikesCommonMedianLocalReferencing.Checked)
+                    referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, 8, numChannels / 8);
+                else
+                    referncer = null;
+            }
+        }
+
         private void button_showcase_Click(object sender, EventArgs e)
         {
             if (videoTask != null)
@@ -4095,7 +4130,5 @@ ch = 1;
            Button b = (Button)sender;
            b.Image = imageList_zoomButtons.Images[imageNumber];
         }
-
- 
     }
 }

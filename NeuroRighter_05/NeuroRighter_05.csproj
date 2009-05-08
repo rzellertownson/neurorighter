@@ -109,6 +109,7 @@
     </Compile>
     <Compile Include="FileWriting\FileOutput.cs" />
     <Compile Include="Filters\CommonAverageReferencer.cs" />
+    <Compile Include="Filters\CommonMedianLocalReferencer.cs" />
     <Compile Include="Filters\CommonMedianReferencer.cs" />
     <Compile Include="Filters\Referencer.cs" />
     <Compile Include="HardwareSettings.cs">
@@ -171,6 +172,8 @@
     <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
     <Compile Include="SpikeDetection\SpikeDetector.cs" />
     <Compile Include="SpikeDetection\SpikeWaveform.cs" />
+    <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
+    <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />

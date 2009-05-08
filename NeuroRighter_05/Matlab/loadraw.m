@@ -13,11 +13,14 @@
 %    channel for the specified time range.  Setting ch = -1 extracts
 %    all channels.
 %
+%    y = LOADRAW(filename, ch, timespan, 'SuppressText') works as above,
+%    but does not write any text to the Matlab command window.
+%
 %    [y, t] = LOADRAW(filename, ...) additionally returns the time stamps of
 %    the acquired samples in a 1xN vector (in seconds).
 % 
 %    Created by: John Rolston (rolston2@gmail.com)
 %    Created on: June 26, 2007
-%    Last modified: January 29, 2009
+%    Last modified: April 22, 2009
 %    
 %    Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt

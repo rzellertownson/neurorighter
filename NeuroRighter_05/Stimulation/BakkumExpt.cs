@@ -615,7 +615,7 @@ namespace NeuroRighter
                         nr.waveforms.RemoveAt(0);
                     }
                 }
-                if (inTrigger)
+                if (!inTrigger)
                     _blockExecution.Set();
             }
         }

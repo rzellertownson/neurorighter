@@ -458,6 +458,7 @@ namespace NeuroRighter
                             //ADDED 5/6/09: Make sure no A was calculated that included artifact
                             int backtrackJ = startPegii - (N + 1);
                             if (backtrackJ > j) backtrackJ = j;
+                            if (backtrackJ < PRE) backtrackJ = PRE;
                             A_n(A[channel], backtrackJ, startPegii - backtrackJ, startPegii - (N + 1), channel);
                             for (int k = backtrackJ; k < startPegii; ++k)
                             { /* prePeg should be number of samples needed to climb rail. I usually go conservative with 10*/

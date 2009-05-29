@@ -3398,7 +3398,20 @@ namespace NeuroRighter
                 List<MLArray> mlList = new List<MLArray>();
                 MLStructure structure = new MLStructure("imp", new int[] { 1, 1 });
                 structure["f", 0] = new MLDouble("", freqs, freqs.Length);
-                structure["z", 0] = new MLDouble("", impedance);
+                
+                //Only add non-null (sampled) channels
+                int numNonNull = 0;
+                List<int> goodChannels = new List<int>();
+                for (int i = 0; i < impedance.Length; ++i)
+                    if (impedance[i] != null)
+                    {
+                        ++numNonNull;
+                        goodChannels.Add(i);
+                    }
+                double[][] nonNullImpedance = new double[numNonNull][];
+                for (int i = 0; i < numNonNull; ++i) nonNullImpedance[i] = impedance[goodChannels[i]];
+
+                structure["z", 0] = new MLDouble("", nonNullImpedance);
                 mlList.Add(structure);
 
                 try
@@ -3990,7 +4003,10 @@ ch = 1;
             for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.SelectedItems.Count; ++i)
                 PTSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningPTSElectrodes.SelectedItems[i]));
 
-            expt = new BakkumExpt(PTSChannels, probeChannels, stimDigitalTask, stimPulseTask,
+            //Get user's desired votlage
+            double voltage = Convert.ToDouble(numericUpDown_bakkumVoltage.Value);
+
+            expt = new BakkumExpt(PTSChannels, probeChannels, voltage, stimDigitalTask, stimPulseTask,
                 stimDigitalWriter, stimPulseWriter);
             expt.linkToSpikes(this);
             expt.start();

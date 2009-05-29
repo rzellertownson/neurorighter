@@ -49,6 +49,7 @@ namespace NeuroRighter
         private int lastPTSIndex = -1;
         private StreamWriter outputFileWriter;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
+        private double voltage;
 
         private Task stimDigitalTask, stimAnalogTask;
         private DigitalSingleChannelWriter stimDigitalWriter;
@@ -75,11 +76,18 @@ namespace NeuroRighter
 
         //'availableContextChannels' is a list of channels from which to construct CPS, 1-based
         //'availableProbeChannels' is ibid for the final probe pulse
-        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels, 
+        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels,
+            Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
+            AnalogMultiChannelWriter stimAnalogWriter)
+            : this(availableContextChannels, availableProbeChannels, PULSE_AMPLITUDE,
+                stimDigitalTask, stimAnalogTask, stimDigitalWriter, stimAnalogWriter) { }
+
+        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels, double voltage, 
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
             waveforms = new List<SpikeWaveform>(100);
+            this.voltage = voltage;
 
             //Initialize random number generator
             rand = new Random();
@@ -118,7 +126,7 @@ namespace NeuroRighter
                 interpulseIntervals.Add(INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble()));
 
             //Make CPS
-            CPS = new StimTrain(PULSE_WIDTH, PULSE_AMPLITUDE, CPSChannels, interpulseIntervals);
+            CPS = new StimTrain(PULSE_WIDTH, voltage, CPSChannels, interpulseIntervals);
             CPS.populate(); //Fill samples (might take a while)
             #endregion
 
@@ -146,9 +154,9 @@ namespace NeuroRighter
                 for (int j = 0; j < NUM_PTS_PULSES; ++j)
                     channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);
 
-                PTS.Add(new StimTrain(PULSE_WIDTH, PULSE_AMPLITUDE, channels, withinPTSIntervals));
+                PTS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
                 //Hold off on populating till later
-                SBS.Add(new StimTrain(PULSE_WIDTH, PULSE_AMPLITUDE, channels, withinPTSIntervals));
+                SBS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
                 SBS[i].shuffleChannelOrder();
 
                 //Make intervals
@@ -202,7 +210,7 @@ namespace NeuroRighter
             TimeSpan SBS_PRE_CL_LENGTH = new TimeSpan(0, 30, 0);    //30 min
             TimeSpan SBS_POST_CL_LENGTH = new TimeSpan(1, 0, 0);    //1 hr
             TimeSpan SBS_ONLY_MEASURE_T = new TimeSpan(0, 30, 0); //30 min
-            TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0);
+            TimeSpan CL_LENGTH = new TimeSpan(2, 0, 0); //2 hrs
 
             //Print file header info
             outputFileWriter.WriteLine("Closed-loop Learning Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");
@@ -357,7 +365,7 @@ namespace NeuroRighter
                     //Check output direction, after listening to 100 ms of spikes
                     if (goingCorrectDirection())
                     {
-                        outputFileWriter.WriteLine("O Moving in correct direction.");
+                        outputFileWriter.WriteLine("Time: " + DateTime.Now + "\r\nO Moving in correct direction.");
                         updateProbabilities(true, lastPTSIndex);
                         deliverSBS();
                     }
@@ -365,7 +373,7 @@ namespace NeuroRighter
                     //Else, it's incorrect: deliver PTS
                     else
                     {
-                        outputFileWriter.WriteLine("X Moving in incorrect direction.");
+                        outputFileWriter.WriteLine("Time: " + DateTime.Now + "\r\nX Moving in incorrect direction.");
                         updateProbabilities(false, lastPTSIndex);
                         //Select and deliver PTS
                         deliverPTS();

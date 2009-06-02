@@ -3065,365 +3065,97 @@ namespace NeuroRighter
         /*************************************
          * IMPEDANCE TEST
          * ***********************************/
-        private double[][] impedance; //Stores impedances for each channel, for multiple frequencies
-        private double[] freqs;
-        private const int IMPEDANCE_SAMPLING_RATE = 1000000;  //9-24-08: noted that higher sampling rate improves accuracy
-
         private void button_impedanceTest_Click(object sender, EventArgs e)
         {
-            const double resolution = 1.5; //Multiplier for freqs.
             double startFreq = Convert.ToDouble(numericUpDown_impStartFreq.Value);
             double stopFreq = Convert.ToDouble(numericUpDown_impStopFreq.Value);
             double numPeriods = Convert.ToDouble(numericUpDown_impNumPeriods.Value);
-            //double[] freqs;
-            if (startFreq == stopFreq)
-                freqs = new double[1];
-            else
-                freqs = new double[Convert.ToInt32(Math.Floor(Math.Log(stopFreq / startFreq) / Math.Log(resolution))) + 1]; //This determines the number of frequencies counting by doublings
-
-            //Populate freqs vector
-            freqs[0] = startFreq;
-            for (int i = 1; i < freqs.GetLength(0); ++i)
-                freqs[i] = freqs[i - 1] * resolution;
+            double commandVoltage = Convert.ToDouble(numericUpDown_impCommandVoltage.Value);
+            double RCurr = Convert.ToDouble(numericUpDown_RCurr.Value);
+            double RMeas = Convert.ToDouble(numericUpDown_RMeas.Value);
+            double RGain = Convert.ToDouble(numericUpDown_RGain.Value);
 
             buttonStart.Enabled = false;  //So users can't try to get data from the same card
             button_impedanceTest.Enabled = false;
-            button_impedanceTest.Refresh();
             button_computeGain.Enabled = false;
-            button_computeGain.Refresh();
-            buttonStart.Refresh();
-
-            impedanceRecord = new Task("Impedance Task");
-            //Choose appropriate input for current/voltage-controlled stimulation
-            String inputChannel;
-            if (radioButton_impCurrent.Checked) inputChannel = "/ai2";
-            else inputChannel = "/ai3";
-
-            impedanceRecord.AIChannels.CreateVoltageChannel(Properties.Settings.Default.ImpedanceDevice + inputChannel, "",
-                AITerminalConfiguration.Rse, -5.0, 5.0, AIVoltageUnits.Volts);
-
-//try delaying sampling
-            impedanceRecord.Timing.DelayFromSampleClock = 10;
-
-            impedanceRecord.Control(TaskAction.Verify);
+            button_impedanceCancel.Enabled = true;
             
 
-            impedanceRecord.Timing.ConfigureSampleClock("", IMPEDANCE_SAMPLING_RATE, SampleClockActiveEdge.Rising,
-                SampleQuantityMode.FiniteSamples);
-            impedanceReader = new AnalogSingleChannelReader(impedanceRecord.Stream);
-            impedanceRecord.Timing.ReferenceClockSource = "OnboardClock";
-
-            stimDigitalTask.Dispose();
-            stimDigitalTask = new Task("stimDigitalTask_impedance");
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-            stimPulseTask.Timing.ConfigureSampleClock("/" + Properties.Settings.Default.ImpedanceDevice + "/ai/SampleClock",
-                IMPEDANCE_SAMPLING_RATE, SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-            stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" +
-                Properties.Settings.Default.ImpedanceDevice + "/ai/StartTrigger",
-                DigitalEdgeStartTriggerEdge.Rising);
-            stimPulseTask.Timing.ReferenceClockSource = impedanceRecord.Timing.ReferenceClockSource;
-            stimPulseTask.Timing.ReferenceClockRate = impedanceRecord.Timing.ReferenceClockRate;
-            //stimPulseTask.Timing.SampleClockSource = impedanceRecord.Timing.SampleClockSource;
-            //stimPulseTask.Timing.SampleClockRate = impedanceRecord.Timing.SampleClockRate;
-            stimDigitalTask.Control(TaskAction.Verify);
-            stimPulseTask.Control(TaskAction.Verify);
-
-            scatterGraph_impedance.ClearData();
             scatterGraph_impedance.Plots.Clear();
 
-            //try
-            //{
-            //    DaqSystem.Local.ConnectTerminals("/" + Properties.Settings.Default.CineplexDevice + "/ai/ConvertClock",
-            //        "/" + Properties.Settings.Default.CineplexDevice + "/PFI13");
-            //}
-            //catch (DaqException e1) { MessageBox.Show(e1.Message); }
+            impMeasurer = new Impedance.ImpedanceMeasurer();
+            impMeasurer.alertChannelFinished += new Impedance.ImpedanceMeasurer.ChannelFinishedHandler(impedanceChannelFinishedHandler);
+            impMeasurer.alertAllFinished += new Impedance.ImpedanceMeasurer.AllFinishedHandler(impedanceFinished);
+            impMeasurer.alertProgressChanged += new Impedance.ImpedanceMeasurer.ProgressChangedHandler(impedanceProgressChangedHandler);
+            if (checkBox_impedanceAllChannels.Checked)
+                impMeasurer.getImpedance(startFreq, stopFreq, numPeriods, radioButton_impCurrent.Checked,
+                    1, numChannels, RCurr, RMeas, RGain, commandVoltage, checkBox_impBandpassFilter.Checked, checkBox_impUseMatchedFilter.Checked);
+            else
+                impMeasurer.getImpedance(startFreq, stopFreq, numPeriods, radioButton_impCurrent.Checked,
+                    Convert.ToInt32(numericUpDown_impChannel.Value), 1, RCurr, RMeas, RGain, commandVoltage, checkBox_impBandpassFilter.Checked, checkBox_impUseMatchedFilter.Checked);
 
-            textBox_impedanceResults.Clear();
-            impedance = new double[numChannels][];
+        }
 
-            if (!(checkBox_impedanceAllChannels.Checked))
+        private Impedance.ImpedanceMeasurer impMeasurer;
+
+        private void impedanceChannelFinishedHandler(object sender, int channelIndex, int channel, double[][] impedance, double[] freqs)
+        {
+            if (scatterGraph_impedance.InvokeRequired)
             {
-                int c = (int)numericUpDown_impChannel.Value;
-                {
-                    impedance[c - 1] = new double[freqs.GetLength(0)];
-
-                    scatterGraph_impedance.Plots.Add(new ScatterPlot());
-
-                    UInt32 data = StimPulse.channel2MUX(Convert.ToDouble(c));
-
-                    //Setup digital waveform, open MUX channel
-                    stimDigitalWriter.WriteSingleSamplePort(true, data);
-                    stimDigitalTask.WaitUntilDone();
-                    stimDigitalTask.Stop();
-
-                    for (int f = 0; f < freqs.GetLength(0); ++f)
-                    {
-                        double numSeconds = 1 / freqs[f];
-                        if (numSeconds * numPeriods < 0.1)
-                        {
-                            numPeriods = Math.Ceiling(0.1 * freqs[f]);
-                        }
-
-                        SineSignal testWave = new SineSignal(freqs[f], Convert.ToDouble(numericUpDown_impCommandVoltage.Value));  //Generate a 100 mV sine wave at 1000 Hz
-                        double[] testWaveValues = testWave.Generate(IMPEDANCE_SAMPLING_RATE, (long)Math.Round(numSeconds * (double)IMPEDANCE_SAMPLING_RATE));
-
-                        int size = Convert.ToInt32(numSeconds * IMPEDANCE_SAMPLING_RATE);
-                        double[,] analogPulse = new double[4, size];
-
-                        for (int i = 0; i < size; ++i)
-                            analogPulse[0 + 2, i] = testWaveValues[i];
-
-                        impedanceRecord.Timing.SamplesPerChannel = (long)(numPeriods * size);
-
-                        stimPulseTask.Timing.SamplesPerChannel = (long)(numPeriods * size); //Do numperiods cycles of sine wave
-
-                        double[] stateData = new double[4];
-                        stateData[0] = (double)c;
-                        stateData[1] = freqs[f];
-                        stateData[2] = (double)f;
-                        stateData[3] = Convert.ToDouble(radioButton_impCurrent.Checked); //1 if current controlled, 0 if voltage controlled
-                        stimPulseWriter.WriteMultiSample(true, analogPulse);
-                        impedanceReader.BeginReadMultiSample((int)(numPeriods * size), analogInCallback_impedance, (Object)stateData);
-
-                        stimPulseTask.WaitUntilDone();
-                        impedanceRecord.WaitUntilDone();
-                        stimPulseTask.Stop();
-                        impedanceRecord.Stop();
-
-                    }
-                    stimDigitalWriter.WriteSingleSamplePort(true, 0);
-                    stimDigitalTask.WaitUntilDone();
-                    stimDigitalTask.Stop();
-                    //scatterGraph_impedance.Plots[c - 1].PlotXY(freqs, impedance[c - 1]);
-                    scatterGraph_impedance.Plots[0].PlotXY(freqs, impedance[c - 1]);
-                    scatterGraph_impedance.Refresh();
-                    textBox_impedanceResults.Clear();
-                    textBox_impedanceResults.Text = "Channel " + c.ToString() + "\r\n\tFrequency (Hz)\tImpedance (Ohms)\r\n";
-                    for (int f = 0; f < freqs.GetLength(0); ++f)
-                    {
-                        textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + impedance[c - 1][f] + "\r\n";
-                    }
-                    textBox_impedanceResults.Text += "\r\n";
-                }
+                scatterGraph_impedance.Invoke(new Impedance.ImpedanceMeasurer.ChannelFinishedHandler(impedanceChannelFinishedHandler), 
+                    new object[] { sender, channelIndex, channel, impedance, freqs });
             }
             else
             {
-                for (int c = 1; c <= numChannels; ++c)
-                {
-                    impedance[c - 1] = new double[freqs.GetLength(0)];
+                scatterGraph_impedance.Plots.Add(new ScatterPlot());
+                scatterGraph_impedance.Plots[channelIndex].PlotXY(freqs, impedance[channelIndex]);
+                scatterGraph_impedance.Refresh();
 
-                    scatterGraph_impedance.Plots.Add(new ScatterPlot());
-
-                    UInt32 data = StimPulse.channel2MUX(Convert.ToDouble(c));
-
-                    //Setup digital waveform, open MUX channel
-                    stimDigitalWriter.WriteSingleSamplePort(true, data);
-                    stimDigitalTask.WaitUntilDone();
-                    stimDigitalTask.Stop();
-
-                    double numPeriodsUsed = numPeriods;
-
-                    for (int f = 0; f < freqs.GetLength(0); ++f)
-                    {
-                        double numSeconds = 1 / freqs[f];
-                        if (numSeconds * numPeriods < 0.1)
-                        {
-                            numPeriodsUsed = Math.Ceiling(0.1 * freqs[f]);
-                        }
-
-                        SineSignal testWave = new SineSignal(freqs[f], Convert.ToDouble(numericUpDown_impCommandVoltage.Value));  //Generate a 100 mV sine wave at 1000 Hz
-                        double[] testWaveValues = testWave.Generate(IMPEDANCE_SAMPLING_RATE, (long)Math.Round(numSeconds * (double)IMPEDANCE_SAMPLING_RATE));
-
-                        int size = Convert.ToInt32(numSeconds * IMPEDANCE_SAMPLING_RATE);
-                        double[,] analogPulse = new double[4, size];
-
-                        for (int i = 0; i < size; ++i)
-                            analogPulse[0 + 2, i] = testWaveValues[i];
-
-                        impedanceRecord.Timing.SamplesPerChannel = (long)(numPeriodsUsed * size);
-
-                        stimPulseTask.Timing.SamplesPerChannel = (long)(numPeriodsUsed * size); //Do numperiods cycles of sine wave
-
-                        double[] stateData = new double[4];
-                        stateData[0] = (double)c;
-                        stateData[1] = freqs[f];
-                        stateData[2] = (double)f;
-                        stateData[3] = Convert.ToDouble(radioButton_impCurrent.Checked); //1 if current controlled, 0 if voltage controlled
-                        stimPulseWriter.WriteMultiSample(true, analogPulse);
-                        impedanceReader.BeginReadMultiSample((int)(numPeriodsUsed * size), analogInCallback_impedance, (Object)stateData);
-
-                        stimPulseTask.WaitUntilDone();
-                        impedanceRecord.WaitUntilDone();
-                        stimPulseTask.Stop();
-                        impedanceRecord.Stop();
-                    }
-                    stimDigitalWriter.WriteSingleSamplePort(true, 0);
-                    stimDigitalTask.WaitUntilDone();
-                    stimDigitalTask.Stop();
-                    scatterGraph_impedance.Plots[c - 1].PlotXY(freqs, impedance[c - 1]);
-                    //scatterGraph_impedance.Plots[0].PlotXY(freqs, impedance[c - 1]);
-                    scatterGraph_impedance.Refresh();
-                    textBox_impedanceResults.Text += "Channel " + c.ToString() + "\r\n\tFrequency (Hz)\tImpedance (Ohms)\r\n";
-                    for (int f = 0; f < freqs.GetLength(0); ++f)
-                    {
-                        textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + string.Format("{0:0.000}", impedance[c - 1][f]) + "\r\n";
-                    }
-                    textBox_impedanceResults.Text += "\r\n";
-                }
+                textBox_impedanceResults.Text += "Channel " + channel.ToString() + "\r\n\tFrequency (Hz)\tImpedance (Ohms)\r\n";
+                for (int f = 0; f < freqs.GetLength(0); ++f)
+                    textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + string.Format("{0:0.000}", impedance[channelIndex][f]) + "\r\n";
+                textBox_impedanceResults.Text += "\r\n";
             }
-            impedanceRecord.Dispose();
+        }
 
-            bool[] fData = new bool[Properties.Settings.Default.StimPortBandwidth];
-            stimDigitalWriter.WriteSingleSampleMultiLine(true, fData);
-            stimDigitalTask.WaitUntilDone();
-            stimDigitalTask.Stop();
+        private void impedanceProgressChangedHandler(object sender, int percentage, int channel, double frequency)
+        {
+            if (progressBar_impedance.InvokeRequired)
+            {
+                progressBar_impedance.Invoke(new Impedance.ImpedanceMeasurer.ProgressChangedHandler(impedanceProgressChangedHandler),
+                    new object[] { sender, percentage, channel, frequency });
+            }
+            else
+            {
+                progressBar_impedance.Value = percentage;
+                label_impedanceProgress.Text = "Ch " + channel + " Freq " + string.Format("{0:0.0}", frequency) + " Hz";
+            }
+        }
+
+        private void impedanceFinished(object sender)
+        {
+            progressBar_impedance.Value = 100;
+            label_impedanceProgress.Text = "Impedance Progress";
 
             buttonStart.Enabled = true;
             button_impedanceTest.Enabled = true;
             button_computeGain.Enabled = true;
+            button_impedanceCancel.Enabled = false;
 
             textBox_impedanceResults.SelectAll();
 
             //Now, destroy the objects we made
             updateSettings();
-            //impedance = null;
         }
 
-        private void analogInCallback_impedance(IAsyncResult ar)
+        private void button_impedanceCancel_Click(object sender, EventArgs e)
         {
-            double[] state = (double[])ar.AsyncState;
-            int ch = (int)state[0];
-            double f = state[1];
-
-            double[] data = impedanceReader.EndReadMultiSample(ar);
-
-            //Remove DC offset
-            double mData = 0;
-            for (int i = 0; i < data.Length; ++i) mData += data[i];
-            mData /= data.Length;
-            for (int i = 0; i < data.Length; ++i) data[i] -= mData;
-
-            //Filter data with Butterworth, if checked
-            if (checkBox_impBandpassFilter.Checked)
-            {
-                ButterworthBandpassFilter bwfilt = new ButterworthBandpassFilter(1, IMPEDANCE_SAMPLING_RATE, f - f / 4, f + f / 4);
-                data = bwfilt.FilterData(data);
-            }
-
-            //Use matched filter to reduce noise, if checked (slow)
-            if (checkBox_impUseMatchedFilter.Checked)
-            {
-                //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                
-                SineSignal wave = new SineSignal(f, 1.0);  //Create a sine wave at test frequency of amplitude 1
-                double[] h; //filter
-                //If data is very long, subsample by an order of magnitude
-                if (data.Length > 1E6)
-                {
-                    double[] dataNew = new double[(int)Math.Floor((double)data.Length / 10)];
-                    for (int i = 0; i < dataNew.Length; ++i) dataNew[i] = data[i * 10];
-                    data = dataNew;
-                    dataNew = null;
-                    h = wave.Generate(IMPEDANCE_SAMPLING_RATE / 10, (long)Math.Round((double)IMPEDANCE_SAMPLING_RATE / (f * 10))); //Generate one period
-                }
-
-                else
-                {
-                    h = wave.Generate(IMPEDANCE_SAMPLING_RATE, (long)Math.Round((double)IMPEDANCE_SAMPLING_RATE / f)); //Generate one period
-                }
-                wave = null;
-                //GC.Collect(); //this uses a lot of memory
-                //Compute filter power
-                double phh = 0.0;
-                for (int i = 0; i < h.Length; ++i) phh += h[i] * h[i];
-                //Normalize filter so power is 1
-                for (int i = 0; i < h.Length; ++i) h[i] /= phh;
-
-                //sw.Start();
-                double[] x = NationalInstruments.Analysis.Dsp.SignalProcessing.Convolve(data, h);
-                //sw.Stop();
-                //TimeSpan ts = sw.Elapsed;
-                //System.Diagnostics.Debug.WriteLine("ms = " + ts.Milliseconds + "\t s = " + ts.Seconds + "\t min = " + ts.Minutes);
-
-                int offset = (int)(h.Length / 2);
-                for (int i = 0; i < data.Length; ++i) data[i] = x[i + offset]; //Take center values
-            }
-
-            double rms = rootMeanSquared(data);
-
-            if (Convert.ToBoolean(state[3]))  //Current-controlled
-            {
-                impedance[ch - 1][(int)state[2]] = rms / (0.707106704695506 * Convert.ToDouble(numericUpDown_impCommandVoltage.Value) / Convert.ToDouble(numericUpDown_RCurr.Value));
-                //Account for 6.8 MOhm resistor in parallel
-                impedance[ch - 1][(int)state[2]] = 1.0 / (1.0 / impedance[ch - 1][(int)state[2]] - 1.0 / 6800000.0);
-            }
-            else  //Voltage-controlled
-            {
-                double Rg = Convert.ToDouble(numericUpDown_RGain.Value);
-                double Rm = Convert.ToDouble(numericUpDown_RMeas.Value);
-                double gain = 1.0 + (49400.0 / Rg); //Based on LT in-amp
-                impedance[ch - 1][(int)state[2]] = (0.707106704695506 * Convert.ToDouble(numericUpDown_impCommandVoltage.Value)) / ((rms / gain) / Rm);
-            }
+            impMeasurer.cancel();
         }
-
-        //Send recorded impedance values to Matlab
-        private void button_impedanceSendToMatlab_Click(object sender, EventArgs e)
-        {
-            //MLApp.MLAppClass matlab = new MLApp.MLAppClass();
-
-            //Array pr = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
-            //Array pi = new double[impedance[(int)numericUpDown_impChannel.Value - 1].GetLength(0)];
-            //for (int i = 0; i < pr.GetLength(0); ++i)
-            //    pr.SetValue(impedance[(int)numericUpDown_impChannel.Value - 1][i], i);
-            //matlab.PutFullMatrix("impedance", "base", pr, pi);
-        }
-
 
         private void button_impedanceSaveAsMAT_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "MAT files (*.mat)|*.mat|All files (*.*)|*.*";
-            saveFileDialog.DefaultExt = "mat";
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string filename = saveFileDialog.FileName;
-
-                List<MLArray> mlList = new List<MLArray>();
-                MLStructure structure = new MLStructure("imp", new int[] { 1, 1 });
-                structure["f", 0] = new MLDouble("", freqs, freqs.Length);
-                
-                //Only add non-null (sampled) channels
-                int numNonNull = 0;
-                List<int> goodChannels = new List<int>();
-                for (int i = 0; i < impedance.Length; ++i)
-                    if (impedance[i] != null)
-                    {
-                        ++numNonNull;
-                        goodChannels.Add(i);
-                    }
-                double[][] nonNullImpedance = new double[numNonNull][];
-                for (int i = 0; i < numNonNull; ++i) nonNullImpedance[i] = impedance[goodChannels[i]];
-
-                structure["z", 0] = new MLDouble("", nonNullImpedance);
-                mlList.Add(structure);
-
-                try
-                {
-                    MatFileWriter mfw = new MatFileWriter(filename, mlList, true);
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show("There was an error when creating the MAT-file: \n" + err.ToString(),
-                        "MAT-File Creation Error!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
+            if (impMeasurer != null) impMeasurer.saveAsMAT();
         }
 
         private void button_impedanceCopyDataToClipboard_Click(object sender, EventArgs e)
@@ -4145,6 +3877,11 @@ ch = 1;
         {
            Button b = (Button)sender;
            b.Image = imageList_zoomButtons.Images[imageNumber];
+        }
+
+        private void NeuroRighter_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

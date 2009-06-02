@@ -118,6 +118,7 @@
     <Compile Include="HardwareSettings.Designer.cs">
       <DependentUpon>HardwareSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Impedance\ImpedanceMeasurer.cs" />
     <Compile Include="Matlab\NRLab.cs" />
     <Compile Include="Miscellaneous\MEAChannelMappings.cs" />
     <Compile Include="NeuroRighter.cs">

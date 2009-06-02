@@ -617,7 +617,8 @@ namespace NeuroRighter
                     {
                         waveforms.Add(nr.waveforms[0]);
 #if (DEBUG_LOG)
-                        nr.logFile.WriteLine("[BakkumExpt] Waveform added, index: " + nr.waveforms[0].index);
+                        nr.logFile.WriteLine("[BakkumExpt] Waveform added, index: " + nr.waveforms[0].index + "\n\r\tTime: " 
+                            + DateTime.Now.Minute + ":" + DateTime.Now.Second + ":" + DateTime.Now.Millisecond);
                         nr.logFile.Flush();
 #endif
                         nr.waveforms.RemoveAt(0);

@@ -63,13 +63,13 @@ namespace NeuroRighter
         private Task stimDigitalTask;
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
-        private Task impedanceRecord; //For impedance measurements
+        //private Task impedanceRecord; //For impedance measurements
         private Task stimIvsV; //Determines whether stim is current or voltage controlled
         private List<AnalogMultiChannelReader> spikeReader;
         private List<AnalogWaveform<double>[]> spikeData;
         private AnalogUnscaledReader lfpReader;
         private AnalogUnscaledReader eegReader;
-        private AnalogSingleChannelReader impedanceReader;
+        //private AnalogSingleChannelReader impedanceReader;
         private DigitalSingleChannelWriter triggerWriter;
         //private AnalogSingleChannelWriter spikeOutWriter;
         private DigitalSingleChannelWriter stimDigitalWriter;
@@ -139,6 +139,7 @@ namespace NeuroRighter
         private DateTime experimentStartTime;
         private Filters.ArtiFilt artiFilt;
         private ChannelOutput BNCOutput;
+        private DateTime timedRecordingStopTime;
 
 
         //Plots
@@ -846,6 +847,7 @@ namespace NeuroRighter
 
                     //Set start time
                     experimentStartTime = DateTime.Now;
+                    timedRecordingStopTime = DateTime.Now.AddMinutes(Convert.ToInt32(numericUpDown_timedRecordingDuration.Value));
                     timer_timeElapsed.Enabled = true;
                     
 
@@ -1334,8 +1336,12 @@ namespace NeuroRighter
         {
             int taskNumber = (int)e.Result;
             
-            //Setup next callback
-            spikeReader[taskNumber].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, taskNumber, spikeData[taskNumber]);
+            //Check whether timed recording is done
+            if (!checkBox_enableTimedRecording.Checked || DateTime.Now < timedRecordingStopTime)
+                //Setup next callback
+                spikeReader[taskNumber].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, taskNumber, spikeData[taskNumber]);
+            else
+                buttonStop.PerformClick();
         }
 
         //***********************
@@ -3137,6 +3143,20 @@ namespace NeuroRighter
             progressBar_impedance.Value = 100;
             label_impedanceProgress.Text = "Impedance Progress";
 
+            //Toggle between voltage/current to discharge any weird build-ups
+            if (radioButton_impCurrent.Checked)
+            {
+                radioButton_impVoltage_Click(this, null);
+                System.Threading.Thread.Sleep(500);
+                radioButton_impCurrent_Click(this, null);
+            }
+            else
+            {
+                radioButton_impCurrent_Click(this, null);
+                System.Threading.Thread.Sleep(500);
+                radioButton_impVoltage_Click(this, null);
+            }
+
             buttonStart.Enabled = true;
             button_impedanceTest.Enabled = true;
             button_computeGain.Enabled = true;
@@ -3146,6 +3166,8 @@ namespace NeuroRighter
 
             //Now, destroy the objects we made
             updateSettings();
+
+            
         }
 
         private void button_impedanceCancel_Click(object sender, EventArgs e)
@@ -3858,7 +3880,7 @@ ch = 1;
         private void timer_timeElapsed_Tick(object sender, EventArgs e)
         {
             TimeSpan ts = DateTime.Now - experimentStartTime;
-            label_timeElapsed.Text = "Time elapsed: " + String.Format("{0:00}:{1:00}:{2:00}",(int)ts.TotalHours, ts.Minutes, ts.Seconds);
+            label_timeElapsed.Text = "Time elapsed: \r\n" + String.Format("{0:00}:{1:00}:{2:00}",(int)ts.TotalHours, ts.Minutes, ts.Seconds);
         }
 
         private void checkBox_artiFilt_CheckedChanged(object sender, EventArgs e)
@@ -3879,9 +3901,9 @@ ch = 1;
            b.Image = imageList_zoomButtons.Images[imageNumber];
         }
 
-        private void NeuroRighter_Load(object sender, EventArgs e)
+        private void checkBox_enableTimedRecording_CheckedChanged(object sender, EventArgs e)
         {
-
+            numericUpDown_timedRecordingDuration.Enabled = checkBox_enableTimedRecording.Checked;
         }
     }
 }

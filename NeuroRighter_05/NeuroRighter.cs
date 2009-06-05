@@ -59,19 +59,15 @@ namespace NeuroRighter
         private Task eegTask;
         private Task videoTask;  //To synch up Cineplex system
         private Task triggerTask; //To trigger everything simultaneously, using AO
-        //private Task spikeOutTask; //To send a channel to the oscilloscope
         private Task stimDigitalTask;
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
-        //private Task impedanceRecord; //For impedance measurements
-        private Task stimIvsV; //Determines whether stim is current or voltage controlled
+        private Task stimIvsVTask; //Determines whether stim is current or voltage controlled
         private List<AnalogMultiChannelReader> spikeReader;
         private List<AnalogWaveform<double>[]> spikeData;
         private AnalogUnscaledReader lfpReader;
         private AnalogUnscaledReader eegReader;
-        //private AnalogSingleChannelReader impedanceReader;
         private DigitalSingleChannelWriter triggerWriter;
-        //private AnalogSingleChannelWriter spikeOutWriter;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimPulseWriter;
         private AnalogMultiChannelReader stimTimeReader;
@@ -445,8 +441,8 @@ namespace NeuroRighter
                         if (checkBox_video.Checked)
                         {
                             triggerTask.Timing.ConfigureSampleClock("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/SampleClock",
-                                spikeSamplingRate, SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,
-                                Convert.ToInt32(spikeSamplingRate/4));
+                                spikeSamplingRate, SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples,
+                                3);
                         }
                         if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         {
@@ -574,7 +570,8 @@ namespace NeuroRighter
                         Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
                     spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
                     spikePlotData.setGain(Properties.Settings.Default.SpikeDisplayGain);
-
+                    spikeGraph.setDisplayGain(Properties.Settings.Default.SpikeDisplayGain);
+                    
                     if (Properties.Settings.Default.UseLFPs)
                     {
                         if (Properties.Settings.Default.SeparateLFPBoard)
@@ -583,12 +580,15 @@ namespace NeuroRighter
                         else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
                                 (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
                         lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
+                        
+                        lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
                         lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
                     }
 
                     waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
                         numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
                     waveformPlotData.setGain(Properties.Settings.Default.SpkWfmDisplayGain);
+                    spkWfmGraph.setDisplayGain(Properties.Settings.Default.SpkWfmDisplayGain);
                     waveformPlotData.dataAcquired += new EventPlotData.dataAcquiredHandler(waveformPlotData_dataAcquired);
                     waveformPlotData.start();
                     #endregion
@@ -824,8 +824,8 @@ namespace NeuroRighter
                     //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
                     if (checkBox_video.Checked)
                     {
-                        byte[] b_array = new byte[5] {255, 255, 255, 255, 255};
-                        DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                        byte[] b_array = new byte[3] {255, 255, 255};
+                        DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
                         wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
                         triggerWriter.BeginWriteWaveform(true, wfm, null, null);
                     }
@@ -1605,20 +1605,23 @@ namespace NeuroRighter
             if (Properties.Settings.Default.UseStimulator)
             {
                 //Deal with IvsV
-                stimIvsV = new Task("stimIvsV");
-                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                stimIvsVTask = new Task("stimIvsV");
+                //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                //    ChannelLineGrouping.OneChannelForAllLines);
+                stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                     ChannelLineGrouping.OneChannelForAllLines);
-                stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
-                stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                stimIvsV.Control(TaskAction.Verify);
-                byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                stimIvsVWriter.WriteWaveform(true, wfm);
-                stimIvsV.WaitUntilDone();
-                stimIvsV.Stop();
-                stimIvsV.Dispose();
+                stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                stimIvsVTask.Control(TaskAction.Verify);
+                //byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
+                //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                //stimIvsVWriter.WriteWaveform(true, wfm);
+                stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
+                stimIvsVTask.WaitUntilDone();
+                stimIvsVTask.Stop();
+                stimIvsVTask.Dispose();
 
                 if (stimDigitalTask != null)
                     stimDigitalTask.Dispose();
@@ -1671,8 +1674,8 @@ namespace NeuroRighter
             taskRunning = false;
             if (triggerWriter != null)
             {
-                byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                byte[] b_array = new byte[3] { 0, 0, 0 };
+                DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
                 wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
                 triggerTask = new Task("TriggerTask");
                 triggerTask.DOChannels.CreateChannel(Properties.Settings.Default.CineplexDevice + "/Port0/line0:7", "",
@@ -2135,7 +2138,7 @@ namespace NeuroRighter
                 if (stimTimeTask != null) { stimTimeTask.Dispose();  stimTimeTask = null; }
                 if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
                 if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-                if (stimIvsV != null) { stimIvsV.Dispose(); stimIvsV = null; }
+                if (stimIvsVTask != null) { stimIvsVTask.Dispose(); stimIvsVTask = null; }
                 if (serialOut != null) { serialOut.Close(); serialOut.Dispose(); }
                 if (Properties.Settings.Default.UseCineplex)
                 {
@@ -2217,24 +2220,28 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.UseStimulator)
                         {
-                            stimIvsV = new Task("stimIvsV");
-                            stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                            stimIvsVTask = new Task("stimIvsV");
+                            //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                            //    ChannelLineGrouping.OneChannelForAllLines);
+                            stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                                 ChannelLineGrouping.OneChannelForAllLines);
-                            stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
-                            stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                            stimIvsV.Control(TaskAction.Verify);
-                            byte[] b_array;
-                            if (radioButton_impCurrent.Checked)
-                                b_array = new byte[5] { 255, 255, 255, 255, 255 };
-                            else 
-                                b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                            DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                            wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                            stimIvsVWriter.WriteWaveform(true, wfm);
-                            stimIvsV.WaitUntilDone();
-                            stimIvsV.Stop();
-                            stimIvsV.Dispose();
+                            stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                            //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                            //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                            stimIvsVTask.Control(TaskAction.Verify);
+                            //byte[] b_array;
+                            //if (radioButton_impCurrent.Checked)
+                            //    b_array = new byte[5] { 255, 255, 255, 255, 255 };
+                            //else 
+                            //    b_array = new byte[5] { 0, 0, 0, 0, 0 };
+                            //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                            //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                            //stimIvsVWriter.WriteWaveform(true, wfm);
+                            if (radioButton_impCurrent.Checked) stimIvsVWriter.WriteSingleSampleSingleLine(true, true);
+                            else stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
+                            stimIvsVTask.WaitUntilDone();
+                            stimIvsVTask.Stop();
+                            stimIvsVTask.Dispose();
                         }
                     }
 
@@ -2282,20 +2289,23 @@ namespace NeuroRighter
             reset();
             if (Properties.Settings.Default.UseStimulator)
             {
-                stimIvsV = new Task("stimIvsV");
-                stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                stimIvsVTask = new Task("stimIvsV");
+                //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                //    ChannelLineGrouping.OneChannelForAllLines);
+                stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                     ChannelLineGrouping.OneChannelForAllLines);
-                stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
-                stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                stimIvsV.Control(TaskAction.Verify);
-                byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                stimIvsVWriter.WriteWaveform(true, wfm);
-                stimIvsV.WaitUntilDone();
-                stimIvsV.Stop();
-                stimIvsV.Dispose();
+                stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                stimIvsVTask.Control(TaskAction.Verify);
+                //byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
+                //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                //stimIvsVWriter.WriteWaveform(true, wfm);
+                stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
+                stimIvsVTask.WaitUntilDone();
+                stimIvsVTask.Stop();
+                stimIvsVTask.Dispose();
             }
 
             if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
@@ -2614,6 +2624,16 @@ namespace NeuroRighter
                 stimPulseTask.Stop();
                 stimDigitalTask.Stop();
                 stimTimer.Dispose();
+
+                //De-select channel on mux
+                stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+                stimDigitalTask.Timing.SamplesPerChannel = 3;
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+                stimDigitalTask.WaitUntilDone();
+                stimDigitalTask.Stop();
             }
             
         }
@@ -2824,6 +2844,16 @@ namespace NeuroRighter
             listBox_stimChannels.Enabled = true;
             progressBar_stimExpt.Value = 0;
             randExpt = null;
+
+            //De-select channel on mux
+            stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+            stimDigitalTask.Timing.SamplesPerChannel = 3;
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
         }
         #endregion //End StimulationExperiment
 
@@ -2922,6 +2952,16 @@ namespace NeuroRighter
             stimDigitalTask.Stop();
             stimPulseTask.Stop();
 
+            //De-select channel on mux
+            stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+            stimDigitalTask.Timing.SamplesPerChannel = 3;
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
+
             button_stim.Enabled = true;
             button_stimExpt.Enabled = true;
             openLoopStart.Enabled = true;
@@ -2950,20 +2990,23 @@ namespace NeuroRighter
             {
                 if (Properties.Settings.Default.UseStimulator)
                 {
-                    stimIvsV = new Task("stimIvsV");
-                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                    stimIvsVTask = new Task("stimIvsV");
+                    //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                    //    ChannelLineGrouping.OneChannelForAllLines);
+                    stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                         ChannelLineGrouping.OneChannelForAllLines);
-                    stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
-                    stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                        SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                    stimIvsV.Control(TaskAction.Verify);
-                    byte[] b_array = new byte[5] { 255, 255, 255, 255, 255 };
-                    DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                    wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                    stimIvsVWriter.WriteWaveform(true, wfm);
-                    stimIvsV.WaitUntilDone();
-                    stimIvsV.Stop();
-                    stimIvsV.Dispose();
+                    stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                    //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                    //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                    stimIvsVTask.Control(TaskAction.Verify);
+                    //byte[] b_array = new byte[5] { 255, 255, 255, 255, 255 };
+                    //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                    //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                    //stimIvsVWriter.WriteWaveform(true, wfm);
+                    stimIvsVWriter.WriteSingleSampleSingleLine(true, true);
+                    stimIvsVTask.WaitUntilDone();
+                    stimIvsVTask.Stop();
+                    stimIvsVTask.Dispose();
                 }
 
                 radioButton_impCurrent.Checked = true;
@@ -2977,20 +3020,23 @@ namespace NeuroRighter
                 if (Properties.Settings.Default.UseStimulator)
                 {
                     //this line goes high (TTL-wise) when we're doing current-controlled stim, low for voltage-controlled
-                    stimIvsV = new Task("stimIvsV");
-                    stimIvsV.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                    stimIvsVTask = new Task("stimIvsV");
+                    //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                    //    ChannelLineGrouping.OneChannelForAllLines);
+                    stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                         ChannelLineGrouping.OneChannelForAllLines);
-                    stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsV.Stream);
-                    stimIvsV.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                        SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                    stimIvsV.Control(TaskAction.Verify);
-                    byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                    DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                    wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                    stimIvsVWriter.WriteWaveform(true, wfm);
-                    stimIvsV.WaitUntilDone();
-                    stimIvsV.Stop();
-                    stimIvsV.Dispose();
+                    stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                    //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                    //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                    stimIvsVTask.Control(TaskAction.Verify);
+                    //byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
+                    //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                    //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                    //stimIvsVWriter.WriteWaveform(true, wfm);
+                    stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
+                    stimIvsVTask.WaitUntilDone();
+                    stimIvsVTask.Stop();
+                    stimIvsVTask.Dispose();
                 }
 
                 radioButton_impVoltage.Checked = true;
@@ -3073,6 +3119,9 @@ namespace NeuroRighter
          * ***********************************/
         private void button_impedanceTest_Click(object sender, EventArgs e)
         {
+            stimDigitalTask.Dispose();
+            stimPulseTask.Dispose();
+
             double startFreq = Convert.ToDouble(numericUpDown_impStartFreq.Value);
             double stopFreq = Convert.ToDouble(numericUpDown_impStopFreq.Value);
             double numPeriods = Convert.ToDouble(numericUpDown_impNumPeriods.Value);
@@ -3085,8 +3134,22 @@ namespace NeuroRighter
             button_impedanceTest.Enabled = false;
             button_computeGain.Enabled = false;
             button_impedanceCancel.Enabled = true;
-            
 
+            //Toggle between voltage/current to discharge any weird build-ups
+            if (radioButton_impCurrent.Checked)
+            {
+                radioButton_impVoltage_Click(this, null);
+                System.Threading.Thread.Sleep(500);
+                radioButton_impCurrent_Click(this, null);
+            }
+            else
+            {
+                radioButton_impCurrent_Click(this, null);
+                System.Threading.Thread.Sleep(500);
+                radioButton_impVoltage_Click(this, null);
+            }
+
+            //Clear plots
             scatterGraph_impedance.Plots.Clear();
 
             impMeasurer = new Impedance.ImpedanceMeasurer();
@@ -3143,20 +3206,6 @@ namespace NeuroRighter
             progressBar_impedance.Value = 100;
             label_impedanceProgress.Text = "Impedance Progress";
 
-            //Toggle between voltage/current to discharge any weird build-ups
-            if (radioButton_impCurrent.Checked)
-            {
-                radioButton_impVoltage_Click(this, null);
-                System.Threading.Thread.Sleep(500);
-                radioButton_impCurrent_Click(this, null);
-            }
-            else
-            {
-                radioButton_impCurrent_Click(this, null);
-                System.Threading.Thread.Sleep(500);
-                radioButton_impVoltage_Click(this, null);
-            }
-
             buttonStart.Enabled = true;
             button_impedanceTest.Enabled = true;
             button_computeGain.Enabled = true;
@@ -3166,8 +3215,6 @@ namespace NeuroRighter
 
             //Now, destroy the objects we made
             updateSettings();
-
-            
         }
 
         private void button_impedanceCancel_Click(object sender, EventArgs e)

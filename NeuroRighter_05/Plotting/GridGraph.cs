@@ -245,24 +245,27 @@ namespace NeuroRighter
         private object voltageTimeLabelLock = new object();
         private void updateVoltageTime()
         {
-            const int VERTICAL_MARGIN = 5;
-            const int HORIZONTAL_MARGIN = 5;
-
-            double displayVoltage = voltageRange / displayGain;
-
-            lock (voltageTimeLabelLock)
+            if (font != null) //Prevents this from being called if object isn't initalized
             {
-                if (displayVoltage >= 1)
-                    voltageTimeLabel = displayVoltage + " V, ";
-                else if (displayVoltage * 1000 >= 1)
-                    voltageTimeLabel = displayVoltage * 1000 + " mV, ";
-                else if (displayVoltage * 1E6 >= 1)
-                    voltageTimeLabel = displayVoltage * 1E6 + " uV, ";
+                const int VERTICAL_MARGIN = 5;
+                const int HORIZONTAL_MARGIN = 5;
 
-                voltageTimeLabel += timeRange * 1000 + " ms";
+                double displayVoltage = voltageRange / displayGain;
 
-                Vector2 stringExtent = font.MeasureString(voltageTimeLabel);
-                voltageTimeLabelCoords = new Vector2(this.Width - stringExtent.X - HORIZONTAL_MARGIN, this.Height - stringExtent.Y - VERTICAL_MARGIN);
+                lock (voltageTimeLabelLock)
+                {
+                    if (displayVoltage >= 1)
+                        voltageTimeLabel = displayVoltage + " V, ";
+                    else if (displayVoltage * 1000 >= 1)
+                        voltageTimeLabel = displayVoltage * 1000 + " mV, ";
+                    else if (displayVoltage * 1E6 >= 1)
+                        voltageTimeLabel = displayVoltage * 1E6 + " uV, ";
+
+                    voltageTimeLabel += timeRange * 1000 + " ms";
+
+                    Vector2 stringExtent = font.MeasureString(voltageTimeLabel);
+                    voltageTimeLabelCoords = new Vector2(this.Width - stringExtent.X - HORIZONTAL_MARGIN, this.Height - stringExtent.Y - VERTICAL_MARGIN);
+                }
             }
         }
 

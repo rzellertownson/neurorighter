@@ -62,6 +62,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     int64_T* timeSpanIdx;
     int64_T position; /* current position of file */
     int64_T offset; /* offset for next file jump */
+    int isUsingTimespan = 0;
+    int isUsingChannel = 0;
     
     
     /* Variables for temp storage of input */
@@ -104,14 +106,17 @@ void mexFunction(int nlhs, mxArray *plhs[],
         else {
             int numMembers;
             numMembers = mxGetNumberOfElements(prhs[1]);
-            if (numMembers == 1)
+            if (numMembers == 1) {
                 ch = (int)(mxGetScalar(prhs[1]));    
+                isUsingChannel = 1;
+            }
             else if (numMembers == 2) {
                 timeSpan = mxGetPr(prhs[1]);
                 if (timeSpan[1] < timeSpan[0]) {
                     fclose(fp);
                     mexErrMsgTxt("First element of time span (i.e., start time) must be less than second (i.e., stop time).");
                 }
+                isUsingTimespan = 1;
             }
             else {
                 fclose(fp);
@@ -139,6 +144,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                     fclose(fp);
                     mexErrMsgTxt("First element of time span (i.e., start time) must be less than second (i.e., stop time).");
                 }
+                isUsingTimespan = 1;
             }
         }
     }
@@ -195,7 +201,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
     /* Compute start and stop indices, if time span was specified */
     timeSpanIdx = mxCalloc(2, sizeof(int64_T)); /* Allocate memory for start/stop indices */
-    if (nrhs >= 3) {
+    if (isUsingTimespan) {
         timeSpanIdx[0] = (int64_T)(ceil(timeSpan[0] * (double)freq));
         timeSpanIdx[1] = (int64_T)(ceil(timeSpan[1] * (double)freq));
         ++timeSpanIdx[1];

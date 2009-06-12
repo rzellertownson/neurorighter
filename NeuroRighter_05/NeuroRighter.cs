@@ -183,7 +183,7 @@ namespace NeuroRighter
             
 
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
-            this.comboBox_spikeDetAlg.SelectedIndex = 0; //Default spike det. algorithm is RMS
+            this.comboBox_spikeDetAlg.SelectedIndex = 1; //Default spike det. algorithm is RMS
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             //this.spikeBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 8); //Take quarter second samples

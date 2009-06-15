@@ -3860,37 +3860,41 @@ ch = 1;
             updateSettings();
         }
 
-        private void checkBox_spikesCommonAvgReferencing_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_spikesReferencingCommonAverage_CheckedChanged(object sender, EventArgs e)
         {
             lock (this)
             {
-                if (checkBox_spikesCommonAvgReferencing.Checked)
+                if (radioButton_spikesReferencingCommonAverage.Checked)
                     referncer = new Filters.CommonAverageReferencer(spikeBufferLength);
-                else
-                    referncer = null;
             }
         }
 
-        private void checkBox_spikesCommonMedianRef_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_spikesReferencingCommonMedian_CheckedChanged(object sender, EventArgs e)
         {
             lock (this)
             {
-                if (checkBox_spikesCommonMedianRef.Checked)
+                if (radioButton_spikesReferencingCommonMedian.Checked)
                     referncer = new Filters.CommonMedianReferencer(spikeBufferLength, numChannels);
-                else
-                    referncer = null;
             }
         }
 
-        private void checkBox_spikesCommonMedianLocalReferencing_CheckedChanged(object sender, EventArgs e)
+        private void radioButton_spikesReferencingCommonMedianLocal_CheckedChanged(object sender, EventArgs e)
         {
             lock (this)
             {
-                if (checkBox_spikesCommonMedianLocalReferencing.Checked)
+                if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                     referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, 8, numChannels / 8);
-                else
+            }
+        }
+
+        private void radioButton_spikeReferencingNone_CheckedChanged(object sender, EventArgs e)
+        {
+            lock (this)
+            {
+                if (radioButton_spikeReferencingNone.Checked)
                     referncer = null;
             }
+
         }
 
         private void button_showcase_Click(object sender, EventArgs e)

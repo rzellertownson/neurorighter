@@ -348,5 +348,89 @@ namespace NeuroRighter.Properties {
                 this["StimIvsVDevice"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public double SpikesLowCut {
+            get {
+                return ((double)(this["SpikesLowCut"]));
+            }
+            set {
+                this["SpikesLowCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        public double SpikesHighCut {
+            get {
+                return ((double)(this["SpikesHighCut"]));
+            }
+            set {
+                this["SpikesHighCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double LFPLowCut {
+            get {
+                return ((double)(this["LFPLowCut"]));
+            }
+            set {
+                this["LFPLowCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public double LFPHighCut {
+            get {
+                return ((double)(this["LFPHighCut"]));
+            }
+            set {
+                this["LFPHighCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public ushort SpikesReferencingScheme {
+            get {
+                return ((ushort)(this["SpikesReferencingScheme"]));
+            }
+            set {
+                this["SpikesReferencingScheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public ushort SpikesNumPoles {
+            get {
+                return ((ushort)(this["SpikesNumPoles"]));
+            }
+            set {
+                this["SpikesNumPoles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public ushort LFPNumPoles {
+            get {
+                return ((ushort)(this["LFPNumPoles"]));
+            }
+            set {
+                this["LFPNumPoles"] = value;
+            }
+        }
     }
 }

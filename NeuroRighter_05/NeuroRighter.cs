@@ -238,6 +238,31 @@ namespace NeuroRighter
 
             //Enable channel output button, if appropriate
             channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
+
+            //Switch referencing scheme to last used
+            switch (Properties.Settings.Default.SpikesReferencingScheme)
+            {
+                case 0:
+                    radioButton_spikesReferencingCommonAverage.Checked = true;
+                    break;
+                case 1:
+                    radioButton_spikesReferencingCommonMedian.Checked = true;
+                    break;
+                case 2:
+                    radioButton_spikesReferencingCommonMedianLocal.Checked = true;
+                    break;
+                case 3:
+                    radioButton_spikeReferencingNone.Checked = true;
+                    break;
+            }
+
+            //Load saved filter settings
+            SpikeLowCut.Value = Convert.ToDecimal(Properties.Settings.Default.SpikesLowCut);
+            SpikeHighCut.Value = Convert.ToDecimal(Properties.Settings.Default.SpikesHighCut);
+            SpikeFiltOrder.Value = Convert.ToDecimal(Properties.Settings.Default.SpikesNumPoles);
+            LFPLowCut.Value = Convert.ToDecimal(Properties.Settings.Default.LFPLowCut);
+            LFPHighCut.Value = Convert.ToDecimal(Properties.Settings.Default.LFPHighCut);
+            LFPFiltOrder.Value = Convert.ToDecimal(Properties.Settings.Default.LFPNumPoles);
         }
         #endregion
 
@@ -1646,6 +1671,26 @@ namespace NeuroRighter
 
             //Save gain settings
             Properties.Settings.Default.Gain = comboBox_SpikeGain.SelectedIndex;
+            
+            //Save referencing scheme settings
+            if (radioButton_spikesReferencingCommonAverage.Checked)
+                Properties.Settings.Default.SpikesReferencingScheme = 0;
+            else if (radioButton_spikesReferencingCommonMedian.Checked)
+                Properties.Settings.Default.SpikesReferencingScheme = 1;
+            else if (radioButton_spikesReferencingCommonMedianLocal.Checked)
+                Properties.Settings.Default.SpikesReferencingScheme = 2;
+            else if (radioButton_spikeReferencingNone.Checked)
+                Properties.Settings.Default.SpikesReferencingScheme = 3;
+
+            //Save filter cut-offs and poles
+            Properties.Settings.Default.SpikesLowCut = Convert.ToDouble(SpikeLowCut.Value);
+            Properties.Settings.Default.SpikesHighCut = Convert.ToDouble(SpikeHighCut.Value);
+            Properties.Settings.Default.SpikesNumPoles = Convert.ToUInt16(SpikeFiltOrder.Value);
+            Properties.Settings.Default.LFPLowCut = Convert.ToDouble(LFPLowCut.Value);
+            Properties.Settings.Default.LFPHighCut = Convert.ToDouble(LFPHighCut.Value);
+            Properties.Settings.Default.LFPNumPoles = Convert.ToUInt16(LFPFiltOrder.Value);
+
+            //Save 
             Properties.Settings.Default.Save();
         }
 
@@ -3894,7 +3939,6 @@ ch = 1;
                 if (radioButton_spikeReferencingNone.Checked)
                     referncer = null;
             }
-
         }
 
         private void button_showcase_Click(object sender, EventArgs e)

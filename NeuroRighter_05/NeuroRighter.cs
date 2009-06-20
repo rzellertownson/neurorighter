@@ -315,6 +315,18 @@ namespace NeuroRighter
                         MessageBox.Show("An output file must be selected before recording."); //display an error message
                         return;
                     }
+
+                    //If file exists, verify over-writing
+                    if (File.Exists(filenameOutput))
+                    {
+                        DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?", 
+                            "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                        if (dr == DialogResult.No)
+                            button_BrowseOutputFile_Click(null, null); //call file selection routine
+                        else if (dr == DialogResult.Cancel)
+                            return;
+                    }
                 }
 
                 try
@@ -380,7 +392,7 @@ namespace NeuroRighter
                         eegTask = new Task("eegTask");
                         for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
                             eegTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.EEGDevice + "/ai" +
-                                (i).ToString(), "", AITerminalConfiguration.Rse, -10.0, 10.0, AIVoltageUnits.Volts);
+                                (i).ToString(), "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
                         setGain(eegTask, comboBox_eegGain);
                         eegTask.Control(TaskAction.Verify);
                         eegSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);

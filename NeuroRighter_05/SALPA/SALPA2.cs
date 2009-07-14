@@ -42,9 +42,9 @@ namespace NeuroRighter
         private rawType[][] W;
         private rawType[][] A;
         private rawType[] rails;
-        private int prePeg;
-        private int postPeg; //Num pts. to drop after a peg
-        private int postPegZero; //Num pts. to set to zero after a successful fit has been achieved (helps control ringing)
+        internal readonly int prePeg;
+        internal readonly int postPeg; //Num pts. to drop after a peg
+        internal readonly int postPegZero; //Num pts. to set to zero after a successful fit has been achieved (helps control ringing)
         private bool[] PEGGING;
         private bool[] FULL_LOOK;
         private bool[] DEPEGGING;

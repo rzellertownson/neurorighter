@@ -27,7 +27,7 @@ namespace NeuroRighter.SpikeDetection
 
         protected override void updateThreshold(double[] data, int channel)
         {
-            tempData = 0;
+            tempData = 0.0;
             int samplesAdded = 0;
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
             {
@@ -35,11 +35,6 @@ namespace NeuroRighter.SpikeDetection
                 {
                     tempData += data[j * downsample] * data[j * downsample]; //Square data
                     ++samplesAdded;
-                }
-                else
-                {
-                    int a = 0;
-                    a++;
                 }
             }
             if (samplesAdded > 0)

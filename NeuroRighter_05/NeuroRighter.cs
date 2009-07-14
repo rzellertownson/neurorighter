@@ -130,18 +130,22 @@ namespace NeuroRighter
         private List<StimTick> stimIndices; //For sending stim times to SALPA (or any other routine that wants them)
         private PlotData spikePlotData;
         private PlotData lfpPlotData;
+        private PlotData muaPlotData;
         private EventPlotData waveformPlotData;
         private Filters.Referencer referncer;
         private DateTime experimentStartTime;
         private Filters.ArtiFilt artiFilt;
         private ChannelOutput BNCOutput;
         private DateTime timedRecordingStopTime;
+        private Filters.MUAFilter muaFilter;
+        private double[][] muaData;
 
 
         //Plots
         private GridGraph spikeGraph;
         private GridGraph spkWfmGraph;
         private RowGraph lfpGraph;
+        private RowGraph muaGraph;
 
         private FileOutput rawFile;
         private FileOutput lfpFile;
@@ -165,6 +169,7 @@ namespace NeuroRighter
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
+        private const int MUA_DOWNSAMPLE_FACTOR = 50;
         #endregion
 
         #region Constructor
@@ -200,9 +205,23 @@ namespace NeuroRighter
                 this.comboBox_LFPGain.SelectedIndex = 2;
             if (Properties.Settings.Default.UseEEG)
             {
-                this.comboBox_eegGain.SelectedIndex = 2;
-                this.comboBox_eegNumChannels.SelectedIndex = 1;
+                comboBox_eegGain.SelectedIndex = Properties.Settings.Default.EEGGain;
+                textBox_eegSamplingRate.Text = Properties.Settings.Default.EEGSamplingRate.ToString();
+                switch (Properties.Settings.Default.EEGNumChannels)
+                {
+                    case 1:
+                        comboBox_eegNumChannels.SelectedIndex = 0; break;
+                    case 2:
+                        comboBox_eegNumChannels.SelectedIndex = 1; break;
+                    case 3:
+                        comboBox_eegNumChannels.SelectedIndex = 2; break;
+                    case 4:
+                        comboBox_eegNumChannels.SelectedIndex = 3; break;
+                    default:
+                        comboBox_eegNumChannels.SelectedIndex = 1; break;
+                }
             }
+
 
             //Select default channels for Bakkum expt.
             for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.Items.Count; ++i)
@@ -366,10 +385,9 @@ namespace NeuroRighter
                     if (checkBox_video.Checked) //NB: This can't be checked unless video is enabled (no need to check properties)
                         triggerTask = new Task("triggerTask");
 
-                    //Add channel to send one analog in channel to a BNC (e.g., for audio)
-                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
-                    //    spikeOutTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.SingleChannelPlaybackDevice + "/ao0", "",
-                    //        -10.0, 10.0, AOVoltageUnits.Volts);
+
+                    int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
+
 
                     //Add LFP channels, if configured
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
@@ -429,7 +447,13 @@ namespace NeuroRighter
                     else
                     {
                         if (!Properties.Settings.Default.UseStimulator)
-                            spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                        {
+                            //Deal with non M-series devices (these can't use "ReferenceClockSource"
+                            Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
+                            
+                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq) 
+                                spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                        }
                         else
                         {
                             spikeTask[0].Timing.ReferenceClockSource = stimPulseTask.Timing.ReferenceClockSource;
@@ -571,9 +595,6 @@ namespace NeuroRighter
                     //Initialize graphs
                     if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
                     spikeGraph = new GridGraph();
-                    //spikeGraph.Resize += new EventHandler(spikeGraph.resize);
-                    //spikeGraph.SizeChanged += new EventHandler(spikeGraph.resize);
-                    //spikeGraph.VisibleChanged += new EventHandler(spikeGraph.resize);
                     int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
                     spikeGraph.setup(numRows, numCols, samplesPerPlot, false, 1 / 4.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                     spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1, 
@@ -585,9 +606,6 @@ namespace NeuroRighter
                     {
                         if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
                         lfpGraph = new RowGraph();
-                        //lfpGraph.Resize += new EventHandler(lfpGraph.resize);
-                        //lfpGraph.SizeChanged += new EventHandler(lfpGraph.resize);
-                        //lfpGraph.VisibleChanged += new EventHandler(lfpGraph.resize);
                         lfpGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
                             5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                         if (Properties.Settings.Default.SeparateLFPBoard)
@@ -598,6 +616,25 @@ namespace NeuroRighter
                                 (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
                         lfpGraph.Dock = DockStyle.Fill;
                         lfpGraph.Parent = tabPage_LFPs;
+                    }
+
+                    if (Properties.Settings.Default.ProcessMUA)
+                    {
+                        if (muaGraph != null) { muaGraph.Dispose(); muaGraph = null; }
+                        muaGraph = new RowGraph();
+                        muaGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                            5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
+                        muaGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                                (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
+                        muaGraph.Dock = DockStyle.Fill;
+                        muaGraph.Parent = tabPage_MUA;
+
+                        muaPlotData = new PlotDataRows(numChannels, downsample, muaSamplingRate * 5, muaSamplingRate,
+                                (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                        //muaPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
+
+                        //muaGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
+                        muaPlotData.dataAcquired += new PlotData.dataAcquiredHandler(muaPlotData_dataAcquired);
                     }
 
                     resetSpkWfm(); //Take care of spike waveform graph
@@ -730,6 +767,8 @@ namespace NeuroRighter
                     resetSpikeFilter();
                     if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
                     resetEEGFilter();
+
+                    muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, DEVICE_REFRESH);
                     #endregion
 
                     #region Setup_DataStorage
@@ -750,6 +789,12 @@ namespace NeuroRighter
                             else
                                 filtLFPData[i] = new rawType[spikeBufferLength];
                         }
+                    }
+                    if (Properties.Settings.Default.ProcessMUA)
+                    {
+                        muaData = new double[numChannels][];
+                        for (int c = 0; c < numChannels; ++c)
+                            muaData[c] = new double[spikeBufferLength / MUA_DOWNSAMPLE_FACTOR];
                     }
                     if (Properties.Settings.Default.UseEEG)
                     {
@@ -884,7 +929,7 @@ namespace NeuroRighter
 
                     //Set start time
                     experimentStartTime = DateTime.Now;
-                    timedRecordingStopTime = DateTime.Now.AddMinutes(Convert.ToInt32(numericUpDown_timedRecordingDuration.Value));
+                    timedRecordingStopTime = DateTime.Now.AddMinutes(Convert.ToDouble(numericUpDown_timedRecordingDuration.Value));
                     timer_timeElapsed.Enabled = true;
                     
 
@@ -1359,6 +1404,16 @@ namespace NeuroRighter
             //Write to PlotData buffer
             spikePlotData.write(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev);
 
+            #region MUA
+            if (Properties.Settings.Default.ProcessMUA)
+            {
+                muaFilter.Filter(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, ref muaData);
+
+                //Write to plot buffer
+                muaPlotData.write(muaData, taskNumber * numChannelsPerDev, numChannelsPerDev);
+            }
+            #endregion
+
             e.Result = taskNumber;
         }
 
@@ -1519,6 +1574,25 @@ namespace NeuroRighter
                 else { pd.skipRead(); }
             //}
         }
+
+        //******************************
+        //muaPlotData_dataAcquired
+        //******************************
+        void muaPlotData_dataAcquired(object sender)
+        {
+            PlotData pd = (PlotData)sender;
+            if (muaGraph.Visible && !checkBox_freeze.Checked)
+            {
+                float[][] data = pd.read();
+                for (int i = 0; i < data.Length; ++i)
+                    //lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
+                    //    (double)pd.downsample / (double)lfpSamplingRate);
+                    muaGraph.plotY(data[i], 0F, 1F, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                muaGraph.Invalidate();
+            }
+            else { pd.skipRead(); }
+        }
+
         #endregion  //End LFP acquisition
 
         #region EEG_Acquisition
@@ -1586,7 +1660,7 @@ namespace NeuroRighter
                             eegPlotData[i, j] = temp - eegOffset[i];
                         }
                     }
-                    if (tabControl.SelectedIndex == 3 && !checkBox_freeze.Checked)
+                    if (tabControl.SelectedTab.Text == "EEG" && !checkBox_freeze.Checked)
                     {
                         //if (plotLFP)
                         //{
@@ -1701,6 +1775,15 @@ namespace NeuroRighter
             Properties.Settings.Default.LFPLowCut = Convert.ToDouble(LFPLowCut.Value);
             Properties.Settings.Default.LFPHighCut = Convert.ToDouble(LFPHighCut.Value);
             Properties.Settings.Default.LFPNumPoles = Convert.ToUInt16(LFPFiltOrder.Value);
+
+            //Save EEG settings
+            if (Properties.Settings.Default.UseEEG)
+            {
+                Properties.Settings.Default.EEGGain = comboBox_eegGain.SelectedIndex;
+                Properties.Settings.Default.EEGNumChannels = Convert.ToInt32(comboBox_eegNumChannels.SelectedItem);
+                Properties.Settings.Default.EEGSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
+            }
+            
 
             //Save 
             Properties.Settings.Default.Save();
@@ -1957,10 +2040,12 @@ namespace NeuroRighter
             listBox_stimChannels.Items.Clear();
             listBox_exptStimChannels.Items.Clear();
             listBox_closedLoopLearningProbeElectrodes.Items.Clear();
+            listBox_closedLoopLearningCPSElectrodes.Items.Clear();
             listBox_closedLoopLearningPTSElectrodes.Items.Clear();
             for (int i = 0; i < Convert.ToInt32(comboBox_numChannels.SelectedItem); ++i)
             {
                 listBox_stimChannels.Items.Add(i + 1);
+                listBox_closedLoopLearningCPSElectrodes.Items.Add(i + 1);
                 listBox_exptStimChannels.Items.Add(i + 1);
                 listBox_closedLoopLearningProbeElectrodes.Items.Add(i + 1);
                 listBox_closedLoopLearningPTSElectrodes.Items.Add(i + 1);
@@ -2100,21 +2185,25 @@ namespace NeuroRighter
 
         private void button_scaleDown_Click(object sender, EventArgs e)
         {
-            switch (tabControl.SelectedIndex)
+            switch (tabControl.SelectedTab.Text)
             {
-                case 0:
+                case "Spikes":
                     spikePlotData.setGain(spikePlotData.getGain() * 0.5F);
                     spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
-                case 1:
+                case "Spk Wfms":
                     waveformPlotData.setGain(waveformPlotData.getGain() / 2);
                     spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
-                case 2:
-                    lfpPlotData.setGain(lfpPlotData.getGain() / 2F);
+                case "LFPs":
+                    lfpPlotData.setGain(lfpPlotData.getGain() * 0.5F);
                     lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
-                case 3:
+                case "MUA":
+                    muaPlotData.setGain(muaPlotData.getGain() * 0.5F);
+                    muaGraph.setDisplayGain(muaPlotData.getGain());
+                    break;
+                case "EEG":
                     eegDisplayGain /= 2;
                     break;
                 default:
@@ -2125,21 +2214,25 @@ namespace NeuroRighter
 
         private void button_scaleUp_Click(object sender, EventArgs e)
         {
-            switch (tabControl.SelectedIndex)
+            switch (tabControl.SelectedTab.Text)
             {
-                case 0:
+                case "Spikes":
                     spikePlotData.setGain(spikePlotData.getGain() * 2F);
                     spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
-                case 1:
+                case "Spk Wfms":
                     waveformPlotData.setGain(waveformPlotData.getGain() * 2F);
                     spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
-                case 2:
+                case "LFPs":
                     lfpPlotData.setGain(lfpPlotData.getGain() * 2F);
                     lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
-                case 3:
+                case "MUA":
+                    muaPlotData.setGain(muaPlotData.getGain() * 2F);
+                    muaGraph.setDisplayGain(muaPlotData.getGain());
+                    break;
+                case "EEG":
                     eegDisplayGain *= 2;
                     break;
                 default:
@@ -2150,21 +2243,27 @@ namespace NeuroRighter
 
         private void button_scaleReset_Click(object sender, EventArgs e)
         {
-            switch (tabControl.SelectedIndex)
+            switch (tabControl.SelectedTab.Text)
+            //switch (tabControl.SelectedIndex)
             {
-                case 0:
+                //case 0:
+                case "Spikes":
                     spikePlotData.setGain(1F);
                     spikeGraph.setDisplayGain(spikePlotData.getGain());
                     break;
-                case 1:
+                case "Spk Wfms":
                     waveformPlotData.setGain(1F);
                     spkWfmGraph.setDisplayGain(waveformPlotData.getGain());
                     break;
-                case 2:
+                case "LFPs":
                     lfpPlotData.setGain(1F);
                     lfpGraph.setDisplayGain(lfpPlotData.getGain());
                     break;
-                case 3:
+                case "MUA":
+                    muaPlotData.setGain(1F);
+                    muaGraph.setDisplayGain(muaPlotData.getGain());
+                    break;
+                case "EEG":
                     eegDisplayGain = 1;
                     break;
                 default:
@@ -2333,6 +2432,22 @@ namespace NeuroRighter
                 }
                 else { groupBox_plexonProgRef.Visible = false; }
                 this.drawOpenLoopStimPulse();
+
+                //Add LFP tab, if applicable
+                if (Properties.Settings.Default.UseLFPs && !tabControl.TabPages.Contains(tabPage_LFPs))
+                {
+                    tabPage_LFPs = new TabPage("LFPs");
+                    tabControl.TabPages.Insert(2, tabPage_LFPs);
+                }
+                else if (!Properties.Settings.Default.UseLFPs && tabControl.TabPages.Contains(tabPage_LFPs)) tabControl.TabPages.Remove(tabPage_LFPs);
+
+                //Add MUA tab, if applicable
+                if (Properties.Settings.Default.ProcessMUA && !tabControl.TabPages.Contains(tabPage_MUA))
+                {
+                    tabPage_MUA = new TabPage("MUA");
+                    tabControl.TabPages.Insert((Properties.Settings.Default.UseLFPs ? 3 : 2), tabPage_MUA);
+                }
+                else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA)) tabControl.TabPages.Remove(tabPage_MUA);
             }
             catch (DaqException exception)
             {
@@ -2444,37 +2559,46 @@ namespace NeuroRighter
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            switch (tabControl.SelectedIndex)
+            switch (tabControl.SelectedTab.Text)
+            //switch (tabControl.SelectedIndex)
             {
-                case 0: //Spike graph
+                //case 0: //Spike graph
+                case "Spikes":
                     spikeGraph.Visible = true;
                     spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
+                    if (eegGraph != null) eegGraph.Visible = false;
+                    if (muaGraph != null) muaGraph.Visible = false;
                     break;
-                case 1: //Waveform graph
+                //case 1: //Waveform graph
+                case "Spk Wfms":
                     spkWfmGraph.Visible = true;
                     spikeGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
+                    if (eegGraph != null) eegGraph.Visible = false;
+                    if (muaGraph != null) muaGraph.Visible = false;
                     break;
-                case 2: //LFP Graph
-                    //lfpGraph.Visible = true;
+                //case 2: //LFP Graph
+                case "LFPs":
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
-                    eegGraph.Visible = false;
+                    if (eegGraph != null) eegGraph.Visible = false;
+                    if (muaGraph != null) muaGraph.Visible = false;
                     break;
-                case 3: //EEG Graph
-                    //eegGraph.Visible = true;
+                //case 3: //EEG Graph
+                case "EEG":
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
+                    if (muaGraph != null) muaGraph.Visible = false;
+                    eegGraph.Visible = true;
+                    break;
+                case "MUA":
+                    spikeGraph.Visible = false;
+                    spkWfmGraph.Visible = false;
+                    if (eegGraph != null) eegGraph.Visible = false;
+                    muaGraph.Visible = true;
                     break;
                 default:
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
-                    //lfpGraph.Visible = false;
-                    //eegGraph.Visible = false;
                     break;
             }
         }
@@ -2934,40 +3058,48 @@ namespace NeuroRighter
         
         private void openLoopStart_Click(object sender, EventArgs e)
         {
-            button_stim.Enabled = false;
-            button_stimExpt.Enabled = false;
-            openLoopStart.Enabled = false;
-            openLoopStop.Enabled = true;
-            button_stim.Refresh();
-            button_stimExpt.Refresh();
-            listBox_exptStimChannels.Enabled = false;
-            listBox_stimChannels.Enabled = false;
+            //Check that at least one channel is selected
+            if (listBox_stimChannels.SelectedIndices.Count > 0)
+            {
 
-            stim_params sp = new stim_params();
+                button_stim.Enabled = false;
+                button_stimExpt.Enabled = false;
+                openLoopStart.Enabled = false;
+                openLoopStop.Enabled = true;
+                button_stim.Refresh();
+                button_stimExpt.Refresh();
+                listBox_exptStimChannels.Enabled = false;
+                listBox_stimChannels.Enabled = false;
 
-            sp.v1 = Convert.ToDouble(openLoopVoltage1.Value);
-            sp.v2 = Convert.ToDouble(openLoopVoltage2.Value);
-            sp.width1 = Convert.ToInt32(openLoopWidth1.Value);
-            sp.width2 = Convert.ToInt32(openLoopWidth2.Value);
-            sp.rate = Convert.ToDouble(openLoopRate.Value);
-            sp.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
-            sp.interphaseLength = Convert.ToInt32(openLoopInterphaseLength.Value);
-            sp.prephaseLength = Convert.ToInt32(openLoopPrephaseLength.Value);
-            sp.postphaseLength = Convert.ToInt32(openLoopPostphaseLength.Value);
+                stim_params sp = new stim_params();
 
-            //Get list of channels to stimulate
-            sp.stimChannelList = new int[listBox_stimChannels.SelectedIndices.Count];
-            for (int i = 0; i < listBox_stimChannels.SelectedIndices.Count; ++i)
-                sp.stimChannelList[i] = listBox_stimChannels.SelectedIndices[i] + 1; //+1 since the stimulator is 1-based
+                sp.v1 = Convert.ToDouble(openLoopVoltage1.Value);
+                sp.v2 = Convert.ToDouble(openLoopVoltage2.Value);
+                sp.width1 = Convert.ToInt32(openLoopWidth1.Value);
+                sp.width2 = Convert.ToInt32(openLoopWidth2.Value);
+                sp.rate = Convert.ToDouble(openLoopRate.Value);
+                sp.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
+                sp.interphaseLength = Convert.ToInt32(openLoopInterphaseLength.Value);
+                sp.prephaseLength = Convert.ToInt32(openLoopPrephaseLength.Value);
+                sp.postphaseLength = Convert.ToInt32(openLoopPostphaseLength.Value);
 
-            int sizeSeq = (int)(sp.stimChannelList.GetLength(0) * STIM_SAMPLING_FREQ / sp.rate); //The num pts. for a random seq. of all channels
+                //Get list of channels to stimulate
+                sp.stimChannelList = new int[listBox_stimChannels.SelectedIndices.Count];
+                for (int i = 0; i < listBox_stimChannels.SelectedIndices.Count; ++i)
+                    sp.stimChannelList[i] = listBox_stimChannels.SelectedIndices[i] + 1; //+1 since the stimulator is 1-based
 
-            stimPulseTask.Timing.SamplesPerChannel = sizeSeq;
-            stimDigitalTask.Timing.SamplesPerChannel = sizeSeq;
-            stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples; //When these are set to continuous, the sampling is regenerative
-            stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples;
-                
-            bw_openLoop.RunWorkerAsync(sp);
+                int sizeSeq = (int)(sp.stimChannelList.GetLength(0) * STIM_SAMPLING_FREQ / sp.rate); //The num pts. for a random seq. of all channels
+
+                stimPulseTask.Timing.SamplesPerChannel = sizeSeq;
+                stimDigitalTask.Timing.SamplesPerChannel = sizeSeq;
+                stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples; //When these are set to continuous, the sampling is regenerative
+                stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples;
+
+                bw_openLoop.RunWorkerAsync(sp);
+            }
+            else //Display error that no channels are selected
+                MessageBox.Show("Stimulation not started. No channels selected for stimulation. Please select at least one channel.", "NeuroRighter Stimulation Error",
+                    MessageBoxButtons.OK);
         }
 
         private void bw_openLoop_DoWork(object sender, DoWorkEventArgs e)
@@ -3854,17 +3986,20 @@ ch = 1;
             button_closedLoopLearningStop.Enabled = true;
 
             List<int> probeChannels = new List<int>();
+            List<int> CPSChannels = new List<int>();
             List<int> PTSChannels = new List<int>();
 
             for (int i = 0; i < listBox_closedLoopLearningProbeElectrodes.SelectedItems.Count; ++i)
                 probeChannels.Add(Convert.ToInt32(listBox_closedLoopLearningProbeElectrodes.SelectedItems[i]));
+            for (int i = 0; i < listBox_closedLoopLearningCPSElectrodes.SelectedItems.Count; ++i)
+                CPSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningCPSElectrodes.SelectedItems[i]));
             for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.SelectedItems.Count; ++i)
                 PTSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningPTSElectrodes.SelectedItems[i]));
 
             //Get user's desired votlage
             double voltage = Convert.ToDouble(numericUpDown_bakkumVoltage.Value);
 
-            expt = new BakkumExpt(PTSChannels, probeChannels, voltage, stimDigitalTask, stimPulseTask,
+            expt = new BakkumExpt(CPSChannels, probeChannels, PTSChannels, voltage, stimDigitalTask, stimPulseTask,
                 stimDigitalWriter, stimPulseWriter);
             expt.linkToSpikes(this);
             expt.start();
@@ -4011,6 +4146,80 @@ ch = 1;
         private void checkBox_enableTimedRecording_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDown_timedRecordingDuration.Enabled = checkBox_enableTimedRecording.Checked;
+        }
+
+        private Stimulation.OpenLoopFollowerTest olfTest;
+        private void button_OpenLoopFollowerStart_Click(object sender, EventArgs e)
+        {
+            //Take care of buttons
+            button_stim.Enabled = false;
+            button_stimExpt.Enabled = false;
+            button_OpenLoopFollowerStart.Enabled = false;
+            button_OpenLoopFollowerStop.Enabled = true;
+            button_ClosedLoopFollowerStart.Enabled = false;
+            button_stim.Refresh();
+            button_stimExpt.Refresh();
+
+            List<int> channels = new List<int>(listBox_OpenLoopFollowerChannels.SelectedIndices.Count); //Only use these channels
+            for (int i = 0; i < listBox_OpenLoopFollowerChannels.SelectedIndices.Count; ++i)
+                channels.Add(Convert.ToInt32(listBox_OpenLoopFollowerChannels.SelectedItems[i]));
+
+            char[] delimiterChars = { ' ', ',', ':', '\t', '\n' };
+            string[] s = textBox_OpenLoopFollowerFrequencies.Text.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
+            List<double> frequencies = new List<double>(s.Length);
+            for (int i = 0; i < s.Length; ++i) frequencies.Add(Convert.ToDouble(s[i]));
+            double voltage = Convert.ToDouble(numericUpDown_OpenLoopFollowerVoltage.Value);
+
+            olfTest = new Stimulation.OpenLoopFollowerTest(channels, frequencies, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter, stimDigitalWriter);
+
+            olfTest.Start();
+        }
+
+        private void button_OpenLoopFollowerStop_Click(object sender, EventArgs e)
+        {
+            olfTest.Stop();
+
+            button_stim.Enabled = true;
+            button_stimExpt.Enabled = true;
+            button_OpenLoopFollowerStart.Enabled = true;
+            button_OpenLoopFollowerStop.Enabled = false;
+            button_ClosedLoopFollowerStart.Enabled = true;
+        }
+
+        private Stimulation.ClosedLoopFollowerTest clfTest;
+        private void button_ClosedLoopFollowerStart_Click(object sender, EventArgs e)
+        {
+            if (checkBox_SALPA.Checked)
+            {
+
+                //Take care of buttons
+                button_stim.Enabled = false;
+                button_stimExpt.Enabled = false;
+                button_OpenLoopFollowerStart.Enabled = false;
+                button_ClosedLoopFollowerStop.Enabled = true;
+                button_ClosedLoopFollowerStart.Enabled = false;
+                button_stim.Refresh();
+                button_stimExpt.Refresh();
+
+                List<int> channels = new List<int>(listBox_ClosedLoopFollowerChannels.SelectedIndices.Count); //Only use these channels
+                for (int i = 0; i < listBox_ClosedLoopFollowerChannels.SelectedIndices.Count; ++i)
+                    channels.Add(Convert.ToInt32(listBox_ClosedLoopFollowerChannels.SelectedItems[i]));
+                double voltage = Convert.ToDouble(numericUpDown_ClosedLoopFollowerVoltage.Value);
+
+                //calculate blanking time
+                double blankingTime = 0.0;
+                blankingTime += (double)(SALPAFilter.postPeg + SALPAFilter.postPegZero + SALPAFilter.prePeg) / spikeSamplingRate;
+
+                clfTest = new Stimulation.ClosedLoopFollowerTest(channels, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter,
+                    stimDigitalWriter, blankingTime);
+                clfTest.linkToSpikes(this);
+                clfTest.Start();
+
+            }
+
+            else
+                MessageBox.Show("SALPA must be running.", "Closed-loop Follower Error", MessageBoxButtons.OK);
+
         }
     }
 }

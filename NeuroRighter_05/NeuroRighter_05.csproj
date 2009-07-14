@@ -111,6 +111,7 @@
     <Compile Include="Filters\CommonAverageReferencer.cs" />
     <Compile Include="Filters\CommonMedianLocalReferencer.cs" />
     <Compile Include="Filters\CommonMedianReferencer.cs" />
+    <Compile Include="Filters\MUAFilter.cs" />
     <Compile Include="Filters\Referencer.cs" />
     <Compile Include="HardwareSettings.cs">
       <SubType>Form</SubType>
@@ -176,7 +177,9 @@
     <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
+    <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
+    <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
     <Compile Include="Stimulation\StimulatorShowcaser.cs" />

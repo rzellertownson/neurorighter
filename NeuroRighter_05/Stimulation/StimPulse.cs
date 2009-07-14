@@ -161,7 +161,8 @@ namespace NeuroRighter
             }
         }
 
-        internal void populate()
+        internal void populate() { populate(false); }
+        internal void populate(bool SendTrigger)
         {
             //Get data bits lined up to control MUXes
             UInt32 temp = channel2MUX((double)channel);
@@ -212,6 +213,11 @@ namespace NeuroRighter
                     analogPulse[rowOffset + 1, j] = amplitude1;
                 for (int j = 60 + prePadding; j < 80 + prePadding; ++j)
                     analogPulse[rowOffset + 1, j] = (double)(width1) / 100.0;
+
+                //Add a trigger for all duration of "pulse" that's outside of actual pulse (meaning a 100 Hz train will have ~9 ms of trigger)
+                if (SendTrigger)
+                    for (int j = size; j < analogPulse.GetLength(1); ++j)
+                        analogPulse[0, j] = 5.0;
 
                 for (int j = 1; j <= NUM_SAMPLES_BLANKING; ++j)
                     digitalData[j] = temp_blankOnly;

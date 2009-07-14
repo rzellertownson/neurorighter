@@ -432,5 +432,65 @@ namespace NeuroRighter.Properties {
                 this["LFPNumPoles"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ProcessMUA {
+            get {
+                return ((bool)(this["ProcessMUA"]));
+            }
+            set {
+                this["ProcessMUA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public float EEGDisplayGain {
+            get {
+                return ((float)(this["EEGDisplayGain"]));
+            }
+            set {
+                this["EEGDisplayGain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int EEGSamplingRate {
+            get {
+                return ((int)(this["EEGSamplingRate"]));
+            }
+            set {
+                this["EEGSamplingRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int EEGGain {
+            get {
+                return ((int)(this["EEGGain"]));
+            }
+            set {
+                this["EEGGain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int EEGNumChannels {
+            get {
+                return ((int)(this["EEGNumChannels"]));
+            }
+            set {
+                this["EEGNumChannels"] = value;
+            }
+        }
     }
 }

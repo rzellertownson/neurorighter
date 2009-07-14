@@ -24,11 +24,13 @@ namespace NeuroRighter
             InitializeComponent();
 
             checkBox_processLFPs.Checked = Properties.Settings.Default.UseLFPs;
+            checkBox_processMUA.Checked = Properties.Settings.Default.ProcessMUA;
         }
 
         private void button_accept_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
+            Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
 
             Properties.Settings.Default.Save();
             this.Close();

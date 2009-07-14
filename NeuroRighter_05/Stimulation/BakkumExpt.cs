@@ -55,6 +55,9 @@ namespace NeuroRighter
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimAnalogWriter;
 
+        private bool _ready = true; //Says whether experiment is ready to run
+        internal bool Ready { get { return _ready; } }
+
         private const Int32 NUM_CPS_PULSES = 6;
         private const Int32 NUM_PTS_PULSES = 6;
         private Int32[] INTERPULSE_INTERVAL_RANGE = { 200, 400 }; //in milliseconds [x, y]
@@ -76,13 +79,13 @@ namespace NeuroRighter
 
         //'availableContextChannels' is a list of channels from which to construct CPS, 1-based
         //'availableProbeChannels' is ibid for the final probe pulse
-        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels,
+        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels, List<Int32> availablePTSElectrodes,
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
-            : this(availableContextChannels, availableProbeChannels, PULSE_AMPLITUDE,
+            : this(availableContextChannels, availableProbeChannels, availablePTSElectrodes, PULSE_AMPLITUDE,
                 stimDigitalTask, stimAnalogTask, stimDigitalWriter, stimAnalogWriter) { }
 
-        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels, double voltage, 
+        internal BakkumExpt(List<Int32> availableContextChannels, List<Int32> availableProbeChannels, List<Int32> availablePTSChannels, double voltage, 
             Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
@@ -117,82 +120,112 @@ namespace NeuroRighter
                 availableContextChannels.RemoveAt(index); //To ensure no repeats, and to ensure PTSes don't include these electrodes
             }
 
-            //Pick probe electrode
-            CPSChannels.Add(availableProbeChannels[(int)Math.Floor(availableProbeChannels.Count * rand.NextDouble())]);
-
-            //Pick interpulse intervals
-            int range = INTERPULSE_INTERVAL_RANGE[1] - INTERPULSE_INTERVAL_RANGE[0] + 1; //+1 since range is inclusive
-            for (int i = 0; i < NUM_CPS_PULSES; ++i)
-                interpulseIntervals.Add(INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble()));
-
-            //Make CPS
-            CPS = new StimTrain(PULSE_WIDTH, voltage, CPSChannels, interpulseIntervals);
-            CPS.populate(); //Fill samples (might take a while)
-            #endregion
-
-            #region ConstructPTSes
-            //******************
-            //Construct PTSes,SBSes
-            //******************
-
-            //Declare vars
-            PTS = new List<StimTrain>(NUM_PTS_TRAINS);
-            resetProbabilities();
-            SBS = new List<StimTrain>(NUM_PTS_TRAINS);
-            PTSInterTrainIntervals = new List<List<Int32>>(NUM_PTS_TRAINS);
-            for (int i = 0; i < NUM_PTS_TRAINS; ++i)
-                PTSInterTrainIntervals.Add(new List<Int32>());
-            List<Int32> withinPTSIntervals = new List<int>(NUM_PTS_PULSES - 1);
-            for (int i = 0; i < NUM_PTS_PULSES - 1; ++i)
-                withinPTSIntervals.Add(INTERPULSE_INTERVAL_TRAIN);
-
-            //Choose channels for each PTS
-            for (int i = 0; i < NUM_PTS_TRAINS; ++i)
+            //Remove used electrodes from probe list, to ensure no overlap
+            for (int i = 0; i < CPSChannels.Count; ++i)
+                if (availableProbeChannels.Contains(CPSChannels[i])) availableProbeChannels.Remove(CPSChannels[i]);
+            if (availableProbeChannels.Count < 1)
             {
-                List<int> channels = new List<int>(NUM_PTS_PULSES);
-
-                for (int j = 0; j < NUM_PTS_PULSES; ++j)
-                    channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);
-
-                PTS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
-                //Hold off on populating till later
-                SBS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
-                SBS[i].shuffleChannelOrder();
-
-                //Make intervals
-                int total = 0;
-                do
-                {
-                    int val = INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble());
-                    PTSInterTrainIntervals[i].Add(val);
-                    total += val;
-                } while (total < 4200); //less than 4.2s
+                _ready = false;
+                MessageBox.Show("Not enough unique channels to create CPS. Please try again.", "Bakkum Experiment Error", MessageBoxButtons.OK);
             }
+            if (_ready)
+            {
+
+                //Pick probe electrode
+                CPSChannels.Add(availableProbeChannels[(int)Math.Floor(availableProbeChannels.Count * rand.NextDouble())]);
+
+                //Remove duplicate channels from PTS pool
+                for (int i = 0; i < CPSChannels.Count; ++i)
+                    if (availablePTSChannels.Contains(CPSChannels[i])) availablePTSChannels.Remove(CPSChannels[i]);
+
+                if (availablePTSChannels.Count < 10 && availablePTSChannels.Count > 6)
+                    MessageBox.Show("There are less than 10 available PTS electrodes. This may not be enough for a good experiment.", "Bakkum Experiment Error", MessageBoxButtons.OK);
+                if (availablePTSChannels.Count <= 6)
+                {
+                    _ready = false;
+                    MessageBox.Show("There are less than 7 available PTS electrodes. This is not enough for a good experiment.", "Bakkum Experiment Error", MessageBoxButtons.OK);
+                }
+
+
+                //Pick interpulse intervals
+                int range = INTERPULSE_INTERVAL_RANGE[1] - INTERPULSE_INTERVAL_RANGE[0] + 1; //+1 since range is inclusive
+                for (int i = 0; i < NUM_CPS_PULSES; ++i)
+                    interpulseIntervals.Add(INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble()));
+
+                //Make CPS
+                CPS = new StimTrain(PULSE_WIDTH, voltage, CPSChannels, interpulseIntervals);
+                CPS.populate(); //Fill samples (might take a while)
             #endregion
 
-            T = new double[4];
+                #region ConstructPTSes
+                //******************
+                //Construct PTSes,SBSes
+                //******************
+
+                //Declare vars
+                PTS = new List<StimTrain>(NUM_PTS_TRAINS);
+                resetProbabilities();
+                SBS = new List<StimTrain>(NUM_PTS_TRAINS);
+                PTSInterTrainIntervals = new List<List<Int32>>(NUM_PTS_TRAINS);
+                for (int i = 0; i < NUM_PTS_TRAINS; ++i)
+                    PTSInterTrainIntervals.Add(new List<Int32>());
+                List<Int32> withinPTSIntervals = new List<int>(NUM_PTS_PULSES - 1);
+                for (int i = 0; i < NUM_PTS_PULSES - 1; ++i)
+                    withinPTSIntervals.Add(INTERPULSE_INTERVAL_TRAIN);
+
+                //Choose channels for each PTS
+                for (int i = 0; i < NUM_PTS_TRAINS; ++i)
+                {
+                    List<int> channels = new List<int>(NUM_PTS_PULSES);
+
+                    for (int j = 0; j < NUM_PTS_PULSES; ++j)
+                        channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);
+
+                    PTS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
+                    //Hold off on populating till later
+                    SBS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
+                    SBS[i].shuffleChannelOrder();
+
+                    //Make intervals
+                    int total = 0;
+                    do
+                    {
+                        int val = INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble());
+                        PTSInterTrainIntervals[i].Add(val);
+                        total += val;
+                    } while (total < 4200); //less than 4.2s
+                }
+                #endregion
+
+                T = new double[4];
+            }
         }
 
         //TODO: start function w/ switch statements for different experimental parts;
         //should be a finite state machine essentially
         internal void start()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.DefaultExt = "txt";
-            sfd.Filter = "Text files (*.txt)|*.txt";
-            sfd.FileName = "Experiment001";
-
-            DialogResult dr = sfd.ShowDialog();
-            if (dr == DialogResult.OK)
+            if (_ready)
             {
-                outputFileWriter = new StreamWriter(sfd.OpenFile());
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.DefaultExt = "txt";
+                sfd.Filter = "Text files (*.txt)|*.txt";
+                sfd.FileName = "Experiment001";
 
-                bw = new BackgroundWorker();
-                bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-                bw.WorkerSupportsCancellation = true;
-                bw.RunWorkerAsync();
+                DialogResult dr = sfd.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    outputFileWriter = new StreamWriter(sfd.OpenFile());
+
+                    bw = new BackgroundWorker();
+                    bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+                    bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+                    bw.WorkerSupportsCancellation = true;
+                    bw.RunWorkerAsync();
+                }
             }
+            else
+                MessageBox.Show("Experiment not ready. Not enough stimulation electrodes.", "Bakkum Experiment Error", MessageBoxButtons.OK);
         }
 
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

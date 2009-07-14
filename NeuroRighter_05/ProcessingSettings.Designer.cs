@@ -31,6 +31,7 @@
             this.checkBox_processLFPs = new System.Windows.Forms.CheckBox();
             this.button_cancel = new System.Windows.Forms.Button();
             this.button_accept = new System.Windows.Forms.Button();
+            this.checkBox_processMUA = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_processLFPs
@@ -64,6 +65,16 @@
             this.button_accept.UseVisualStyleBackColor = true;
             this.button_accept.Click += new System.EventHandler(this.button_accept_Click);
             // 
+            // checkBox_processMUA
+            // 
+            this.checkBox_processMUA.AutoSize = true;
+            this.checkBox_processMUA.Location = new System.Drawing.Point(12, 35);
+            this.checkBox_processMUA.Name = "checkBox_processMUA";
+            this.checkBox_processMUA.Size = new System.Drawing.Size(91, 17);
+            this.checkBox_processMUA.TabIndex = 3;
+            this.checkBox_processMUA.Text = "Process MUA";
+            this.checkBox_processMUA.UseVisualStyleBackColor = true;
+            // 
             // ProcessingSettings
             // 
             this.AcceptButton = this.button_accept;
@@ -71,6 +82,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.button_cancel;
             this.ClientSize = new System.Drawing.Size(284, 116);
+            this.Controls.Add(this.checkBox_processMUA);
             this.Controls.Add(this.button_accept);
             this.Controls.Add(this.button_cancel);
             this.Controls.Add(this.checkBox_processLFPs);
@@ -86,5 +98,6 @@
         private System.Windows.Forms.CheckBox checkBox_processLFPs;
         private System.Windows.Forms.Button button_cancel;
         private System.Windows.Forms.Button button_accept;
+        private System.Windows.Forms.CheckBox checkBox_processMUA;
     }
 }

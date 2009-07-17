@@ -179,7 +179,7 @@ namespace NeuroRighter
                     List<int> channels = new List<int>(NUM_PTS_PULSES);
 
                     for (int j = 0; j < NUM_PTS_PULSES; ++j)
-                        channels.Add(availableContextChannels[(int)Math.Floor(availableContextChannels.Count * rand.NextDouble())]);
+                        channels.Add(availablePTSChannels[(int)Math.Floor(availablePTSChannels.Count * rand.NextDouble())]);
 
                     PTS.Add(new StimTrain(PULSE_WIDTH, voltage, channels, withinPTSIntervals));
                     //Hold off on populating till later

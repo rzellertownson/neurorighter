@@ -44,6 +44,13 @@ namespace NeuroRighter.Stimulation
         private const double MIN_DURATION = 10; //in seconds
         private const int TIME_BETWEEN_TRAINS = 30 * 1000; //in ms
 
+        internal delegate void ProgressChangedHandler(object sender, int channel, double frequency, double metric, double metricChanged);
+        internal event ProgressChangedHandler alertProgressChanged;
+        internal delegate void AllFinishedHandler(object sender);
+        internal event AllFinishedHandler alertAllFinished;
+
+        private NeuroRighter.spikesAcquiredHandler eventHandler;
+
         internal ClosedLoopFollowerTest(List<int> channels, double voltage, Task StimAnalogTask, Task StimDigitalTask, 
             AnalogMultiChannelWriter StimAnalogWriter, DigitalSingleChannelWriter StimDigitalWriter, double blankingTime)
         {
@@ -66,7 +73,10 @@ namespace NeuroRighter.Stimulation
 
             _bgWorker = new BackgroundWorker();
             _bgWorker.DoWork += new DoWorkEventHandler(bw_DoWork);
+            _bgWorker.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
+            _bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
             _bgWorker.WorkerSupportsCancellation = true;
+            _bgWorker.WorkerReportsProgress = true;
             _bgWorker.RunWorkerAsync();
         }
 
@@ -90,75 +100,131 @@ namespace NeuroRighter.Stimulation
                 //Pick a stim channel combo
                 int index = rand.Next(0, channels.Count);
 
-                while (!isDone)
+                while (!isDone && !_isCancelled && !_bgWorker.CancellationPending)
                 {
-                    //Ensure we have either MIN_NUM_PULSES or MIN_DURATION of train, then create pulse
-                    int numPulses = (int)(testFreq * MIN_DURATION < MIN_NUM_PULSES ? MIN_NUM_PULSES : testFreq * MIN_DURATION);
-                    pulse = new StimPulse(PULSE_WIDTH, PULSE_WIDTH, voltage, -voltage, channels[index], numPulses, testFreq, OFFSET_VOLTAGE,
-                        INTERPULSE_DURATION, PADDING, PADDING, false);
-
-                    //Populate with trigger
-                    pulse.populate(true);
-
-                    //Set timing of tasks
-                    StimAnalogTask.Timing.SamplesPerChannel = (int)(pulse.numPulses * StimPulse.STIM_SAMPLING_FREQ / pulse.rate);
-                    StimDigitalTask.Timing.SamplesPerChannel = (int)(pulse.numPulses * StimPulse.STIM_SAMPLING_FREQ / pulse.rate);
-
-                    //Deliver pulse
-                    StimAnalogWriter.WriteMultiSample(true, pulse.analogPulse);
-                    if (Properties.Settings.Default.StimPortBandwidth == 32)
-                        StimDigitalWriter.WriteMultiSamplePort(true, pulse.digitalData);
-                    else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                        StimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(pulse.digitalData));
-                    StimDigitalTask.WaitUntilDone();
-                    StimAnalogTask.WaitUntilDone();
-                    StimAnalogTask.Stop();
-                    StimDigitalTask.Stop();
-
-                    //Calculate metric
-                    currValue = APRAW();
-
-                    //Calculate difference between current and last iteration
-                    double diff = double.NaN;
-                    if (!double.IsNaN(prevValue))
-                        diff = (currValue - prevValue) / prevValue;
-                    prevValue = currValue;
-
-                    //See if we're done
-                    if (++tries > MAX_NUM_ITERATIONS || Math.Abs(diff) < PERCENT_THRESHOLD) isDone = true;
-                    else
+                    lock (this)
                     {
-                        if (!double.IsNaN(prevDiff) && diff * prevDiff < 0) //Change of signs
-                            freqStep *= 0.75; //Cut frequency step in half
-
-                        if (double.IsNaN(diff) || diff > 0)
+                        if (!_isCancelled && !_bgWorker.CancellationPending)
                         {
-                            testFreq += freqStep * lastDirection;
-                            //lastDirection stays same
+
+                            //Ensure we have either MIN_NUM_PULSES or MIN_DURATION of train, then create pulse
+                            int numPulses = (int)(testFreq * MIN_DURATION < MIN_NUM_PULSES ? MIN_NUM_PULSES : testFreq * MIN_DURATION);
+                            pulse = new StimPulse(PULSE_WIDTH, PULSE_WIDTH, voltage, -voltage, channels[index], numPulses, testFreq, OFFSET_VOLTAGE,
+                                INTERPULSE_DURATION, PADDING, PADDING, false);
+
+                            //Populate with trigger
+                            pulse.populate(true);
+
+                            //Set timing of tasks
+                            StimAnalogTask.Timing.SamplesPerChannel = (int)(pulse.numPulses * StimPulse.STIM_SAMPLING_FREQ / pulse.rate);
+                            StimDigitalTask.Timing.SamplesPerChannel = (int)(pulse.numPulses * StimPulse.STIM_SAMPLING_FREQ / pulse.rate);
+
+                            //Deliver pulse
+                            StimAnalogWriter.WriteMultiSample(true, pulse.analogPulse);
+                            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                                StimDigitalWriter.WriteMultiSamplePort(true, pulse.digitalData);
+                            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                                StimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(pulse.digitalData));
+                            //StimDigitalTask.WaitUntilDone();
+                            //StimAnalogTask.WaitUntilDone();
+                            while (!StimDigitalTask.IsDone && !_bgWorker.CancellationPending && !_isCancelled) Thread.Sleep(10);
+                            StimAnalogTask.Stop();
+                            StimDigitalTask.Stop();
                         }
-                        else
+
+
+                        if (!_bgWorker.CancellationPending && !_isCancelled)
                         {
-                            testFreq -= freqStep * lastDirection;
-                            lastDirection *= -1;
+                            //Calculate metric
+                            currValue = APRAW();
+
+                            //Calculate difference between current and last iteration
+                            double diff = double.NaN;
+                            if (!double.IsNaN(prevValue))
+                                diff = (currValue - prevValue) / prevValue;
+
+                            //See if we're done
+                            if (++tries > MAX_NUM_ITERATIONS || Math.Abs(diff) < PERCENT_THRESHOLD) isDone = true;
+                            else
+                            {
+                                //Report progress
+                                _bgWorker.ReportProgress(0, new double[] { channels[index], testFreq, currValue, diff });
+
+
+                                if (!double.IsNaN(prevDiff) && diff * prevDiff < 0) //Change of signs
+                                    freqStep *= 0.75; //Cut frequency step in half
+
+                                if (double.IsNaN(diff) || diff > 0)
+                                {
+                                    testFreq += freqStep * lastDirection;
+                                    //lastDirection stays same
+                                }
+                                else
+                                {
+                                    testFreq -= freqStep * lastDirection;
+                                    lastDirection *= -1;
+                                }
+
+                                if (testFreq < MIN_FREQUENCY) testFreq = MIN_FREQUENCY;
+                                else if (testFreq > MAX_FREQUENCY) testFreq = MAX_FREQUENCY;
+
+                                //Store previous values
+                                prevDiff = diff;
+                                prevValue = currValue;
+
+                            }
                         }
-
-                        if (testFreq < MIN_FREQUENCY) testFreq = MIN_FREQUENCY;
-                        else if (testFreq > MAX_FREQUENCY) testFreq = MAX_FREQUENCY;
-
-                        prevDiff = diff;
                     }
                 }
-
                 channels.RemoveAt(index);
             }
         }
 
-        internal void linkToSpikes(NeuroRighter nr) { nr.spikesAcquired += new NeuroRighter.spikesAcquiredHandler(spikeAcquired); }
-        private void spikeAcquired(object sender, bool inTrigger)
+        private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            NeuroRighter nr = (NeuroRighter)sender;
+            double[] values = e.UserState as double[];
+            alertProgressChanged(this, (int)values[0], values[1], values[2], values[3] * 100.0);
+        }
+
+        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            alertAllFinished(this);
+        }
+
+        internal void Stop(NeuroRighter nr)
+        {
+            nr.spikesAcquired -= eventHandler;
+
+            _isCancelled = true;
+            _bgWorker.CancelAsync();
+
             lock (this)
             {
+                if (!StimDigitalTask.IsDone) StimDigitalTask.Stop();
+            }
+
+            //De-select channel on mux
+            StimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
+            StimDigitalTask.Timing.SamplesPerChannel = 3;
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                StimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                StimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            StimDigitalTask.WaitUntilDone();
+            StimDigitalTask.Stop();
+        }
+
+        internal void linkToSpikes(NeuroRighter nr)
+        {
+            eventHandler = new NeuroRighter.spikesAcquiredHandler(spikeAcquired);
+            nr.spikesAcquired += eventHandler;
+        }
+        private void spikeAcquired(object sender, bool inTrigger)
+        {
+            if (!_isCancelled && !_bgWorker.CancellationPending)
+            {
+
+                NeuroRighter nr = (NeuroRighter)sender;
                 lock (nr)
                 {
                     //Add all waveforms to local buffer

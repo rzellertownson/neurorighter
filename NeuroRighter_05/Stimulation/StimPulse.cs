@@ -146,8 +146,9 @@ namespace NeuroRighter
                     analogPulse[rowOffset + 1, j] = v2;
                 for (int j = 40 + this.prePadding + offset * i; j < 60 + this.prePadding + offset * i; ++j)
                     analogPulse[rowOffset + 1, j] = inAmp1;
+                double pulseWidthEncoding = ((double)(width1) / 100.0 > 10.0 ? -1 : (double)(width1) / 100.0);
                 for (int j = 60 + this.prePadding + offset * i; j < 80 + this.prePadding + offset * i; ++j)
-                    analogPulse[rowOffset + 1, j] = (double)inWidth1 / 100;
+                    analogPulse[rowOffset + 1, j] = pulseWidthEncoding;
 
                 //Make digital waveform
                 for (int j = 1 + offset * i; j <= NUM_SAMPLES_BLANKING + offset * i; ++j)
@@ -211,8 +212,9 @@ namespace NeuroRighter
                     analogPulse[rowOffset + 1, j] = v2;
                 for (int j = 40 + prePadding; j < 60 + prePadding; ++j)
                     analogPulse[rowOffset + 1, j] = amplitude1;
+                double pulseWidthEncoding = ((double)(width1) / 100.0 > 10.0 ? -1 : (double)(width1) / 100.0);
                 for (int j = 60 + prePadding; j < 80 + prePadding; ++j)
-                    analogPulse[rowOffset + 1, j] = (double)(width1) / 100.0;
+                    analogPulse[rowOffset + 1, j] = pulseWidthEncoding;
 
                 //Add a trigger for all duration of "pulse" that's outside of actual pulse (meaning a 100 Hz train will have ~9 ms of trigger)
                 if (SendTrigger)
@@ -253,8 +255,9 @@ namespace NeuroRighter
                     analogPulse[rowOffset + 1, j] = v2;
                 for (int j = 40 + prePadding; j < 60 + prePadding; ++j)
                     analogPulse[rowOffset + 1, j] = amplitude1;
+                double pulseWidthEncoding = ((double)(width1) / 100.0 > 10.0 ? -1 : (double)(width1) / 100.0);
                 for (int j = 60 + prePadding; j < 80 + prePadding; ++j)
-                    analogPulse[rowOffset + 1, j] = (double)(width1) / 100.0;
+                    analogPulse[rowOffset + 1, j] = pulseWidthEncoding;
                 analogPulse[1, 80 + prePadding] = 0.0;
 
                 //Make digital waveform, use one time bin (10 us) to let things settle.

@@ -282,6 +282,9 @@ namespace NeuroRighter
             LFPLowCut.Value = Convert.ToDecimal(Properties.Settings.Default.LFPLowCut);
             LFPHighCut.Value = Convert.ToDecimal(Properties.Settings.Default.LFPHighCut);
             LFPFiltOrder.Value = Convert.ToDecimal(Properties.Settings.Default.LFPNumPoles);
+
+            //Set default for closed-loop follower expt.
+            comboBox_ClosedLoopFollowerAlgorithm.SelectedIndex = 0;
         }
         #endregion
 
@@ -3302,7 +3305,7 @@ namespace NeuroRighter
         #endregion //End DrawStimPulse region
         #endregion //End stimulation section
 
-        #region impedanceTest
+        #region Impedance Testing
         /*************************************
          * IMPEDANCE TEST
          * ***********************************/
@@ -4171,13 +4174,35 @@ ch = 1;
             double voltage = Convert.ToDouble(numericUpDown_OpenLoopFollowerVoltage.Value);
 
             olfTest = new Stimulation.OpenLoopFollowerTest(channels, frequencies, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter, stimDigitalWriter);
-
+            olfTest.alertAllFinished += new Stimulation.OpenLoopFollowerTest.AllFinishedHandler(OpenLoopFollowerFinished);
+            olfTest.alertProgressChanged += new Stimulation.OpenLoopFollowerTest.ProgressChangedHandler(OpenLoopFollowerProgressChanged);
+            progressBar__OpenLoopFollowerProgressBar.Minimum = 0;
+            progressBar__OpenLoopFollowerProgressBar.Maximum = 100;
+            progressBar__OpenLoopFollowerProgressBar.Value = 0;
             olfTest.Start();
+        }
+
+        private void OpenLoopFollowerProgressChanged(object sender, int percent, int channel, double frequency)
+        {
+            progressBar__OpenLoopFollowerProgressBar.Value = percent;
+            label_OpenLoopFollowerStatus.Text = "Channel: " + channel.ToString() + "\r\nFreq. (Hz): " + frequency.ToString("F1");
+        }
+
+        private void OpenLoopFollowerFinished(object sender)
+        {
+            olfTest = null;
+
+            button_stim.Enabled = true;
+            button_stimExpt.Enabled = true;
+            button_OpenLoopFollowerStart.Enabled = true;
+            button_OpenLoopFollowerStop.Enabled = false;
+            button_ClosedLoopFollowerStart.Enabled = true;
         }
 
         private void button_OpenLoopFollowerStop_Click(object sender, EventArgs e)
         {
             olfTest.Stop();
+            olfTest = null;
 
             button_stim.Enabled = true;
             button_stimExpt.Enabled = true;
@@ -4191,7 +4216,6 @@ ch = 1;
         {
             if (checkBox_SALPA.Checked)
             {
-
                 //Take care of buttons
                 button_stim.Enabled = false;
                 button_stimExpt.Enabled = false;
@@ -4212,6 +4236,8 @@ ch = 1;
 
                 clfTest = new Stimulation.ClosedLoopFollowerTest(channels, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter,
                     stimDigitalWriter, blankingTime);
+                clfTest.alertProgressChanged += new Stimulation.ClosedLoopFollowerTest.ProgressChangedHandler(ClosedLoopFollowerProgressChanged);
+                clfTest.alertAllFinished += new Stimulation.ClosedLoopFollowerTest.AllFinishedHandler(ClosedLoopFollowerFinished);
                 clfTest.linkToSpikes(this);
                 clfTest.Start();
 
@@ -4220,6 +4246,38 @@ ch = 1;
             else
                 MessageBox.Show("SALPA must be running.", "Closed-loop Follower Error", MessageBoxButtons.OK);
 
+        }
+
+        private void ClosedLoopFollowerProgressChanged(object sender, int channel, double frequency, double metric, double metricDifference)
+        {
+            label_ClosedLoopFollowerData.Text = "Ch #" + channel.ToString() + ", " + frequency.ToString("F1") + " Hz\r\n" +
+                "Value = " + metric.ToString("F2") + "\r\nDifference = " + metricDifference.ToString("F2") + "%";
+        }
+
+        private void ClosedLoopFollowerFinished(object sender)
+        {
+            clfTest = null;
+
+            button_stim.Enabled = true;
+            button_stimExpt.Enabled = true;
+            button_OpenLoopFollowerStart.Enabled = true;
+            button_ClosedLoopFollowerStop.Enabled = false;
+            button_ClosedLoopFollowerStart.Enabled = true;
+        }
+
+        private void button_ClosedLoopFollowerStop_Click(object sender, EventArgs e)
+        {
+            if (clfTest != null)
+            {
+                clfTest.Stop(this);
+                clfTest = null;
+
+                button_stim.Enabled = true;
+                button_stimExpt.Enabled = true;
+                button_OpenLoopFollowerStart.Enabled = true;
+                button_ClosedLoopFollowerStop.Enabled = false;
+                button_ClosedLoopFollowerStart.Enabled = true;
+            }
         }
     }
 }

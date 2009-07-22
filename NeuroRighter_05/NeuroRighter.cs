@@ -2685,7 +2685,7 @@ namespace NeuroRighter
         /* ************************************************************************
          *  STIMULATION
          * ************************************************************************/
-        #region OneClickStimulation
+        #region On Demand Stimulation
         private void button_stim_Click(object sender, EventArgs e)
         {
             /* There are two timing schemes.  If the total duration is >500 ms, stopping of the tasks is 
@@ -2696,6 +2696,8 @@ namespace NeuroRighter
             button_stimExpt.Enabled = false;
             listBox_exptStimChannels.Enabled = false;
             listBox_stimChannels.Enabled = false;
+            radioButton_OnDemandBiphasic.Enabled = false;
+            radioButton_OnDemandUniphasic.Enabled = false;
             button_stim.Refresh();
 
             int ch = Convert.ToInt32(stimChannel.Value); //Channel to stimulate
@@ -2743,18 +2745,24 @@ namespace NeuroRighter
             stim_params[4] = rate;
             stim_params[5] = inOffsetVoltage;
             stim_params[6] = interphaseLength;
-            //stim_params[7] = prephaseLength;
-            //stim_params[8] = postphaseLength;
-            //StimPulse sp = new StimPulse((int)width, v, (int)ch, maxNumPulses, rate);
             bw_stim.RunWorkerAsync(stim_params);
         }
 
         private void bw_stim_DoWork(object sender, DoWorkEventArgs e)
         {
+            //Get pulse arguments
             double[] stim_params = (double[])e.Argument;
+
+            //Select between uni- and biphasic pulses
+            int phase2Width = (int)stim_params[0];
+            if (radioButton_OnDemandUniphasic.Checked)
+                phase2Width = 0;
+
             if (stim_params[3] * 1000 / stim_params[4] < 500)
             {
-                StimPulse sp = new StimPulse((int)stim_params[0], (int)stim_params[0], stim_params[1], -stim_params[1], (int)stim_params[2], (int)stim_params[3], (int)stim_params[4], (double)stim_params[5], (int)stim_params[6], 10, 10, true);
+                //Create pulse
+                StimPulse sp = new StimPulse((int)stim_params[0], phase2Width, stim_params[1], -stim_params[1], 
+                    (int)stim_params[2], (int)stim_params[3], (int)stim_params[4], (double)stim_params[5], (int)stim_params[6], 10, 10, true);
                 if (stim_params[3] == 1)
                 {
                     stimPulseTask.Timing.SamplesPerChannel = sp.analogPulse.GetLength(1);
@@ -2763,7 +2771,6 @@ namespace NeuroRighter
 
                 //Write
                 stimPulseWriter.WriteMultiSample(true, sp.analogPulse);
-                //stimDigitalWriter.WriteWaveform(true, sp.digitalData);
                 if (Properties.Settings.Default.StimPortBandwidth == 32)
                     stimDigitalWriter.WriteMultiSamplePort(true, sp.digitalData);
                 else if (Properties.Settings.Default.StimPortBandwidth == 8)
@@ -2781,7 +2788,7 @@ namespace NeuroRighter
             {
                 //Make a single stim pulse, but with the correct number of zeros to insure proper rate
                 //when task is regenerative
-                StimPulse sp = new StimPulse((int)stim_params[0], (int)stim_params[0], stim_params[1], -stim_params[1], (int)stim_params[2], 1, (int)stim_params[4], (double)stim_params[5], (int)stim_params[6], 10, 10, true);
+                StimPulse sp = new StimPulse((int)stim_params[0], phase2Width, stim_params[1], -stim_params[1], (int)stim_params[2], 1, (int)stim_params[4], (double)stim_params[5], (int)stim_params[6], 10, 10, true);
                 if (stim_params[3] == 1)
                 {
                     stimPulseTask.Timing.SamplesPerChannel = sp.analogPulse.GetLength(1);
@@ -2797,7 +2804,6 @@ namespace NeuroRighter
                 stimStopTime = stimStartTime.AddMilliseconds(((double)stim_params[3] * 1000.0) / (double)stim_params[4]);
                 stimTimer = new System.Threading.Timer(stim_timer_tick, null, 100, 100);
             }
-            
         }
 
         private void stim_timer_tick(object data)
@@ -2838,6 +2844,8 @@ namespace NeuroRighter
                 button_stimExpt.Enabled = true;
                 listBox_exptStimChannels.Enabled = true;
                 listBox_stimChannels.Enabled = true;
+                radioButton_OnDemandUniphasic.Enabled = true;
+                radioButton_OnDemandBiphasic.Enabled = true;
                 timer.Enabled = false;
             }
         }
@@ -3261,6 +3269,18 @@ namespace NeuroRighter
                 pulse[i] = offsetV;
 
             waveformGraph_openLoopStimPulse.PlotY(pulse, 0, 1000000 / STIM_SAMPLING_FREQ);
+
+
+            //Give a little breathing room on plot
+            double min = Math.Min(Math.Min(offsetV + v1, offsetV + v2), offsetV);
+            double max = Math.Max(Math.Max(offsetV + v1, offsetV + v2), offsetV);
+            double diff = max - min;
+            if (diff == 0.0) diff = 0.1;
+            min -= diff * 0.05;
+            max += diff * 0.05;
+
+
+            waveformGraph_openLoopStimPulse.YAxes[0].Range = new Range(min, max);
         }
 
         private void openLoopVoltage1_ValueChanged(object sender, EventArgs e)
@@ -4173,7 +4193,12 @@ ch = 1;
             for (int i = 0; i < s.Length; ++i) frequencies.Add(Convert.ToDouble(s[i]));
             double voltage = Convert.ToDouble(numericUpDown_OpenLoopFollowerVoltage.Value);
 
-            olfTest = new Stimulation.OpenLoopFollowerTest(channels, frequencies, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter, stimDigitalWriter);
+            //Get durations
+            double Duration = Convert.ToDouble(numericUpDown_OpenLoopFollowerDuration.Value);
+            double WaitDuration = Convert.ToDouble(numericUpDown_OpenLoopFollowerWaitDuration.Value);
+
+            olfTest = new Stimulation.OpenLoopFollowerTest(channels, frequencies, voltage, Duration, WaitDuration,
+                stimPulseTask, stimDigitalTask, stimPulseWriter, stimDigitalWriter);
             olfTest.alertAllFinished += new Stimulation.OpenLoopFollowerTest.AllFinishedHandler(OpenLoopFollowerFinished);
             olfTest.alertProgressChanged += new Stimulation.OpenLoopFollowerTest.ProgressChangedHandler(OpenLoopFollowerProgressChanged);
             progressBar__OpenLoopFollowerProgressBar.Minimum = 0;
@@ -4278,6 +4303,18 @@ ch = 1;
                 button_ClosedLoopFollowerStop.Enabled = false;
                 button_ClosedLoopFollowerStart.Enabled = true;
             }
+        }
+
+        private void button_ElectrodeScreeningSelectAll_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < listBox_exptStimChannels.Items.Count; ++i)
+                listBox_exptStimChannels.SetSelected(i, true);
+        }
+
+        private void button_ElectrodeScreeningSelectNone_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < listBox_exptStimChannels.Items.Count; ++i)
+                listBox_exptStimChannels.SetSelected(i, false);
         }
     }
 }

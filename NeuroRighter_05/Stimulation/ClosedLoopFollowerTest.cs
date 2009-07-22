@@ -5,6 +5,8 @@ using System.Text;
 using System.ComponentModel;
 using System.Threading;
 using NationalInstruments.DAQmx;
+using System.IO;
+using System.Windows.Forms;
 
 namespace NeuroRighter.Stimulation
 {
@@ -21,6 +23,7 @@ namespace NeuroRighter.Stimulation
         private Task StimDigitalTask;
         private AnalogMultiChannelWriter StimAnalogWriter;
         private DigitalSingleChannelWriter StimDigitalWriter;
+        private StreamWriter outputFileWriter;
 
         private double testFreq;
         private double freqStep;
@@ -41,8 +44,8 @@ namespace NeuroRighter.Stimulation
         private const double OFFSET_VOLTAGE = 0.0;
         private const int PADDING = 100;
         private const int MIN_NUM_PULSES = 10;
-        private const double MIN_DURATION = 10; //in seconds
-        private const int TIME_BETWEEN_TRAINS = 30 * 1000; //in ms
+        private const double MIN_DURATION = 20; //in seconds
+        private const int TIME_BETWEEN_TRAINS = 20 * 1000; //in ms
 
         internal delegate void ProgressChangedHandler(object sender, int channel, double frequency, double metric, double metricChanged);
         internal event ProgressChangedHandler alertProgressChanged;
@@ -69,21 +72,39 @@ namespace NeuroRighter.Stimulation
 
         internal void Start()
         {
-            rand = new Random();
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.DefaultExt = "txt";
+            sfd.Filter = "Text files (*.txt)|*.txt";
+            sfd.FileName = "Experiment001";
 
-            _bgWorker = new BackgroundWorker();
-            _bgWorker.DoWork += new DoWorkEventHandler(bw_DoWork);
-            _bgWorker.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
-            _bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
-            _bgWorker.WorkerSupportsCancellation = true;
-            _bgWorker.WorkerReportsProgress = true;
-            _bgWorker.RunWorkerAsync();
+            DialogResult dr = sfd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                outputFileWriter = new StreamWriter(sfd.OpenFile());
+
+                rand = new Random();
+
+                _bgWorker = new BackgroundWorker();
+                _bgWorker.DoWork += new DoWorkEventHandler(bw_DoWork);
+                _bgWorker.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
+                _bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+                _bgWorker.WorkerSupportsCancellation = true;
+                _bgWorker.WorkerReportsProgress = true;
+                _bgWorker.RunWorkerAsync();
+            }
         }
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
             int tries = 0;
             bool isDone;
+
+            //Print file header info
+            outputFileWriter.WriteLine("Closed-loop Follower Experiment\r\n\r\nProgrammed by John Rolston (rolston2@gmail.com)\r\n\r\n");
+
+            //Get starting time
+            outputFileWriter.WriteLine("Starting time: " + DateTime.Now);
+            outputFileWriter.Flush();
 
             while (channels.Count > 0 && !_isCancelled && !_bgWorker.CancellationPending)
             {
@@ -99,6 +120,7 @@ namespace NeuroRighter.Stimulation
 
                 //Pick a stim channel combo
                 int index = rand.Next(0, channels.Count);
+                outputFileWriter.WriteLine("\r\n\r\nChannel #: " + channels[index] + "\r\n");
 
                 while (!isDone && !_isCancelled && !_bgWorker.CancellationPending)
                 {
@@ -106,11 +128,15 @@ namespace NeuroRighter.Stimulation
                     {
                         if (!_isCancelled && !_bgWorker.CancellationPending)
                         {
-
                             //Ensure we have either MIN_NUM_PULSES or MIN_DURATION of train, then create pulse
                             int numPulses = (int)(testFreq * MIN_DURATION < MIN_NUM_PULSES ? MIN_NUM_PULSES : testFreq * MIN_DURATION);
                             pulse = new StimPulse(PULSE_WIDTH, PULSE_WIDTH, voltage, -voltage, channels[index], numPulses, testFreq, OFFSET_VOLTAGE,
                                 INTERPULSE_DURATION, PADDING, PADDING, false);
+
+                            //Write to file
+                            outputFileWriter.WriteLine("Test Frequency (Hz): " + testFreq);
+                            outputFileWriter.WriteLine("# Pulses: " + numPulses);
+                            outputFileWriter.Flush();
 
                             //Populate with trigger
                             pulse.populate(true);
@@ -143,16 +169,20 @@ namespace NeuroRighter.Stimulation
                             if (!double.IsNaN(prevValue))
                                 diff = (currValue - prevValue) / prevValue;
 
+                            //Report progress
+                            _bgWorker.ReportProgress(0, new double[] { channels[index], testFreq, currValue, diff });
+
+                            //Write to file
+                            outputFileWriter.WriteLine("\tMetric Value: " + currValue.ToString("F2"));
+                            outputFileWriter.WriteLine("\tDifference (%): " + (diff * 100.0).ToString("F2") + "\r\n");
+                            outputFileWriter.Flush();
+
                             //See if we're done
                             if (++tries > MAX_NUM_ITERATIONS || Math.Abs(diff) < PERCENT_THRESHOLD) isDone = true;
                             else
                             {
-                                //Report progress
-                                _bgWorker.ReportProgress(0, new double[] { channels[index], testFreq, currValue, diff });
-
-
                                 if (!double.IsNaN(prevDiff) && diff * prevDiff < 0) //Change of signs
-                                    freqStep *= 0.75; //Cut frequency step in half
+                                    freqStep *= 0.75; //Cut frequency step
 
                                 if (double.IsNaN(diff) || diff > 0)
                                 {
@@ -171,7 +201,6 @@ namespace NeuroRighter.Stimulation
                                 //Store previous values
                                 prevDiff = diff;
                                 prevValue = currValue;
-
                             }
                         }
                     }
@@ -188,7 +217,13 @@ namespace NeuroRighter.Stimulation
 
         private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            alertAllFinished(this);
+            //Close file
+            outputFileWriter.Flush();
+            outputFileWriter.Close();
+            outputFileWriter.Dispose();
+
+            if (alertAllFinished != null)
+                alertAllFinished(this);
         }
 
         internal void Stop(NeuroRighter nr)
@@ -212,6 +247,10 @@ namespace NeuroRighter.Stimulation
                 StimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
             StimDigitalTask.WaitUntilDone();
             StimDigitalTask.Stop();
+
+            outputFileWriter.Flush();
+            outputFileWriter.Close();
+            outputFileWriter.Dispose();
         }
 
         internal void linkToSpikes(NeuroRighter nr)
@@ -221,7 +260,7 @@ namespace NeuroRighter.Stimulation
         }
         private void spikeAcquired(object sender, bool inTrigger)
         {
-            if (!_isCancelled && !_bgWorker.CancellationPending)
+            if (!_isCancelled && _bgWorker!= null && !_bgWorker.CancellationPending)
             {
 
                 NeuroRighter nr = (NeuroRighter)sender;

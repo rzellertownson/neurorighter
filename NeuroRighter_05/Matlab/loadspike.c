@@ -231,7 +231,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                 }
                 else {
                     chs[i] = (double)ch;
-                    tms[i] = (double)(tm)/(double)freq; /* Convert sample number to time (in seconds) */
+                    tms[i] = ((double)(tm))/((double)freq); /* Convert sample number to time (in seconds) */
                     for (j = 0; j < wfmLength; ++j)
                         wfms[i * wfmLength + j] = wfm[j];
                     /*mexPrintf("\n[DEBUG] channel = %f, time = %f\n", chs[i], tms[i]);*/

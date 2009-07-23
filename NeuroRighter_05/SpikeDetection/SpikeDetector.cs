@@ -106,7 +106,7 @@ namespace NeuroRighter
                     rawType[] waveform = new rawType[numPost + numPre + 1];
                     for (int j = spikeBufferSize - (numPre - i); j < spikeBufferSize; ++j)
                         waveform[j - spikeBufferSize + (numPre - i)] = spikeDetectionBuffer[channel][j];
-                    for (int j = 0; j < numPost + 1; ++j)
+                    for (int j = 0; j < (numPost + 1) + i; ++j)
                         waveform[j + (numPre - i)] = data[j];
                     waveforms.Add(new SpikeWaveform(channel, i, waveform));
                     i += numPost - DEADTIME;

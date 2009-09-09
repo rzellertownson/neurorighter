@@ -53,7 +53,7 @@ namespace NeuroRighter
         private rawType delta;
         private int[] endIdx;
         private int[] startPeg, stopPeg; //Indices at which the first 0'ing and last 0'ing will occur (i.e., inclusive bounds)
-        private int numSamples; //Buffer length
+        private readonly int numSamples; //Buffer length
 
         private static int PRE;
         private static int POST;

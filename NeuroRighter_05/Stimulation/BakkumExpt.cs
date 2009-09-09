@@ -441,6 +441,7 @@ namespace NeuroRighter
             #endregion
         }
 
+        Random rSleep = new Random();
         private void deliverCPS()
         {
             //Assumes CPS is initialized, does not check
@@ -459,8 +460,8 @@ namespace NeuroRighter
             stimAnalogTask.Stop();
             stimDigitalTask.Stop();
 
-            //Wait 100 ms while listening to spikes
-            //System.Threading.Thread.Sleep(100);
+            //Wait 150-350 ms while listening to spikes
+            System.Threading.Thread.Sleep((int)(rSleep.NextDouble() * 200.0) + 150);
             //Not necessary with waitone() construct
         }
 

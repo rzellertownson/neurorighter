@@ -26,33 +26,33 @@ namespace NeuroRighter.Filters
 
         unsafe internal override void reference(double[][] data, int startChannel, int numChannels)
         {
-            int group = startChannel / numChannelsPerGroup;
-
             //Store entries into meanData array
-            for (int c = 0; c < numChannelsPerGroup; ++c)
-                for (int s = 0; s < bufferLength; ++s)
-                    meanData[group][s][c] = data[c + group * numChannelsPerGroup][s];
-
-            //Sort
-            for (int s = 0; s < bufferLength; ++s) Array.Sort(meanData[group][s]);
-
-            //Subtract out median
-            if (numChannels % 2 == 0)
+            for (int g = startChannel / numChannelsPerGroup; g < (startChannel + numChannels) / numChannelsPerGroup; ++g)
             {
-                for (int s = 0; s < bufferLength; ++s)
+                for (int c = 0; c < numChannelsPerGroup; ++c)
+                    for (int s = 0; s < bufferLength; ++s)
+                        meanData[g][s][c] = data[c + g * numChannelsPerGroup][s];
+
+                //Sort
+                for (int s = 0; s < bufferLength; ++s) Array.Sort(meanData[g][s]);
+
+                //Subtract out median
+                if (numChannels % 2 == 0)
                 {
-                    double median = 0.5 * (meanData[group][s][(int)(numChannelsPerGroup * 0.5)] + meanData[group][s][(int)(numChannelsPerGroup * 0.5) + 1]);
-                    for (int c = group * numChannelsPerGroup; c < (group + 1) * numChannelsPerGroup; ++c)
-                        data[c][s] -= median;
+                    for (int s = 0; s < bufferLength; ++s)
+                    {
+                        double median = 0.5 * (meanData[g][s][(int)(numChannelsPerGroup * 0.5)] + meanData[g][s][(int)(numChannelsPerGroup * 0.5) + 1]);
+                        for (int c = g * numChannelsPerGroup; c < (g + 1) * numChannelsPerGroup; ++c)
+                            data[c][s] -= median;
+                    }
+                }
+                else
+                {
+                    for (int c = g * numChannelsPerGroup; c < (g + 1) * numChannelsPerGroup; ++c)
+                        for (int s = 0; s < bufferLength; ++s)
+                            data[c][s] -= meanData[g][s][(int)(numChannelsPerGroup * 0.5)];
                 }
             }
-            else
-            {
-                for (int c = group * numChannelsPerGroup; c < (group + 1) * numChannelsPerGroup; ++c)
-                    for (int s = 0; s < bufferLength; ++s)
-                        data[c][s] -= meanData[group][s][(int)(numChannelsPerGroup * 0.5)];
-            }
-
         }
     }
 }

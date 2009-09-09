@@ -2058,6 +2058,18 @@ namespace NeuroRighter
             textBox_lfpSamplingRate_TextChanged(null, null);
             textBox_spikeSamplingRate_TextChanged(null, null);
             setSpikeDetector();
+
+            if (radioButton_spikeReferencingNone.Checked)
+                referncer = null;
+            else if (radioButton_spikesReferencingCommonAverage.Checked)
+                referncer = new Filters.CommonAverageReferencer(spikeBufferLength);
+            else if (radioButton_spikesReferencingCommonMedian.Checked)
+                referncer = new Filters.CommonMedianReferencer(spikeBufferLength, numChannels);
+            else if (radioButton_spikesReferencingCommonMedianLocal.Checked)
+            {
+                int channelsPerGroup = Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
+                referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
+            }
         }
 
         //******************************
@@ -4095,10 +4107,11 @@ ch = 1;
 
         private void radioButton_spikesReferencingCommonMedianLocal_CheckedChanged(object sender, EventArgs e)
         {
+            int channelsPerGroup = Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
             lock (this)
             {
                 if (radioButton_spikesReferencingCommonMedianLocal.Checked)
-                    referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, 8, numChannels / 8);
+                    referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
             }
         }
 
@@ -4315,6 +4328,19 @@ ch = 1;
         {
             for (int i = 0; i < listBox_exptStimChannels.Items.Count; ++i)
                 listBox_exptStimChannels.SetSelected(i, false);
+        }
+
+        private void numericUpDown_CommonMedianLocalReferencingChannelsPerGroup_ValueChanged(object sender, EventArgs e)
+        {
+            int channelsPerGroup = Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
+            if (numChannels % channelsPerGroup != 0)
+            {
+                channelsPerGroup = 8;
+                numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value = 8;
+                MessageBox.Show("Value must evenly divide total number of channels.");
+            }
+            if (radioButton_spikesReferencingCommonMedianLocal.Checked)
+                referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
     }
 }

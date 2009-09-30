@@ -1,0 +1,484 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NeuroRighter</name>
+    </assembly>
+    <members>
+        <member name="M:NeuroRighter.Stimulation.StimulatorShowcaser.makeSampleWaveforms">
+            <summary>
+            This function sends out a few sample stimulus waveforms, and reads them to a single
+            analog input channel (ai2 of Cineplex device).
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.Stimulation.StimulatorShowcaser.makeDualVIWaveforms(System.Boolean)">
+            <summary>
+            This function sends outs a current and voltage controlled pulse, recording
+            the corresponding voltage and current, respectively.  The recorded V and I
+            are on Cineplex Device, ai2 and ai3 (V,I, respectively).  V-controlled pulse
+            is delivered first.
+            </summary>
+            <param name="currentControlled">True is experiment is current-controlled, false if voltage-controlled</param>
+        </member>
+        <member name="T:NeuroRighter.EventPlotData">
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.DisplaySettings">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="F:NeuroRighter.DisplaySettings.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DisplaySettings.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.DisplaySettings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DisplaySettings.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.PlotDataGrid">
+            <summary>PlotDataGrid is for grid displayed data</summary>
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.PlotData">
+            <summary>PlotData: Stores a portion of data, posting to plots when appropriate</summary>
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.GraphicsDeviceControl">
+            <summary>
+            Custom control uses the XNA Framework GraphicsDevice to render onto
+            a Windows Form. Derived classes can override the Initialize and Draw
+            methods to add their own drawing code.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.OnCreateControl">
+            <summary>
+            Initializes the control.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.Dispose(System.Boolean)">
+            <summary>
+            Disposes the control.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Redraws the control in response to a WinForms paint message.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.BeginDraw">
+            <summary>
+            Attempts to begin drawing the control. Returns an error message string
+            if this was not possible, which can happen if the graphics device is
+            lost, or if we are running inside the Form designer.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.EndDraw">
+            <summary>
+            Ends drawing the control. This is called after derived classes
+            have finished their Draw method, and is responsible for presenting
+            the finished image onto the screen, using the appropriate WinForms
+            control handle to make sure it shows up in the right place.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.HandleDeviceReset">
+            <summary>
+            Helper used by BeginDraw. This checks the graphics device status,
+            making sure it is big enough for drawing the current control, and
+            that the device is not lost. Returns an error string if the device
+            could not be reset.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.PaintUsingSystemDrawing(System.Drawing.Graphics,System.String)">
+            <summary>
+            If we do not have a valid graphics device (for instance if the device
+            is lost, or if we are running inside the Form designer), we must use
+            regular System.Drawing method to display a status message.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.OnPaintBackground(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Ignores WinForms paint-background messages. The default implementation
+            would clear the control to the current background color, causing
+            flickering when our OnPaint implementation then immediately draws some
+            other color over the top using the XNA Framework GraphicsDevice.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.Initialize">
+            <summary>
+            Derived classes override this to initialize their drawing code.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceControl.Draw">
+            <summary>
+            Derived classes override this to draw themselves using the GraphicsDevice.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.GraphicsDeviceControl.GraphicsDevice">
+            <summary>
+            Gets a GraphicsDevice that can be used to draw onto this control.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.GraphicsDeviceControl.Services">
+            <summary>
+            Gets an IServiceProvider containing our IGraphicsDeviceService.
+            This can be used with components such as the ContentManager,
+            which use this service to look up the GraphicsDevice.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.StimPulse">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.StimPulse.#ctor(System.Int32,System.Int32,System.Double,System.Double,System.Int32,System.Double,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="width1">First phase duration (microseconds)</param>
+            <param name="width2">Second phase duration (microseconds)</param>
+            <param name="amp1">First phase amplitude (Volts)</param>
+            <param name="amp2">Second phase amplitude (Volts)</param>
+            <param name="ch">Channel to stimulate</param>
+            <param name="offsetVoltage">Offset voltage for entire waveform (volts)</param>
+            <param name="interphaseLength">Duration between phase 1 and phase 2, equal to offset voltage (microseconds)</param>
+            <param name="prePadding">Duration before phase 1, set to offset voltage (microseconds)</param>
+            <param name="postPadding">Duration after phase 2, set to offset voltage (microseconds)</param>
+            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
+        </member>
+        <member name="T:NeuroRighter.HardwareSettings">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.HardwareSettings.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.HardwareSettings.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.HardwareSettings.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.HardwareSettings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.Filters.ArtiFilt">
+            <summary>
+            Filters data by clipping out stimulation artifacts and setting samples to 0.0
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.Filters.ArtiFilt.#ctor(System.Double,System.Double,System.Double,System.Int32)">
+            <summary>
+            Constructor for ArtiFilt filter
+            </summary>
+            <param name="timeBefore">Time (in seconds) before stim pulse to blank/interpolate</param>
+            <param name="timeAfter">Time (in seconds) after stim pulse to blank/interpolate</param>
+            <param name="samplingRate">Sampling frequency (in Hz)</param>
+            <param name="numChannels">Number of channels</param>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetection.StimSafeMedian">
+            <summary>
+            
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetector">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.SALPA2">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.PlotSpikeWaveform">
+            <summary>
+            
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.ButterworthFilter">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.SALPA">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.LimAda">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.ProcessingSettings">
+            <summary>
+            
+            </summary>
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="F:NeuroRighter.ProcessingSettings.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ProcessingSettings.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.ProcessingSettings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ProcessingSettings.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.FileOutput">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.AboutBox">
+            <summary>
+            
+            </summary>
+            <author>John Rolston (rolston2@gmail.com</author>
+        </member>
+        <member name="F:NeuroRighter.AboutBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.AboutBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.AboutBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.AboutBox.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.SpikeWaveform">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.NeuroRighter">
+            <summary>Main Form for NeuroRighter application.</summary>
+            <author>John Rolston</author>
+        </member>
+        <member name="F:NeuroRighter.NeuroRighter.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.NeuroRighter.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.NeuroRighter.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.NeuroRighter.bwSpikes_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            Process raw data (detect spikes, write to file, etc.)
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:NeuroRighter.NeuroRighter.StimTick">
+            <summary>
+            Keeps track of when a stimulus pulse occurred
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.LoadRawSignature">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.LoadRawSignature.loadRaw(System.String,System.Double[0:,0:],System.Double[0:,0:])">
+            <summary>
+            
+            </summary>
+            <param name="filename"></param>
+            <param name="channels"></param>
+            <param name="times"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeuroRighter.LoadRawSignature.loadRawTimes(System.String,System.Double[0:,0:])">
+            <summary>
+            
+            </summary>
+            <param name="filename"></param>
+            <param name="times"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NeuroRighter.ChannelOutput">
+            <summary>
+            Class to handle playback of one channel to BNC or other output (useful for audio playback)
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ChannelOutput.Dispose">
+            <summary>
+            Dispose of tasks within object.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.BakkumExpt">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.ServiceContainer">
+            <summary>
+            Container class implements the IServiceProvider interface. This is used
+            to pass shared services between different components, for instance the
+            ContentManager uses it to locate the IGraphicsDeviceService implementation.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ServiceContainer.AddService``1(``0)">
+            <summary>
+            Adds a new service to the collection.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ServiceContainer.GetService(System.Type)">
+            <summary>
+            Looks up the specified service.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.GraphicsDeviceService">
+            <summary>
+            Helper class responsible for creating and managing the GraphicsDevice.
+            All GraphicsDeviceControl instances share the same GraphicsDeviceService,
+            so even though there can be many controls, there will only ever be a single
+            underlying GraphicsDevice. This implements the standard IGraphicsDeviceService
+            interface, which provides notification events for when the device is reset
+            or disposed.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.#ctor(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Constructor is private, because this is a singleton class:
+            client controls should use the public AddRef method instead.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.AddRef(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Gets a reference to the singleton instance.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.Release(System.Boolean)">
+            <summary>
+            Releases a reference to the singleton instance.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.ResetDevice(System.Int32,System.Int32)">
+            <summary>
+            Resets the graphics device to whichever is bigger out of the specified
+            resolution or its current size. This behavior means the device will
+            demand-grow to the largest of all its GraphicsDeviceControl clients.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.GraphicsDeviceService.GraphicsDevice">
+            <summary>
+            Gets the current graphics device.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.PlotDataRows">
+            <summary>PlotDataRows for data like LFPs</summary>
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetection.StimSafeAdaptiveRMS">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.GridGraph">
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.MEAChannelMappings">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.MEAChannelMappings.channel2LinearCR(System.Int32)">
+            <summary>
+            Takes the hardware channel and outputs the display channel number ((row-1)*8+col)
+            </summary>
+            <param name="index">0-based channel number to map</param>
+            <returns>0-based mapped channel number</returns>
+        </member>
+        <member name="T:NeuroRighter.IISZapper">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.MedianThreshold">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.RMSThresholdFixed">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.StimTrain">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.RMSThreshold">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[])">
+            <summary>
+            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
+            the neurorighter system
+            </summary>
+            <param name="ch">Channel to stimulate</param>
+            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
+        </member>
+        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[],System.Boolean)">
+            <summary>
+            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
+            the neurorighter system
+            </summary>
+            <param name="ch">Channel to stimulate</param>
+            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
+            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
+        </member>
+    </members>
+</doc>

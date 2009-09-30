@@ -4357,14 +4357,12 @@ ch = 1;
                 button_startStimFromFile.Enabled = false;
                 button_stopStimFromFile.Enabled = true;
 
-                string timefile = textBox_protocolFileLocations.Text + ".st";
-                string chanfile = textBox_protocolFileLocations.Text + ".ch";
-                string wavefile = textBox_protocolFileLocations.Text + ".wv";
+                string stimfile = textBox_protocolFileLocations.Text;
 
                 // Make sure that the user has input a valid file path
-                if (!checkFilePath(timefile) || !checkFilePath(chanfile) || !checkFilePath(wavefile))
+                if (!checkFilePath(stimfile))
                 {
-                    MessageBox.Show("Your file path or base file name appears to be invalid");
+                    MessageBox.Show("The *.olstim file provided does not exist");
                     button_startStimFromFile.Enabled = true;
                     button_stopStimFromFile.Enabled = false;
                     return;
@@ -4375,7 +4373,7 @@ ch = 1;
                 spStimFromFile.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
 
                 // Create a File2Stim object and start to run the protocol via its methods
-                custprot = new File2Stim(timefile, chanfile, wavefile, spStimFromFile.offsetVoltage,
+                custprot = new File2Stim(stimfile, spStimFromFile.offsetVoltage,
                     stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
                 custprot.start();
                 buttonStart.PerformClick();

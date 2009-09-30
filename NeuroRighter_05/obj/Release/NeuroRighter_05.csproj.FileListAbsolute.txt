@@ -22,3 +22,4 @@ C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\NeuroRighter_05\obj
 C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\NeuroRighter_05\obj\Release\NeuroRighter.exe.licenses
 C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\NeuroRighter_05\obj\Release\NeuroRighter.exe
 C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\NeuroRighter_05\obj\Release\NeuroRighter.pdb
+C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\NeuroRighter_05\bin\Release\NeuroRighter.XML

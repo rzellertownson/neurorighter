@@ -13,10 +13,9 @@ namespace NeuroRighter
     class File2Stim
     {
         // Declare space for the file-id's for the three .dat files needed to creat N stimuli and the matracies that will contain the data
-        internal string timefile; //interstim times (NX1 vector)
-        internal string channelfile; // stimulation locations (NX1 vector)
-        internal string wavefile; // stimulation waveforms (NXM vector, M samples per waveform)
-
+        internal string stimfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
+        internal int numstim; // the number of separate stimuli in the stimulation protocol
+        internal int wavesize; // the number of samples per stimulation waveform
         // Voltage offset
         double offset;
 
@@ -45,13 +44,11 @@ namespace NeuroRighter
         internal event AllFinishedHandler AlertAllFinished;
 
         //Constructor to form an arbitary stimulation experiment.
-        internal File2Stim(string timefile, string channelfile, string wavefile, double offset, Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
+        internal File2Stim(string stimfile, double offset, Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
             //File ID's
-            this.timefile = timefile;
-            this.channelfile = channelfile;
-            this.wavefile = wavefile;
+            this.stimfile = stimfile;
             this.offset = offset;
 
             //Get references to tasks
@@ -61,46 +58,59 @@ namespace NeuroRighter
             this.stimAnalogWriter = stimAnalogWriter;
         }
 
-        // Method to load data files into arrays of doubles
-        internal int[] loadVec(string filePath)
+        // Method to load the *.olstim file into arrays of doubles
+        internal void loadStim(string filePath)
         {
-            var lineCount = File.ReadAllLines(@filePath).Length;
             StreamReader file = new StreamReader(filePath);
-            int i = 0;
-            datvec = new int[lineCount];
-            while ((line = file.ReadLine()) != null)
-            {
-                datvec[i] = Convert.ToInt32(line);
-                i++;
-            }
-            return datvec;
-        }
-
-        // Method to load data files into arrays of doubles
-        internal double[,] loadMat(string filePath)
-        {
-            var lineCount = File.ReadAllLines(@filePath).Length;
-
-            StreamReader _file = new StreamReader(filePath);
-            string firstline = _file.ReadLine();
+            int j = 1;
             char delimiter = ' ';
-            _line = _file.ReadLine();
-            string[] _split = _line.Split(delimiter);
-            int lineSize = _split.Length;
 
-            StreamReader file = new StreamReader(filePath);
-            int i = 0;
-            datmat = new double[lineCount, lineSize];
+            Reset:
             while ((line = file.ReadLine()) != null)
             {
-                string[] split = line.Split(delimiter);
-                for (int j = 0; j < split.Length; ++j)
-                    datmat[i, j] = Convert.ToDouble(split[j]);
-                i++;
+                if (j == 1)
+                {
+                    j++;
+                    goto Reset;
+                }
+                if (j == 2)
+                {
+                    numstim = Convert.ToInt32(line);
+                    timeVec = new int[numstim];
+                    channelVec = new int[numstim];
+                    j++;
+                    goto Reset;
+                }
+                if (j > 2 && j <= 2 + numstim)
+                {
+                    timeVec[j-3] = Convert.ToInt32(line);
+                    j++;
+                    goto Reset;
+                }
+                if (j > 2 + numstim && j <= 2+2*numstim)
+                {
+                    channelVec[j-numstim -3] = Convert.ToInt32(line);
+                    j++;
+                    goto Reset;
+                }
+                if (j == 3 + 2*numstim)
+                {
+                    string[] split = line.Split(delimiter);
+                    wavesize = split.Length;
+                    waveMat = new double[numstim,wavesize];
+                }
+                if (j > 2 + 2 * numstim && j <= 2 + 3 * numstim)
+                {
+                    string[] split = line.Split(delimiter);
+                    for (int i = 0; i < split.Length; ++i)
+                    {
+                        waveMat[j - 2 * numstim - 3, i] = Convert.ToDouble(split[i]);
+                    }
+                    j++;
+                }
             }
-            return datmat;
         }
-
+  
         internal void start()
         {
             // Setup BGW
@@ -142,9 +152,7 @@ namespace NeuroRighter
             if (!bw.CancellationPending)
             {
                 // Load the data files
-                timeVec = loadVec(timefile); //interstim times (NX1 vector of integers is ms)
-                channelVec = loadVec(channelfile); // stimulation locations (NX1 vector of integers)
-                waveMat = loadMat(wavefile); // stimulation waveforms (NXM vector, M samples per waveform)
+                loadStim(stimfile); // create the stimulation data arrays
                 int lengthStim = waveMat.GetLength(1); // Length of each stimulus waveform in samples
 
                 // Post stimulus blanking

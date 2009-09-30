@@ -216,6 +216,23 @@
         <member name="T:NeuroRighter.ButterworthFilter">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
+        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[])">
+            <summary>
+            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
+            the neurorighter system
+            </summary>
+            <param name="ch">Channel to stimulate</param>
+            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
+        </member>
+        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[],System.Boolean)">
+            <summary>
+            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
+            the neurorighter system
+            </summary>
+            <param name="ch">Channel to stimulate</param>
+            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
+            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
+        </member>
         <member name="T:NeuroRighter.SALPA">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
@@ -462,23 +479,6 @@
         </member>
         <member name="T:NeuroRighter.RMSThreshold">
             <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[])">
-            <summary>
-            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
-            the neurorighter system
-            </summary>
-            <param name="ch">Channel to stimulate</param>
-            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
-        </member>
-        <member name="M:NeuroRighter.StimWave.#ctor(System.Int32,System.Double[],System.Boolean)">
-            <summary>
-            StimWave will read a file containing voltage or current command information and then create a stimulation waveform that can be read by the
-            the neurorighter system
-            </summary>
-            <param name="ch">Channel to stimulate</param>
-            <param name="waveform">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
-            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
         </member>
     </members>
 </doc>

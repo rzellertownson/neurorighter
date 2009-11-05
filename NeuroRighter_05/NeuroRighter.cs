@@ -4342,5 +4342,91 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
+
+        #region arbitrary stimulation from file
+        File2Stim custprot;
+
+        private void button_startStimFromFile_Click(object sender, EventArgs e)
+        {
+            if (textBox_protocolFileLocations.Text.Length < 1)
+            {
+                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
+            }
+            else
+            {
+                button_startStimFromFile.Enabled = false;
+                button_stopStimFromFile.Enabled = true;
+
+                string stimfile = textBox_protocolFileLocations.Text;
+
+                // Make sure that the user has input a valid file path
+                if (!checkFilePath(stimfile))
+                {
+                    MessageBox.Show("The *.olstim file provided does not exist");
+                    button_startStimFromFile.Enabled = true;
+                    button_stopStimFromFile.Enabled = false;
+                    return;
+                }
+
+                // Get voltage offset from stimulation parameters
+                stim_params spStimFromFile = new stim_params();
+                spStimFromFile.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
+
+                // Create a File2Stim object and start to run the protocol via its methods
+                custprot = new File2Stim(stimfile, spStimFromFile.offsetVoltage,
+                    stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
+                custprot.start();
+                buttonStart.PerformClick();
+                buttonStop.Enabled = false;
+                custprot.AlertProgChanged += new File2Stim.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim.AllFinishedHandler(protFinisheddHandler);
+
+                progressBar_protocolFromFile.Minimum = 0;
+                progressBar_protocolFromFile.Maximum = 100;
+                progressBar_protocolFromFile.Value = 0;
+
+            }
+        }
+
+        private void button_stopStimFromFile_Click(object sender, EventArgs e)
+        {
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            custprot.stop();
+            buttonStop.Enabled = true;
+            buttonStop.PerformClick();
+
+            //De-select channel on mux
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
+        }
+
+        private void protProgressChangedHandler(object sender, int percentage)
+        {
+            progressBar_protocolFromFile.Value = percentage;
+        }
+
+        // Return buttons to default configuration when finished
+        private void protFinisheddHandler(object sender)
+        {
+            buttonStop.Enabled = true;
+            buttonStop.PerformClick();
+            progressBar_protocolFromFile.Value = 0;
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete");
+        }
+
+        private bool checkFilePath(string filePath)
+        {
+            string sourcefile = @filePath;
+            bool check = File.Exists(sourcefile);
+            return (check);
+        }
+        #endregion
     }
 }

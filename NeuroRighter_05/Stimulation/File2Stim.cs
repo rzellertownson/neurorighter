@@ -165,6 +165,7 @@ namespace NeuroRighter
                 stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.FiniteSamples;
 
                 // Deliver the stimuli!
+
                 int j = 0;
                 DateTime startTime = DateTime.Now;
                 while (!isDone && !isCancelled && !bw.CancellationPending)

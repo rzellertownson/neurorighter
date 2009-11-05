@@ -7,7 +7,7 @@ function makestimfile(time, channel, waveform, filename)
 %         channel     [N 1] vector of channels to stimulate on
 %         time        [N 1] vector of stimulation times (in milliseconds)
 %         waveform    [N M] matrix of stimulation waveforms each with M
-%                           samples
+%                           samples at 10us per sample
 %    and returns a .olstim file that specifies an open-loop stimulation
 %    protocol for use with the NeuroRighter system
 % 

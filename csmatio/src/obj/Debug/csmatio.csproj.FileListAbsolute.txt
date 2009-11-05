@@ -5,10 +5,3 @@ C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Debu
 C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\csmatio.dll
 C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Debug\csmatio.pdb
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\bin\Debug\csmatio.dll
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\bin\Debug\csmatio.pdb
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\bin\Debug\csmatio.xml
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\bin\Debug\zlib.net.dll
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\obj\Debug\csmatio.dll
-C:\Users\Jon\Documents\2009_Crimpy\NeuroRighter_StimWave_SVN\csmatio\src\obj\Debug\csmatio.pdb

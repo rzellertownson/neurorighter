@@ -89,6 +89,20 @@ namespace NeuroRighter
             for (int j = 0; j < size; ++j)
                 analogPulse[rowOffset + 0, j] = waveform[j];
 
+            // Create pulse endcoding stimulation channel, time, duration
+            for (int j = 0; j < 20; ++j)
+                analogPulse[rowOffset + 1, j] = v1;
+            for (int j = 20; j < 40; ++j)
+                analogPulse[rowOffset + 1, j] = v2;
+            for (int j = 40; j < 60; ++j)
+                analogPulse[rowOffset + 1, j] = 0; // For now the ampltitude pulse is set to 0 since this is an abitrary waveform
+            double stimduration = 1000 * size / STIM_SAMPLING_FREQ; //Convert stim time to ms
+            double pulseWidthEncoding = ((double)(stimduration) / 100.0 > 10.0 ? -1 : (double)(stimduration) / 100.0); //Make sure encoding is less than 10 volts (max DAQ voltage)
+            for (int j = 60; j < 80; ++j)
+                analogPulse[rowOffset + 1, j] = pulseWidthEncoding;
+            analogPulse[1, 80] = 0.0;
+
+
             //Make digital waveform, use one time bin (10 us) to let things settle.
             //Order is first 0's, then blanking, then everything but En, the everything, then reverse
             for (int i = 1; i <= NUM_SAMPLES_BLANKING; ++i)

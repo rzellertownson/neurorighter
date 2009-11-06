@@ -4427,6 +4427,24 @@ ch = 1;
             bool check = File.Exists(sourcefile);
             return (check);
         }
+
+
+        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
+            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
+            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = OLStimFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = OLStimFileDialog.FileName;
+                textBox_protocolFileLocations.Text = filenameOutput;
+            }
+        }
         #endregion
     }
 }

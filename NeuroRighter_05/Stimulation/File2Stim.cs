@@ -23,9 +23,6 @@ namespace NeuroRighter
         internal int[] channelVec; // stimulation locations (NX1 vector)
         internal double[,] waveMat; // stimulation waveforms (NXM vector, M samples per waveform)
         internal string line;
-        internal string _line;
-        internal double[,] datmat;
-        internal int[] datvec;
         internal double[] waveform;
 
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);

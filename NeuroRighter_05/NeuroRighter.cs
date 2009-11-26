@@ -139,7 +139,7 @@ namespace NeuroRighter
         private DateTime timedRecordingStopTime;
         private Filters.MUAFilter muaFilter;
         private double[][] muaData;
-
+        private int SALPA_WIDTH;
 
         //Plots
         private GridGraph spikeGraph;
@@ -163,7 +163,6 @@ namespace NeuroRighter
         #region Constants
         internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
-        private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private const int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
@@ -1138,25 +1137,25 @@ namespace NeuroRighter
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
 
-            #region WriteSpikeFile
-            //Write data to file
-            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
-            {
-                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                rawType tempVal;
-                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                    for (int j = 0; j < spikeBufferLength; ++j)
-                    {
-                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                        else { tempVal = Int16.MinValue; }
-                        rawFile.read((short)tempVal, i);
-                    }
-            }
+            //#region WriteSpikeFile
+            ////Write data to file
+            //if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            //{
+            //    rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+            //    rawType tempVal;
+            //    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+            //        for (int j = 0; j < spikeBufferLength; ++j)
+            //        {
+            //            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+            //            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+            //            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+            //            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+            //            else { tempVal = Int16.MinValue; }
+            //            rawFile.read((short)tempVal, i);
+            //        }
+            //}
 
-            #endregion
+            //#endregion
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -1234,6 +1233,26 @@ namespace NeuroRighter
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
             #endregion
 
+            // Can move the position of this code to make the raw recording take place after some level of filtering
+            #region WriteSpikeFile
+            //Write data to file
+            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            {
+                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                rawType tempVal;
+                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    for (int j = 0; j < spikeBufferLength; ++j)
+                    {
+                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                        else { tempVal = Int16.MinValue; }
+                        rawFile.read((short)tempVal, i);
+                    }
+            }
+
+            #endregion
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
@@ -1267,6 +1286,8 @@ namespace NeuroRighter
 
             #region SpikeDetection
             ++(numSpikeReads[taskNumber]);
+
+            SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
             int startTime = (numSpikeReads[taskNumber] - 1) * spikeBufferLength; //Used to mark spike time for *.spk file
             if (checkBox_SALPA.Checked)
@@ -2118,22 +2139,69 @@ namespace NeuroRighter
             //spkWfmGraph.clear();
         }
 
+
+        #region The region resets the SALPA parameters in real time when the user changes them
+
+
+        private void numericUpDown_salpa_halfwidth_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_postpeg_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_postpegzeros_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_delta_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
         private void checkBox_SALPA_CheckedChanged(object sender, EventArgs e)
         {
-            //if (comboBox_SpikeGain.SelectedIndex < 5) //I don't expect real signals to go over 200 mV, regardless of DAQ Gain
-            //SALPAFilter = new SALPA(SALPA_WIDTH, 15, 5, 5, -0.05, 0.05, numElectrodes, 5);
-            //else  //At higher gains, use the NI-DAQ's clipping to determine rails, with a small safety margin (e.g., 10 mV)
-            const double prepegSeconds = 0.0002;
-            const double postpegSeconds = 0.002;
-            const double postpegZeroSeconds = 0.0002; //0.0002 = 5 samples @ 25 kHz
+            if (checkBox_SALPA.Checked)
+            {
+                numericUpDown_salpa_halfwidth.Enabled = false;
+                numericUpDown_salpa_postpeg.Enabled = false;
+                numericUpDown_salpa_postpegzeros.Enabled = false;
+                numericUpDown_salpa_delta.Enabled = false;
+                resetSALPA();
+            }
+            else
+            {
+                numericUpDown_salpa_halfwidth.Enabled = true;
+                numericUpDown_salpa_postpeg.Enabled = true;
+                numericUpDown_salpa_postpegzeros.Enabled = true;
+                numericUpDown_salpa_delta.Enabled = true;
+            }
+        }
+
+        private void resetSALPA()
+        {
+            // Set SALPA parameters
+            double prepegSeconds = 0.0002;
+            double postpegSeconds = Convert.ToDouble(numericUpDown_salpa_postpeg.Value);
+            double postpegZeroSeconds = Convert.ToDouble(numericUpDown_salpa_postpegzeros.Value); //0.0002 = 5 samples @ 25 kHz
+            double delta = Convert.ToDouble(numericUpDown_salpa_delta.Value);
+            SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
+
+            if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
+            {
+                double max_halfwidth =  Convert.ToDouble((spikeBufferLength - 1) / 4);
+                SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
+            }
 
             int prepeg = (int)Math.Round(prepegSeconds * spikeSamplingRate);
             int postpeg = (int)Math.Round(postpegSeconds * spikeSamplingRate);
             int postpegzero = (int)Math.Round(postpegZeroSeconds * spikeSamplingRate);
-
+            
             SALPAFilter = new SALPA2(SALPA_WIDTH, prepeg, postpeg, postpegzero, (rawType)(-10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) + 0.01),
-                (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, 5, spikeBufferLength);
+                (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, delta, spikeBufferLength);
         }
+
+        #endregion
 
         private void comboBox_SpikeGain_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2226,7 +2294,6 @@ namespace NeuroRighter
                 //do nothing
             }
         }
-
         private void button_scaleUp_Click(object sender, EventArgs e)
         {
             switch (tabControl.SelectedTab.Text)
@@ -2622,7 +2689,6 @@ namespace NeuroRighter
          * End caretaking routines                             *
          *******************************************************/
         #endregion 
-        
         private void button_Train_Click(object sender, EventArgs e)
         {
             thrSALPA = new rawType[Convert.ToInt32(comboBox_numChannels.SelectedItem)];
@@ -4446,5 +4512,6 @@ ch = 1;
             }
         }
         #endregion
+
     }
 }

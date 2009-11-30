@@ -81,7 +81,8 @@ namespace NeuroRighter
         private string filenameEEG;
         private string filenameSpks;  //Spike times and waveforms
         private string filenameStim; //Stim times
-        private FileStream fsSpks;
+        //private FileStream fsSpks;
+        private SpikeFileOutput fsSpks;
         private FileStream fsStim;
         private FileStream fsEEG;
         private double[,] eegPlotData;
@@ -687,7 +688,9 @@ namespace NeuroRighter
                         DateTime dt = DateTime.Now; //Get current time (local to computer)
                         try
                         {
-                            fsSpks = new FileStream(filenameSpks, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
+                            //fsSpks = new FileStream(filenameSpks, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
+                            fsSpks = new SpikeFileOutput(filenameBase, numChannels, spikeSamplingRate, Convert.ToInt32(numPreSamples.Value + numPostSamples.Value) + 1,
+                                spikeTask[0], ".spk");
                             if (Properties.Settings.Default.UseStimulator)
                                 fsStim = new FileStream(filenameStim, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
                             if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
@@ -699,17 +702,17 @@ namespace NeuroRighter
                             }
 
                             //File for clipped waveforms and spike times
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
-                            fsSpks.Write(BitConverter.GetBytes(spikeSamplingRate), 0, 4); //Int: Sampling rate
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(Convert.ToInt16(numPreSamples.Value) + Convert.ToInt16(numPostSamples.Value) + 1)), 0, 2); //Int: Samples per waveform
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / spikeTask[0].AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Hour)), 0, 2); //Int: Hour
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
-                            fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
+                            //fsSpks.Write(BitConverter.GetBytes(spikeSamplingRate), 0, 4); //Int: Sampling rate
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(Convert.ToInt16(numPreSamples.Value) + Convert.ToInt16(numPostSamples.Value) + 1)), 0, 2); //Int: Samples per waveform
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / spikeTask[0].AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Hour)), 0, 2); //Int: Hour
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
+                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
 
                             if (Properties.Settings.Default.UseLFPs)
                             {
@@ -1332,10 +1335,12 @@ namespace NeuroRighter
                     {
                         lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
                         {
-                            fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
-                            fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
-                            for (int k = 0; k < numPre + numPost + 1; ++k)
-                                fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                            //fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
+                            //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
+                            //for (int k = 0; k < numPre + numPost + 1; ++k)
+                            //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                            fsSpks.WriteSpikeToFile(newWaveforms[j].channel, startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData);
                         }
                     }
                     #endregion
@@ -1352,10 +1357,12 @@ namespace NeuroRighter
                         lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
                         {
                             //fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
-                            fsSpks.Write(BitConverter.GetBytes(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel)), 0, 2); //Write channel num.
-                            fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
-                            for (int k = 0; k < numPre + numPost + 1; ++k)
-                                fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                            //fsSpks.Write(BitConverter.GetBytes(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel)), 0, 2); //Write channel num.
+                            //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
+                            //for (int k = 0; k < numPre + numPost + 1; ++k)
+                            //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
+                            fsSpks.WriteSpikeToFile(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData);
                         }
                     }
                     #endregion

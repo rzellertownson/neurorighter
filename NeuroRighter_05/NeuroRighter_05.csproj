@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="ChannelOutput.cs" />
     <Compile Include="FileWriting\FileOutputRemapped.cs" />
+    <Compile Include="FileWriting\SpikeFileOutput.cs" />
     <Compile Include="Filters\ArtiFilt_Interpolation.cs" />
     <Compile Include="Filters\ArtiFilt.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />

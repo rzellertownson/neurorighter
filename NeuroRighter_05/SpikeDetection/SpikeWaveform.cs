@@ -30,12 +30,14 @@ namespace NeuroRighter
     {
         public Int16 channel;
         public Int32 index;
+        public double threshold;
         public RawType[] waveform;
 
-        public SpikeWaveform(int channel, int index, RawType[] waveform)
+        public SpikeWaveform(int channel, int index, double threshold, RawType[] waveform)
         {
             this.channel = (short)channel;
             this.index = index;
+            this.threshold = threshold;
             this.waveform = waveform;
         }
     }

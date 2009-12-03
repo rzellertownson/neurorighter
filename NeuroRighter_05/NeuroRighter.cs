@@ -2658,20 +2658,26 @@ namespace NeuroRighter
             for (int i = 0; i < spikeTask.Count; ++i)
                 setGain(spikeTask[i], comboBox_SpikeGain);
 
+            
+
+            //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
+            for (int i = 0; i < spikeTask.Count; ++i)
+                spikeTask[i].Timing.ReferenceClockSource = "OnboardClock"; 
+
+            for (int i = 0; i < spikeTask.Count; ++i)
+                spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising,
+                    SampleQuantityMode.ContinuousSamples,
+                    Convert.ToInt32(spikeSamplingRate / 2));
             //Verify the Task
             for (int i = 0; i < spikeTask.Count; ++i)
                 spikeTask[i].Control(TaskAction.Verify);
+            //for (int i = 1; i < spikeTask.Count; ++i)
+            //{
+            //    spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+            //    spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+            //}
+            
 
-            spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
-            for (int i = 1; i < spikeTask.Count; ++i)
-            {
-                spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-            }
-            for (int i = 0; i < spikeTask.Count; ++i)
-                spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising, 
-                    SampleQuantityMode.ContinuousSamples,
-                    Convert.ToInt32(spikeSamplingRate / 2));
             List<AnalogMultiChannelReader> readers = new List<AnalogMultiChannelReader>(spikeTask.Count);
             for (int i = 0; i < spikeTask.Count; ++i)
                 readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));

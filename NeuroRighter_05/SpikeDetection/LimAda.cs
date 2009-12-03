@@ -124,7 +124,7 @@ namespace NeuroRighter
                         waveform[j - i + numPre] = spikeDetectionBuffer[channel][j];
                     for (int j = 0; j < numPost - (spikeBufferSize - i) + 1; ++j)
                         waveform[j + numPre + (spikeBufferSize - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, threshold[channel, spikeBufferLength - spikeBufferSize + i], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, waveform));
                     i += numPost - 10;
                 }
             }
@@ -133,7 +133,7 @@ namespace NeuroRighter
             
             for (i = 0; i < numPre; ++i)
             {
-                if (data[i] < threshold[channel, i] && data[i] > -threshold[channel, i]) { }
+                if (data[i] < threshold[0, channel] && data[i] > -threshold[channel, i]) { }
                 else
                 {
                     rawType[] waveform = new rawType[numPost + numPre + 1];
@@ -141,19 +141,19 @@ namespace NeuroRighter
                         waveform[j - spikeBufferSize + (numPre - i)] = spikeDetectionBuffer[channel][j];
                     for (int j = 0; j < numPost + 1; ++j)
                         waveform[j + (numPre - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[channel, i], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i, waveform));
                     i += numPost - 10;
                 }
             }
             for (; i < spikeBufferLength - numPost; ++i)
             {
-                if (data[i] < threshold[channel, i] && data[i] > -threshold[channel, i]) { }
+                if (data[i] < threshold[0, channel] && data[i] > -threshold[channel, i]) { }
                 else
                 {
                     rawType[] waveform = new rawType[numPost + numPre + 1];
                     for (int j = i - numPre; j < i + numPost + 1; ++j)
                         waveform[j - i + numPre] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[channel, i], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i, waveform));
                     i += numPost - 10;
                 }
             }

@@ -18,3 +18,8 @@ C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csma
 C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\zlib.net.dll
 C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\ResolveAssemblyReference.cache
 C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll

@@ -187,14 +187,13 @@ namespace NeuroRighter
                     SBS[i].shuffleChannelOrder();
 
                     //Make intervals
-                    int pulseDuration = withinPTSIntervals.Count * INTERPULSE_INTERVAL_TRAIN + (int)Math.Round(2 * (double)PULSE_WIDTH / 1000.0);
                     int total = 0;
                     do
                     {
                         int val = INTERPULSE_INTERVAL_RANGE[0] + (int)Math.Floor(range * rand.NextDouble());
                         PTSInterTrainIntervals[i].Add(val);
-                        total += val + pulseDuration;
-                    } while (total < 4050); //less than 4.2s
+                        total += val;
+                    } while (total < 4200); //less than 4.2s
                 }
                 #endregion
 

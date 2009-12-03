@@ -94,7 +94,7 @@ namespace NeuroRighter
                         waveform[j - i + numPre] = spikeDetectionBuffer[channel][j];
                     for (int j = 0; j < numPost - (spikeBufferSize - i) + 1; ++j)
                         waveform[j + numPre + (spikeBufferSize - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, threshold[0, channel], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, waveform));
                     i += numPost - DEADTIME;
                 }
             }
@@ -108,7 +108,7 @@ namespace NeuroRighter
                         waveform[j - spikeBufferSize + (numPre - i)] = spikeDetectionBuffer[channel][j];
                     for (int j = 0; j < (numPost + 1) + i; ++j)
                         waveform[j + (numPre - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i, waveform));
                     i += numPost - DEADTIME;
                 }
             }
@@ -120,7 +120,7 @@ namespace NeuroRighter
                     rawType[] waveform = new rawType[numPost + numPre + 1];
                     for (int j = i - numPre; j < i + numPost + 1; ++j)
                         waveform[j - i + numPre] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
+                    waveforms.Add(new SpikeWaveform(channel, i, waveform));
                     i += numPost - DEADTIME;
                 }
             }

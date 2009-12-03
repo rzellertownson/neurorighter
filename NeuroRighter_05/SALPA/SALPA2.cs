@@ -307,7 +307,6 @@ namespace NeuroRighter
                             filtData[channel][i - PRE] = 0.0; //zero out rest of fit
                     }
 
-                    // What is the point of this??
                     PEGGING[channel] = false;
                     PEGGING_UNFINISHED[channel] = false;
                     j = stopPeg[channel] + postPeg;

@@ -2717,23 +2717,27 @@ namespace NeuroRighter
             for (int i = 0; i < spikeTask.Count; ++i)
                 setGain(spikeTask[i], comboBox_SpikeGain);
 
+            for (int i = 0; i < spikeTask.Count; ++i)
+                spikeTask[i].Timing.ReferenceClockSource = "OnboardClock";
+
+            for (int i = 0; i < spikeTask.Count; ++i)
+                spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising,
+                    SampleQuantityMode.ContinuousSamples, Convert.ToInt32(spikeSamplingRate / 2));
+
             //Verify the Task
             for (int i = 0; i < spikeTask.Count; ++i)
                 spikeTask[i].Control(TaskAction.Verify);
 
-            spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
-            for (int i = 1; i < spikeTask.Count; ++i)
-            {
-                spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-            }
-            for (int i = 0; i < spikeTask.Count; ++i)
-                spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising, 
-                    SampleQuantityMode.ContinuousSamples,
-                    Convert.ToInt32(spikeSamplingRate / 2));
+            //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
+            //for (int i = 1; i < spikeTask.Count; ++i)
+            //{
+            //    spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+            //    spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+            //}
+
             List<AnalogMultiChannelReader> readers = new List<AnalogMultiChannelReader>(spikeTask.Count);
             for (int i = 0; i < spikeTask.Count; ++i)
-                readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));
+                readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));          
             double[][] data = new double[numChannels][];
             int c = 0; //Last channel of 'data' written to
             for (int i = 0; i < readers.Count; ++i)
@@ -4439,11 +4443,11 @@ ch = 1;
                 spStimFromFile.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
 
                 // Create a File2Stim object and start to run the protocol via its methods
+                buttonStart.PerformClick();
+                buttonStop.Enabled = false;
                 custprot = new File2Stim(stimfile, spStimFromFile.offsetVoltage,
                     stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
                 custprot.start();
-                buttonStart.PerformClick();
-                buttonStop.Enabled = false;
                 custprot.AlertProgChanged += new File2Stim.ProgressChangedHandler(protProgressChangedHandler);
                 custprot.AlertAllFinished += new File2Stim.AllFinishedHandler(protFinisheddHandler);
 
@@ -4480,7 +4484,7 @@ ch = 1;
         private void protFinisheddHandler(object sender)
         {
             buttonStop.Enabled = true;
-            buttonStop.PerformClick();
+            //buttonStop.PerformClick();
             progressBar_protocolFromFile.Value = 0;
             button_startStimFromFile.Enabled = true;
             button_stopStimFromFile.Enabled = false;

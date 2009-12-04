@@ -140,7 +140,7 @@ namespace NeuroRighter
         private DateTime timedRecordingStopTime;
         private Filters.MUAFilter muaFilter;
         private double[][] muaData;
-
+        private int SALPA_WIDTH;
 
         //Plots
         private GridGraph spikeGraph;
@@ -164,7 +164,6 @@ namespace NeuroRighter
         #region Constants
         internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
-        private const int SALPA_WIDTH = 40; //Size of SALPA half-width, also #pts. to buffer filtered data by.
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private const int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
@@ -1141,25 +1140,25 @@ namespace NeuroRighter
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
 
-            #region WriteSpikeFile
-            //Write data to file
-            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
-            {
-                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                rawType tempVal;
-                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                    for (int j = 0; j < spikeBufferLength; ++j)
-                    {
-                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                        else { tempVal = Int16.MinValue; }
-                        rawFile.read((short)tempVal, i);
-                    }
-            }
+            //#region WriteSpikeFile
+            ////Write data to file
+            //if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            //{
+            //    rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+            //    rawType tempVal;
+            //    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+            //        for (int j = 0; j < spikeBufferLength; ++j)
+            //        {
+            //            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+            //            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+            //            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+            //            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+            //            else { tempVal = Int16.MinValue; }
+            //            rawFile.read((short)tempVal, i);
+            //        }
+            //}
 
-            #endregion
+            //#endregion
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -1237,6 +1236,26 @@ namespace NeuroRighter
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
             #endregion
 
+            // Can move the position of this code to make the raw recording take place after some level of filtering
+            #region WriteSpikeFile
+            //Write data to file
+            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            {
+                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                rawType tempVal;
+                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    for (int j = 0; j < spikeBufferLength; ++j)
+                    {
+                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                        else { tempVal = Int16.MinValue; }
+                        rawFile.read((short)tempVal, i);
+                    }
+            }
+
+            #endregion
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
@@ -1270,6 +1289,8 @@ namespace NeuroRighter
 
             #region SpikeDetection
             ++(numSpikeReads[taskNumber]);
+
+            SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
             int startTime = (numSpikeReads[taskNumber] - 1) * spikeBufferLength; //Used to mark spike time for *.spk file
             if (checkBox_SALPA.Checked)
@@ -2125,22 +2146,69 @@ namespace NeuroRighter
             //spkWfmGraph.clear();
         }
 
+
+        #region The region resets the SALPA parameters in real time when the user changes them
+
+
+        private void numericUpDown_salpa_halfwidth_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_postpeg_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_postpegzeros_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+        private void numericUpDown_salpa_delta_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
         private void checkBox_SALPA_CheckedChanged(object sender, EventArgs e)
         {
-            //if (comboBox_SpikeGain.SelectedIndex < 5) //I don't expect real signals to go over 200 mV, regardless of DAQ Gain
-            //SALPAFilter = new SALPA(SALPA_WIDTH, 15, 5, 5, -0.05, 0.05, numElectrodes, 5);
-            //else  //At higher gains, use the NI-DAQ's clipping to determine rails, with a small safety margin (e.g., 10 mV)
-            const double prepegSeconds = 0.0002;
-            const double postpegSeconds = 0.002;
-            const double postpegZeroSeconds = 0.0002; //0.0002 = 5 samples @ 25 kHz
+            if (checkBox_SALPA.Checked)
+            {
+                numericUpDown_salpa_halfwidth.Enabled = false;
+                numericUpDown_salpa_postpeg.Enabled = false;
+                numericUpDown_salpa_postpegzeros.Enabled = false;
+                numericUpDown_salpa_delta.Enabled = false;
+                resetSALPA();
+            }
+            else
+            {
+                numericUpDown_salpa_halfwidth.Enabled = true;
+                numericUpDown_salpa_postpeg.Enabled = true;
+                numericUpDown_salpa_postpegzeros.Enabled = true;
+                numericUpDown_salpa_delta.Enabled = true;
+            }
+        }
+
+        private void resetSALPA()
+        {
+            // Set SALPA parameters
+            double prepegSeconds = 0.0002;
+            double postpegSeconds = Convert.ToDouble(numericUpDown_salpa_postpeg.Value);
+            double postpegZeroSeconds = Convert.ToDouble(numericUpDown_salpa_postpegzeros.Value); //0.0002 = 5 samples @ 25 kHz
+            double delta = Convert.ToDouble(numericUpDown_salpa_delta.Value);
+            SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
+
+            if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
+            {
+                double max_halfwidth =  Convert.ToDouble((spikeBufferLength - 1) / 4);
+                SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
+            }
 
             int prepeg = (int)Math.Round(prepegSeconds * spikeSamplingRate);
             int postpeg = (int)Math.Round(postpegSeconds * spikeSamplingRate);
             int postpegzero = (int)Math.Round(postpegZeroSeconds * spikeSamplingRate);
-
+            
             SALPAFilter = new SALPA2(SALPA_WIDTH, prepeg, postpeg, postpegzero, (rawType)(-10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) + 0.01),
-                (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, 5, spikeBufferLength);
+                (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, delta, spikeBufferLength);
         }
+
+        #endregion
 
         private void comboBox_SpikeGain_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2233,7 +2301,6 @@ namespace NeuroRighter
                 //do nothing
             }
         }
-
         private void button_scaleUp_Click(object sender, EventArgs e)
         {
             switch (tabControl.SelectedTab.Text)
@@ -2629,7 +2696,6 @@ namespace NeuroRighter
          * End caretaking routines                             *
          *******************************************************/
         #endregion 
-        
         private void button_Train_Click(object sender, EventArgs e)
         {
             thrSALPA = new rawType[Convert.ToInt32(comboBox_numChannels.SelectedItem)];
@@ -2658,16 +2724,24 @@ namespace NeuroRighter
             for (int i = 0; i < spikeTask.Count; ++i)
                 setGain(spikeTask[i], comboBox_SpikeGain);
 
-            
-
-            //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
             for (int i = 0; i < spikeTask.Count; ++i)
-                spikeTask[i].Timing.ReferenceClockSource = "OnboardClock"; 
+                spikeTask[i].Timing.ReferenceClockSource = "OnboardClock";
 
             for (int i = 0; i < spikeTask.Count; ++i)
                 spikeTask[i].Timing.ConfigureSampleClock("", spikeSamplingRate, SampleClockActiveEdge.Rising,
-                    SampleQuantityMode.ContinuousSamples,
-                    Convert.ToInt32(spikeSamplingRate / 2));
+                    SampleQuantityMode.ContinuousSamples, Convert.ToInt32(spikeSamplingRate / 2));
+
+            //Verify the Task
+            for (int i = 0; i < spikeTask.Count; ++i)
+                spikeTask[i].Timing.ReferenceClockSource = "OnboardClock"; 
+
+            //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
+            //for (int i = 1; i < spikeTask.Count; ++i)
+            //{
+            //    spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+            //    spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+            //}
+
             //Verify the Task
             for (int i = 0; i < spikeTask.Count; ++i)
                 spikeTask[i].Control(TaskAction.Verify);
@@ -2680,7 +2754,7 @@ namespace NeuroRighter
 
             List<AnalogMultiChannelReader> readers = new List<AnalogMultiChannelReader>(spikeTask.Count);
             for (int i = 0; i < spikeTask.Count; ++i)
-                readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));
+                readers.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));          
             double[][] data = new double[numChannels][];
             int c = 0; //Last channel of 'data' written to
             for (int i = 0; i < readers.Count; ++i)
@@ -4355,5 +4429,110 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
+
+        #region arbitrary stimulation from file
+        File2Stim custprot;
+
+        private void button_startStimFromFile_Click(object sender, EventArgs e)
+        {
+            if (textBox_protocolFileLocations.Text.Length < 1)
+            {
+                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
+            }
+            else
+            {
+                button_startStimFromFile.Enabled = false;
+                button_stopStimFromFile.Enabled = true;
+
+                string stimfile = textBox_protocolFileLocations.Text;
+
+                // Make sure that the user has input a valid file path
+                if (!checkFilePath(stimfile))
+                {
+                    MessageBox.Show("The *.olstim file provided does not exist");
+                    button_startStimFromFile.Enabled = true;
+                    button_stopStimFromFile.Enabled = false;
+                    return;
+                }
+
+                // Get voltage offset from stimulation parameters
+                stim_params spStimFromFile = new stim_params();
+                spStimFromFile.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
+
+                // Create a File2Stim object and start to run the protocol via its methods
+                buttonStart.PerformClick();
+                buttonStop.Enabled = false;
+                custprot = new File2Stim(stimfile, spStimFromFile.offsetVoltage,
+                    stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
+                custprot.start();
+                custprot.AlertProgChanged += new File2Stim.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim.AllFinishedHandler(protFinisheddHandler);
+
+                progressBar_protocolFromFile.Minimum = 0;
+                progressBar_protocolFromFile.Maximum = 100;
+                progressBar_protocolFromFile.Value = 0;
+
+            }
+        }
+
+        private void button_stopStimFromFile_Click(object sender, EventArgs e)
+        {
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            custprot.stop();
+            buttonStop.Enabled = true;
+            buttonStop.PerformClick();
+
+            //De-select channel on mux
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
+        }
+
+        private void protProgressChangedHandler(object sender, int percentage)
+        {
+            progressBar_protocolFromFile.Value = percentage;
+        }
+
+        // Return buttons to default configuration when finished
+        private void protFinisheddHandler(object sender)
+        {
+            buttonStop.Enabled = true;
+            //buttonStop.PerformClick();
+            progressBar_protocolFromFile.Value = 0;
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete");
+        }
+
+        private bool checkFilePath(string filePath)
+        {
+            string sourcefile = @filePath;
+            bool check = File.Exists(sourcefile);
+            return (check);
+        }
+
+
+        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
+            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
+            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = OLStimFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = OLStimFileDialog.FileName;
+                textBox_protocolFileLocations.Text = filenameOutput;
+            }
+        }
+        #endregion
+
     }
 }

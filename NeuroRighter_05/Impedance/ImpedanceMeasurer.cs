@@ -31,9 +31,7 @@ namespace NeuroRighter.Impedance
         private bool useMatchedFilter;
         private BackgroundWorker bgWorker;
 
-        private const int IMPEDANCE_SAMPLING_RATE = 100000;  //9-24-08: noted that higher sampling rate improves accuracy
-                                                             //12-02-09: noted that having this too high (>100000) will cause DAQ buffer problems
-                        
+        private const int IMPEDANCE_SAMPLING_RATE = 1000000;  //9-24-08: noted that higher sampling rate improves accuracy
         private const double RESOLUTION = 1.5; //Gather frequencies in multiples of RESOLUTION
 
         internal delegate void ProgressChangedHandler(object sender, int percentage, int channel, double frequency);

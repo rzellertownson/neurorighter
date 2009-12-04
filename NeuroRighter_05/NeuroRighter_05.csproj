@@ -58,15 +58,14 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accessibility" />
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.Common, Version=8.6.35.131, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.465, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=8.6.35.419, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.DAQmx, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.UI, Version=8.6.35.465, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.465, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -99,6 +98,7 @@
     </Compile>
     <Compile Include="ChannelOutput.cs" />
     <Compile Include="FileWriting\FileOutputRemapped.cs" />
+    <Compile Include="FileWriting\SpikeFileOutput.cs" />
     <Compile Include="Filters\ArtiFilt_Interpolation.cs" />
     <Compile Include="Filters\ArtiFilt.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />
@@ -179,13 +179,11 @@
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
     <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
-    <Compile Include="Stimulation\File2Stim.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
     <Compile Include="Stimulation\StimulatorShowcaser.cs" />
-    <Compile Include="Stimulation\StimWave.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AboutBox.resx">
@@ -216,7 +214,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Matlab\makestimfile.m" />
     <Content Include="Miscellaneous\Buttons\ZoomIn.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOut.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOutBlue.png" />

@@ -16,7 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 
+//#define DEBUG
 #define USE_HIGHPASS
+//#define DEBUG_JEFF
 
 using System;
 using System.Collections.Generic;
@@ -30,23 +32,25 @@ namespace NeuroRighter
     /// <author>John Rolston (rolston2@gmail.com)</author>
     sealed class SALPA2
     {
+        /*call in matlab would be: [filtData, myfit] = SALPAmex(V, numElectrodes, rails, NPrePeg, salpathresh)*/
+
+        /*last edited on July 17, 2008 */
         private int N;  //Half width of filter
         private rawType[][] oldData;
         private rawType[][] oldDataPrev;
-        private rawType[,] SInv;    //S^-1 matrix
-        private rawType[][] W; //W vector
-        private rawType[][] A; // Ploynomial fit of the artifact 
+        private rawType[,] SInv;    //S' matrix
+        private rawType[][] W;
+        private rawType[][] A;
         private rawType[] rails;
-        private rawType delta; // Width of deviation estimator data
         internal readonly int prePeg;
         internal readonly int postPeg; //Num pts. to drop after a peg
         internal readonly int postPegZero; //Num pts. to set to zero after a successful fit has been achieved (helps control ringing)
-        
-        private bool[] PEGGING; //Is the electrode pegged?
+        private bool[] PEGGING;
         private bool[] FULL_LOOK;
         private bool[] DEPEGGING;
-        private bool[] FIT_UNFINISHED; //Is the deviation too large for the fit to be good?
+        private bool[] FIT_UNFINISHED;
         private bool[] PEGGING_UNFINISHED;
+        private rawType delta;
         private int[] endIdx;
         private int[] startPeg, stopPeg; //Indices at which the first 0'ing and last 0'ing will occur (i.e., inclusive bounds)
         private readonly int numSamples; //Buffer length
@@ -61,37 +65,25 @@ namespace NeuroRighter
         private const double ALPHA = 0.16 / (0.16 + (1 / 25E3));  //RC = 1.5 yields a 0.1 Hz high -3 dB point.  25E3 is the typical sampling rate
         #endregion
 #endif
+#if (DEBUG_JEFF)
+        private StreamWriter debugLogFile;
+#endif
 
         public SALPA2()
-            : this(75, 5, 5, 5, -5, 5, 16, 5, 250)
+            : this(75, 5, 2, -5, 5, 5, 16, 5, 250)
         {
-            //Default halfWidth of 75, delta of 5, 
+            //Default halfWidth of 75
         }
 
-        /// <summary>
-        /// SALPA - Artifact Supression by Local Polynomial Approximation
-        /// </summary>
-        /// <param name="halfwidth">The number of data points, on either side of the central point, used for polynomial fit</param>
-        /// <param name="prepeg">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
-        /// <param name="postpeg"></param>
-        /// <param name="postPegZero"></param>
-        /// <param name="railHigh">criteria for deciding if the amplifier is saturating or not</param>
-        /// <param name="railLow">criteria for deciding if the amplifier is saturating or not</param
-        /// <param name="numElectrodes">Number of electrodes on recording device (16 or 59)</param>
-        /// <param name="delta">the width of the data used for the deviation estimate to decide if SALPA has made a good fit or not</param>
-        /// <param name="bufferLength"></param
         public SALPA2(int halfWidth, int prePeg, int postPeg, int postPegZero, rawType railLow, rawType railHigh, int numElectrodes, rawType delta, int bufferLength)
         {
-
             //Compute S' (inverse matrix of S)
             N = halfWidth;
-            double[] T = new double[7]; // T-vector
-            double[] n = new double[2 * N + 1]; //Vector of delays (ordinate variable)
-
-            for (int i = 0; i < 2 * N + 1; ++i) // Define n vector
+            double[] T = new double[7];
+            double[] n = new double[2 * N + 1];
+            for (int i = 0; i < 2 * N + 1; ++i)
                 n[i] = i - N;
-
-            for (int i = 0; i < 7; ++i) // Define T-vector
+            for (int i = 0; i < 7; ++i)
                 for (int j = 0; j < 2 * N + 1; ++j)
                     T[i] += Math.Pow(n[j], i);
 
@@ -100,7 +92,6 @@ namespace NeuroRighter
                 for (int j = 1; j < 5; ++j)
                     S[i, j] = T[i + j - 2]; //-2 in T since indices in S are offset
 
-            // Compute S inverse
             double[,] SInvTemp = new double[5, 5];
             Array.Copy(S, SInvTemp, 5 * 5); //Copy S to SInv
             inv.inverse(ref SInvTemp, 4);
@@ -111,22 +102,19 @@ namespace NeuroRighter
                     SInv[i, j] = (rawType)SInvTemp[i + 1, j + 1];
 
             //a = new double[4];
-            
-            // Polynomial fit for each electrode
             A = new double[numElectrodes][];
 
             startPeg = new int[numElectrodes];
             stopPeg = new int[numElectrodes];
 
-            // Assign railing criteria to rails vector
             rails = new double[2];
             rails[0] = railLow;
             rails[1] = railHigh;
 
-            // Instantiate all parameters
             this.prePeg = prePeg;
             this.postPeg = postPeg;
             this.postPegZero = postPegZero;
+
             this.delta = delta;
 
             PEGGING = new bool[numElectrodes];
@@ -147,6 +135,7 @@ namespace NeuroRighter
             endIdx = new int[numElectrodes];
 
             numSamples = bufferLength;
+            //PRE = N + 1; //This has to be N+1 for fitting old points with W_recursive
             PRE = 2 * N + 1;
             POST = 2 * N; //This has to be 2N to fit new pts with W_nonrecursive
 
@@ -163,6 +152,11 @@ namespace NeuroRighter
             lastInputs = new double[numElectrodes];
             lastOutputs = new double[numElectrodes];
 #endif
+#if (DEBUG_JEFF)
+            debugLogFile = new StreamWriter("salpa_log.txt");
+            debugLogFile.WriteLine("SALPA Log File\r\n" + DateTime.Now);
+#endif
+
         }
 
         //Commented out on 2/5/09: Not used, but useful to understand code
@@ -190,7 +184,6 @@ namespace NeuroRighter
 
         private void W_nonRecursive(int n_c, double[] V, int channel)
         {
-            // Calculate W matrix with brute force now that we have a fast machine
             W[channel][0] = W[channel][1] = W[channel][2] = W[channel][3] = 0.0;
             for (int k = 0; k <= 3; ++k)
             {
@@ -204,7 +197,6 @@ namespace NeuroRighter
 
         private void alpha(double[] a, int channel)
         {
-            // Calculate coefficients (only consider non-odd values of T_k)
             a[0] = SInv[0, 0] * W[channel][0] + SInv[0, 2] * W[channel][2];
             a[1] = SInv[1, 1] * W[channel][1] + SInv[1, 3] * W[channel][3];
             a[2] = SInv[2, 0] * W[channel][0] + SInv[2, 2] * W[channel][2];
@@ -224,7 +216,6 @@ namespace NeuroRighter
 
         private double D_n(int n_c, double[] V, double[] A)
         {
-            // Calculate Deviance metric
             double y = 0.0;
             for (int i = 0; i < delta; ++i)
                 y += V[n_c - N + i] - A[i];
@@ -233,11 +224,7 @@ namespace NeuroRighter
         }
 
 
-        internal void forcePegging() 
-        { 
-            for (int i = 0; i < oldData.GetLength(0); ++i) 
-                PEGGING[i] = true; 
-        }
+        internal void forcePegging() { for (int i = 0; i < oldData.GetLength(0); ++i) PEGGING[i] = true; }
 
 
         /******************************************************************
@@ -251,6 +238,13 @@ namespace NeuroRighter
             List<int> stimIndices;
             lock (stimIndicesIn)
             {
+#if (DEBUG_JEFF)
+                int minStimIndexReads = Int32.MaxValue;
+                for (int i = 0; i < stimIndicesIn.Count; ++i)
+                    if (stimIndicesIn[i].numStimReads < minStimIndexReads) minStimIndexReads = stimIndicesIn[i].numStimReads;
+
+                debugLogFile.WriteLine("[startChannel, numBufferReads, minStimIndexReads] " + startChannel + "\t" + numBufferReads + "\t" + minStimIndexReads);
+#endif
 
                 #region Deal With Stimultation Indices (times)
                 //convert the stimindices input into something easier to search
@@ -286,7 +280,7 @@ namespace NeuroRighter
 
                 #region Check for Unfinished Pegging/Railing
                 /********************************
-                 * check unfinished pegging, only done when the channel's PEGGING_UNFINISHED bool is 1
+                 * check unfinished pegging
                  ********************************/
                 if (PEGGING_UNFINISHED[channel])
                 {
@@ -303,24 +297,23 @@ namespace NeuroRighter
                     }
                     else
                     {
-                    for (int i = PRE; i < stopPeg[channel] + postPeg; ++i)
+                        for (int i = PRE; i < stopPeg[channel] + postPeg; ++i)
                             filtData[channel][i - PRE] = 0.0; //zero out rest of fit
                     }
-
                     PEGGING[channel] = false;
                     PEGGING_UNFINISHED[channel] = false;
                     j = stopPeg[channel] + postPeg;
 
 
                     //
-                    //Take care of post-peg fits for when you have to do a fit with only forward data.
+                    //Take care of post-peg
                     //
                     A[channel] = new double[N + 1];
-                    int n_c = j + N;  /* start the fit N samples away so that you are not using data in the railed regime */
+                    int n_c = j + N;  /* start the fit N samples away */
 
                     W_nonRecursive(n_c, oldData[channel], channel);
                     A_n(A[channel], j, N + 1, n_c, channel);
-                    if (D_n(n_c, oldData[channel], A[channel]) < thresh[channel]) // thresh is the minmal value of D_n to be deemed a good fit
+                    if (D_n(n_c, oldData[channel], A[channel]) < thresh[channel])
                     {
                         if (j >= PRE)
                         {
@@ -331,7 +324,7 @@ namespace NeuroRighter
                         else
                         {
                             for (int k = PRE; k < j + postPegZero; ++k)
-                                filtData[channel][k - PRE] = 0.0; 
+                                filtData[channel][k - PRE] = 0.0;
                         }
                         for (int k = (j >= PRE ? postPegZero : PRE); k <= N; ++k)
                             /* subtract out fit */

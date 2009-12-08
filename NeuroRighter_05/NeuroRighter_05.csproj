@@ -70,8 +70,7 @@
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.AxCWIMAQControlsLib.Interop, Version=8.5.0.0, Culture=neutral, PublicKeyToken=4544464cdeaab541" />
+    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.Common, Version=8.6.35.131, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.DAQmx, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
@@ -270,6 +269,22 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <COMReference Include="AxCWUIControlsLib">
+      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="CWUIControlsLib">
+      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
     <COMReference Include="GUSILib">
       <Guid>{6E9D01D8-FDF2-11D6-90EF-00C0F04C1E46}</Guid>
       <VersionMajor>1</VersionMajor>

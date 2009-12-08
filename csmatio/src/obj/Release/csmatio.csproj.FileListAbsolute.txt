@@ -28,3 +28,8 @@ C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\c
 C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
 C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll

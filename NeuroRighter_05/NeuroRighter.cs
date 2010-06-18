@@ -70,6 +70,8 @@ namespace NeuroRighter
         private DigitalSingleChannelWriter triggerWriter;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimPulseWriter;
+        private DigitalSingleChannelWriter stimFromFileDigitalWriter;
+        private AnalogMultiChannelWriter stimFromFileAnalogWriter;
         private AnalogMultiChannelReader stimTimeReader;
         private DigitalSingleChannelWriter stimIvsVWriter;
         private AsyncCallback spikeCallback;
@@ -165,7 +167,8 @@ namespace NeuroRighter
         internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
-        private const int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
+        private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
+        private int STIMBUFFSIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
@@ -1048,7 +1051,7 @@ namespace NeuroRighter
                                             fsStim.Write(BitConverter.GetBytes((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - //average a couple values
                                                 (short)1) * (short)8 +
                                                 Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] +
-                                                prependedData[i + (int)(3 * stimJump)]) / 2 - 1)), 0, 2); //channel (-1 since everything should be 0-based)
+                                                prependedData[i + (int)(3 * stimJump)]) / 2)), 0, 2); //channel (-1 since everything should be 0-based) // JN, CHANGED TO BE 1 BASED FOR NORMAL PEOPLE
                                             fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(5 * stimJump)]), 0, 8); //Stim voltage
                                             fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(7 * stimJump)]), 0, 8); //Stim pulse width (div by 100us)
                                         }
@@ -1140,25 +1143,25 @@ namespace NeuroRighter
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
 
-            //#region WriteSpikeFile
-            ////Write data to file
-            //if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
-            //{
-            //    rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-            //    rawType tempVal;
-            //    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-            //        for (int j = 0; j < spikeBufferLength; ++j)
-            //        {
-            //            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-            //            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-            //            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-            //            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-            //            else { tempVal = Int16.MinValue; }
-            //            rawFile.read((short)tempVal, i);
-            //        }
-            //}
+            #region Write RAW data
+            //Write data to file
+            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            {
+                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                rawType tempVal;
+                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    for (int j = 0; j < spikeBufferLength; ++j)
+                    {
+                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                        else { tempVal = Int16.MinValue; }
+                        rawFile.read((short)tempVal, i);
+                    }
+            }
 
-            //#endregion
+            #endregion
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -1234,28 +1237,8 @@ namespace NeuroRighter
             #region SALPA Filtering
             if (checkBox_SALPA.Checked)
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
-            #endregion
+            #endregion SALPA Filtering
 
-            // Can move the position of this code to make the raw recording take place after some level of filtering
-            #region WriteSpikeFile
-            //Write data to file
-            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
-            {
-                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                rawType tempVal;
-                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                    for (int j = 0; j < spikeBufferLength; ++j)
-                    {
-                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                        else { tempVal = Int16.MinValue; }
-                        rawFile.read((short)tempVal, i);
-                    }
-            }
-
-            #endregion
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
@@ -4431,7 +4414,7 @@ ch = 1;
         }
 
         #region arbitrary stimulation from file
-        File2Stim custprot;
+        File2Stim3 custprot;
 
         private void button_startStimFromFile_Click(object sender, EventArgs e)
         {
@@ -4455,18 +4438,56 @@ ch = 1;
                     return;
                 }
 
-                // Get voltage offset from stimulation parameters
-                stim_params spStimFromFile = new stim_params();
-                spStimFromFile.offsetVoltage = Convert.ToDouble(offsetVoltage.Value);
+                // Refresh DAQ tasks as they are needed for file2stim
+                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+
+                // Create new DAQ tasks and corresponding writers
+                stimPulseTask = new Task("stimPulseTask");
+                stimDigitalTask = new Task("stimDigitalTask");
+
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                }
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                }
+
+                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+
+                // Setup the AO and DO tasks for continuous stimulaiton
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase",Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.SynchronizeCallbacks = false;
+                stimPulseTask.SynchronizeCallbacks = false;
+
+                //Create output writers
+                stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+                stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+                //Verify the tasks
+                stimPulseTask.Control(TaskAction.Verify);
+                stimDigitalTask.Control(TaskAction.Verify);
 
                 // Create a File2Stim object and start to run the protocol via its methods
+                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
                 buttonStart.PerformClick();
-                buttonStop.Enabled = false;
-                custprot = new File2Stim(stimfile, spStimFromFile.offsetVoltage,
-                    stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter);
                 custprot.start();
-                custprot.AlertProgChanged += new File2Stim.ProgressChangedHandler(protProgressChangedHandler);
-                custprot.AlertAllFinished += new File2Stim.AllFinishedHandler(protFinisheddHandler);
+                buttonStop.Enabled = false;
+                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
 
                 progressBar_protocolFromFile.Minimum = 0;
                 progressBar_protocolFromFile.Maximum = 100;
@@ -4483,13 +4504,30 @@ ch = 1;
             buttonStop.Enabled = true;
             buttonStop.PerformClick();
 
+            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+
+            stimDigitalTask = new Task("stimDigitalTask");
+
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+
+            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
+            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
             //De-select channel on mux
             if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
             else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            //stimDigitalTask.Start();
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
+            updateSettings();
         }
 
         private void protProgressChangedHandler(object sender, int percentage)
@@ -4501,11 +4539,10 @@ ch = 1;
         private void protFinisheddHandler(object sender)
         {
             buttonStop.Enabled = true;
-            //buttonStop.PerformClick();
             progressBar_protocolFromFile.Value = 0;
             button_startStimFromFile.Enabled = true;
             button_stopStimFromFile.Enabled = false;
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete");
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
         }
 
         private bool checkFilePath(string filePath)

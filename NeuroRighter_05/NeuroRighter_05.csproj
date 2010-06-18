@@ -189,8 +189,10 @@
     <Compile Include="Stimulation\BakkumExpt.cs" />
     <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
     <Compile Include="Stimulation\File2Stim.cs" />
+    <Compile Include="Stimulation\File2Stim3.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
+    <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
     <Compile Include="Stimulation\StimulatorShowcaser.cs" />

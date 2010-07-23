@@ -90,6 +90,7 @@
     <None Include="Matlab\loadraw.mexw32" />
     <None Include="Matlab\loadspike.mexw32" />
     <None Include="Matlab\loadstim.mexw32" />
+    <None Include="Matlab\SqueakySpk.zip" />
     <None Include="Miscellaneous\Microsoft Permissive License.rtf" />
     <None Include="Miscellaneous\National_Instruments_software_license_agreement.pdf" />
     <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
@@ -188,7 +189,6 @@
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
     <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
-    <Compile Include="Stimulation\File2Stim.cs" />
     <Compile Include="Stimulation\File2Stim3.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />

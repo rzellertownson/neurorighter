@@ -13,9 +13,17 @@ function makestimfile(time, channel, waveform, filename)
 % 
 %    Created by: Jon Newman (jonathan.p.newman at gmail dot com)
 %    Created on: Sept 30, 2009
-%    Last modified: Sept 30, 2009
+%    Last modified: July, 23 2010
 %
 %    Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt
+
+% Make sure that input is correctly formated
+if size(channel,2) > 1 || size(time,2) > 1
+    error('Error:dim','Time and channel vectors are column vectors with the vertical index indicated the stimulus number and the value indicating time or channel');
+end
+if size(channel,1) ~= size(time,1) || size(waveform,1) ~= size(time,1)
+    error('Error:dim','The number of indicies in the first dimension of the time channel \n and waveform matracies must be equal since it is the number of stimuli to be delivered');
+end
 
 % open file and write header
 fid = fopen(strcat([filename,'.olstim']),'w');

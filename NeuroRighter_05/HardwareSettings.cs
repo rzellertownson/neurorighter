@@ -154,6 +154,7 @@ namespace NeuroRighter
                     comboBox_IVControlDevice.SelectedIndex = 0;
             }
 
+            textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
             checkBox_recordStimulationInfo.Checked = Properties.Settings.Default.RecordStimTimes;
@@ -197,6 +198,7 @@ namespace NeuroRighter
         private void button_accept_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.AnalogInDevice.Clear();
+            Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
             Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice1.SelectedItem));
             if (checkBox_useSecondBoard.Checked)
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
@@ -332,5 +334,6 @@ namespace NeuroRighter
         {
             comboBox_singleChannelPlaybackDevice.Enabled = checkBox_useChannelPlayback.Checked;
         }
+
     }
 }

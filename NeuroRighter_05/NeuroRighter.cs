@@ -369,6 +369,9 @@ namespace NeuroRighter
                     checkBox_SaveRawSpikes.Enabled = false;
                     switch_record.Enabled = false;
                     processingSettingsToolStripMenuItem.Enabled = false;
+                    textBox_spikeSamplingRate.Enabled = false;
+                    textBox_lfpSamplingRate.Enabled = false;
+                    textBox_MUASamplingRate.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
@@ -553,7 +556,7 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.UseEEG)
                         scalingCoeffsEEG = eegTask.AIChannels[0].DeviceScalingCoefficients;
 
-                    
+
                     #region Setup_Plotting
                     /**************************************************
                     /*   Setup plotting
@@ -644,6 +647,8 @@ namespace NeuroRighter
                     }
 
                     resetSpkWfm(); //Take care of spike waveform graph
+
+                    double ampdec = (1/Properties.Settings.Default.PreAmpGain);
 
                     spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
                         (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength, 
@@ -1142,6 +1147,12 @@ namespace NeuroRighter
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
+            
+            //Account for Pre-amp gain
+            double ampdec = (1/Properties.Settings.Default.PreAmpGain);
+            for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                for (int j = 0; j < spikeBufferLength; ++j)
+                    filtSpikeData[i][j] = ampdec * filtSpikeData[i][j];
 
             #region Write RAW data
             //Write data to file
@@ -1875,6 +1886,10 @@ namespace NeuroRighter
             checkBox_SaveRawSpikes.Enabled = true;
             switch_record.Enabled = true;
             processingSettingsToolStripMenuItem.Enabled = true;
+            textBox_spikeSamplingRate.Enabled = true;
+            textBox_lfpSamplingRate.Enabled = true;
+            textBox_MUASamplingRate.Enabled = true;
+
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegNumChannels.Enabled = true;
@@ -2070,17 +2085,18 @@ namespace NeuroRighter
             textBox_spikeSamplingRate_TextChanged(null, null);
             setSpikeDetector();
 
-            if (radioButton_spikeReferencingNone.Checked)
-                referncer = null;
-            else if (radioButton_spikesReferencingCommonAverage.Checked)
-                referncer = new Filters.CommonAverageReferencer(spikeBufferLength);
-            else if (radioButton_spikesReferencingCommonMedian.Checked)
-                referncer = new Filters.CommonMedianReferencer(spikeBufferLength, numChannels);
-            else if (radioButton_spikesReferencingCommonMedianLocal.Checked)
-            {
-                int channelsPerGroup = Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
-                referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
-            }
+            //if (radioButton_spikeReferencingNone.Checked)
+            //    referncer = null;
+            //else if (radioButton_spikesReferencingCommonAverage.Checked)
+            //    referncer = new Filters.CommonAverageReferencer(spikeBufferLength);
+            //else if (radioButton_spikesReferencingCommonMedian.Checked)
+            //    referncer = new Filters.CommonMedianReferencer(spikeBufferLength, numChannels);
+            //else if (radioButton_spikesReferencingCommonMedianLocal.Checked)
+            //{
+            //    int channelsPerGroup = Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
+            //    referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
+            //}
+            resetReferencers();
         }
 
         //******************************
@@ -2128,6 +2144,28 @@ namespace NeuroRighter
             }
             //spkWfmGraph.clear();
         }
+        private void resetReferencers()
+{
+           if (radioButton_spikeReferencingNone.Checked)
+                referncer = null;
+           else if (radioButton_spikesReferencingCommonAverage.Checked)
+           {
+                referncer = new
+                Filters.CommonAverageReferencer(spikeBufferLength);
+           }
+           else if (radioButton_spikesReferencingCommonMedian.Checked)
+           {
+                referncer = new
+                Filters.CommonMedianReferencer(spikeBufferLength, numChannels);
+           }
+           else if (radioButton_spikesReferencingCommonMedianLocal.Checked)
+           {
+                int channelsPerGroup =
+                Convert.ToInt32(numericUpDown_CommonMedianLocalReferencingChannelsPerGroup.Value);
+                referncer = new
+                Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
+           }
+       }
 
 
         #region The region resets the SALPA parameters in real time when the user changes them
@@ -2235,10 +2273,11 @@ namespace NeuroRighter
                 int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
 
                 int fs = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                if (fs < 1)
+                 if (fs*DEVICE_REFRESH <=  numPost + numPre + 1)
                 {
-                    textBox_spikeSamplingRate.Text = "4";
-                    fs = 4;
+                    int fsmin = (int)Math.Ceiling((numPost + numPre + 1) / DEVICE_REFRESH);
+                    textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
+                    fs = fsmin;
                 }
                 if (fs > 1000000 / numChannelsPerDevice)
                 {
@@ -2253,7 +2292,10 @@ namespace NeuroRighter
             {
                 textBox_spikeSamplingRate.Text = "25000"; //Set to default of 1kHz
             }
+
             spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+            resetReferencers();
+            setSpikeDetector();
         }
 
         private void button_scaleDown_Click(object sender, EventArgs e)

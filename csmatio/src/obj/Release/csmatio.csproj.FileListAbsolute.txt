@@ -33,3 +33,8 @@ C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\csma
 C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
 C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll

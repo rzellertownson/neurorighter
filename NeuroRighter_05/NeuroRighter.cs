@@ -369,7 +369,9 @@ namespace NeuroRighter
                     checkBox_SaveRawSpikes.Enabled = false;
                     switch_record.Enabled = false;
                     processingSettingsToolStripMenuItem.Enabled = false;
+                    button_spikeSamplingRate.PerformClick(); // updata samp freq
                     textBox_spikeSamplingRate.Enabled = false;
+                    button_lfpSamplingRate.PerformClick();
                     textBox_lfpSamplingRate.Enabled = false;
                     textBox_MUASamplingRate.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
@@ -2081,8 +2083,8 @@ namespace NeuroRighter
             }
 
             //Ensure that sampling rates are okay
-            textBox_lfpSamplingRate_TextChanged(null, null);
-            textBox_spikeSamplingRate_TextChanged(null, null);
+            button_lfpSamplingRate_Click(null, null);
+            button_spikeSamplingRate_Click(null, null);
             setSpikeDetector();
 
             //if (radioButton_spikeReferencingNone.Checked)
@@ -2243,7 +2245,7 @@ namespace NeuroRighter
         /***************************************************************************
         * Check sampling rates for hardware capabilities                          *
         * *************************************************************************/
-        private void textBox_lfpSamplingRate_TextChanged(object sender, EventArgs e)
+        private void button_lfpSamplingRate_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2265,7 +2267,7 @@ namespace NeuroRighter
             }
         }
 
-        private void textBox_spikeSamplingRate_TextChanged(object sender, EventArgs e)
+        private void button_spikeSamplingRate_Click(object sender, EventArgs e)
         {
             try
             {
@@ -2273,7 +2275,7 @@ namespace NeuroRighter
                 int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
 
                 int fs = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                 if (fs*DEVICE_REFRESH <=  numPost + numPre + 1)
+                if (fs * DEVICE_REFRESH <= numPost + numPre + 1)
                 {
                     int fsmin = (int)Math.Ceiling((numPost + numPre + 1) / DEVICE_REFRESH);
                     textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
@@ -4612,6 +4614,8 @@ ch = 1;
             }
         }
         #endregion
+
+
 
     }
 }

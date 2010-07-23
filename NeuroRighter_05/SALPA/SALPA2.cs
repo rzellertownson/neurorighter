@@ -71,15 +71,15 @@ namespace NeuroRighter
         /// <summary>
         /// SALPA - Artifact Supression by Local Polynomial Approximation
         /// </summary>
-        /// <param name="halfwidth">The number of data points, on either side of the central point, used for polynomial fit</param>
-        /// <param name="prepeg">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
-        /// <param name="postpeg"></param>
+        /// <param name="halfWidth">The number of data points, on either side of the central point, used for polynomial fit</param>
+        /// <param name="prePeg">Vector of voltages (in volts) that specifies the stimulation command voltage - the offset</param>
+        /// <param name="postPeg"></param>
         /// <param name="postPegZero"></param>
+        /// <param name="railLow">criteria for deciding if the amplifier is saturating or not</param>
         /// <param name="railHigh">criteria for deciding if the amplifier is saturating or not</param>
-        /// <param name="railLow">criteria for deciding if the amplifier is saturating or not</param
-        /// <param name="numElectrodes">Number of electrodes on recording device (16 or 59)</param>
+        /// <param name="numElectrodes">Number of electrodes on recording device, sixteen or fifty-nine</param>
         /// <param name="delta">the width of the data used for the deviation estimate to decide if SALPA has made a good fit or not</param>
-        /// <param name="bufferLength"></param
+        /// <param name="bufferLength">Chunk of data SALPA gets to work with</param>
         public SALPA2(int halfWidth, int prePeg, int postPeg, int postPegZero, rawType railLow, rawType railHigh, int numElectrodes, rawType delta, int bufferLength)
         {
 

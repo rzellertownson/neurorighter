@@ -944,8 +944,8 @@ namespace NeuroRighter
 
                     //Set start time
                     experimentStartTime = DateTime.Now;
-                    double min2add = Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + 0.0166666667 * Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
-                    timedRecordingStopTime = DateTime.Now.AddMinutes(min2add) ;
+                    double sec2add = 60*Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
+                    timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add) ;
                     timer_timeElapsed.Enabled = true;
                     
                     if (checkBox_video.Checked)

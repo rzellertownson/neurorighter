@@ -944,10 +944,10 @@ namespace NeuroRighter
 
                     //Set start time
                     experimentStartTime = DateTime.Now;
-                    timedRecordingStopTime = DateTime.Now.AddMinutes(Convert.ToDouble(numericUpDown_timedRecordingDuration.Value));
+                    double min2add = Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + 0.0166666667 * Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
+                    timedRecordingStopTime = DateTime.Now.AddMinutes(min2add) ;
                     timer_timeElapsed.Enabled = true;
                     
-
                     if (checkBox_video.Checked)
                     {
                         triggerTask.WaitUntilDone();
@@ -4296,6 +4296,7 @@ ch = 1;
         private void checkBox_enableTimedRecording_CheckedChanged(object sender, EventArgs e)
         {
             numericUpDown_timedRecordingDuration.Enabled = checkBox_enableTimedRecording.Checked;
+            numericUpDown_timedRecordingDurationSeconds.Enabled = checkBox_enableTimedRecording.Checked;
         }
 
         private Stimulation.OpenLoopFollowerTest olfTest;
@@ -4614,7 +4615,6 @@ ch = 1;
             }
         }
         #endregion
-
 
 
     }

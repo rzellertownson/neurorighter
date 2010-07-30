@@ -4687,12 +4687,18 @@ ch = 1;
             pnpCL.start();
             startPNPCL.Enabled = false;
             stopPNPCL.Enabled = true;
+
+            progressBar_pnpcl.Minimum = 0;
+            progressBar_pnpcl.Maximum = 100;
+            progressBar_pnpcl.Value = 0;
+
         }
 
         private void stopPNPCL_Click(object sender, EventArgs e)
         {
             //stop the closed loop experiment
             pnpCL.stop();
+            spikesAcquired = null;
             //stop recording
             buttonStop.Enabled = true;
             buttonStop.PerformClick();

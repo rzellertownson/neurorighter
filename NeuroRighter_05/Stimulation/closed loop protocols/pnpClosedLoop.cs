@@ -11,6 +11,8 @@ namespace NeuroRighter
          void grab(ClosedLoopExpt closedLoopExpt);
 
          void run();
+
+         void close();
         
     }
 }

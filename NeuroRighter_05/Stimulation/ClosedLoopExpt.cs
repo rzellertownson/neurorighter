@@ -62,6 +62,7 @@ namespace NeuroRighter
         public void stop()
         {
             isCancelled = true;
+            pnpcl.close();
             bw.CancelAsync();
         }
 
@@ -93,6 +94,7 @@ namespace NeuroRighter
 
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            
             if (AlertAllFinished != null) AlertAllFinished(this);
         }
 
@@ -102,15 +104,17 @@ namespace NeuroRighter
             if (AlertProgChanged != null) AlertProgChanged(this, e.ProgressPercentage);
         }
 
-        
 
+        pnpClosedLoop pnpcl;
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            pnpClosedLoop pnpcl;
-            pnpcl = new pnpBakkum();
+            
+            pnpcl = new pnpBurstDetect();
             pnpcl.grab(this);
             pnpcl.run();
+
             //simpleExample();
+
             //spikeCounter();
         }
 
@@ -162,18 +166,11 @@ namespace NeuroRighter
         private void spikeCounter()
         {
 
-            //todo:figure out how the thing is triggered!
+            
             
             while (!isCancelled)
             {
-                record(100);   
-                int firingRate = 0;
-                while (waveforms.Count > 0)
-                {
-                    ++firingRate; //channels are 0-based
-                    waveforms.RemoveAt(0);
-                }
-                bw.ReportProgress(firingRate);
+                waitForBurst(1000, 0);
             }
         }
 

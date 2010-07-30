@@ -130,13 +130,108 @@ namespace NeuroRighter
             stimDigitalTask.Stop();
         }
 
+        internal StimBuffer makeStim(int[] timeVec, int[] channelVec, double[,] waveMat)
+        {
+            int lengthWave = waveMat.GetLength(1);
+            return new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
+                BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+        }
+
+
         #endregion
 
         #region RECORD METHODS
 
-        //set buffer length
+        //wait for a burst to occur, and then return all spikes in that burst.  If timeout occurs, return empty array
+        //algorithms:
+        //  0- simple envelope detection
+        //  1- wagenaar detection (using singlet bursts) (NOT IMPLEMENTED)
+        internal List<SpikeWaveform> waitForBurst(int msTimeout,int algorithm)
+        {
+            int rez = 10;//ms
+            int threshold = 100;
+            List<SpikeWaveform> burst = new List<SpikeWaveform>();
+            switch (algorithm)
+            {
+                case 0:
+                    #region envelope method
+                    //clear all previously detected waveforms
+                    clearWaves();
 
-        //read buffer
+                    //setup timeout detection
+                    DateTime start = DateTime.Now;
+                    DateTime end = start + new TimeSpan(0, 0, 0, 0, msTimeout);
+                    //List<int>  = new List<int>(100);
+                    List<List<SpikeWaveform>> envelope = new List<List<SpikeWaveform>>();
+                    int mostRecentSpikeCount = 0;
+                    int[] filter = {
+                                       10,
+                                       30,
+                                       50
+                                   };
+                    List<SpikeWaveform> temp;
+                    int score = 0;
+                    while ((DateTime.Now < end)&&(score<threshold))
+                    {
+                        //read spike rate- we only care about the spikes that fall within the filter
+                        if (envelope.Count >= filter.Length)
+                            envelope.RemoveAt(0);
+                        temp = new List<SpikeWaveform>();
+                        temp.AddRange(waveforms);
+                        
+                        clearWaves();
+                        envelope.Add(temp );
+                        
+                        score = 0;
+                        int total = 0;
+                        //filter the response
+                        if (envelope.Count >= filter.Length)
+                        {
+                            for (int i = 0; i < filter.Length; i++)
+                            {
+                                total += envelope.ElementAt(envelope.Count - filter.Length + i).Count;
+                                score += filter[i] * envelope.ElementAt(envelope.Count - filter.Length + i).Count;
+                            }
+                            if (total > 0)
+                                score /= total;
+                            else
+                                score = 0;
+                            progress(score);
+                        }
+                        wait(rez);
+
+                        
+                    }
+                    if (score>=threshold)
+                    {
+                        for (int i = 0; i < envelope.Count; i++)
+                        {
+                            burst.AddRange(envelope.ElementAt(i));
+                        }
+                    }
+                        
+                    break;
+                    #endregion
+                case 1:
+                    #region wagenaar method
+
+                    throw new NotImplementedException("Wagenaar algorithm is not implemented yet. Try a lower number.");
+                    //TODO:
+                    //clear all previously detected waveforms
+                    //clearWaves();
+                    //locate singlet bursts
+                    //find coincidence of singlet bursts
+                    //locate starting point of burst
+                    //wait for end of burst
+                    break;
+                    #endregion
+                default:
+
+                    throw new NotImplementedException("that algorithm is not implemented yet. Try a different algorithm.");
+                    break;
+            }
+            return burst;
+        }
 
         //record(ms) - record spikes for the next _ ms
         internal List<SpikeWaveform> record(int ms)
@@ -189,7 +284,14 @@ namespace NeuroRighter
 
         internal void progress(int pg)
         {
-            bw.ReportProgress(pg);
+            if (pg>100)
+                bw.ReportProgress(100);
+            else if (pg<0)
+                bw.ReportProgress(0);
+            else 
+                bw.ReportProgress(pg);
+        
+                
         }
         #endregion
 

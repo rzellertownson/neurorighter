@@ -1297,7 +1297,8 @@ namespace NeuroRighter
                 spikeDetector.detectSpikes(filtSpikeData[i], newWaveforms, i);
 
             #region SpikeValidation
-            const int numSamplesPeak = 10; //Number of samples to search for max peak after threshold crossing
+            double Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
+            int numSamplesPeak = (int)Math.Ceiling(0.0005*Fs); //Search the first half millisecond after thresh crossing
             int numSamplesToSearch = 64;
             if ((numPre + numPost + 1) < numSamplesToSearch) numSamplesToSearch = (numPre + numPost + 1);
 
@@ -1326,13 +1327,23 @@ namespace NeuroRighter
                             maxVal = Math.Abs(newWaveforms[w].waveform[k + numPre]);
                     }
                     //Search pts. before and after for bigger, disqualifying if there are larger peaks
-                    for (int k = 0; k < numSamplesToSearch; ++k)
-                    {
-                        if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
+                    if (maxVal > 1e-6*Convert.ToDouble(textBox_AbsArtThresh.Text))
                         {
                             newWaveforms.RemoveAt(w);
                             --w;
-                            break;
+                        }
+                    else
+                    {
+                        for (int k = 0; k < numSamplesToSearch; ++k)
+                        {
+
+                            if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
+                            {
+                                newWaveforms.RemoveAt(w);
+                                --w;
+                                break;
+                            }
+                      
                         }
                     }
 

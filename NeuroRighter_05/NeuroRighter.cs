@@ -42,6 +42,10 @@ using NationalInstruments.Analysis.Math;
 using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
+using NeuroRighter.Virtualization;
+using NeuroRighter.Bufferization;
+using NeuroRighter.Plotting;
+using NeuroRighter.Networking;
 
 namespace NeuroRighter
 {
@@ -4614,6 +4618,79 @@ ch = 1;
                 textBox_protocolFileLocations.Text = filenameOutput;
             }
         }
+        #endregion
+
+        #region Virtual_Rat
+
+        VirtualRat rat;
+        DataBuffer dBuf;
+        ThreadedPlotter tdP;
+        bool simulationRunning = false;
+
+        SignalServer serv;
+
+        private void playback_fbrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Multiselect = false;
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                playback_fname.Text = ofd.FileName;
+                rat = new VirtualRat();
+                rat.loadRecordedData(playback_fname.Text);
+                DateTime recOn = DateTime.Parse(String.Format("{2}.{1}.{0} {3}:{4}:{5}.{6}",
+                                                rat.recordTime[0], rat.recordTime[1], rat.recordTime[2], rat.recordTime[3], rat.recordTime[4], rat.recordTime[5], rat.recordTime[6]));
+                virt_recOn_view.Text = recOn.ToShortDateString() + " " + recOn.ToLongTimeString();
+                TimeSpan duration = new TimeSpan(0, 0, (int)rat.duration);
+                virt_duration_view.Text = duration.ToString();
+                virt_srate_view.Text = rat.samplingRate.ToString();
+                virt_nChan_view.Text = rat.numChannels.ToString();
+            }
+        }
+
+        private void playback_control_Click(object sender, EventArgs e)
+        {
+            if (!simulationRunning)
+            {
+                dBuf = new DataBuffer(rat.numChannels, rat.samplingRate, 15);
+
+                if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                lfpGraph = new RowGraph();
+                lfpGraph.setup(rat.numChannels, rat.samplingRate * 5, 5.0, 200);
+                //lfpGraph.setMinMax(0, 5 * rat.samplingRate, -0.1F, 0.1F);
+                lfpGraph.setMinMax(0, 5 * rat.samplingRate, (float)(-100 * (rat.numChannels * 2 - 1)), (float)100);
+                lfpGraph.Dock = DockStyle.Fill;
+                lfpGraph.Parent = tabPage_LFPs;
+                lfpGraph.setDisplayGain(1);
+
+                tdP = new ThreadedPlotter(dBuf, rat.samplingRate * 5, lfpGraph);
+
+                rat.dataAcquired += new VirtualRat.dataAcquiredHandler(virtualCallback_LFP);
+                rat.startPlayBack(1);
+
+                simulationRunning = true;
+
+                playback_control.Text = "Stop simulation";
+
+                serv = new SignalServer(dBuf, 3125);
+
+            }
+            else
+            {
+                rat.stopPlayBack();
+                tdP = null;
+                dBuf = null;
+                simulationRunning = false;
+                playback_control.Text = "Run model!";
+            }
+        }
+
+        private void virtualCallback_LFP(object Rat)
+        {
+            if (dBuf != null)
+                dBuf.yumData(((VirtualRat)Rat).buf);
+        }
+
         #endregion
 
 

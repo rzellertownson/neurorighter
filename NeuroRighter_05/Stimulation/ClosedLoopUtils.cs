@@ -196,7 +196,7 @@ namespace NeuroRighter
                                 score /= total;
                             else
                                 score = 0;
-                            progress(score);
+                           // progress(score);
                         }
                         wait(rez);
 

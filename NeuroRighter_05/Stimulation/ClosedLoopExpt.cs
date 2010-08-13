@@ -17,7 +17,7 @@ namespace NeuroRighter
         private Task stimDigitalTask, stimAnalogTask;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimAnalogWriter;
-        internal Boolean isCancelled;
+        public Boolean isCancelled;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private List<SpikeWaveform> waveforms;
 

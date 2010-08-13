@@ -71,6 +71,10 @@
     <Reference Include="NationalInstruments.DAQmx, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="pnpClosedLoop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\pnpClosedLoop\pnpClosedLoop\bin\Debug\pnpClosedLoop.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -184,7 +188,6 @@
     <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
-    <Compile Include="Stimulation\closed loop protocols\pnpBurstDetect.cs" />
     <Compile Include="Stimulation\ClosedLoopExpt.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -193,8 +196,6 @@
     <Compile Include="Stimulation\File2Stim3.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
-    <Compile Include="Stimulation\closed loop protocols\pnpBakkum.cs" />
-    <Compile Include="Stimulation\closed loop protocols\pnpClosedLoopAbs.cs" />
     <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
@@ -318,6 +319,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
+    <Folder Include="Stimulation\closed loop protocols\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

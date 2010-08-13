@@ -19,7 +19,7 @@ namespace NeuroRighter
         #endregion
         
         #region STIM METHODS
-        internal void initializeStim()
+        public void initializeStim()
         {
             //stolen from JN's file2stim3 code
             //Set buffer regenation mode to off and set parameters
@@ -40,7 +40,7 @@ namespace NeuroRighter
             
         }
         //wavestim
-        internal void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
+        public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
         {
             int lengthWave = waveMat.GetLength(1); // Length of each stimulus waveform in samples
              
@@ -89,7 +89,7 @@ namespace NeuroRighter
         }
 
         //useful if you want to avoid the time taken up by generateing the stimulus buffer in the first place.
-        internal void waveStim(StimBuffer stimulusbuffer)
+        public void waveStim(StimBuffer stimulusbuffer)
         {
             //Populate the 1st stimulus buffer
             stimulusbuffer.precompute();
@@ -130,7 +130,7 @@ namespace NeuroRighter
             stimDigitalTask.Stop();
         }
 
-        internal StimBuffer makeStim(int[] timeVec, int[] channelVec, double[,] waveMat)
+        public StimBuffer makeStim(int[] timeVec, int[] channelVec, double[,] waveMat)
         {
             int lengthWave = waveMat.GetLength(1);
             return new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
@@ -146,7 +146,7 @@ namespace NeuroRighter
         //algorithms:
         //  0- simple envelope detection
         //  1- wagenaar detection (using singlet bursts) (NOT IMPLEMENTED)
-        internal List<SpikeWaveform> waitForBurst(int msTimeout,int algorithm)
+        public List<SpikeWaveform> waitForBurst(int msTimeout,int algorithm)
         {
             int rez = 10;//ms
             int threshold = 100;
@@ -234,7 +234,7 @@ namespace NeuroRighter
         }
 
         //record(ms) - record spikes for the next _ ms
-        internal List<SpikeWaveform> record(int ms)
+        public List<SpikeWaveform> record(int ms)
         {
             //filler
             List<SpikeWaveform> waves = new List<SpikeWaveform>();
@@ -252,19 +252,19 @@ namespace NeuroRighter
         }
         
         //if no argument, just send all the spikes that have been recorded since the last record/clear
-        internal List<SpikeWaveform> record()
+        public List<SpikeWaveform> record()
         {
             return waveforms;
         }
         
         //clear the waveforms recorded so far
-        internal void clearWaves()
+        public void clearWaves()
         {
             waveforms = new List<SpikeWaveform>();
         }
 
         //precisely timed wait.. or maybe just a wait
-        internal void wait(int ms)
+        public void wait(int ms)
         {
             //filler
             System.Threading.Thread.Sleep(ms);
@@ -282,7 +282,7 @@ namespace NeuroRighter
 
         //stuff
 
-        internal void progress(int pg)
+        public void progress(int pg)
         {
             if (pg>100)
                 bw.ReportProgress(100);
@@ -295,7 +295,7 @@ namespace NeuroRighter
         }
         #endregion
 
-        internal void stim(stimWave sw)
+        public void stim(stimWave sw)
 {
     stimAnalogTask.Timing.SamplesPerChannel = sw.analogPulse.GetLength(1);
     stimDigitalTask.Timing.SamplesPerChannel = sw.digitalData.GetLength(0);
@@ -312,7 +312,7 @@ namespace NeuroRighter
 }
     }
 
-    class stimWave
+    public class stimWave
     {
             internal Double[,] analogPulse;
             internal UInt32[] digitalData;

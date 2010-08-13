@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace NeuroRighter
 {
-    class StimBuffer
+    public class StimBuffer
     {
         // Public Properties
         public long BufferIndex = 0;

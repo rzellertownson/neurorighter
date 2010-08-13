@@ -18,84 +18,116 @@ using System.Net;
 using System.Net.Sockets;
 using NeuroRighter.Bufferization;
 using System.Threading;
+using System.ComponentModel;
 
 namespace NeuroRighter.Networking
 {
     class SignalServer
     {
 
+        public delegate void clientStatusHandler(string clientIP, string status);
+        public event clientStatusHandler clientStatus;
+
         DataBuffer dBuf;
         TcpListener tcpListener;
-        Thread listenThread;
 
-        public SignalServer(DataBuffer dataBuf, int port)
+        Thread listenThread;
+        List<TcpClient> myClients;
+        List<Thread> clientThreads;
+
+        private volatile bool shouldStop;
+
+        public SignalServer(int port)
+        {
+            tcpListener = new TcpListener(IPAddress.Any, port);
+            myClients = new List<TcpClient>();
+            clientThreads = new List<Thread>();
+        }
+
+        public void connectBuffer(DataBuffer dataBuf)
         {
             this.dBuf = dataBuf;
-            this.tcpListener = new TcpListener(IPAddress.Any, port);
-            this.listenThread = new Thread(new ThreadStart(ListenForClients));
-            this.listenThread.Start();
         }
 
-        private void ListenForClients()
+        public void startListening()
         {
-            this.tcpListener.Start();
+            shouldStop = false;
+            listenThread = new Thread(new ThreadStart(waitingForClients));
+            listenThread.Start();
+        }
+
+        public void stopListening()
+        {
+            shouldStop = true;
+            foreach (TcpClient client in myClients)
+                client.Client.Disconnect(false);
+            foreach (Thread clientThread in clientThreads)
+                clientThread.Abort();
+            tcpListener.Stop();
+            listenThread.Abort();
+        }
+
+        private void waitingForClients()
+        {
+            tcpListener.Start();
             while (true)
             {
-                TcpClient client = this.tcpListener.AcceptTcpClient();
-                Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+                while (!tcpListener.Pending() && !shouldStop)
+                    Thread.Sleep(10);
+                if (shouldStop)
+                    break;
+                TcpClient client = tcpListener.AcceptTcpClient();
+                Thread clientThread = new Thread(new ParameterizedThreadStart(processClient));
+                myClients.Add(client);
+                clientThreads.Add(clientThread);
                 clientThread.Start(client);
             }
+            tcpListener.Stop();
         }
 
-        private void HandleClientComm(object client)
+        private void processClient(object client)
         {
             TcpClient tcpClient = (TcpClient)client;
+            string clientIP = tcpClient.Client.RemoteEndPoint.ToString();
+            //clientIP = clientIP.Remove(clientIP.IndexOf(':'));
+            clientStatus(clientIP, "connected");
             NetworkStream clientStream = tcpClient.GetStream();
-            byte[] message = new byte[32];
-            int bytesRead;
+            byte[] message = new byte[4 + dBuf.numChannels];
+            int bR;
             List<int[]> myList = null;
             int dataChunkLen = dBuf.samplingRate;
             byte[] sendBuf = new byte[dBuf.numChannels * dataChunkLen * sizeof(double)];
-            while (true)
+            while (!shouldStop)
             {
-                bytesRead = 0;
-                try
-                {
-                    bytesRead = clientStream.Read(message, 0, 1);
-                }
-                catch
-                {
-                    break;
-                }
-                if (bytesRead == 0)
-                {
-                    break;
-                }
+                bR = 0;
+                try { bR = clientStream.Read(message, 0, 1); } catch { break; }; if (bR == 0) { break; }
                 ASCIIEncoding encoder = new ASCIIEncoding();
-                string cmd = encoder.GetString(message, 0, bytesRead);
+                string cmd = encoder.GetString(message, 0, bR);
                 if (cmd == "i")
                 {
                     byte[] info_nChan = BitConverter.GetBytes(dBuf.numChannels);
                     byte[] info_sRate = BitConverter.GetBytes(dBuf.samplingRate);
-                    clientStream.Write(info_nChan, 0, info_nChan.Length);
-                    clientStream.Write(info_sRate, 0, info_sRate.Length);
+                    try { clientStream.Write(info_nChan, 0, info_nChan.Length); } catch { break; };
+                    try { clientStream.Write(info_sRate, 0, info_sRate.Length); } catch { break; };
                     continue;
                 }
-                if (cmd == "s" || cmd == "c")
+                if (cmd == "s")
                 {
-                    if (cmd == "s")
-                    {
-                        clientStream.Read(message, 0, 4);
-                        int dataChunkLen_msec = BitConverter.ToInt32(message, 0);
-                        dataChunkLen = (int)((double)dataChunkLen_msec / 1000 * dBuf.samplingRate);
-                        clientStream.Read(message, 0, dBuf.numChannels);
+                    try { bR = clientStream.Read(message, 0, 4 + dBuf.numChannels); } catch { break; }; if (bR == 0) { break; }
+                    int dataChunkLen_msec = BitConverter.ToInt32(message, 0);
+                    dataChunkLen = (int)((double)dataChunkLen_msec / 1000 * dBuf.samplingRate);
+                    sendBuf = new byte[dBuf.numChannels * dataChunkLen * sizeof(double)];
+                    myList = null;
+                }
+                if (cmd == "r")
+                {
+                    clientStatus(clientIP, "transferring");
+                    if (myList == null)
                         myList = dBuf.connectClient();
-                        sendBuf = new byte[dBuf.numChannels * dataChunkLen * sizeof(double)];
-                    }
                     int newPointsCnt;
                     do
                     {
-                        Thread.Sleep(50);
+                        Thread.Sleep(5);
                         newPointsCnt = 0;
                         foreach (int[] newP in myList)
                             newPointsCnt = newPointsCnt + newP[1];
@@ -123,13 +155,16 @@ namespace NeuroRighter.Networking
                             myList.RemoveAt(0);
                     }
                     dBuf.rwLock.ExitReadLock();
-                    clientStream.Write(sendBuf, 0, sendBuf.Length);
+                    try { clientStream.Write(sendBuf, 0, sendBuf.Length); } catch { break; };
                     continue;
                 }
             }
+            clientStatus(clientIP, "disconnected");
             if (myList != null)
                 dBuf.detachClient(myList);
-            tcpClient.Close();
+            if (tcpClient.Connected)
+                tcpClient.Client.Disconnect(false);
+            myClients.Remove(tcpClient);
         }
 
     }

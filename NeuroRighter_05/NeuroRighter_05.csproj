@@ -243,6 +243,7 @@
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\logo_sigserv.PNG" />
     <None Include="Resources\logo_rat.JPG" />
   </ItemGroup>
   <ItemGroup>

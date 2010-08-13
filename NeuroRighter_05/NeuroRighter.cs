@@ -47,9 +47,12 @@ using NeuroRighter.Bufferization;
 using NeuroRighter.Plotting;
 using NeuroRighter.Networking;
 
+using System.Linq;
+
 namespace NeuroRighter
 {
     using rawType = System.Double;
+    using System.Net.Sockets;
 
     ///<summary>Main Form for NeuroRighter application.</summary>
     ///<author>John Rolston</author>
@@ -4627,8 +4630,6 @@ ch = 1;
         ThreadedPlotter tdP;
         bool simulationRunning = false;
 
-        SignalServer serv;
-
         private void playback_fbrowse_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -4672,8 +4673,6 @@ ch = 1;
 
                 playback_control.Text = "Stop simulation";
 
-                serv = new SignalServer(dBuf, 3125);
-
             }
             else
             {
@@ -4693,6 +4692,75 @@ ch = 1;
 
         #endregion
 
+        #region Signal_Server
+
+        SignalServer serv;
+        bool serverRunning = false;
+
+        private void sigserv_start_Click(object sender, EventArgs e)
+        {
+            startSigServer(!serverRunning);
+        }
+
+        private void startSigServer(bool start)
+        {
+            if (!start && serv != null)
+            {
+                serv.stopListening();
+                serv = null;
+                sigserv_clients.Rows.Clear();
+                sigserv_port.Enabled = true;
+                sigserv_start.Text = "Start";
+                sigserv_status.Text = "Stopped";
+                serverRunning = false;
+            }
+            else if (start && dBuf != null)
+            {
+                serv = new SignalServer(Int32.Parse(sigserv_port.Text));
+                serv.connectBuffer(dBuf);
+                serv.clientStatus += new SignalServer.clientStatusHandler(updateClientsSafe);
+                serv.startListening();
+                sigserv_port.Enabled = false;
+                sigserv_start.Text = "Stop";
+                sigserv_status.Text = "Running";
+                serverRunning = true;
+            }
+        }
+
+        public delegate void updateClientsDelegate(string clientIP, string status);
+
+        public void updateClientsSafe(string clientIP, string status)
+        {
+            if (sigserv_clients.InvokeRequired)
+                sigserv_clients.Invoke(new updateClientsDelegate(updateClients), new object[] { clientIP, status });
+            else
+                updateClients(clientIP, status);
+        }
+
+        public void updateClients(string clientIP, string status)
+        {
+            int index = -1;
+            for (int i = 0; i < sigserv_clients.Rows.Count; i++)
+                if (sigserv_clients[0, i].Value.ToString() == clientIP)
+                {
+                    index = i;
+                    break;
+                }
+            switch (status)
+            {
+                case "connected":
+                    sigserv_clients.Rows.Add(new object[2] {clientIP, status});
+                    break;
+                case "disconnected":
+                    sigserv_clients.Rows.RemoveAt(index);
+                    break;
+                default:
+                    sigserv_clients[1, index].Value = status;
+                    break;
+            }
+        }
+
+        #endregion
 
     }
 }

@@ -66,5 +66,12 @@ namespace NeuroRighter.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap logo_sigserv {
+            get {
+                object obj = ResourceManager.GetObject("logo_sigserv", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

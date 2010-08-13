@@ -57,7 +57,7 @@ namespace NeuroRighter.Bufferization
             if (freeSpaceIndex > bufferSize)
                 freeSpaceIndex = 0;
             int newDataLength = newData.GetLength(1);
-            for (int c = 0; c < data.GetLength(0); c++)
+            for (int c = 0; c < numChannels; c++)
                 for (int d = 0; d < newDataLength; d++)
                     data[c, freeSpaceIndex + d] = newData[c, d];
             foreach (List<int[]> freshDataList in freshData)

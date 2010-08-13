@@ -194,7 +194,7 @@
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
     <Compile Include="Stimulation\closed loop protocols\pnpBakkum.cs" />
-    <Compile Include="Stimulation\closed loop protocols\pnpClosedLoop.cs" />
+    <Compile Include="Stimulation\closed loop protocols\pnpClosedLoopAbs.cs" />
     <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />

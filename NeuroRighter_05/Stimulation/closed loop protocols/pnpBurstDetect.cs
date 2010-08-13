@@ -4,26 +4,17 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using NeuroRighter;
 
-namespace NeuroRighter
+namespace pnpCL
 {
-    class pnpBurstDetect:pnpClosedLoop
+    class pnpClosedLoop : pnpClosedLoopAbs
     {
-        #region crap
-        ClosedLoopExpt CLE;
-        
-        
-        public void grab(ClosedLoopExpt CLE)
-        {
-            this.CLE = CLE;
-        }
-        #endregion
-
-        #region important crap
+       
 
         FileStream fs;
         StreamWriter w;
-        public void run()
+        public override void run()
         {
             fs = new FileStream("BurstDetectTest.txt", FileMode.Create);
 
@@ -53,7 +44,7 @@ namespace NeuroRighter
             }
         }
 
-        public void close()
+        public override void close()
         {
             try
             {
@@ -70,7 +61,7 @@ namespace NeuroRighter
             }
         }
 
-        #endregion
+       
 
     }
 }

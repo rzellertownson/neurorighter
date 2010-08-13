@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NeuroRighter;
 
 
-namespace NeuroRighter
+namespace pnpCL
 {
-    class pnpBakkum:pnpClosedLoop
+    class pnpBakkum:pnpClosedLoopAbs
     {
-        #region crap
-        ClosedLoopExpt CLE;
-        
-        
-        public void grab(ClosedLoopExpt CLE)
-        {
-            this.CLE = CLE;
-        }
-        #endregion
+     
 
-        #region important crap
-        public void run()
+        
+        public override void run()
         {
             
             CLE.initializeStim();//sets stim params for wavestimming
@@ -135,12 +128,12 @@ namespace NeuroRighter
             }
         }
 
-        public void close()
+        public override void close()
         {
             //nothin'
         }
 
-        #endregion
+       
 
     }
 }

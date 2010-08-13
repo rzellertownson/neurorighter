@@ -5,11 +5,12 @@ using System.Text;
 using System.ComponentModel;
 using NationalInstruments.DAQmx;
 using System.Threading;
+using pnpCL;
 
 namespace NeuroRighter
 {
-    //contains code for an actual closed loop experiment.  uses methods provided by the closedloop utilities class.
-    partial class ClosedLoopExpt
+    //contains background worker stuff.  creates a pnpCL class that uses methods provided by the closedloop utilities file.
+    public partial class ClosedLoopExpt
     {
         //private variables
         private BackgroundWorker bw;
@@ -62,7 +63,6 @@ namespace NeuroRighter
         public void stop()
         {
             isCancelled = true;
-            pnpcl.close();
             bw.CancelAsync();
         }
 
@@ -94,7 +94,6 @@ namespace NeuroRighter
 
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            
             if (AlertAllFinished != null) AlertAllFinished(this);
         }
 
@@ -104,17 +103,15 @@ namespace NeuroRighter
             if (AlertProgChanged != null) AlertProgChanged(this, e.ProgressPercentage);
         }
 
+        
 
-        pnpClosedLoop pnpcl;
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            
-            pnpcl = new pnpBurstDetect();
+            pnpClosedLoop pnpcl;
+            pnpcl = new pnpClosedLoop();
             pnpcl.grab(this);
             pnpcl.run();
-
             //simpleExample();
-
             //spikeCounter();
         }
 
@@ -166,11 +163,18 @@ namespace NeuroRighter
         private void spikeCounter()
         {
 
-            
+            //todo:figure out how the thing is triggered!
             
             while (!isCancelled)
             {
-                waitForBurst(1000, 0);
+                record(100);   
+                int firingRate = 0;
+                while (waveforms.Count > 0)
+                {
+                    ++firingRate; //channels are 0-based
+                    waveforms.RemoveAt(0);
+                }
+                bw.ReportProgress(firingRate);
             }
         }
 

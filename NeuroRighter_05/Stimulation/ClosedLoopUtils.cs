@@ -10,7 +10,7 @@ namespace NeuroRighter
 
     //purpose of this class is to provide a set of static methods for closed loop experiments that can
     //be written without an exhaustive understanding of NeuroRighter's intestines
-    partial class ClosedLoopExpt
+    public partial class ClosedLoopExpt
     {
         #region stim params
         Int32 BUFFSIZE;

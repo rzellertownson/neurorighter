@@ -110,6 +110,7 @@ namespace NeuroRighter
             stimDigitalTask.Start();
             stimAnalogTask.Start();
             long samplessent = 0;
+
             while (!isCancelled && !bw.CancellationPending && stimulusbuffer.NumBuffLoadsCompleted < stimulusbuffer.NumBuffLoadsRequired)
             {
                 //Populate the stimulus buffer

@@ -42,6 +42,7 @@ using NationalInstruments.Analysis.Math;
 using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
+using pnpCL;
 
 namespace NeuroRighter
 {
@@ -4628,76 +4629,99 @@ ch = 1;
 
         AnalogMultiChannelWriter stimCLAnalogWriter;
         DigitalSingleChannelWriter stimCLDigitalWriter;
-        ClosedLoopExpt pnpCL;
+        ClosedLoopExpt CLE;
+        List<pnpClosedLoopAbs> experiments;
+        
 
-        private void startPNPCL_Click(object sender, EventArgs e)
+        //load experiments
+        private void refresh_closedloop_button_Click(object sender, EventArgs e)
         {
-            //setup
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-
-            // Create new DAQ tasks and corresponding writers
-            stimPulseTask = new Task("stimPulseTask");
-            stimDigitalTask = new Task("stimDigitalTask");
-
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-            {
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
-            }
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-            {
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
-            }
-
-            stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-
-            // Setup the AO and DO tasks for continuous stimulaiton
-            stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            stimDigitalTask.SynchronizeCallbacks = false;
-            stimPulseTask.SynchronizeCallbacks = false;
-
-            //Create output writers
-            stimCLAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-            stimCLDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-            //Verify the tasks
-            stimPulseTask.Control(TaskAction.Verify);
-            stimDigitalTask.Control(TaskAction.Verify);
-
-            //create the closed loop experiment
-            pnpCL = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter);
-            pnpCL.linkToSpikes(this);
-            //start recording
-            buttonStart.PerformClick();
-            pnpCL.AlertProgChanged += new ClosedLoopExpt.ProgressChangedHandler(clProgressChangedHandler);
-            pnpCL.AlertAllFinished += new ClosedLoopExpt.AllFinishedHandler(clFinisheddHandler);
-            //start the closed loop experiment
-            pnpCL.start();
-            startPNPCL.Enabled = false;
-            stopPNPCL.Enabled = true;
-
-            progressBar_pnpcl.Minimum = 0;
-            progressBar_pnpcl.Maximum = 100;
-            progressBar_pnpcl.Value = 0;
+            //find all dll files that contain a concrete pnpclosedloop class and add them to the experiments list
+            experiments = pnpclFinder.find();
+            pnpcl_available_dropdown.Items.Clear();
+            foreach (pnpClosedLoopAbs exp in experiments)
+                pnpcl_available_dropdown.Items.Add(exp);
 
         }
 
+        //start an experiment
+        private void startPNPCL_Click(object sender, EventArgs e)
+        {
+            if (pnpcl_available_dropdown.SelectedItem.Equals(null))
+                MessageBox.Show("please select an experiment from the drop down menu. If no experiments are visible, hit the 'refresh' button, or double check to make sure an appropriate .dll is in the 'plugin' folder.");
+            else
+            {
+
+                //setup
+                // Refresh DAQ tasks as they are needed for file2stim
+                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+
+                // Create new DAQ tasks and corresponding writers
+                stimPulseTask = new Task("stimPulseTask");
+                stimDigitalTask = new Task("stimDigitalTask");
+
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                }
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                }
+
+                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+
+                // Setup the AO and DO tasks for continuous stimulaiton
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.SynchronizeCallbacks = false;
+                stimPulseTask.SynchronizeCallbacks = false;
+
+                //Create output writers
+                stimCLAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+                stimCLDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+                //Verify the tasks
+                stimPulseTask.Control(TaskAction.Verify);
+                stimDigitalTask.Control(TaskAction.Verify);
+
+                //create the closed loop experiment
+                //pnpClosedLoopAbs pnpcl1 = new pnpClosedLoop();
+                pnpClosedLoopAbs pnpcl = (pnpClosedLoopAbs) pnpcl_available_dropdown.SelectedItem;
+                CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter, pnpcl);
+                //MessageBox.Show(pnpcl1.ToString());
+                CLE.linkToSpikes(this);
+                //start recording
+                buttonStart.PerformClick();
+                CLE.AlertProgChanged += new ClosedLoopExpt.ProgressChangedHandler(clProgressChangedHandler);
+                CLE.AlertAllFinished += new ClosedLoopExpt.AllFinishedHandler(clFinisheddHandler);
+                //start the closed loop experiment
+                CLE.start();
+                startPNPCL.Enabled = false;
+                stopPNPCL.Enabled = true;
+
+                progressBar_pnpcl.Minimum = 0;
+                progressBar_pnpcl.Maximum = 100;
+                progressBar_pnpcl.Value = 0;
+            }
+        }
+
+        //end an experiment
         private void stopPNPCL_Click(object sender, EventArgs e)
         {
             //stop the closed loop experiment
-            pnpCL.stop();
+            CLE.stop();
             spikesAcquired = null;
             //stop recording
             buttonStop.Enabled = true;
@@ -4731,6 +4755,7 @@ ch = 1;
             updateSettings();
         }
 
+        //callbacks:  progress changed and experiment finished before cancelation.
         private void clProgressChangedHandler(object sender, int percentage)
         {
             progressBar_pnpcl.Value = percentage;
@@ -4747,6 +4772,8 @@ ch = 1;
         }
 
         #endregion
+
+       
 
         
     }

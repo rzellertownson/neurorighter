@@ -20,6 +20,7 @@ namespace NeuroRighter
         public Boolean isCancelled;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private List<SpikeWaveform> waveforms;
+        private pnpClosedLoopAbs pnpcl;
 
         //variables for wavestimming
         internal int[] timeVec; //interstim times (NX1 vector)
@@ -33,7 +34,7 @@ namespace NeuroRighter
         internal event AllFinishedHandler AlertAllFinished;
 
         //constructor
-        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE,Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter)
+        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE,Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl )
         {
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.BUFFSIZE = STIMBUFFSIZE;
@@ -41,6 +42,7 @@ namespace NeuroRighter
             this.stimAnalogTask = stimPulseTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
+            this.pnpcl = pnpcl;
         }
        
         //start
@@ -107,8 +109,8 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            pnpClosedLoop pnpcl;
-            pnpcl = new pnpClosedLoop();
+            
+            //pnpcl = new pnpClosedLoop();
             pnpcl.grab(this);
             pnpcl.run();
             //simpleExample();

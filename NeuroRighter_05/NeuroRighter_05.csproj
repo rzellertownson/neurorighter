@@ -196,6 +196,7 @@
     <Compile Include="Stimulation\File2Stim3.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
+    <Compile Include="Stimulation\pnpclFinder.cs" />
     <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />

@@ -4649,6 +4649,8 @@ ch = 1;
             }
         }
 
+//        List<System.TimeSpan> dt = new List<TimeSpan>();
+
         private void playback_control_Click(object sender, EventArgs e)
         {
             if (!simulationRunning)
@@ -4684,10 +4686,18 @@ ch = 1;
             }
         }
 
+//        DateTime now, prev;
+
         private void virtualCallback_LFP(object Rat)
         {
+
             if (dBuf != null)
                 dBuf.yumData(((VirtualRat)Rat).buf);
+
+//            now = DateTime.Now;
+//            dt.Add(now - prev);
+//            prev = now;
+
         }
 
         #endregion

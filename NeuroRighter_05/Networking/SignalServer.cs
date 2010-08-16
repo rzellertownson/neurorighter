@@ -78,25 +78,36 @@ namespace NeuroRighter.Networking
                     break;
                 TcpClient client = tcpListener.AcceptTcpClient();
                 Thread clientThread = new Thread(new ParameterizedThreadStart(processClient));
-                myClients.Add(client);
                 clientThreads.Add(clientThread);
                 clientThread.Start(client);
             }
             tcpListener.Stop();
         }
 
-        private void processClient(object client)
+ 
+        private void processClient(object tcpClient)
         {
-            TcpClient tcpClient = (TcpClient)client;
-            string clientIP = tcpClient.Client.RemoteEndPoint.ToString();
-            //clientIP = clientIP.Remove(clientIP.IndexOf(':'));
+            Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+            myClients.Add(((TcpClient)tcpClient));
+            string clientIP = ((TcpClient)tcpClient).Client.RemoteEndPoint.ToString();
             clientStatus(clientIP, "connected");
-            NetworkStream clientStream = tcpClient.GetStream();
+            NetworkStream clientStream = ((TcpClient)tcpClient).GetStream();
             byte[] message = new byte[4 + dBuf.numChannels];
             int bR;
             List<int[]> myList = null;
             int dataChunkLen = dBuf.samplingRate;
             byte[] sendBuf = new byte[dBuf.numChannels * dataChunkLen * sizeof(double)];
+            bool[] selectedChannels = new bool[dBuf.numChannels];
+            int selectedChannelsCnt = dBuf.numChannels;
+            bool applyFilter = false;
+            ButterworthFilter dataFilter = null;
+            bool decimate = false;
+            int newSamplingRate = 0;
+            int sampleStep = 0;
+            int decChunkLen = 0;
+//            DateTime now, prev;
+//            List<System.TimeSpan> dt = new List<TimeSpan>();
+            int i, j;
             while (!shouldStop)
             {
                 bR = 0;
@@ -115,12 +126,37 @@ namespace NeuroRighter.Networking
                 {
                     try { bR = clientStream.Read(message, 0, 4 + dBuf.numChannels); } catch { break; }; if (bR == 0) { break; }
                     int dataChunkLen_msec = BitConverter.ToInt32(message, 0);
+                    selectedChannelsCnt = 0;
+                    for (int c = 0; c < dBuf.numChannels; c++)
+                    {
+                        selectedChannels[c] = BitConverter.ToBoolean(message, 4 + c);
+                        if (selectedChannels[c])
+                            selectedChannelsCnt++;
+                    }
                     dataChunkLen = (int)((double)dataChunkLen_msec / 1000 * dBuf.samplingRate);
-                    sendBuf = new byte[dBuf.numChannels * dataChunkLen * sizeof(double)];
+                    sendBuf = new byte[selectedChannelsCnt * dataChunkLen * sizeof(double)];
                     myList = null;
+                }
+                if (cmd == "f")
+                {
+                    try { bR = clientStream.Read(message, 0, 2 * sizeof(double)); } catch { break; }; if (bR == 0) { break; }
+                    double lowCut = BitConverter.ToDouble(message, 0);
+                    double highCut = BitConverter.ToDouble(message, sizeof(double));
+                    dataFilter = new ButterworthFilter(1, dBuf.samplingRate, lowCut, highCut, sendBuf.Length);
+                    applyFilter = true;
+                }
+                if (cmd == "d")
+                {
+                    try { bR = clientStream.Read(message, 0, sizeof(Int32)); } catch { break; }; if (bR == 0) { break; }
+                    newSamplingRate = BitConverter.ToInt32(message, 0);
+                    decChunkLen = (int)((double)dataChunkLen * newSamplingRate / dBuf.samplingRate);
+                    sampleStep = (int)((double)dataChunkLen / decChunkLen);
+                    sendBuf = new byte[decChunkLen * selectedChannelsCnt * sizeof(double)];
+                    decimate = true;
                 }
                 if (cmd == "r")
                 {
+//                    now = DateTime.Now;
                     clientStatus(clientIP, "transferring");
                     if (myList == null)
                         myList = dBuf.connectClient();
@@ -132,20 +168,26 @@ namespace NeuroRighter.Networking
                         foreach (int[] newP in myList)
                             newPointsCnt = newPointsCnt + newP[1];
                     } while (newPointsCnt < dataChunkLen);
-                    int i = 0;
+                    i = 0;
                     int np = 0;
+                    double[][] tmpBuf = new double[selectedChannelsCnt][];
+                    for (int c = 0; c < selectedChannelsCnt; c++)
+                        tmpBuf[c] = new double[dataChunkLen];
                     dBuf.rwLock.EnterReadLock();
                     while (myList.Count > 0 && np < dataChunkLen)
                     {
                         int[] newP = myList[0];
                         int k;
                         for (k = newP[0]; np < dataChunkLen && k < newP[0] + newP[1]; k++, np++)
-                            for (int c = 0; c < dBuf.numChannels; c++)
-                            {
-                                byte[] tmpBuf = BitConverter.GetBytes(dBuf.data[c, k]);
-                                for (int ti = 0; ti < 8; ti++, i++)
-                                    sendBuf[i] = tmpBuf[ti];
-                            }
+                            for (int c = 0, cs = 0; c < dBuf.numChannels; c++)
+                                if (selectedChannels[c])
+                                {
+                                    tmpBuf[cs][np] = dBuf.data[k, c];
+                                    //byte[] tmpBuf = BitConverter.GetBytes(dBuf.data[k, c]);
+                                    //for (int ti = 0; ti < 8; ti++, i++)
+                                    //    sendBuf[i] = tmpBuf[ti];
+                                    cs++;
+                                }
                         if (np >= dataChunkLen && k-newP[0] > 0)
                         {
                             myList[0][0] = k;
@@ -155,17 +197,39 @@ namespace NeuroRighter.Networking
                             myList.RemoveAt(0);
                     }
                     dBuf.rwLock.ExitReadLock();
+
+                    if (applyFilter)
+                    {
+                        for (int c = 0; c < tmpBuf.GetLength(0); c++)
+                            dataFilter.filterData(tmpBuf[c]);
+                    }
+                    int copyLen;
+                    if (decimate)
+                    {
+                        for (int c = 0; c < tmpBuf.GetLength(0); c++)
+                            for (i = 0, j = 0; i < dataChunkLen; i += sampleStep, j++)
+                                tmpBuf[c][j] = tmpBuf[c][i];
+                        copyLen = decChunkLen;
+                    }
+                    else
+                        copyLen = dataChunkLen;
+                    for (int c = 0; c < tmpBuf.GetLength(0); c++)
+                        Buffer.BlockCopy(tmpBuf[c], 0, sendBuf, c * copyLen * sizeof(double), copyLen * sizeof(double));
+
                     try { clientStream.Write(sendBuf, 0, sendBuf.Length); } catch { break; };
+//                    dt.Add(DateTime.Now - now);
                     continue;
                 }
             }
             clientStatus(clientIP, "disconnected");
             if (myList != null)
                 dBuf.detachClient(myList);
-            if (tcpClient.Connected)
-                tcpClient.Client.Disconnect(false);
-            myClients.Remove(tcpClient);
+            if (((TcpClient)tcpClient).Connected)
+                ((TcpClient)tcpClient).Client.Disconnect(false);
+            myClients.Remove(((TcpClient)tcpClient));
         }
+
+
 
     }
 }

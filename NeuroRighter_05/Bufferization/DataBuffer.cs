@@ -28,14 +28,16 @@ namespace NeuroRighter.Bufferization
 
         int bufferSize;
         int freeSpaceIndex;
+        int freeSpaceIndex_byte;
 
         public DataBuffer(int numChannels, int samplingRate, int bufferLengthSec)
         {
             this.numChannels = numChannels;
             this.samplingRate = samplingRate;
             bufferSize = samplingRate * bufferLengthSec;
-            data = new double[numChannels, bufferSize * 2];
+            data = new double[bufferSize * 2, numChannels];
             freeSpaceIndex = 0;
+            freeSpaceIndex_byte = 0;
             freshData = new List<List<int[]>>();
             rwLock = new ReaderWriterLockSlim();
         }
@@ -53,13 +55,23 @@ namespace NeuroRighter.Bufferization
 
         public void yumData(double[,] newData)
         {
-            rwLock.EnterWriteLock();
             if (freeSpaceIndex > bufferSize)
+            {
                 freeSpaceIndex = 0;
-            int newDataLength = newData.GetLength(1);
-            for (int c = 0; c < numChannels; c++)
-                for (int d = 0; d < newDataLength; d++)
-                    data[c, freeSpaceIndex + d] = newData[c, d];
+                freeSpaceIndex_byte = 0;
+            }
+            int newDataLength = newData.GetLength(0);
+            int newDataLength_byte = numChannels * newDataLength * sizeof(double);
+
+//            int bufferSize_byte = bufferSize * 2 * sizeof(double);
+
+            rwLock.EnterWriteLock();
+            Buffer.BlockCopy(newData, 0, data, freeSpaceIndex_byte, newDataLength_byte);       
+//            for (int c = 0; c < numChannels; c++)
+//                Buffer.BlockCopy(newData, c * newDataLength_byte, data, c * bufferSize_byte + freeSpaceIndex_byte, newDataLength_byte);       
+//            for (int c = 0; c < numChannels; c++)
+//                for (int d = 0; d < newDataLength; d++)
+//                    data[c, freeSpaceIndex + d] = newData[c, d];
             foreach (List<int[]> freshDataList in freshData)
             {
                 if (freshDataList.Count > 0 && freshDataList.Last()[0] + freshDataList.Last()[1] == freeSpaceIndex)
@@ -67,8 +79,9 @@ namespace NeuroRighter.Bufferization
                 else
                     freshDataList.Add(new int[] { freeSpaceIndex, newDataLength });
             }
-            freeSpaceIndex = freeSpaceIndex + newDataLength;
             rwLock.ExitWriteLock();
+            freeSpaceIndex = freeSpaceIndex + newDataLength;
+            freeSpaceIndex_byte = freeSpaceIndex_byte + newDataLength_byte;
         }
 
     }

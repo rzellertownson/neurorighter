@@ -41,7 +41,7 @@ namespace NeuroRighter.Virtualization
         {
             scalingCoeffs = new double[4];
             recordTime = new short[7];
-            refreshInterval = 100;
+            refreshInterval = 50;
             isRunning = false;
         }
 
@@ -63,9 +63,10 @@ namespace NeuroRighter.Virtualization
 
         public void startPlayBack(int speedToReal)
         {
-            buf = new double[numChannels, samplingRate * refreshInterval * speedToReal / 1000];
+            buf = new double[samplingRate * refreshInterval * speedToReal / 1000, numChannels];
             isRunning = true;
-            ThreadPool.QueueUserWorkItem(new WaitCallback(playBack));            
+            Thread ratThread = new Thread(new ThreadStart(playBack));
+            ratThread.Start();
         }
 
         public void stopPlayBack()
@@ -73,9 +74,9 @@ namespace NeuroRighter.Virtualization
             isRunning = false;
         }
 
-        void playBack(object x)
+        void playBack()
         {
-            int numSamples = buf.GetLength(1);
+            int numSamples = buf.GetLength(0);
             byte[] currentSamplesBuf = new byte[numSamples * numChannels * sizeof(short)];
             short temp;
             while (isRunning && dataFile.Position < dataFile.Length)
@@ -86,7 +87,7 @@ namespace NeuroRighter.Virtualization
                     for (int c = 0; c < numChannels; c++, si += 2)
                     {
                         temp = BitConverter.ToInt16(currentSamplesBuf, si);
-                        buf[c, i] = scalingCoeffs[0] + scalingCoeffs[1] * (double)temp +
+                        buf[i, c] = scalingCoeffs[0] + scalingCoeffs[1] * (double)temp +
                                     scalingCoeffs[2] * scalingCoeffs[2] * (double)temp +
                                     scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)temp;
                     }

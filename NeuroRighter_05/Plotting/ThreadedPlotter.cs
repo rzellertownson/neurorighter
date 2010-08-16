@@ -33,15 +33,16 @@ namespace NeuroRighter.Plotting
         {
             this.dBuf = dBuf;
             myList = dBuf.connectClient();
-            numChannels = dBuf.data.GetLength(0);
+            numChannels = dBuf.numChannels;
             numPoints = pointsPerPlot;
             visBuf = new double[numChannels,numPoints * 2];
             freeSpaceIndex = 0;
             this.plot = plot;
-            ThreadPool.QueueUserWorkItem(new WaitCallback(plottingLoop));
+            Thread plotThread = new Thread(new ThreadStart(plottingLoop));
+            plotThread.Start();
         }
 
-        void plottingLoop(object x)
+        void plottingLoop()
         {
             int i, c, k;
             while (true)
@@ -55,7 +56,7 @@ namespace NeuroRighter.Plotting
                 {
                     for (k = newP[0]; k < newP[0] + newP[1]; k++, i++)
                         for (c = 0; c < numChannels; c++)
-                            visBuf[c, i] = dBuf.data[c, k];
+                            visBuf[c, i] = dBuf.data[k, c];
                 }
                 freeSpaceIndex = i;
                 if (freeSpaceIndex > numPoints)

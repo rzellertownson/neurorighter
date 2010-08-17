@@ -4647,7 +4647,7 @@ ch = 1;
         //start an experiment
         private void startPNPCL_Click(object sender, EventArgs e)
         {
-            if (pnpcl_available_dropdown.SelectedItem.Equals(null))
+            if (pnpcl_available_dropdown.SelectedItem==null)
                 MessageBox.Show("please select an experiment from the drop down menu. If no experiments are visible, hit the 'refresh' button, or double check to make sure an appropriate .dll is in the 'plugin' folder.");
             else
             {

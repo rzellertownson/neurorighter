@@ -16,12 +16,15 @@ namespace NeuroRighter
         Int32 BUFFSIZE;
         int STIM_SAMPLING_FREQ;
         int NUM_SAMPLES_BLANKING = 1;
+        StimBuffer buffer;
         #endregion
         
         #region STIM METHODS
+        //initialize the stimbuffer if you want to generate each wavestim separately
         public void initializeStim()
         {
             //stolen from JN's file2stim3 code
+            //create a stimbuffer that you can start appending to
             //Set buffer regenation mode to off and set parameters
             stimAnalogTask.Stop();
             stimDigitalTask.Stop();
@@ -36,109 +39,92 @@ namespace NeuroRighter
             //Commit the stimulation tasks
             stimAnalogTask.Control(TaskAction.Commit);
             stimDigitalTask.Control(TaskAction.Commit);
-
+            
             
         }
+
+        //initialize the stimbuffer if you want to keep adding stim commands to a buffer
+        public void initializeStim(int bufferlength, int wavelength)
+        {
+            //stolen from JN's file2stim3 code
+            //create a stimbuffer that you can start appending to
+            //Set buffer regenation mode to off and set parameters
+            stimAnalogTask.Stop();
+            stimDigitalTask.Stop();
+
+            stimAnalogTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
+            stimDigitalTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
+            stimAnalogTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
+            stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
+            stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
+            stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
+
+            //Commit the stimulation tasks
+            stimAnalogTask.Control(TaskAction.Commit);
+            stimDigitalTask.Control(TaskAction.Commit);
+            buffer = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+        }
+
         //wavestim
         public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
         {
-            int lengthWave = waveMat.GetLength(1); // Length of each stimulus waveform in samples
-             
-            //Instantiate a stimulus buffer object
-             StimBuffer stimulusbuffer = new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
-                BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+            //append the above matrix to the wavestim buffer
+            StimBuffer stimulusbuffer;
+            long samplessent;
+           
+                int lengthWave = waveMat.GetLength(1); // Length of each stimulus waveform in samples
 
-            //Populate the 1st stimulus buffer
-            stimulusbuffer.precompute();
-            stimulusbuffer.validateStimulusParameters();
-            stimulusbuffer.populateBuffer();
+                //Instantiate a stimulus buffer object
+                 stimulusbuffer = new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
+                   BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+           //below here 
+                //Populate the 1st stimulus buffer
+                stimulusbuffer.precompute();
 
-            //Write Samples to the hardware buffer
-            stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-            stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
 
-            //Populate the 2nd stimulus buffer
-            stimulusbuffer.populateBuffer();
-
-            //Write Samples to the hardware buffer
-            stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-            stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
-
-            stimDigitalTask.Start();
-            stimAnalogTask.Start();
-             long samplessent = 0;
-            while (!isCancelled && !bw.CancellationPending && stimulusbuffer.NumBuffLoadsCompleted < stimulusbuffer.NumBuffLoadsRequired)
-                    
-            {
-                //Populate the stimulus buffer
                 stimulusbuffer.populateBuffer();
 
-                // Wait for space to open in the buffer
-                samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * BUFFSIZE - samplessent > BUFFSIZE) && !isCancelled && !bw.CancellationPending)
-                {
-                    samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                }
-                if (isCancelled || bw.CancellationPending) break;
                 //Write Samples to the hardware buffer
                 stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
                 stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
-            }
-            stimAnalogTask.Stop();
-            stimDigitalTask.Stop();
-        }
-
-        //useful if you want to avoid the time taken up by generateing the stimulus buffer in the first place.
-        public void waveStim(StimBuffer stimulusbuffer)
-        {
-            //Populate the 1st stimulus buffer
-            stimulusbuffer.precompute();
-            stimulusbuffer.validateStimulusParameters();
-            stimulusbuffer.populateBuffer();
-
-            //Write Samples to the hardware buffer
-            stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-            stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
-
-            //Populate the 2nd stimulus buffer
-            stimulusbuffer.populateBuffer();
-
-            //Write Samples to the hardware buffer
-            stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-            stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
-
-            stimDigitalTask.Start();
-            stimAnalogTask.Start();
-            long samplessent = 0;
-
-            while (!isCancelled && !bw.CancellationPending && stimulusbuffer.NumBuffLoadsCompleted < stimulusbuffer.NumBuffLoadsRequired)
-            {
-                //Populate the stimulus buffer
+           
+                //Populate the 2nd stimulus buffer
                 stimulusbuffer.populateBuffer();
 
-                // Wait for space to open in the buffer
-                samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * BUFFSIZE - samplessent > BUFFSIZE) && !isCancelled && !bw.CancellationPending)
-                {
-                    samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                }
-                if (isCancelled || bw.CancellationPending) break;
                 //Write Samples to the hardware buffer
                 stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
                 stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
-            }
-            stimAnalogTask.Stop();
-            stimDigitalTask.Stop();
+
+                stimDigitalTask.Start();
+                stimAnalogTask.Start();
+                samplessent = 0;
+           
+                while (!isCancelled && !bw.CancellationPending && stimulusbuffer.NumBuffLoadsCompleted < stimulusbuffer.NumBuffLoadsRequired)
+                {
+                    //Populate the stimulus buffer
+                    stimulusbuffer.populateBuffer();
+
+                    // Wait for space to open in the buffer
+                    samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                    while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * BUFFSIZE - samplessent > BUFFSIZE) && !isCancelled && !bw.CancellationPending)
+                    {
+                        samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                    }
+                    if (isCancelled || bw.CancellationPending) break;
+                    //Write Samples to the hardware buffer
+                    stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
+                    stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
+                }
+                stimAnalogTask.Stop();
+                stimDigitalTask.Stop();
+                stimulusbuffer = null;
+           
         }
 
-        public StimBuffer makeStim(int[] timeVec, int[] channelVec, double[,] waveMat)
+        public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
         {
-            int lengthWave = waveMat.GetLength(1);
-            return new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
-                BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+ 
         }
-
-
         #endregion
 
         #region RECORD METHODS

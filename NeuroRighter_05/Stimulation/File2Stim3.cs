@@ -176,6 +176,7 @@ namespace NeuroRighter
             int percentComplete = (int)Math.Round((double)100 * (stimulusbuffer.NumBuffLoadsCompleted) / (stimulusbuffer.NumBuffLoadsRequired+1));
             bw.ReportProgress(percentComplete);
 
+
         }
 
 

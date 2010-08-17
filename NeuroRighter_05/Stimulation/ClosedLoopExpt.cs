@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 using System.Threading;
 using pnpCL;
@@ -109,12 +110,18 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
-            
-            //pnpcl = new pnpClosedLoop();
-            pnpcl.grab(this);
-            pnpcl.run();
-            //simpleExample();
-            //spikeCounter();
+            try
+            {
+                //pnpcl = new pnpClosedLoop();
+                pnpcl.grab(this);
+                pnpcl.run();
+                //simpleExample();
+                //spikeCounter();
+            }
+            catch (Exception me)
+            {
+                MessageBox.Show("error while running closed loop experiment- experiment might be using depricated methods." + me.Message);
+            }
         }
 
         #region example experiments

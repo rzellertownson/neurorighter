@@ -53,6 +53,10 @@ namespace NeuroRighter
         private uint BUFFSIZE;
         private uint LengthWave;
 
+        //RTZT3 appending edits
+        private uint outerbufferSize;
+        private uint SamplesPerStim;
+
         //Constructor to create a Stim Buffer object for use by File2Stim
         internal StimBuffer(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix, int LengthWave,
             int BUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING)
@@ -66,50 +70,69 @@ namespace NeuroRighter
             this.NUM_SAMPLES_BLANKING = (uint)NUM_SAMPLES_BLANKING;
 
         }
+        //constructor if using stim buffer in append mode
+        internal StimBuffer(int OUTERBUFFSIZE, int SamplesPerStim, int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING)
+        {
+            this.SamplesPerStim = (uint)SamplesPerStim;
+            this.outerbufferSize = (uint)OUTERBUFFSIZE;
+            this.BUFFSIZE = (uint)INNERBUFFSIZE;
+            this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
+            this.NUM_SAMPLES_BLANKING = (uint)NUM_SAMPLES_BLANKING;
+
+            //create the stimuli buffer - this is an outer buffer with a fixed number of stimuli.  This buffer is read
+            //into the inner buffer, which contains a fixed number of samples
+            this.TimeVector = new int[outerbufferSize];
+            this.ChannelVector = new int[outerbufferSize];
+            this.WaveMatrix = new double[outerbufferSize, SamplesPerStim];
+        }
 
         internal void precompute()
         {
-            // Does as much pre computation of the buffers that will be populated as possible to prevent buffer load lag and resulting DAQ exceptions
-            StimSample = new uint[TimeVector.Length];
-            AnalogEncode = new double[2, ChannelVector.Length];
-            DigitalEncode = new UInt32[3, ChannelVector.Length];
             
-            WaveLength = (uint)WaveMatrix.GetLength(1);
-            StimulusLength = (uint)(WaveLength + 2 * NUM_SAMPLES_BLANKING + 2); //length of waveform + padding on either side due to digital signaling.
+                // Does as much pre computation of the buffers that will be populated as possible to prevent buffer load lag and resulting DAQ exceptions
+                StimSample = new uint[TimeVector.Length];
+                AnalogEncode = new double[2, ChannelVector.Length];
+                DigitalEncode = new UInt32[3, ChannelVector.Length];
 
-            // Populate StimSample
-            for (int i = 0; i < StimSample.Length; i++)
-                StimSample[i] = (uint)Math.Round((double)(TimeVector[i] * (STIM_SAMPLING_FREQ / 1000)));
+                WaveLength = (uint)WaveMatrix.GetLength(1);
+                StimulusLength = (uint)(WaveLength + 2 * NUM_SAMPLES_BLANKING + 2); //length of waveform + padding on either side due to digital signaling.
 
-            // Populate AnalogEncode
-            for (int i = 0; i < AnalogEncode.GetLength(1); i++)
-            {
-                AnalogEncode[0, i] = Math.Ceiling((double)ChannelVector[i] / 8.0);
-                AnalogEncode[1, i] = (double)((ChannelVector[i] - 1) % 8) + 1.0;
-            }
+                // Populate StimSample
+                for (int i = 0; i < StimSample.Length; i++)
+                    StimSample[i] = (uint)Math.Round((double)(TimeVector[i] * (STIM_SAMPLING_FREQ / 1000)));
 
-            // Populate DigitalEncode
-            for (int i = 0; i < DigitalEncode.GetLength(1); i++)
-            {
-                DigitalEncode[0, i] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
-                DigitalEncode[1, i] = channel2MUX_noEN((double)ChannelVector[i]);
-                DigitalEncode[2, i] = channel2MUX((double)ChannelVector[i]);
-                
-            }
+                // Populate AnalogEncode
+                for (int i = 0; i < AnalogEncode.GetLength(1); i++)
+                {
+                    AnalogEncode[0, i] = Math.Ceiling((double)ChannelVector[i] / 8.0);
+                    AnalogEncode[1, i] = (double)((ChannelVector[i] - 1) % 8) + 1.0;
+                }
+                 
+           
+                // Populate DigitalEncode
+                for (int i = 0; i < DigitalEncode.GetLength(1); i++)
+                {
+                    
+                        DigitalEncode[0, i] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
+                        DigitalEncode[1, i] = channel2MUX_noEN((double)ChannelVector[i]);
+                        DigitalEncode[2, i] = channel2MUX((double)ChannelVector[i]);
+                    
 
-            // What are the buffer offset settings for this system?
-            NumAOChannels = 2;
-            RowOffset = 0;
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-            {
-                NumAOChannels = 4;
-                RowOffset = 2;
-            }
+                }
+            
+                // What are the buffer offset settings for this system?
+                NumAOChannels = 2;
+                RowOffset = 0;
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                {
+                    NumAOChannels = 4;
+                    RowOffset = 2;
+                }
 
-            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
-            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
-
+                //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
+                //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
+                NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
+           
         }
         
         internal void validateStimulusParameters()

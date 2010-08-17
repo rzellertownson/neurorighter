@@ -16,7 +16,7 @@ namespace RileyClosedLoops
         StreamWriter w;
 
         //stim params
-        static int nostim = 1;
+        static int nostim = 10;
         static int wavedur = 100;
 
         int[] timevec = new int[nostim];
@@ -59,8 +59,7 @@ namespace RileyClosedLoops
 
 
                 regen();
-                StimBuffer standard = CLE.makeStim(timevec,channelvec,wavemat);
-                StimBuffer mixed;
+                CLE.initializeStim();
                 //MessageBox.Show("gate 1");
                 w.WriteLine(DateTime.Now.TimeOfDay.ToString() + ":first stimbuff generated");
                 int count = 0;
@@ -70,14 +69,13 @@ namespace RileyClosedLoops
                     CLE.clearWaves();
                     CLE.wait(1000);
                     w.WriteLine(DateTime.Now.TimeOfDay.ToString() + ":wait done " );
-                    CLE.waveStim(standard);
+                    CLE.waveStim(timevec, channelvec, wavemat);
                     w.WriteLine( DateTime.Now.TimeOfDay.ToString() + ":stim a "+(count).ToString());
                    // MessageBox.Show("gate 2");
                     
                     
                     regen();
-                    mixed = CLE.makeStim(timevec, channelvec, wavemat);
-                    CLE.waveStim(mixed);
+                    CLE.waveStim(timevec, channelvec, wavemat);
                     w.WriteLine("" + DateTime.Now.TimeOfDay.ToString() + ":stim b " + (count).ToString());
                   //  MessageBox.Show("gate 3");
 
@@ -110,7 +108,7 @@ namespace RileyClosedLoops
                 }
                 timevec[i] = current;
                 current += 10;
-                channelvec[i] = r.Next(64);
+                channelvec[i] = r.Next(64)+1;
             }
            // MessageBox.Show("gate0.2");
 

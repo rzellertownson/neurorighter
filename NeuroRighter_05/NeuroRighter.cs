@@ -121,6 +121,7 @@ namespace NeuroRighter
         private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA
         private SALPA2 SALPAFilter;
+        private bool skipSecondVal;
         private int numChannels;
         private int numChannelsPerDev;
         private int[] currentRef;
@@ -1248,8 +1249,14 @@ namespace NeuroRighter
             #endregion
 
             #region SALPA Filtering
-            if (checkBox_SALPA.Checked)
+            if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
+            {
+                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, 0);
+            }
+            else if (checkBox_SALPA.Checked)
+            {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
+            }
             #endregion SALPA Filtering
 
             #region SpikeFiltering
@@ -1298,9 +1305,8 @@ namespace NeuroRighter
 
             #region SpikeValidation
             double Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
-            int numSamplesPeak = (int)Math.Ceiling(0.0005*Fs); //Search the first half millisecond after thresh crossing
-            int numSamplesToSearch = 64;
-            if ((numPre + numPost + 1) < numSamplesToSearch) numSamplesToSearch = (numPre + numPost + 1);
+            int numSamplesPeak = (int)Math.Ceiling(0.0005*Fs); //Search the first half millisecond after thresh crossing      
+            int numSamplesToSearch = (numPre + numPost + 1);
 
             if (checkBox_spikeValidation.Checked)
             {
@@ -1321,12 +1327,12 @@ namespace NeuroRighter
 
                     //Find peak
                     double maxVal = 0.0;
-                    for (int k = 0; k < numSamplesPeak; ++k)
+                    for (int k = numPre; k < numPre+numSamplesPeak; ++k)
                     {
-                        if (Math.Abs(newWaveforms[w].waveform[k + numPre]) > maxVal)
-                            maxVal = Math.Abs(newWaveforms[w].waveform[k + numPre]);
+                        if (Math.Abs(newWaveforms[w].waveform[k ]) > maxVal)
+                            maxVal = Math.Abs(newWaveforms[w].waveform[k]);
                     }
-                    //Search pts. before and after for bigger, disqualifying if there are larger peaks
+                    //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
                     if (maxVal > 1e-6*Convert.ToDouble(textBox_AbsArtThresh.Text))
                         {
                             newWaveforms.RemoveAt(w);
@@ -1334,16 +1340,34 @@ namespace NeuroRighter
                         }
                     else
                     {
-                        for (int k = 0; k < numSamplesToSearch; ++k)
+                        skipSecondVal = false;
+
+                        for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
                         {
 
-                            if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
+                            if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
                             {
                                 newWaveforms.RemoveAt(w);
                                 --w;
+                                skipSecondVal = true;
                                 break;
                             }
                       
+                        }
+
+                        if (!skipSecondVal)
+                        {
+                            for (int k = 0; k < numPre; ++k)
+                            {
+
+                                if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
+                                {
+                                    newWaveforms.RemoveAt(w);
+                                    --w;
+                                    break;
+                                }
+
+                            }
                         }
                     }
 

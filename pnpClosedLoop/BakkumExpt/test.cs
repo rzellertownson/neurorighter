@@ -107,7 +107,7 @@ namespace RileyClosedLoops
                     wavemat[i, j] = wave[j];
                 }
                 timevec[i] = current;
-                current += 10;
+                current += 10;  
                 channelvec[i] = r.Next(64)+1;
             }
            // MessageBox.Show("gate0.2");

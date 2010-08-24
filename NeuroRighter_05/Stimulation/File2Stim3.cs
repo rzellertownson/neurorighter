@@ -163,7 +163,7 @@ namespace NeuroRighter
 
             // Wait for space to open in the buffer
             samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-            while ((stimulusbuffer.NumBuffLoadsCompleted-1) * BUFFSIZE - samplessent > BUFFSIZE)
+            while ((stimulusbuffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - (ulong)samplessent > (ulong)BUFFSIZE)
             {
                 samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
             }

@@ -67,6 +67,7 @@ namespace NeuroRighter
         {
             isCancelled = true;
             bw.CancelAsync();
+            
         }
 
         internal void linkToSpikes(NeuroRighter nr) { nr.spikesAcquired += new NeuroRighter.spikesAcquiredHandler(spikeAcquired); }
@@ -98,6 +99,7 @@ namespace NeuroRighter
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (AlertAllFinished != null) AlertAllFinished(this);
+            pnpcl.close();
         }
 
         void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)

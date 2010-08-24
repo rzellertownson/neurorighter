@@ -16,7 +16,7 @@ namespace NeuroRighter
         Int32 BUFFSIZE;
         int STIM_SAMPLING_FREQ;
         int NUM_SAMPLES_BLANKING = 1;
-        StimBuffer buffer;
+        private StimBuffer buffer;
         #endregion
         
         #region STIM METHODS
@@ -44,6 +44,8 @@ namespace NeuroRighter
         }
 
         //initialize the stimbuffer if you want to keep adding stim commands to a buffer
+        //bufferlength- size of the wavestim array (ie, the number of individual stimuli that can be stored and ready to go)
+        //wavelength- the size of each waveform sent (this will put an upper limit on stimulation frequency as well as a limit on waveform length)
         public void initializeStim(int bufferlength, int wavelength)
         {
             //stolen from JN's file2stim3 code
@@ -62,22 +64,24 @@ namespace NeuroRighter
             //Commit the stimulation tasks
             stimAnalogTask.Control(TaskAction.Commit);
             stimDigitalTask.Control(TaskAction.Commit);
-            buffer = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+            buffer = new StimBuffer(bufferlength, wavelength, BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+            
+        
         }
 
         //wavestim
         public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
         {
-            //append the above matrix to the wavestim buffer
+            
             StimBuffer stimulusbuffer;
-            long samplessent;
+            ulong samplessent;
            
                 int lengthWave = waveMat.GetLength(1); // Length of each stimulus waveform in samples
 
                 //Instantiate a stimulus buffer object
                  stimulusbuffer = new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
                    BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
-           //below here 
+          
                 //Populate the 1st stimulus buffer
                 stimulusbuffer.precompute();
 
@@ -105,10 +109,10 @@ namespace NeuroRighter
                     stimulusbuffer.populateBuffer();
 
                     // Wait for space to open in the buffer
-                    samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                    while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * BUFFSIZE - samplessent > BUFFSIZE) && !isCancelled && !bw.CancellationPending)
+                    samplessent = (ulong) stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                    while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - samplessent > (ulong)BUFFSIZE) && !isCancelled && !bw.CancellationPending)
                     {
-                        samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                        samplessent = (ulong) stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
                     }
                     if (isCancelled || bw.CancellationPending) break;
                     //Write Samples to the hardware buffer
@@ -123,7 +127,26 @@ namespace NeuroRighter
 
         public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
         {
- 
+            buffer.append(timeVec, channelVec, waveMat);
+        }
+
+        public uint availableBufferSpace()
+        {
+            return buffer.availableBufferSpace();
+        }
+
+        public bool StimRunning()
+        {
+            return buffer.running;
+        }
+        public void stimBuffStart()
+        {
+            buffer.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask);
+        }
+
+        public void stimBuffStop()
+        {
+            buffer.stop();
         }
         #endregion
 

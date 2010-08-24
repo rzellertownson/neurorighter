@@ -4640,7 +4640,7 @@ ch = 1;
             experiments = pnpclFinder.find();
             pnpcl_available_dropdown.Items.Clear();
             foreach (pnpClosedLoopAbs exp in experiments)
-                pnpcl_available_dropdown.Items.Add(exp);
+                pnpcl_available_dropdown.Items.Add(exp.ToString());
 
         }
 
@@ -4698,22 +4698,36 @@ ch = 1;
 
                 //create the closed loop experiment
                 //pnpClosedLoopAbs pnpcl1 = new pnpClosedLoop();
-                pnpClosedLoopAbs pnpcl = (pnpClosedLoopAbs) pnpcl_available_dropdown.SelectedItem;
-                CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter, pnpcl);
-                //MessageBox.Show(pnpcl1.ToString());
-                CLE.linkToSpikes(this);
-                //start recording
-                buttonStart.PerformClick();
-                CLE.AlertProgChanged += new ClosedLoopExpt.ProgressChangedHandler(clProgressChangedHandler);
-                CLE.AlertAllFinished += new ClosedLoopExpt.AllFinishedHandler(clFinisheddHandler);
-                //start the closed loop experiment
-                CLE.start();
-                startPNPCL.Enabled = false;
-                stopPNPCL.Enabled = true;
 
-                progressBar_pnpcl.Minimum = 0;
-                progressBar_pnpcl.Maximum = 100;
-                progressBar_pnpcl.Value = 0;
+                experiments = pnpclFinder.find();
+                if (pnpcl_available_dropdown.SelectedIndex < experiments.ToArray().GetLength(0))
+                {
+                    pnpClosedLoopAbs pnpcl = experiments[pnpcl_available_dropdown.SelectedIndex];
+                    string name = pnpcl.ToString();
+                    string oldname = pnpcl_available_dropdown.SelectedItem.ToString();
+                    bool works = ((name).Equals(oldname) );
+                    if (works)
+                    {
+                        //pnpClosedLoopAbs pnpcl = (pnpClosedLoopAbs) pnpcl_available_dropdown.SelectedItem;
+                        CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter, pnpcl);
+                        //MessageBox.Show(pnpcl1.ToString());
+                        CLE.linkToSpikes(this);
+                        //start recording
+                        buttonStart.PerformClick();
+                        CLE.AlertProgChanged += new ClosedLoopExpt.ProgressChangedHandler(clProgressChangedHandler);
+                        CLE.AlertAllFinished += new ClosedLoopExpt.AllFinishedHandler(clFinisheddHandler);
+                        //start the closed loop experiment
+                        CLE.start();
+                        startPNPCL.Enabled = false;
+                        stopPNPCL.Enabled = true;
+
+                        progressBar_pnpcl.Minimum = 0;
+                        progressBar_pnpcl.Maximum = 100;
+                        progressBar_pnpcl.Value = 0;
+                        return;
+                    }
+                }
+                MessageBox.Show("reload experiments- the experiment you selected (" + pnpcl_available_dropdown.SelectedItem + ") is no longer showing up in the same place");
             }
         }
 
@@ -4753,6 +4767,9 @@ ch = 1;
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
             updateSettings();
+
+
+            CLE = null;
         }
 
         //callbacks:  progress changed and experiment finished before cancelation.

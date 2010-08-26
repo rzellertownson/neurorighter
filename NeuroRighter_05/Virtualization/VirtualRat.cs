@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.IO;
+using System.ComponentModel;
 
 namespace NeuroRighter.Virtualization
 {
@@ -27,21 +28,28 @@ namespace NeuroRighter.Virtualization
         public short[] recordTime;
         public long duration;
 
-        public delegate void dataAcquiredHandler(object sender);
-        public event dataAcquiredHandler dataAcquired;
+        //public delegate void dataAcquiredHandler(VirtualRat sender);
+        //public event dataAcquiredHandler dataAcquired;
+        public event DoWorkEventHandler dataAcquired;
+        public delegate void playbackStatusHandler(VirtualRat sender);
+        public event playbackStatusHandler playbackStatus;
 
+        Thread ratThread;
         FileStream dataFile;
         int gain;
         double[] scalingCoeffs;
-
         int refreshInterval;
-        bool isRunning;
+        int chunkLen_msec;
+        
+        public bool isRunning;
+        public int currentTime;
 
         public VirtualRat()
         {
             scalingCoeffs = new double[4];
             recordTime = new short[7];
             refreshInterval = 50;
+            currentTime = 0;
             isRunning = false;
         }
 
@@ -61,11 +69,14 @@ namespace NeuroRighter.Virtualization
                 recordTime[i] = BitConverter.ToInt16(header, 40 + i * 2);
         }
 
-        public void startPlayBack(int speedToReal)
+        public void startPlayBack(int startTime_msec, int speedToReal)
         {
-            buf = new double[samplingRate * refreshInterval * speedToReal / 1000, numChannels];
+            chunkLen_msec = refreshInterval * speedToReal;
+            buf = new double[(int)((double)samplingRate * chunkLen_msec / 1000), numChannels];
+            currentTime = startTime_msec;
+            dataFile.Seek(54 + (int)((double)samplingRate * startTime_msec / 1000) * numChannels * sizeof(short), SeekOrigin.Begin);
             isRunning = true;
-            Thread ratThread = new Thread(new ThreadStart(playBack));
+            ratThread = new Thread(new ThreadStart(playBack));
             ratThread.Start();
         }
 
@@ -91,9 +102,14 @@ namespace NeuroRighter.Virtualization
                                     scalingCoeffs[2] * scalingCoeffs[2] * (double)temp +
                                     scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)temp;
                     }
-                dataAcquired(this);
+                //dataAcquired(this);
+                dataAcquired(this, null);
+                currentTime += chunkLen_msec;
+                playbackStatus(this);
                 Thread.Sleep(refreshInterval);
             }
+            isRunning = false;
+            playbackStatus(this);
         }
 
     }

@@ -66,7 +66,7 @@ namespace NeuroRighter.Bufferization
 //            int bufferSize_byte = bufferSize * 2 * sizeof(double);
 
             rwLock.EnterWriteLock();
-            Buffer.BlockCopy(newData, 0, data, freeSpaceIndex_byte, newDataLength_byte);       
+            Buffer.BlockCopy(newData, 0, data, freeSpaceIndex_byte, newDataLength_byte);
 //            for (int c = 0; c < numChannels; c++)
 //                Buffer.BlockCopy(newData, c * newDataLength_byte, data, c * bufferSize_byte + freeSpaceIndex_byte, newDataLength_byte);       
 //            for (int c = 0; c < numChannels; c++)

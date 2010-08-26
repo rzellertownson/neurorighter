@@ -1,9 +1,6 @@
-C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\NeuroRighter.exe.config
-C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\Interop.CWUIControlsLib.dll
-C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\AxInterop.CWUIControlsLib.dll
-C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\NeuroRighter_05.csproj.ResolveComReference.cache
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\Miscellaneous\gpl.txt
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\NeuroRighter_v04.ico
+C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\NeuroRighter.exe.config
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\NeuroRighter.exe
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\NeuroRighter.pdb
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\csmatio.dll
@@ -13,6 +10,9 @@ C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\Interop.CWUIControlsLib.dll
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\bin\Debug\AxInterop.CWUIControlsLib.dll
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\NeuroRighter_05.csproj.ResolveComReference.cache
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\NeuroRighter.AboutBox.resources
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\NeuroRighter.DisplaySettings.resources
 C:\Documents and Settings\ringo-ring\Desktop\NeuroRighter\branches\NeuroRighter_matlab\NeuroRighter_05\obj\Debug\NeuroRighter.HardwareSettings.resources

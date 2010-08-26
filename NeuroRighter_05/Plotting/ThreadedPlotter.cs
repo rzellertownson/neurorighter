@@ -28,6 +28,7 @@ namespace NeuroRighter.Plotting
         int freeSpaceIndex;
         int numChannels, numPoints;
         RowGraph plot;
+        Thread plotThread;
 
         public ThreadedPlotter(DataBuffer dBuf, int pointsPerPlot, RowGraph plot)
         {
@@ -38,7 +39,7 @@ namespace NeuroRighter.Plotting
             visBuf = new double[numChannels,numPoints * 2];
             freeSpaceIndex = 0;
             this.plot = plot;
-            Thread plotThread = new Thread(new ThreadStart(plottingLoop));
+            plotThread = new Thread(new ThreadStart(plottingLoop));
             plotThread.Start();
         }
 

@@ -77,7 +77,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="Matlab\loadraw.mexw32" />
     <None Include="Matlab\loadspike.mexw32" />
@@ -126,6 +125,7 @@
     <Compile Include="Impedance\ImpedanceMeasurer.cs" />
     <Compile Include="Matlab\NRLab.cs" />
     <Compile Include="Miscellaneous\MEAChannelMappings.cs" />
+    <Compile Include="Networking\SignalClient.cs" />
     <Compile Include="Networking\SignalServer.cs" />
     <Compile Include="NeuroRighter.cs">
       <SubType>Form</SubType>
@@ -243,6 +243,7 @@
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="app.config" />
     <None Include="Resources\logo_sigserv.PNG" />
     <None Include="Resources\logo_rat.JPG" />
   </ItemGroup>

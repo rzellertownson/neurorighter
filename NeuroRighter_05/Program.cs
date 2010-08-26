@@ -33,6 +33,7 @@ namespace NeuroRighter
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new NeuroRighter());
+            Environment.Exit(0);
         }
     }
 }

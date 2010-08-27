@@ -28,23 +28,22 @@ namespace NeuroRighter.Networking
         public delegate void clientStatusHandler(string clientIP, string status);
         public event clientStatusHandler clientStatus;
 
-        DataBuffer dBuf;
-        TcpListener tcpListener;
+        public DataBuffer dRawBuffer, dLFPBuffer;
+        public getBuffer getBuf;
 
+        TcpListener tcpListener;
         Thread listenThread;
         List<SignalClient> myClients;
 
         private volatile bool shouldStop;
 
-        public SignalServer(int port)
+        public SignalServer(int port, getBuffer getBuf)
         {
+            this.getBuf = getBuf;
+            dRawBuffer = null;
+            dLFPBuffer = null;
             tcpListener = new TcpListener(IPAddress.Any, port);
             myClients = new List<SignalClient>();
-        }
-
-        public void connectBuffer(DataBuffer dataBuf)
-        {
-            this.dBuf = dataBuf;
         }
 
         public void startListening()
@@ -65,15 +64,21 @@ namespace NeuroRighter.Networking
         private void waitingForClients()
         {
             tcpListener.Start();
-            while (true)
+            try
             {
-                while (!tcpListener.Pending() && !shouldStop)
-                    Thread.Sleep(10);
-                if (shouldStop)
-                    break;
-                SignalClient client = new SignalClient(tcpListener.AcceptTcpClient(), this, dBuf);
+                while (true)
+                {
+                    while (!tcpListener.Pending() && !shouldStop)
+                        Thread.Sleep(10);
+                    if (shouldStop)
+                        break;
+                    SignalClient client = new SignalClient(tcpListener.AcceptTcpClient(), this);
+                }
+                tcpListener.Stop();
             }
-            tcpListener.Stop();
+            finally
+            {
+            }
         }
 
         public void reportStatus(string clientIP, string status)

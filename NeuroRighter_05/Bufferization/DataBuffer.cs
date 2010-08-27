@@ -17,7 +17,10 @@ using System.Threading;
 
 namespace NeuroRighter.Bufferization
 {
-    class DataBuffer
+    public enum DataType { raw, lfp };
+    public delegate DataBuffer getBuffer(DataType bufferType);
+
+    public class DataBuffer
     {
         public double[,] data;
         public List<List<int[]>> freshData;

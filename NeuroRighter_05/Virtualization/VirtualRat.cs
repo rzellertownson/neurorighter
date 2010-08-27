@@ -16,11 +16,15 @@ using System.Text;
 using System.Threading;
 using System.IO;
 using System.ComponentModel;
+using NeuroRighter.Bufferization;
 
 namespace NeuroRighter.Virtualization
 {
+
     class VirtualRat
     {
+
+        public DataType dataType;
 
         public double[,] buf;
         public int numChannels;
@@ -28,8 +32,6 @@ namespace NeuroRighter.Virtualization
         public short[] recordTime;
         public long duration;
 
-        //public delegate void dataAcquiredHandler(VirtualRat sender);
-        //public event dataAcquiredHandler dataAcquired;
         public event DoWorkEventHandler dataAcquired;
         public delegate void playbackStatusHandler(VirtualRat sender);
         public event playbackStatusHandler playbackStatus;
@@ -55,6 +57,15 @@ namespace NeuroRighter.Virtualization
 
         public void loadRecordedData(string filename)
         {
+            switch ((new FileInfo(filename)).Extension)
+            {
+                case ".raw": dataType = DataType.raw;
+                    break;
+                case ".lfp": dataType = DataType.lfp;
+                    break;
+                default:
+                    return;
+            }
             dataFile = File.OpenRead(filename);
             byte[] header = new byte[54];
             dataFile.Read(header, 0, 54);
@@ -69,8 +80,9 @@ namespace NeuroRighter.Virtualization
                 recordTime[i] = BitConverter.ToInt16(header, 40 + i * 2);
         }
 
-        public void startPlayBack(int startTime_msec, int speedToReal)
+        public void startPlayBack(int startTime_msec, int speedToReal, double refreshRate)
         {
+            refreshInterval = (int)(refreshRate * 1000);
             chunkLen_msec = refreshInterval * speedToReal;
             buf = new double[(int)((double)samplingRate * chunkLen_msec / 1000), numChannels];
             currentTime = startTime_msec;
@@ -102,7 +114,6 @@ namespace NeuroRighter.Virtualization
                                     scalingCoeffs[2] * scalingCoeffs[2] * (double)temp +
                                     scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)temp;
                     }
-                //dataAcquired(this);
                 dataAcquired(this, null);
                 currentTime += chunkLen_msec;
                 playbackStatus(this);

@@ -182,7 +182,7 @@ namespace NeuroRighter
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
         #endregion
 
-        DataBuffer dBuf;
+        DataBuffer dRawBuf, dLFPBuf;
         bool simulationRunning = false;
 
         #region Constructor
@@ -298,6 +298,9 @@ namespace NeuroRighter
 
             //Set default for closed-loop follower expt.
             comboBox_ClosedLoopFollowerAlgorithm.SelectedIndex = 0;
+
+            dRawBuf = null;
+            dLFPBuf = null;
         }
         #endregion
 
@@ -927,10 +930,6 @@ namespace NeuroRighter
                         BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, DEVICE_REFRESH, spikeTask[0],
                             Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
-                    // Create LFP buffer
-
-                    dBuf = new DataBuffer(Convert.ToInt32(comboBox_numChannels.SelectedItem), lfpSamplingRate, 15);
-
                     //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
                     if (checkBox_video.Checked)
                     {
@@ -1159,6 +1158,9 @@ namespace NeuroRighter
             Object[] state;
             int taskNumber;
 
+            if (!taskRunning && ((VirtualRat)sender).dataType != DataType.raw)
+                return;
+
             if (!simulationRunning)
             {
                 state = (Object[])e.Argument;
@@ -1200,6 +1202,14 @@ namespace NeuroRighter
                         filtSpikeData[i][j] = Rat.buf[j, i];
             }
 
+            if (dRawBuf != null)
+            {
+                double[,] newRawData = new double[spikeBufferLength, numChannelsPerDev];
+                for (int j = 0; j < spikeBufferLength; j++)
+                    for (int i = 0; i < numChannelsPerDev; i++)
+                        newRawData[j, i] = filtSpikeData[i][j];
+                dRawBuf.yumData(newRawData);
+            }
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -1269,13 +1279,13 @@ namespace NeuroRighter
 
                 // Post to LFP data buffer
                 #region LFP_bufferization
-                if (dBuf != null)
+                if (dLFPBuf != null)
                 {
-                    double[,] newData = new double[finalLFPData[0].Length, dBuf.numChannels];
+                    double[,] newData = new double[finalLFPData[0].Length, dLFPBuf.numChannels];
                     for (int j = 0; j < newData.GetLength(0); j++)
                         for (int i = 0; i < newData.GetLength(1); i++)
                             newData[j, i] = finalLFPData[i][j];
-                    dBuf.yumData(newData);
+                    dLFPBuf.yumData(newData);
                 }
                 #endregion
 
@@ -1478,7 +1488,8 @@ namespace NeuroRighter
             }
             #endregion
 
-            e.Result = taskNumber;
+            if (!simulationRunning && e != null)
+                e.Result = taskNumber;
         }
 
         internal delegate void spikesAcquiredHandler(object sender, bool inTrigger);
@@ -1601,13 +1612,13 @@ namespace NeuroRighter
 
                     // Post to LFP data buffer
                     #region LFP_bufferization
-                    if (dBuf != null)
+                    if (dLFPBuf != null)
                     {
                         double[,] newData = new double[lfpBufferLength, numChannels];
                         for (int j = 0; j < lfpBufferLength; j++)
                             for (int i = 0; i < numChannels; i++)
                                 newData[j, i] = filtLFPData[i][j];
-                        dBuf.yumData(newData);
+                        dLFPBuf.yumData(newData);
                     }
                     #endregion
 
@@ -2187,12 +2198,14 @@ namespace NeuroRighter
             spkWfmGraph.BringToFront();
             spkWfmGraph.Dock = DockStyle.Fill;
 
+            double wfmLength = numPre + numPost + 1;
+
             //Adjust ranges
             if (spikeTask != null && spikeTask[0] != null)
-            {
-                double wfmLength = numPre + numPost + 1;
                 spkWfmGraph.setMinMax(1, (float)(numCols * wfmLength), (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
-            }
+            else
+                spkWfmGraph.setMinMax(1, (float)(numCols * wfmLength), (float)(-10 * (numRows * 2 - 1)), (float)(10));
+
             //spkWfmGraph.clear();
         }
         private void resetReferencers()
@@ -4665,10 +4678,44 @@ ch = 1;
         }
         #endregion
 
+        #region Bufferization
+
+        public DataBuffer requestBuffer(DataType bufferType)
+        {
+            switch (bufferType)
+            {
+                case DataType.lfp:
+                    if (dLFPBuf == null)
+                        dLFPBuf = new DataBuffer(numChannels, lfpSamplingRate, 15);
+                    return dLFPBuf;
+                case DataType.raw:
+                    if (dRawBuf == null)
+                        dRawBuf = new DataBuffer(numChannels, spikeSamplingRate, 5);
+                    return dRawBuf;
+                default:
+                    return null;
+            }
+        }
+
+        public void clearBuffer(DataType bufferType)
+        {
+            switch (bufferType)
+            {
+                case DataType.lfp:
+                    dLFPBuf = null;
+                    break;
+                case DataType.raw:
+                    dRawBuf = null;
+                    break;
+            }
+        }
+
+        #endregion
+
         #region Virtual_Rat
 
         VirtualRat rat;
-        ThreadedPlotter tdP;
+//        ThreadedPlotter tdP;
 
         private void playback_fbrowse_Click(object sender, EventArgs e)
         {
@@ -4678,7 +4725,7 @@ ch = 1;
             {
                 playback_fname.Text = ofd.FileName;
                 rat = new VirtualRat();
-                //rat.dataAcquired += new VirtualRat.dataAcquiredHandler(virtualCallback_LFP);
+                rat.dataAcquired += new DoWorkEventHandler(virtualCallback_LFP);
                 rat.dataAcquired += new DoWorkEventHandler(bwSpikes_DoWork);
                 rat.playbackStatus += new VirtualRat.playbackStatusHandler(rat_playbackStatus);
                 rat.loadRecordedData(playback_fname.Text);
@@ -4702,324 +4749,297 @@ ch = 1;
 
         private void playbackStart()
         {
-            dBuf = new DataBuffer(rat.numChannels, rat.samplingRate, 15);
-            setupGraphs();
+            lfpSamplingRate = spikeSamplingRate = rat.samplingRate;
+            numChannels = rat.numChannels;
+            requestBuffer(rat.dataType);
+            preparePlayback();
             simulationRunning = true;
-            rat.startPlayBack((int)(double.Parse(playback_startTime.Text) * 1000), int.Parse(playback_speed.Text));
+            rat.startPlayBack((int)(double.Parse(playback_startTime.Text) * 1000), int.Parse(playback_speed.Text), DEVICE_REFRESH);
             playback_control.Text = "Stop simulation";
         }
 
-        private void setupGraphs()
+        private void preparePlayback()
         {
+            int downsample, numRows, numCols;
+            const double spikeplotlength = 0.25; //in seconds
+            switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
+            {
+                case 16:
+                    numRows = numCols = 4;
+                    downsample = 10;
+                    break;
+                case 32:
+                    numRows = numCols = 6;
+                    downsample = 15;
+                    break;
+                case 64:
+                    numRows = numCols = 8;
+                    downsample = 20; //if this gets really small, LFP data won't plot
+                    break;
+                default:
+                    numRows = numCols = 4;
+                    downsample = 5;
+                    break;
+            }
 
+            int scaleMax = 10;
+            int scaleMin = -10;
 
+            if (rat.dataType == DataType.lfp)
+            {
+                if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                lfpGraph = new RowGraph();
+                lfpGraph.setup(rat.numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * rat.samplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                    5.0, 10 * 2.0);
+                lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * rat.samplingRate / downsample) / DEVICE_REFRESH) - 1,
+                    (float)(-10 * (rat.numChannels * 2 - 1)), (float)(10));
+                lfpGraph.Dock = DockStyle.Fill;
+                lfpGraph.Parent = tabPage_LFPs;
 
+                lfpPlotData = new PlotDataRows(rat.numChannels, downsample, rat.samplingRate * 5, rat.samplingRate,
+                    (float)10 * 2F, 0.5, 5, DEVICE_REFRESH);
+                lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
+                lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
 
+                lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
 
-{
-                    // Modify the UI, so user doesn't try running multiple instances of tasks
-                    this.Cursor = Cursors.WaitCursor;
-                    buttonStop.Enabled = true;
-                    buttonStart.Enabled = false;
-                    comboBox_numChannels.Enabled = false;
-                    numPreSamples.Enabled = false;
-                    numPostSamples.Enabled = false;
-                    settingsToolStripMenuItem.Enabled = false;
-                    comboBox_SpikeGain.Enabled = false;
-                    button_Train.Enabled = false;
-                    checkBox_SaveRawSpikes.Enabled = false;
-                    switch_record.Enabled = false;
-                    processingSettingsToolStripMenuItem.Enabled = false;
-                    button_spikeSamplingRate.PerformClick(); // updata samp freq
-                    textBox_spikeSamplingRate.Enabled = false;
-                    button_lfpSamplingRate.PerformClick();
-                    textBox_lfpSamplingRate.Enabled = false;
-                    textBox_MUASamplingRate.Enabled = false;
-                    if (Properties.Settings.Default.SeparateLFPBoard)
-                        comboBox_LFPGain.Enabled = false;
+                /*
+                if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                lfpGraph = new RowGraph();
+                lfpGraph.setup(rat.numChannels, rat.samplingRate * 5, 5.0, 200);
+                //lfpGraph.setMinMax(0, 5 * rat.samplingRate, -0.1F, 0.1F);
+                lfpGraph.setMinMax(0, 5 * rat.samplingRate, (float)(-100 * (rat.numChannels * 2 - 1)), (float)100);
+                lfpGraph.Dock = DockStyle.Fill;
+                lfpGraph.Parent = tabPage_LFPs;
+                lfpGraph.setDisplayGain(1);
+                tdP = new ThreadedPlotter(dBuf, rat.samplingRate * 5, lfpGraph);
+                */
+            }
+            if (rat.dataType == DataType.raw)
+            {
+                this.Cursor = Cursors.WaitCursor;
+                buttonStop.Enabled = true;
+                buttonStart.Enabled = false;
+                comboBox_numChannels.Enabled = false;
+                numPreSamples.Enabled = false;
+                numPostSamples.Enabled = false;
+                settingsToolStripMenuItem.Enabled = false;
+                comboBox_SpikeGain.Enabled = false;
+                button_Train.Enabled = false;
+                checkBox_SaveRawSpikes.Enabled = false;
+                switch_record.Enabled = false;
+                processingSettingsToolStripMenuItem.Enabled = false;
+                button_spikeSamplingRate.PerformClick(); // updata samp freq
+                textBox_spikeSamplingRate.Enabled = false;
+                button_lfpSamplingRate.PerformClick();
+                textBox_lfpSamplingRate.Enabled = false;
+                textBox_MUASamplingRate.Enabled = false;
+                if (Properties.Settings.Default.SeparateLFPBoard)
+                    comboBox_LFPGain.Enabled = false;
 
-                    //Create new tasks
-                    int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
-                    for (int i = 0; i < numDevices; ++i)
-                    {
-                        //Create virtual channels for analog input
-                        numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
-                    }
+                int taskCount = 1;
 
-                    int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
+                int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
+                numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
+                int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
 
-                    //Add EEG channels, if configured
-                    if (Properties.Settings.Default.UseEEG)
-                    {
-                        comboBox_eegNumChannels.Enabled = false;
-                        comboBox_eegGain.Enabled = false;
-                        textBox_eegSamplingRate.Enabled = false;
-                        eegSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
-                    }
-                    
-                    //Get sampling rates, set to private variables
-                    spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                    lfpSamplingRate = Convert.ToInt32(textBox_lfpSamplingRate.Text);
+                //Add EEG channels, if configured
+                if (Properties.Settings.Default.UseEEG)
+                {
+                    comboBox_eegNumChannels.Enabled = false;
+                    comboBox_eegGain.Enabled = false;
+                    textBox_eegSamplingRate.Enabled = false;
+                    eegSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
+                }
 
-                    #region Setup_Plotting
-                    /**************************************************
-                    /*   Setup plotting
-                    /**************************************************/
-                    if (Properties.Settings.Default.UseEEG)
-                    {
-                        eegGraph.ClearData();
-                        eegGraph.Plots.RemoveAll();
-                        eegGraph.Plots.Add();
-                        eegGraph.Plots.Item(1).YAxis.SetMinMax(eegTask.AIChannels.All.RangeLow * (Convert.ToInt32(comboBox_eegNumChannels.SelectedItem) * 2 - 1),
-                            eegTask.AIChannels.All.RangeHigh);
-                        eegDownsample = 2;
-                        eegDisplayGain = 1;
-                        eegBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 4);
+                //Get sampling rates, set to private variables
+                spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
+                lfpSamplingRate = Convert.ToInt32(textBox_lfpSamplingRate.Text);
 
-                        setupEEGOffset();
-                    }
+                /**************************************************
+                /*   Setup plotting
+                /**************************************************/
+                if (Properties.Settings.Default.UseEEG)
+                {
+                    eegGraph.ClearData();
+                    eegGraph.Plots.RemoveAll();
+                    eegGraph.Plots.Add();
+                    eegGraph.Plots.Item(1).YAxis.SetMinMax(eegTask.AIChannels.All.RangeLow * (Convert.ToInt32(comboBox_eegNumChannels.SelectedItem) * 2 - 1),
+                        eegTask.AIChannels.All.RangeHigh);
+                    eegDownsample = 2;
+                    eegDisplayGain = 1;
+                    eegBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 4);
 
-                    #region PlotData_Buffers
-                    //***********************
-                    //Make PlotData buffers
-                    //***********************
-                    int downsample, numRows, numCols;
-                    const double spikeplotlength = 0.25; //in seconds
-                    switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
-                    {
-                        case 16:
-                            numRows = numCols = 4;
-                            downsample = 10;
-                            break;
-                        case 32:
-                            numRows = numCols = 6;
-                            downsample = 15;
-                            break;
-                        case 64:
-                            numRows = numCols = 8;
-                            downsample = 20; //if this gets really small, LFP data won't plot
-                            break;
-                        default:
-                            numRows = numCols = 4;
-                            downsample = 5;
-                            break;
-                    }
+                    setupEEGOffset();
+                }
 
-                    //Initialize graphs
-                    if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
-                    spikeGraph = new GridGraph();
-                    int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
-                    spikeGraph.setup(numRows, numCols, samplesPerPlot, false, 1 / 4.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
-                    spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1, 
-                        (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
-                    spikeGraph.Dock = DockStyle.Fill;
-                    spikeGraph.Parent = tabPage_spikes;
+                #region PlotData_Buffers
+                //***********************
+                //Make PlotData buffers
+                //***********************
+                //Initialize graphs
+                if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
+                spikeGraph = new GridGraph();
+                int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
+                spikeGraph.setup(numRows, numCols, samplesPerPlot, false, 1 / 4.0, scaleMax * 2.0);
+                spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1,
+                    (float)(scaleMin * (numRows * 2 - 1)), (float)(scaleMax));
+                spikeGraph.Dock = DockStyle.Fill;
+                spikeGraph.Parent = tabPage_spikes;
 
-                    if (Properties.Settings.Default.UseLFPs)
-                    {
-                        if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
-                        lfpGraph = new RowGraph();
-                        lfpGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
-                            5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
-                        if (Properties.Settings.Default.SeparateLFPBoard)
-                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
-                                (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
-                        else
-                            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
-                                (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
-                        lfpGraph.Dock = DockStyle.Fill;
-                        lfpGraph.Parent = tabPage_LFPs;
-                    }
+                if (Properties.Settings.Default.UseLFPs)
+                {
+                    if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
+                    lfpGraph = new RowGraph();
+                    lfpGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                        5.0, scaleMax * 2.0);
+                    lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                        (float)(scaleMin * (numChannels * 2 - 1)), (float)(scaleMax));
+                    lfpGraph.Dock = DockStyle.Fill;
+                    lfpGraph.Parent = tabPage_LFPs;
+                }
 
-                    if (Properties.Settings.Default.ProcessMUA)
-                    {
-                        if (muaGraph != null) { muaGraph.Dispose(); muaGraph = null; }
-                        muaGraph = new RowGraph();
-                        muaGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
-                            5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
-                        muaGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) / DEVICE_REFRESH) - 1,
-                                (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
-                        muaGraph.Dock = DockStyle.Fill;
-                        muaGraph.Parent = tabPage_MUA;
+                if (Properties.Settings.Default.ProcessMUA)
+                {
+                    if (muaGraph != null) { muaGraph.Dispose(); muaGraph = null; }
+                    muaGraph = new RowGraph();
+                    muaGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                        5.0, scaleMax * 2.0);
+                    muaGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                            (float)(scaleMin * (numChannels * 2 - 1)), (float)(scaleMax));
+                    muaGraph.Dock = DockStyle.Fill;
+                    muaGraph.Parent = tabPage_MUA;
 
-                        muaPlotData = new PlotDataRows(numChannels, downsample, muaSamplingRate * 5, muaSamplingRate,
-                                (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
-                        //muaPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
+                    muaPlotData = new PlotDataRows(numChannels, downsample, muaSamplingRate * 5, muaSamplingRate,
+                            (float)scaleMax * 2F, 0.5, 5, DEVICE_REFRESH);
 
-                        //muaGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
-                        muaPlotData.dataAcquired += new PlotData.dataAcquiredHandler(muaPlotData_dataAcquired);
-                    }
+                    muaPlotData.dataAcquired += new PlotData.dataAcquiredHandler(muaPlotData_dataAcquired);
+                }
 
-                    resetSpkWfm(); //Take care of spike waveform graph
+                resetSpkWfm(); //Take care of spike waveform graph
 
-                    double ampdec = (1/Properties.Settings.Default.PreAmpGain);
+                double ampdec = (1 / Properties.Settings.Default.PreAmpGain);
 
-                    spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
-                        (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength, 
-                        Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
-                    spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
-                    spikePlotData.setGain(Properties.Settings.Default.SpikeDisplayGain);
-                    spikeGraph.setDisplayGain(Properties.Settings.Default.SpikeDisplayGain);
-                    
-                    if (Properties.Settings.Default.UseLFPs)
-                    {
-                        if (Properties.Settings.Default.SeparateLFPBoard)
-                            lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                                (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
-                        else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                                (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
-                        lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
-                        
-                        lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
-                        lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
-                    }
+                spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
+                    (float)(scaleMax * 2.0), numRows, numCols, spikeplotlength,
+                    Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
+                spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
+                spikePlotData.setGain(Properties.Settings.Default.SpikeDisplayGain);
+                spikeGraph.setDisplayGain(Properties.Settings.Default.SpikeDisplayGain);
 
-                    waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
-                        numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
-                    waveformPlotData.setGain(Properties.Settings.Default.SpkWfmDisplayGain);
-                    spkWfmGraph.setDisplayGain(Properties.Settings.Default.SpkWfmDisplayGain);
-                    waveformPlotData.dataAcquired += new EventPlotData.dataAcquiredHandler(waveformPlotData_dataAcquired);
-                    waveformPlotData.start();
+                if (Properties.Settings.Default.UseLFPs)
+                {
+                    lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
+                        (float)scaleMax * 2F, 0.5, 5, DEVICE_REFRESH);
+                    lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
 
-                    spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-                    lfpBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_lfpSamplingRate.Text));
-                    
-                    if (Properties.Settings.Default.UseEEG)
-                    {
-                        eegGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_eegSamplingRate.Text), 5);
-                        eegPlotData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem),
-                            Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
-                    }
-                    #endregion
+                    lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
+                    lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
+                }
 
-                    #region Setup_Filters
-                    //Setup filters, based on user's input
-                    resetSpikeFilter();
-                    if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
-                    resetEEGFilter();
+                waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(scaleMax * 2F),
+                    numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
+                waveformPlotData.setGain(Properties.Settings.Default.SpkWfmDisplayGain);
+                spkWfmGraph.setDisplayGain(Properties.Settings.Default.SpkWfmDisplayGain);
+                waveformPlotData.dataAcquired += new EventPlotData.dataAcquiredHandler(waveformPlotData_dataAcquired);
+                waveformPlotData.start();
 
-                    muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, DEVICE_REFRESH);
-                    #endregion
+                spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+                lfpBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_lfpSamplingRate.Text));
 
-                    #region Setup_DataStorage
-                    //Initialize data storing matrices
-                    numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
+                if (Properties.Settings.Default.UseEEG)
+                {
+                    eegGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_eegSamplingRate.Text), 5);
+                    eegPlotData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem),
+                        Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
+                }
+                #endregion
 
-                    //numSpikeReads = new int[spikeTask.Count];
-                    numSpikeReads = new int[1];
+                #region Setup_Filters
+                //Setup filters, based on user's input
+                resetSpikeFilter();
+                if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
+                resetEEGFilter();
 
-                    filtSpikeData = new rawType[numChannels][];
-                    if (Properties.Settings.Default.UseLFPs)
-                    {
-                        filtLFPData = new rawType[numChannels][];
-                        finalLFPData = new rawType[numChannels][];
-                        for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
-                        {
-                            if (Properties.Settings.Default.SeparateLFPBoard)
-                                filtLFPData[i] = new rawType[lfpBufferLength];
-                            else
-                                filtLFPData[i] = new rawType[spikeBufferLength];
-                        }
-                    }
-                    if (Properties.Settings.Default.ProcessMUA)
-                    {
-                        muaData = new double[numChannels][];
-                        for (int c = 0; c < numChannels; ++c)
-                            muaData[c] = new double[spikeBufferLength / MUA_DOWNSAMPLE_FACTOR];
-                    }
-                    if (Properties.Settings.Default.UseEEG)
-                    {
-                        filtEEGData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)][];
-                        for (int i = 0; i < filtEEGData.GetLength(0); ++i)
-                        {
-                            filtEEGData[i] = new double[eegBufferLength];
-                        }
-                    }
+                muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, DEVICE_REFRESH);
+                #endregion
+
+                #region Setup_DataStorage
+                //Initialize data storing matrices
+                numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
+
+                //numSpikeReads = new int[spikeTask.Count];
+                numSpikeReads = new int[1];
+
+                filtSpikeData = new rawType[numChannels][];
+                if (Properties.Settings.Default.UseLFPs)
+                {
+                    filtLFPData = new rawType[numChannels][];
+                    finalLFPData = new rawType[numChannels][];
                     for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
                     {
-                        filtSpikeData[i] = new rawType[spikeBufferLength];
-                        if (Properties.Settings.Default.UseLFPs)
-                            finalLFPData[i] = new rawType[lfpBufferLength];
+                        if (Properties.Settings.Default.SeparateLFPBoard)
+                            filtLFPData[i] = new rawType[lfpBufferLength];
+                        else
+                            filtLFPData[i] = new rawType[spikeBufferLength];
                     }
-
-                    _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
-                    //newWaveforms = new List<SpikeWaveform>(10);
-
-                    numPre = Convert.ToInt32(numPreSamples.Value);
-                    numPost = Convert.ToInt32(numPostSamples.Value);
-
-                    #endregion
-
-                    //Make persistent buffers for spikeData
-                    spikeData = new List<AnalogWaveform<double>[]>(spikeReader.Count);
-                    for (int i = 0; i < spikeReader.Count; ++i) 
+                }
+                if (Properties.Settings.Default.ProcessMUA)
+                {
+                    muaData = new double[numChannels][];
+                    for (int c = 0; c < numChannels; ++c)
+                        muaData[c] = new double[spikeBufferLength / MUA_DOWNSAMPLE_FACTOR];
+                }
+                if (Properties.Settings.Default.UseEEG)
+                {
+                    filtEEGData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)][];
+                    for (int i = 0; i < filtEEGData.GetLength(0); ++i)
                     {
-                        spikeData.Add(new AnalogWaveform<double>[numChannelsPerDev]);
-                        for (int j = 0; j < numChannelsPerDev; ++j)
-                            spikeData[i][j] = new AnalogWaveform<double>(spikeBufferLength);
+                        filtEEGData[i] = new double[eegBufferLength];
                     }
+                }
+                for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
+                {
+                    filtSpikeData[i] = new rawType[spikeBufferLength];
+                    if (Properties.Settings.Default.UseLFPs)
+                        finalLFPData[i] = new rawType[lfpBufferLength];
+                }
 
-                    //Set start time
-                    experimentStartTime = DateTime.Now;
-                    double sec2add = 60*Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
-                    timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add) ;
-                    timer_timeElapsed.Enabled = true;
-                    
-                    this.Cursor = Cursors.Default;
+                _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
+                //newWaveforms = new List<SpikeWaveform>(10);
 
+                numPre = Convert.ToInt32(numPreSamples.Value);
+                numPost = Convert.ToInt32(numPostSamples.Value);
 
+                #endregion
 
+                //Make persistent buffers for spikeData
+                spikeData = new List<AnalogWaveform<double>[]>(taskCount);
+                for (int i = 0; i < taskCount; ++i)
+                {
+                    spikeData.Add(new AnalogWaveform<double>[numChannelsPerDev]);
+                    for (int j = 0; j < numChannelsPerDev; ++j)
+                        spikeData[i][j] = new AnalogWaveform<double>(spikeBufferLength);
+                }
 
+                //Set start time
+                experimentStartTime = DateTime.Now;
+                double sec2add = 60 * Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
+                timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add);
+                timer_timeElapsed.Enabled = true;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-            if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
-            lfpGraph = new RowGraph();
-            lfpGraph.setup(rat.numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * rat.samplingRate / downsample) * (5 / DEVICE_REFRESH))),
-                5.0, 10 * 2.0);
-            lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * rat.samplingRate / downsample) / DEVICE_REFRESH) - 1,
-                (float)(-10 * (rat.numChannels * 2 - 1)), (float)(10));
-            lfpGraph.Dock = DockStyle.Fill;
-            lfpGraph.Parent = tabPage_LFPs;
-
-            lfpPlotData = new PlotDataRows(rat.numChannels, downsample, rat.samplingRate * 5, rat.samplingRate,
-                (float)10 * 2F, 0.5, 5, DEVICE_REFRESH);
-            lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
-            lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
-
-            lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
-
-            /*
-            if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
-            lfpGraph = new RowGraph();
-            lfpGraph.setup(rat.numChannels, rat.samplingRate * 5, 5.0, 200);
-            //lfpGraph.setMinMax(0, 5 * rat.samplingRate, -0.1F, 0.1F);
-            lfpGraph.setMinMax(0, 5 * rat.samplingRate, (float)(-100 * (rat.numChannels * 2 - 1)), (float)100);
-            lfpGraph.Dock = DockStyle.Fill;
-            lfpGraph.Parent = tabPage_LFPs;
-            lfpGraph.setDisplayGain(1);
-            tdP = new ThreadedPlotter(dBuf, rat.samplingRate * 5, lfpGraph);
-            */
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void playbackStop()
         {
             rat.stopPlayBack();
             //tdP = null;
-            lfpPlotData = null;
-            dBuf = null;
+            clearBuffer(rat.dataType);
             simulationRunning = false;
+            if (rat.dataType == DataType.raw)
+                reset();
             playback_control.Text = "Run model!";
         }
 
@@ -5038,10 +5058,13 @@ ch = 1;
                 playback_startTime.Text = String.Format("{0:00.000}", ((double)Rat.currentTime / 1000));
         }
 
-        private void virtualCallback_LFP(VirtualRat Rat)
+        private void virtualCallback_LFP(object sender, EventArgs e)
         {
-            if (dBuf != null)
-                dBuf.yumData(Rat.buf);
+            VirtualRat Rat = (VirtualRat)sender;
+            if (Rat.dataType != DataType.lfp)
+                return;
+            if (dLFPBuf != null)
+                dLFPBuf.yumData(Rat.buf);
             if (lfpPlotData != null)
             {
                 double[][] finalLFPData = new double[Rat.numChannels][];
@@ -5080,10 +5103,9 @@ ch = 1;
                 sigserv_status.Text = "Stopped";
                 serverRunning = false;
             }
-            else if (start && dBuf != null)
+            else if (start)
             {
-                serv = new SignalServer(Int32.Parse(sigserv_port.Text));
-                serv.connectBuffer(dBuf);
+                serv = new SignalServer(Int32.Parse(sigserv_port.Text), new getBuffer(requestBuffer));
                 serv.clientStatus += new SignalServer.clientStatusHandler(updateClientsSafe);
                 serv.startListening();
                 sigserv_port.Enabled = false;
@@ -5118,10 +5140,12 @@ ch = 1;
                     sigserv_clients.Rows.Add(new object[2] {clientIP, status});
                     break;
                 case "disconnected":
-                    sigserv_clients.Rows.RemoveAt(index);
+                    if (index >= 0)
+                        sigserv_clients.Rows.RemoveAt(index);
                     break;
                 default:
-                    sigserv_clients[1, index].Value = status;
+                    if (index >= 0)
+                        sigserv_clients[1, index].Value = status;
                     break;
             }
         }

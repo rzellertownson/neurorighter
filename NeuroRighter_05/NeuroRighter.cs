@@ -706,9 +706,9 @@ namespace NeuroRighter
                             if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
                             {
                                 if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
                                 else
-                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
                             }
 
                             //File for clipped waveforms and spike times
@@ -727,13 +727,13 @@ namespace NeuroRighter
                             if (Properties.Settings.Default.UseLFPs)
                             {
                                 if (Properties.Settings.Default.SeparateLFPBoard)
-                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp");
+                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp", Properties.Settings.Default.PreAmpGain);
                                 else //Using spikes A/D card to capture LFP data, too.
                                 {
                                     if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
                                     else
-                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
                                 }
                             }
 
@@ -1161,7 +1161,7 @@ namespace NeuroRighter
             //Write data to file
             if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
             {
-                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
                 rawType tempVal;
                 for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                     for (int j = 0; j < spikeBufferLength; ++j)

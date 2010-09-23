@@ -13,27 +13,28 @@ namespace NeuroRighter
     public class StimBuffer
     {
         // Public Properties
-        public ulong BufferIndex = 0;
-        public uint StimulusIndex = 0; // Indexs the outer buffer
-        public double[,] AnalogBuffer;
-        public UInt32[] DigitalBuffer;
+        public ulong BufferIndex = 0; //Incex for inner buffer
+        public uint StimulusIndex = 0; // Index for outer buffer
+        public double[,] AnalogBuffer; //actual values written to the analog task
+        public UInt32[] DigitalBuffer; //ditto for digital task
         public bool StillWritting = false;
         public ulong NumBuffLoadsCompleted = 0;
         public uint NumBuffLoadsRequired;
         
 
         // Private Properties
-        private uint WaveLength;
-        private uint StimulusLength;
-        private uint NumSampWrittenForCurrentStim = 0;
+        private uint WaveLength;//length of all the waveforms
+        private uint StimulusLength;//total lenght of stimulus, including blanking
+        private uint NumSampWrittenForCurrentStim = 0;  //how far are we in the current stimulus?
         private uint NumSamplesLoadedForWave = 0;
         private uint STIM_SAMPLING_FREQ;
         private uint NUM_SAMPLES_BLANKING;
-        private ulong[] StimSample; 
+        private ulong[] StimSample; //record of when stimulations start, in units of samples
         private double[,] AnalogEncode;
         private UInt32[,] DigitalEncode;
         private double[] AnalogPoint = new double[] {0, 0};
         private UInt32 DigitalPoint;
+        private double TriggerPoint;
 
 
         //DO line that will have the blanking signal for different hardware configurations
@@ -53,6 +54,15 @@ namespace NeuroRighter
         private uint BUFFSIZE;
         private uint LengthWave;
 
+        //RTZT3 recording edits
+        private int[] recordTimes; //when does each recording begin, in ms?
+        private int[] recordDurations; //how long is each recording, in ms?
+        private uint NumSampWrittenForCurrentRecord = 0; //how far are we into the current recording?
+        private uint RecordingLength; //how long is this recording going to be (in samples)?
+        public uint RecordIndex = 0; // Index for the outer buffer
+        private ulong[] RecSample; //how long are all of the recordings, in samples?
+        private uint outerRecordWrite; //where are we writing in the record buffer?
+
         //RTZT3 appending edits
         private uint outerbufferSize; //the number of stimuli that can be loaded into memory at once
         private uint SamplesPerStim; //waveform length
@@ -68,9 +78,18 @@ namespace NeuroRighter
         Task stimDigitalTask, stimAnalogTask;
         
 
-        //Constructor to create a Stim Buffer object for use by File2Stim (one-shot mode)
+        //Constructor to create a Stim Buffer object for use by File2Stim (one-shot mode, no recording)
         internal StimBuffer(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix, int LengthWave,
             int BUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING)
+            
+                     :this(TimeVector, ChannelVector, WaveMatrix, null, null, LengthWave,
+                  BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING)
+        { }
+        
+
+        //Constructor to create a Stim Buffer object for use by File2Stim (one-shot mode, recording)
+        internal StimBuffer(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix, int[] recordTimes, int[] recordDurations, 
+                int LengthWave,int BUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING)
         {
             this.TimeVector = TimeVector;
             this.ChannelVector = ChannelVector;
@@ -79,6 +98,8 @@ namespace NeuroRighter
             this.LengthWave = (uint)LengthWave;
             this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
             this.NUM_SAMPLES_BLANKING = (uint)NUM_SAMPLES_BLANKING;
+            this.recordTimes = recordTimes;
+            this.recordDurations = recordDurations;
             isAppending = false;
 
         }
@@ -97,6 +118,7 @@ namespace NeuroRighter
             StimSample = new ulong[outerbufferSize+1];//buffer size is plus one, such that if the read and write indices are at the same point, the buffer is empty, while at the same time providing the specified effective buffer size
             AnalogEncode = new double[2, outerbufferSize+1];
             DigitalEncode = new UInt32[3, outerbufferSize+1];
+            RecSample = new ulong[outerbufferSize + 1];
 
             WaveLength = (uint)SamplesPerStim;
             StimulusLength = (uint)(WaveLength + 2 * NUM_SAMPLES_BLANKING + 2); //length of waveform + padding on either side due to digital signaling.
@@ -125,9 +147,11 @@ namespace NeuroRighter
             //TODO: create locks for the outer buffer (writeIndex, spaces to be written to- can I lock only some of them?  which ones?)
         }
 
+        #region appending methods
+
         internal void append(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
         {
-
+           // MessageBox.Show("append 0");
             //needs to include precompute stuff!  ie, convert to stimsample, analog encode, etc
             if (WaveMatrix.GetLength(1) != this.WaveMatrix.GetLength(1))
                 throw new Exception("attempting to append waveforms with " + WaveMatrix.GetLength(1) + " samples, the buffer is configured to use " + this.WaveMatrix.GetLength(1) + " samples");
@@ -136,15 +160,16 @@ namespace NeuroRighter
                 throw new Exception("outer buffer overflow: " + WaveMatrix.GetLength(0) + " stimuli were appended to the stimuli buffer, but only " + available + " spaces were available in the buffer");
             
             //okay, passed the tests, start appending
+            //MessageBox.Show("append 1");
             for (int i = 0; i < WaveMatrix.GetLength(0); i++)
             {
                 //this.TimeVector[outerIndexWrite] = TimeVector[i];
                 StimSample[outerIndexWrite] = (uint)Math.Round((double)(TimeVector[i] * (STIM_SAMPLING_FREQ / 1000)));
-                
+                //MessageBox.Show("append 2");
                 //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
                 AnalogEncode[0, outerIndexWrite] = Math.Ceiling((double)ChannelVector[i] / 8.0);
                 AnalogEncode[1, outerIndexWrite] = (double)((ChannelVector[i] - 1) % 8) + 1.0;
-
+                //MessageBox.Show("append 3");
                 DigitalEncode[0, outerIndexWrite] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
                 DigitalEncode[1, outerIndexWrite] = channel2MUX_noEN((double)ChannelVector[i]);
                 DigitalEncode[2, outerIndexWrite] = channel2MUX((double)ChannelVector[i]);
@@ -153,10 +178,18 @@ namespace NeuroRighter
                 {
                     this.WaveMatrix[outerIndexWrite, j] = WaveMatrix[i, j];
                 }
+                 
+                //RecSample[outerIndexWrite] = (uint)Math.Round((double)(recordTimes[i] * (STIM_SAMPLING_FREQ / 1000)));
+
                 outerIndexWrite++;
                 if (outerIndexWrite > outerbufferSize)
                     outerIndexWrite = 0;
             }
+        }
+
+        internal void appendRecord(int[] TimeVector, int[] duration)
+        {
+            throw new NotImplementedException();
         }
 
         internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)
@@ -244,6 +277,8 @@ namespace NeuroRighter
             return available;
         }
 
+        #endregion
+
         internal void precompute()//should be the same for both appending and not, assuming that the first appended array is longer than the inner buffer
         {
            
@@ -251,6 +286,8 @@ namespace NeuroRighter
                 StimSample = new ulong[TimeVector.Length];
                 AnalogEncode = new double[2, ChannelVector.Length];
                 DigitalEncode = new UInt32[3, ChannelVector.Length];
+            if (recordTimes !=null)
+                RecSample = new ulong[recordTimes.Length];
 
                 WaveLength = (uint)WaveMatrix.GetLength(1);
                 StimulusLength = (uint)(WaveLength + 2 * NUM_SAMPLES_BLANKING + 2); //length of waveform + padding on either side due to digital signaling.
@@ -277,6 +314,12 @@ namespace NeuroRighter
                     
 
                 }
+
+                // Populate RecSample if recording
+            if (recordTimes != null)
+                for (int i = 0; i < RecSample.Length; i++)
+                    RecSample[i] = (uint)Math.Round((double)(recordTimes[i] * (STIM_SAMPLING_FREQ / 1000)));
+
             
                 // What are the buffer offset settings for this system?
                 NumAOChannels = 2;
@@ -289,8 +332,16 @@ namespace NeuroRighter
 
                 //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
                 //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-                NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
+                NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)((StimSample[StimSample.Length - 1]+StimulusLength) / BUFFSIZE));
+            //possibly extend required loads if recording
+            if (recordTimes != null)
+            {
+                ulong recsamplesneeded = RecSample[RecSample.Length - 1]+(ulong)(recordDurations[RecSample.Length - 1]* (STIM_SAMPLING_FREQ / 1000));
+                uint recbuffloadsneeded = 3 + (uint)Math.Ceiling((double)( recsamplesneeded/ BUFFSIZE));
+                NumBuffLoadsRequired = Math.Max(NumBuffLoadsRequired, recbuffloadsneeded);
            
+            }
+               
         }
         
         internal void validateStimulusParameters()
@@ -333,7 +384,8 @@ namespace NeuroRighter
 
             // Populate the buffers if a stimulus occurs in this particular buffer length
 
-            // Finish up writting the stimulus from the last buffer load if you didn't finish then
+            #region Finish up writing the stimulus from the last buffer load if you didn't finish then
+
             if (NumSampWrittenForCurrentStim < StimulusLength && NumSampWrittenForCurrentStim != 0)
             {
                 uint Samples2Finish = StimulusLength - NumSampWrittenForCurrentStim;
@@ -343,28 +395,41 @@ namespace NeuroRighter
                     calculateDigPoint(StimulusIndex, NumSampWrittenForCurrentStim);
                     AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
                     AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
+                    
                     DigitalBuffer[(int)BufferIndex] = DigitalPoint;
+
+                    
                     NumSampWrittenForCurrentStim++;
                     BufferIndex++;
                 }
 
-                // Finished writting current stimulus, reset variables
+                // Finished writing current stimulus, reset variables
                 NumSampWrittenForCurrentStim = 0;
+
+                //find next stimulus
                 StimulusIndex++;
                 if (isAppending &( StimulusIndex >= (ulong)StimSample.Length))//cycle through to beginning only if in appending mode
                     StimulusIndex = 0;
-                BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
-                if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
+
+                //move the buffer to the next stimulus, if needed
+                if (StimulusIndex < (ulong)StimSample.Length)//only attempt to look up a stimulus if you can
                 {
-                    //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
-                    throw new Exception ("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                    BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
+                    if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
+                    {
+                        //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                    }
                 }
             }
             else
             {
-                if (((isAppending) & (StimulusIndex != outerIndexWrite)) || ((!isAppending) & (StimulusIndex < StimSample.Length)))
+                //move to the next stimulus
+                if (((isAppending) & (StimulusIndex != outerIndexWrite)) || 
+                    ((!isAppending) & (StimulusIndex < StimSample.Length)))//if we haven't reached the end of the stimbuffer...
                     {
-                        BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
+                        //move to the space in the inner buffer where the next stimulus begins
+                        BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE; 
                         if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
                         {
                            // MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
@@ -376,9 +441,10 @@ namespace NeuroRighter
                         BufferIndex = BUFFSIZE;
                     }
             }
+            #endregion
 
-            // Write to the buffer if the next stimulus is within this buffer's time span
-            while(BufferIndex < BUFFSIZE  && BufferIndex >= 0)
+            #region Write to the buffer if the next stimulus is within this buffer's time span
+            while (BufferIndex < BUFFSIZE  && BufferIndex >= 0)
             {
                 if (NumSampWrittenForCurrentStim < StimulusLength)
                 {
@@ -395,10 +461,10 @@ namespace NeuroRighter
                     // Finished writting current stimulus, reset variables
                     NumSampWrittenForCurrentStim = 0;
                     StimulusIndex++;
-                    if (isAppending&(StimulusIndex >= StimSample.Length))
+                    if (isAppending & (StimulusIndex >= StimSample.Length))
                         StimulusIndex = 0;
-
-                    if (((isAppending)&(StimulusIndex!=outerIndexWrite))||((!isAppending) &(StimulusIndex < StimSample.Length)))
+                    
+                    if (((isAppending) & (StimulusIndex != outerIndexWrite)) || ((!isAppending) & (StimulusIndex < StimSample.Length)))
                     {
                         BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
                         if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
@@ -411,10 +477,127 @@ namespace NeuroRighter
                     {
                         BufferIndex = BUFFSIZE;
                     }
-                    
                 }
             }
+            #endregion
             NumBuffLoadsCompleted++; 
+        }
+
+        internal void addTriggerToBuffer()
+        {
+            //this code is designed to be run directly after populate buffer, and effectively performs the 
+            //same tasks, but for the recording buffer.  That is, it edits analogbuffer to include the
+            //record signal (trigger).  It draws these trigger signals from two vectors, one which contains
+            //the trigger start times and one which contains the durations.
+
+            //we just ran populate buffer- so numbuffloadscompleted has been incremented already.
+            ulong NumBuffLoadsCompleted_d = NumBuffLoadsCompleted - 1;
+            //dont clear the buffer- just add to analog[0]
+            BufferIndex = 0;
+#region are we in the middle of a recording?- if so, finish
+            if (RecordIndex < recordDurations.Length)
+                RecordingLength = (uint)recordDurations[RecordIndex] * STIM_SAMPLING_FREQ / 1000;
+            else
+                RecordingLength = 0;
+
+            if (NumSampWrittenForCurrentRecord <= RecordingLength && NumSampWrittenForCurrentRecord != 0)
+            {
+                //MessageBox.Show("finishing one");
+                ulong Samples2Finish = RecordingLength - NumSampWrittenForCurrentRecord;
+                for (ulong i = 0; i < Samples2Finish; i++)
+                {
+                    AnalogBuffer[0,(int)BufferIndex] = 4.0;
+                    NumSampWrittenForCurrentRecord++;
+                    BufferIndex++;
+                }
+                //finished writing current record signal, reset variables
+                NumSampWrittenForCurrentRecord = 0;
+                RecordIndex++;
+                
+                //MessageBox.Show("wrote " + RecordIndex + " to buffer");
+                if (isAppending & (RecordIndex >= (ulong)RecSample.Length))//cycle through to beginning if in appending mode
+                    RecordIndex = 0;
+                if (RecordIndex < (ulong)RecSample.Length)
+                {
+                    BufferIndex = RecSample[RecordIndex] - NumBuffLoadsCompleted_d * BUFFSIZE;
+                    if (RecSample[RecordIndex] < NumBuffLoadsCompleted_d * BUFFSIZE)
+                    {
+                        throw new Exception("trying to record at some time in the past: recording number " + RecordIndex + " at time " + recordTimes[RecordIndex] + "ms was attempted at buffer load " + NumBuffLoadsCompleted_d + "at time " +
+                            (NumBuffLoadsCompleted_d * BUFFSIZE * 1000 / STIM_SAMPLING_FREQ) + "ms");
+                    }
+                }
+            }
+            //move to the index of the next recording
+            else
+            {
+                if (((isAppending) & (RecordIndex != outerRecordWrite)) || ((!isAppending) & (RecordIndex < RecSample.Length)))
+                {
+                    //go to next stimulus
+                    BufferIndex = RecSample[RecordIndex] - NumBuffLoadsCompleted_d * BUFFSIZE;
+                    //RecordingLength = recordDurations[RecordIndex] * STIM_SAMPLING_FREQ / 1000;
+                    if (RecSample[RecordIndex] < NumBuffLoadsCompleted_d * BUFFSIZE)
+                    {
+                        throw new Exception("trying to record at some time in the past: recording number " + RecordIndex + " at time " + recordTimes[RecordIndex] + "ms was attempted at buffer load " + NumBuffLoadsCompleted_d + "at time " +
+                         (NumBuffLoadsCompleted_d * BUFFSIZE * 1000 / STIM_SAMPLING_FREQ) + "ms, right here, and we already wrote " + NumSampWrittenForCurrentRecord);
+                    }
+                }
+                else
+                {
+                    //go to end of the buffer
+                    BufferIndex = BUFFSIZE;
+                }
+            }
+#endregion
+
+
+            #region find next recording region and move to it
+            if (RecordIndex < recordDurations.Length)
+            {
+                //while still in this buffer
+                while (BufferIndex < BUFFSIZE && BufferIndex >= 0)
+                {
+                    //MessageBox.Show("have started a stimulus at bufload " + NumBuffLoadsCompleted_d);
+                    if (NumSampWrittenForCurrentRecord < recordDurations[RecordIndex] * STIM_SAMPLING_FREQ / 1000)
+                    {
+                        AnalogBuffer[0, (int)BufferIndex] = 4.0;
+                        NumSampWrittenForCurrentRecord++;
+                        BufferIndex++;
+                    }
+                    else
+                    {
+                        //finished writing that stimulus, reset vars
+                        NumSampWrittenForCurrentRecord = 0;
+                        RecordIndex++;
+                        //MessageBox.Show("wrote " + RecordIndex + " to buffer");
+                        if (isAppending & (RecordIndex >= (ulong)RecSample.Length))//cycle through to beginning if in appending mode
+                            RecordIndex = 0;
+                        //if (RecordIndex >= (ulong)RecSample.Length) return;
+                        //move buffer to next index, or finish this buffer
+                        if (((isAppending) & (RecordIndex != outerRecordWrite)) || ((!isAppending) & (RecordIndex < RecSample.Length)))
+                        {
+                            //go to next stimulus
+                            BufferIndex = RecSample[RecordIndex] - NumBuffLoadsCompleted_d * BUFFSIZE;
+                            if (RecSample[RecordIndex] < NumBuffLoadsCompleted_d * BUFFSIZE)
+                            {
+                                throw new Exception("trying to record at some time in the past: recording at time " + recordTimes[RecordIndex] + "ms was attempted at time " +
+                                                       (NumBuffLoadsCompleted_d * BUFFSIZE * STIM_SAMPLING_FREQ / 1000) + "ms");
+                            }
+                        }
+                        else
+                        {
+                            //go to end of the buffer
+                            BufferIndex = BUFFSIZE;
+                        }
+                    }
+
+
+                }
+            }
+            #endregion
+
+            //populate takes care of incrementing the numbuffloads completed.
+
+           
         }
 
         internal void calculateDigPoint(ulong StimulusIndex, uint NumSampLoadedForCurr)
@@ -483,6 +666,8 @@ namespace NeuroRighter
                 }
             }
         }
+
+       
 
         #region MUX conversion Functions
         internal static UInt32 channel2MUX(double channel)

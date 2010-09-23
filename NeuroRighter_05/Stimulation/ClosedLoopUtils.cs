@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NationalInstruments.DAQmx;
+using System.Windows.Forms;
 
 namespace NeuroRighter
 {
@@ -46,7 +47,7 @@ namespace NeuroRighter
         //initialize the stimbuffer if you want to keep adding stim commands to a buffer
         //bufferlength- size of the wavestim array (ie, the number of individual stimuli that can be stored and ready to go)
         //wavelength- the size of each waveform sent (this will put an upper limit on stimulation frequency as well as a limit on waveform length)
-        public void initializeStim(int bufferlength, int wavelength)
+        public void initializeStim(int bufferlength, int wavelength )
         {
             //stolen from JN's file2stim3 code
             //create a stimbuffer that you can start appending to
@@ -73,61 +74,180 @@ namespace NeuroRighter
         public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
         {
             
-            StimBuffer stimulusbuffer;
+            //StimBuffer stimulusbuffer;
             ulong samplessent;
            
                 int lengthWave = waveMat.GetLength(1); // Length of each stimulus waveform in samples
 
                 //Instantiate a stimulus buffer object
-                 stimulusbuffer = new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
+                 buffer = new StimBuffer(timeVec, channelVec, waveMat, lengthWave,
                    BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
           
                 //Populate the 1st stimulus buffer
-                stimulusbuffer.precompute();
+                buffer.precompute();
 
 
-                stimulusbuffer.populateBuffer();
+                buffer.populateBuffer();
 
                 //Write Samples to the hardware buffer
-                stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-                stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
+                stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+                stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
            
                 //Populate the 2nd stimulus buffer
-                stimulusbuffer.populateBuffer();
-
+                buffer.populateBuffer();
+                
                 //Write Samples to the hardware buffer
-                stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-                stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
+                stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+                stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
 
                 stimDigitalTask.Start();
                 stimAnalogTask.Start();
                 samplessent = 0;
            
-                while (!isCancelled && !bw.CancellationPending && stimulusbuffer.NumBuffLoadsCompleted < stimulusbuffer.NumBuffLoadsRequired)
+                while (!isCancelled && !bw.CancellationPending && buffer.NumBuffLoadsCompleted < buffer.NumBuffLoadsRequired)
                 {
                     //Populate the stimulus buffer
-                    stimulusbuffer.populateBuffer();
+                    buffer.populateBuffer();
 
                     // Wait for space to open in the buffer
                     samplessent = (ulong) stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                    while (((stimulusbuffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - samplessent > (ulong)BUFFSIZE) && !isCancelled && !bw.CancellationPending)
+                    while (((buffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - samplessent > (ulong)BUFFSIZE) && !isCancelled && !bw.CancellationPending)
                     {
                         samplessent = (ulong) stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
                     }
                     if (isCancelled || bw.CancellationPending) break;
                     //Write Samples to the hardware buffer
-                    stimAnalogWriter.WriteMultiSample(false, stimulusbuffer.AnalogBuffer);
-                    stimDigitalWriter.WriteMultiSamplePort(false, stimulusbuffer.DigitalBuffer);
+                    stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+                    stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
                 }
                 stimAnalogTask.Stop();
                 stimDigitalTask.Stop();
-                stimulusbuffer = null;
+                buffer = null;
            
+        }
+
+        public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat, int[] recordingTimes, int[] recordingDurations)
+        {
+            
+            ulong samplessent;
+            int lengthWave = waveMat.GetLength(1);
+
+            buffer = new StimBuffer(timeVec, channelVec, waveMat, recordingTimes, recordingDurations, lengthWave, BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+
+            buffer.precompute();
+            buffer.populateBuffer();
+            buffer.addTriggerToBuffer();
+
+            //write to hardware buffer
+            stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+            stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
+          //  MessageBox.Show("first buffer passed");
+            //populate buffer 2
+            buffer.populateBuffer();
+            buffer.addTriggerToBuffer();
+
+            //write to hardware buffer
+            stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+            stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
+          //  MessageBox.Show("second buffer passed");
+            stimDigitalTask.Start();
+            stimAnalogTask.Start();
+            samplessent = 0;
+
+            while (!isCancelled && !bw.CancellationPending && buffer.NumBuffLoadsCompleted < buffer.NumBuffLoadsRequired)
+            {
+                buffer.populateBuffer();
+                //MessageBox.Show("pop");
+                
+                    buffer.addTriggerToBuffer();
+                
+               
+                //MessageBox.Show("trig");
+                samplessent = (ulong)stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                while ((buffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - samplessent > (ulong)BUFFSIZE && !isCancelled && !bw.CancellationPending)
+                {
+                    
+                    samplessent = (ulong)stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
+                }
+                if (isCancelled || bw.CancellationPending) break;
+             //   MessageBox.Show("loop");
+                //write to hardware buffer
+                stimAnalogWriter.WriteMultiSample(false, buffer.AnalogBuffer);
+                stimDigitalWriter.WriteMultiSamplePort(false, buffer.DigitalBuffer);
+                bool check = stimAnalogTask.IsDone;
+            }
+            stimAnalogTask.Stop();
+            stimDigitalTask.Stop();
+            buffer = null;
+
+        }
+
+        public void appendRecord(int[] timeVec, double[] duration)
+        {
+            throw new NotImplementedException();
         }
 
         public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
         {
             buffer.append(timeVec, channelVec, waveMat);
+        }
+
+        public int[] concatTime(int[] timeVec1, int[] timeVec2)
+        {
+            int[] output = new int[timeVec1.Length + timeVec2.Length];
+            int last = timeVec1[timeVec1.Length-1];
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (i < timeVec1.Length)
+                    output[i] = timeVec1[i];
+                else
+                    output[i] = timeVec2[i - timeVec1.Length] + last;
+            }
+            return output;
+            
+        }
+
+        public int[] concatTime(int[] timeVec1, int[] timeVec2, int delay)
+        {
+            int[] output = new int[timeVec1.Length + timeVec2.Length];
+            int last = timeVec1[timeVec1.Length - 1];
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (i < timeVec1.Length)
+                    output[i] = timeVec1[i];
+                else
+                    output[i] = timeVec2[i - timeVec1.Length] + last+delay;
+            }
+            return output;
+
+        }
+
+        public int[] concatChannel(int[] channelVec1, int[] channelVec2)
+        {
+            int[] output = new int[channelVec1.Length + channelVec2.Length];
+            for (int i = 0; i < output.Length; i++)
+            {
+                if (i < timeVec1.Length)
+                    output[i] = timeVec1[i];
+                else
+                    output[i] = timeVec2[i - timeVec1.Length];
+            }
+            return output;
+        }
+
+        public double[,] concatWaves(double[,] waveMat1, double[,] waveMat2)
+        {
+            double[,] output = new double[waveMat1.GetLength(0), waveMat1.GetLength(1) + waveMat2.GetLength(1)];
+            for (int i = 0; i < output.GetLength(1); i++)
+            {
+                for (int k = 0; k < output.GetLength(0); k++)
+                {
+                    if (i < waveMat1.GetLength(1))
+                        output[k, i] = waveMat1[k, i];
+                    else
+                        output[k, i] = waveMat2[k, i - waveMat1.GetLength(1)];
+                }
+            }
         }
 
         public uint availableBufferSpace()
@@ -150,6 +270,12 @@ namespace NeuroRighter
         }
         #endregion
 
+        #region TTL methods
+        public void waveTTL(int[] timeVec, int[] lead, bool[] value)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
         #region RECORD METHODS
 
         //wait for a burst to occur, and then return all spikes in that burst.  If timeout occurs, return empty array
@@ -305,40 +431,8 @@ namespace NeuroRighter
         }
         #endregion
 
-        public void stim(stimWave sw)
-{
-    stimAnalogTask.Timing.SamplesPerChannel = sw.analogPulse.GetLength(1);
-    stimDigitalTask.Timing.SamplesPerChannel = sw.digitalData.GetLength(0);
-
-    stimAnalogWriter.WriteMultiSample(true, sw.analogPulse);
-    if (Properties.Settings.Default.StimPortBandwidth == 32)
-        stimDigitalWriter.WriteMultiSamplePort(true, sw.digitalData);
-    else if (Properties.Settings.Default.StimPortBandwidth == 8)
-        stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sw.digitalData));
-    stimDigitalTask.WaitUntilDone();
-    stimAnalogTask.WaitUntilDone();
-    stimAnalogTask.Stop();
-    stimDigitalTask.Stop();
-}
+        
     }
 
-    public class stimWave
-    {
-            internal Double[,] analogPulse;
-            internal UInt32[] digitalData;
-            public stimWave(int ms)
-            {
-                int totalLength = 0;
-                int numRows = 4;
-                totalLength += 1 + StimPulse.STIM_SAMPLING_FREQ * ms / 1000;
-                analogPulse = new double[numRows, totalLength]; //Only make one pulse of train, the padding zeros will ensure proper rate when sampling is regenerative
-                //digitalData = new UInt32[totalLength + 2 * (StimPulse.NUM_SAMPLES_BLANKING + 2)];
-               // digitalData = new UInt32
-                int offset = 0;
-                int size = 0;
-                for (int j = size; j < StimPulse.STIM_SAMPLING_FREQ * ms / 1000; ++j)
-                    analogPulse[0, j + offset] = 4.0; //4 Volts, TTL-compatible
-                analogPulse[0, analogPulse.GetLength(1) - 1] = 0.0;
-            }
-    }
+   
 }

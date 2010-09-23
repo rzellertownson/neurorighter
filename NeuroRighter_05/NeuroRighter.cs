@@ -1404,11 +1404,14 @@ namespace NeuroRighter
                     for (int i = 0; i < newWaveforms.Count; ++i)
                     {
                         //removed triggering mechanism
+                       if (newWaveforms[i].index + startTime >= triggerStartTime && newWaveforms[i].index + startTime <= triggerStopTime)
+                        {
                             _waveforms.Add(newWaveforms[i]);
 #if (DEBUG1)
-                            logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
+                        logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
 #endif
-                        
+                        }
+                                                
                     }
                 }
                 spikesAcquired(this, inTrigger);

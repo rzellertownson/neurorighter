@@ -44,6 +44,7 @@ using csmatio.types;
 using csmatio.io;
 using pnpCL;
 
+
 namespace NeuroRighter
 {
     using rawType = System.Double;
@@ -113,6 +114,11 @@ namespace NeuroRighter
         private List<double[]> scalingCoeffsSpikes; //Scaling coefficients for NI-DAQs
         private double[] scalingCoeffsLFPs;
         private double[] scalingCoeffsEEG;
+        private List<StimulusData> _stimulations;
+        internal List<StimulusData> stimulations
+        {
+            get { return _stimulations; }
+        }
         private List<SpikeWaveform> _waveforms;  //Locations of threshold crossings
         internal List<SpikeWaveform> waveforms
         {
@@ -836,6 +842,7 @@ namespace NeuroRighter
                         stimJump = (double)spikeSamplingRate * 0.0001; //num. indices in 100 us of data
                     }
                     _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
+                    _stimulations = new List<StimulusData>(10);
                     //newWaveforms = new List<SpikeWaveform>(10);
 
                     numPre = Convert.ToInt32(numPreSamples.Value);
@@ -1053,15 +1060,29 @@ namespace NeuroRighter
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)
                                     {
                                         //stimIndices.Add(new StimTick(i - STIM_BUFFER_LENGTH, numStimReads[taskNumber]));
+
+                                        //calculate stimulus data
+                                        Int32 index = startTimeStim + i;
+                                        Int16 channel = Convert.ToInt16((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - //average a couple values
+                                              (short)1) * (short)8 +
+                                                Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] +
+                                                prependedData[i + (int)(3 * stimJump)]) / 2));
+                                        double voltage = prependedData[i + (int)(5 * stimJump)];
+                                        double pulseWidth = prependedData[i + (int)(7 * stimJump)];
+
+                                        //if we are recording stim data, save it
                                         if (switch_record.Value)
                                         {
-                                            fsStim.Write(BitConverter.GetBytes(startTimeStim + i), 0, 4); //Write time (index number)
-                                            fsStim.Write(BitConverter.GetBytes((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - //average a couple values
-                                                (short)1) * (short)8 +
-                                                Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] +
-                                                prependedData[i + (int)(3 * stimJump)]) / 2)), 0, 2); //channel (-1 since everything should be 0-based) // JN, CHANGED TO BE 1 BASED FOR NORMAL PEOPLE
-                                            fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(5 * stimJump)]), 0, 8); //Stim voltage
-                                            fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(7 * stimJump)]), 0, 8); //Stim pulse width (div by 100us)
+                                            fsStim.Write(BitConverter.GetBytes(index), 0, 4); //Write time (index number)
+                                            fsStim.Write(BitConverter.GetBytes(channel), 0, 2); //channel (-1 since everything should be 0-based) // JN, CHANGED TO BE 1 BASED FOR NORMAL PEOPLE
+                                            fsStim.Write(BitConverter.GetBytes(voltage), 0, 8); //Stim voltage
+                                            fsStim.Write(BitConverter.GetBytes(pulseWidth), 0, 8); //Stim pulse width (div by 100us)
+                                        }
+
+                                        //if we are using stim data for closed loop purposes, save it
+                                        if (stimAcquired != null)
+                                        {
+                                            _stimulations.Add(new StimulusData(channel, index, voltage, pulseWidth));
                                         }
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
                                         for (int j = 0; j < (int)(8 * stimJump) + 1; ++j)
@@ -1120,6 +1141,8 @@ namespace NeuroRighter
                                             stimIndices.RemoveAt(i);
                                 }
                                 ++numStimReads[taskNumber];
+                                if (stimAcquired != null)
+                                    stimAcquired(this);
                             }
                         }
                     }
@@ -1449,6 +1472,9 @@ namespace NeuroRighter
 
         internal delegate void spikesAcquiredHandler(object sender, bool inTrigger);
         internal event spikesAcquiredHandler spikesAcquired;
+
+        internal delegate void stimAcquiredHandler(object sender);
+        internal event stimAcquiredHandler stimAcquired;
 
 
         //*************************
@@ -4637,10 +4663,17 @@ ch = 1;
         private void refresh_closedloop_button_Click(object sender, EventArgs e)
         {
             //find all dll files that contain a concrete pnpclosedloop class and add them to the experiments list
-            experiments = pnpclFinder.find();
-            pnpcl_available_dropdown.Items.Clear();
-            foreach (pnpClosedLoopAbs exp in experiments)
-                pnpcl_available_dropdown.Items.Add(exp.ToString());
+            try
+            {
+                experiments = pnpclFinder.find();
+                pnpcl_available_dropdown.Items.Clear();
+                foreach (pnpClosedLoopAbs exp in experiments)
+                    pnpcl_available_dropdown.Items.Add(exp.ToString());
+            }
+            catch (Exception me)
+            {
+                MessageBox.Show("Error while loading plugins.  Do you have a plugins directory within your working directory? \n" + me.Message);
+            }
 
         }
 
@@ -4712,6 +4745,7 @@ ch = 1;
                         CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter, pnpcl);
                         //MessageBox.Show(pnpcl1.ToString());
                         CLE.linkToSpikes(this);
+                        CLE.linkToStim(this);
                         //start recording
                         buttonStart.PerformClick();
                         CLE.AlertProgChanged += new ClosedLoopExpt.ProgressChangedHandler(clProgressChangedHandler);
@@ -4736,6 +4770,7 @@ ch = 1;
         {
             //stop the closed loop experiment
             CLE.stop();
+            stimAcquired = null;
             spikesAcquired = null;
             //stop recording
             buttonStop.Enabled = true;

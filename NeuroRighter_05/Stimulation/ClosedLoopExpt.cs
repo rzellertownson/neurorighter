@@ -21,6 +21,9 @@ namespace NeuroRighter
         public Boolean isCancelled;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private List<SpikeWaveform> waveforms;
+        private List<StimulusData> stimulations;
+        private int SpikesSaved = 100;
+        private int StimSaved = 100;
         private pnpClosedLoopAbs pnpcl;
 
         //variables for wavestimming
@@ -35,7 +38,11 @@ namespace NeuroRighter
         internal event AllFinishedHandler AlertAllFinished;
 
         //constructor
-        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE,Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl )
+        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE, Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl)
+            :this(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimDigitalWriter, stimAnalogWriter, pnpcl, 100, 100)
+        {}
+
+        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE, Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl, int StimsSaved, int SpikesSaved)
         {
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.BUFFSIZE = STIMBUFFSIZE;
@@ -44,6 +51,8 @@ namespace NeuroRighter
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
             this.pnpcl = pnpcl;
+            this.SpikesSaved = SpikesSaved;
+            this.StimSaved = StimsSaved;
         }
        
         //start
@@ -58,7 +67,8 @@ namespace NeuroRighter
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
             isCancelled = false;
-            waveforms = new List<SpikeWaveform>(100);
+            waveforms = new List<SpikeWaveform>(SpikesSaved);
+            stimulations = new List<StimulusData>(StimSaved);
             // Run Worker
             bw.RunWorkerAsync();
         }
@@ -72,6 +82,7 @@ namespace NeuroRighter
 
         internal void linkToSpikes(NeuroRighter nr) { nr.spikesAcquired += new NeuroRighter.spikesAcquiredHandler(spikeAcquired); }
 
+        internal void linkToStim(NeuroRighter nr) { nr.stimAcquired += new NeuroRighter.stimAcquiredHandler(stimAcquired); }
         private void spikeAcquired(object sender, bool inTrigger)
         {
             NeuroRighter nr = (NeuroRighter)sender;
@@ -88,14 +99,40 @@ namespace NeuroRighter
                             + DateTime.Now.Minute + ":" + DateTime.Now.Second + ":" + DateTime.Now.Millisecond);
                         nr.logFile.Flush();
 #endif
+                        
                         nr.waveforms.RemoveAt(0);
+                        if (waveforms.Count >= waveforms.Capacity)
+                            waveforms.RemoveAt(0);
                     }
                 }
-                if (!inTrigger)//if the trigger is currently not active
-                    _blockExecution.Set();
+                //if (!inTrigger)//if the trigger is currently not active
+                //    _blockExecution.Set();
             }
         }
-
+        private void stimAcquired(object sender)
+        {
+            NeuroRighter nr = (NeuroRighter)sender;
+            lock (this)
+            {
+                lock (nr)
+                {
+                    //Add all stimulations to local buffer
+                    while (nr.stimulations.Count > 0)
+                    {
+                        stimulations.Add(nr.stimulations[0]);
+#if (DEBUG_LOG)
+                        nr.logFile.WriteLine("[BakkumExpt] Waveform added, index: " + nr.waveforms[0].index + "\n\r\tTime: " 
+                            + DateTime.Now.Minute + ":" + DateTime.Now.Second + ":" + DateTime.Now.Millisecond);
+                        nr.logFile.Flush();
+#endif
+                        nr.stimulations.RemoveAt(0);
+                        if (stimulations.Count >= stimulations.Capacity)
+                            stimulations.RemoveAt(0);
+                    }
+                }
+                
+            }
+        }
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (AlertAllFinished != null) AlertAllFinished(this);
@@ -116,6 +153,7 @@ namespace NeuroRighter
             {
                 //pnpcl = new pnpClosedLoop();
                 pnpcl.grab(this);
+                
                 pnpcl.run();
                 //simpleExample();
                 //spikeCounter();

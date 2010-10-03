@@ -188,6 +188,7 @@
     <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
+    <Compile Include="Stimulation\Class1.cs" />
     <Compile Include="Stimulation\ClosedLoopExpt.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -201,6 +202,7 @@
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
     <Compile Include="Stimulation\StimulatorShowcaser.cs" />
+    <Compile Include="Stimulation\StimulusData.cs" />
     <Compile Include="Stimulation\StimWave.cs" />
   </ItemGroup>
   <ItemGroup>

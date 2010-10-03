@@ -280,6 +280,13 @@ namespace NeuroRighter
             System.Threading.Thread.Sleep(ms);
         }
 
+        //RETURN SPIKE FILE DATA
+        //public 
+
+        //RETURN STIM FILE DATA
+        
+
+
         #endregion
 
         #region INTERFACE METHODS

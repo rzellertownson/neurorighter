@@ -201,7 +201,8 @@ namespace NeuroRighter
                 
 
                 //record spikes for 100ms
-                recording = record(100);
+                System.Threading.Thread.Sleep(100);
+                recording = recordClear();
                 //update progress bar
                 //percentProgress+=10;
                 //percentProgress %= 100;
@@ -209,23 +210,7 @@ namespace NeuroRighter
             }
         }
 
-        private void spikeCounter()
-        {
-
-            //todo:figure out how the thing is triggered!
-            
-            while (!isCancelled)
-            {
-                record(100);   
-                int firingRate = 0;
-                while (waveforms.Count > 0)
-                {
-                    ++firingRate; //channels are 0-based
-                    waveforms.RemoveAt(0);
-                }
-                bw.ReportProgress(firingRate);
-            }
-        }
+       
 
         #endregion
 

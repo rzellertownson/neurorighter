@@ -1080,10 +1080,10 @@ namespace NeuroRighter
                                         }
 
                                         //if we are using stim data for closed loop purposes, save it
-                                        if (stimAcquired != null)
-                                        {
-                                            _stimulations.Add(new StimulusData(channel, index, voltage, pulseWidth));
-                                        }
+                                     //   if (stimAcquired != null)
+                                      //  {
+                                      //      _stimulations.Add(//new StimulusData(channel, index, voltage, pulseWidth));
+                                       // }
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
                                         for (int j = 0; j < (int)(8 * stimJump) + 1; ++j)
                                             prependedData[j + i] = 0;
@@ -1421,13 +1421,18 @@ namespace NeuroRighter
             //
             if (spikesAcquired != null)
             {
+                SpikeWaveform raw;
                 lock (this)
                 {
                     //Check to see if spikes are within trigger
                     for (int i = 0; i < newWaveforms.Count; ++i)
                     {
                         //removed triggering mechanism
-                            _waveforms.Add(newWaveforms[i]);
+                        raw = new SpikeWaveform(MEAChannelMappings.channel2LinearCR(newWaveforms[i].channel), startTime + newWaveforms[i].index, newWaveforms[i].threshold, newWaveforms[i].waveform);
+                       
+                        //also need to change mapping
+                            _waveforms.Add(raw);
+                            
 #if (DEBUG1)
                             logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
 #endif

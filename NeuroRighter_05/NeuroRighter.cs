@@ -1080,10 +1080,11 @@ namespace NeuroRighter
                                         }
 
                                         //if we are using stim data for closed loop purposes, save it
-                                     //   if (stimAcquired != null)
-                                      //  {
-                                      //      _stimulations.Add(//new StimulusData(channel, index, voltage, pulseWidth));
-                                       // }
+                                        if (stimAcquired != null)
+                                        {
+                                           double[] w = {};
+                                            _stimulations.Add(new StimulusData(channel,index,w));
+                                        }
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
                                         for (int j = 0; j < (int)(8 * stimJump) + 1; ++j)
                                             prependedData[j + i] = 0;

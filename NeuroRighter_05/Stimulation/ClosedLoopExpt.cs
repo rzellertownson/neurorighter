@@ -25,6 +25,7 @@ namespace NeuroRighter
         private int SpikesSaved = 100;
         private int StimSaved = 100;
         private pnpClosedLoopAbs pnpcl;
+        private bool first_stim = true;
 
         //variables for wavestimming
         internal int[] timeVec; //interstim times (NX1 vector)
@@ -111,27 +112,34 @@ namespace NeuroRighter
         }
         private void stimAcquired(object sender)
         {
-            NeuroRighter nr = (NeuroRighter)sender;
-            lock (this)
-            {
-                lock (nr)
-                {
-                    //Add all stimulations to local buffer
-                    while (nr.stimulations.Count > 0)
+            
+             NeuroRighter nr = (NeuroRighter)sender;
+             lock (this)
+             {
+                 lock (nr)
+                 {
+                    if (first_stim)
                     {
-                        stimulations.Add(nr.stimulations[0]);
+                            //get first stimulation to calculate offset
+                            //TODO: calculate offset
+                            //nr.stimulations[0]
+                            
+                            first_stim = false;
 #if (DEBUG_LOG)
                         nr.logFile.WriteLine("[BakkumExpt] Waveform added, index: " + nr.waveforms[0].index + "\n\r\tTime: " 
                             + DateTime.Now.Minute + ":" + DateTime.Now.Second + ":" + DateTime.Now.Millisecond);
                         nr.logFile.Flush();
 #endif
-                        nr.stimulations.RemoveAt(0);
-                        if (stimulations.Count >= stimulations.Capacity)
-                            stimulations.RemoveAt(0);
-                    }
-                }
-                
+                        
+                     }
+                     else
+                     {
+                            nr.stimulations.Clear();//don't bother saving these
+                     }
+                 }
+
             }
+            
         }
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

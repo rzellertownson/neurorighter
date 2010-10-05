@@ -17,6 +17,7 @@ namespace NeuroRighter
         int STIM_SAMPLING_FREQ;
         int NUM_SAMPLES_BLANKING = 1;
         private StimBuffer buffer;
+        double stim_spike_offset;
         #endregion
         
         #region STIM METHODS
@@ -109,7 +110,14 @@ namespace NeuroRighter
             buffer.append(timeVec, channelVec, waveMat);
         }
 
-      
+      //what is the time delay between the spike file and the stimulus indices?
+        public double StimOffset()
+        {
+            if (stim_spike_offset != null)
+                return stim_spike_offset;
+            else
+                return -1.0;
+        }
 
         public bool StimRunning()
         {
@@ -117,7 +125,9 @@ namespace NeuroRighter
         }
         public void stimBuffStart()
         {
+
             buffer.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask);
+            
         }
 
         public void stimBuffStop()

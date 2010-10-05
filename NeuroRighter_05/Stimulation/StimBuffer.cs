@@ -162,12 +162,22 @@ namespace NeuroRighter
             }
             outerbuffer.AddRange(stimlist);
         }
-        internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)
+        
+        internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)//, ulong starttime)
         {
             this.stimAnalogTask = stimAnalogTask;
             this.stimDigitalTask = stimDigitalTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
+            //calculate what time stimulation is starting at- start is controlled by user, so can't anticipate that
+            // it is synched to the overall start
+            //starttime is in microseconds
+
+
+         //   NumBuffLoadsCompleted = starttime / (BUFFSIZE * 1000000 / STIM_SAMPLING_FREQ);
+          //  BufferIndex = starttime % (BUFFSIZE * 1000000 / STIM_SAMPLING_FREQ);
+
+
             bw_stimbuffer.RunWorkerAsync();
             running = true;
         }

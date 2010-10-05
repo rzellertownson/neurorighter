@@ -28,3 +28,17 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\pnpClosed
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\pnpClosedLoop\BakkumExpt\bin\Debug\NeuroRighter.pdb
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\pnpClosedLoop\BakkumExpt\bin\Debug\NeuroRighter.xml
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\pnpClosedLoop\BakkumExpt\bin\Debug\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\obj\Debug\RileyClosedLoops.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\obj\Debug\RileyClosedLoops.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\RileyClosedLoops.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\RileyClosedLoops.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\NeuroRighter.exe
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\pnpClosedLoop.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\NeuroRighter.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\NeuroRighter.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\pnpClosedLoop\BakkumExpt\bin\Debug\csmatio.xml

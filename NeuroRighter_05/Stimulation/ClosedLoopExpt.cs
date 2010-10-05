@@ -118,11 +118,11 @@ namespace NeuroRighter
              {
                  lock (nr)
                  {
-                    if (first_stim)
+                    if (first_stim& (nr.stimulations.Count>0))
                     {
                             //get first stimulation to calculate offset
                             //TODO: calculate offset
-                            //nr.stimulations[0]
+                        stim_spike_offset = nr.stimulations[0].time;
                             
                             first_stim = false;
 #if (DEBUG_LOG)

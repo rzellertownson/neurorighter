@@ -1083,7 +1083,8 @@ namespace NeuroRighter
                                         if (stimAcquired != null)
                                         {
                                            double[] w = {};
-                                            _stimulations.Add(new StimulusData(channel,index,w));
+                                           double time = (double)(index) / spikeSamplingRate * 1000.0;
+                                            _stimulations.Add(new StimulusData(channel,time,w));
                                         }
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
                                         for (int j = 0; j < (int)(8 * stimJump) + 1; ++j)

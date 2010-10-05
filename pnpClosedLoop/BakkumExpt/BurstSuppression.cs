@@ -62,6 +62,8 @@ namespace RileyClosedLoops
                 }
                 w.WriteLine(DateTime.Now.TimeOfDay.ToString() + ":" + response);
             
+                
+                    w.WriteLine(DateTime.Now.TimeOfDay.ToString() + ":stim offset: " + CLE.StimOffset() + " stim in queue: " + CLE.stimuliInQueue()+ ".");
             }
 
         }

@@ -39,35 +39,14 @@ namespace NeuroRighter
             //Commit the stimulation tasks
             stimAnalogTask.Control(TaskAction.Commit);
             stimDigitalTask.Control(TaskAction.Commit);
-            
+            buffer = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
             
         }
 
         //initialize the stimbuffer if you want to keep adding stim commands to a buffer
         //bufferlength- size of the wavestim array (ie, the number of individual stimuli that can be stored and ready to go)
         //wavelength- the size of each waveform sent (this will put an upper limit on stimulation frequency as well as a limit on waveform length)
-        public void initializeStim(int bufferlength, int wavelength)
-        {
-            //stolen from JN's file2stim3 code
-            //create a stimbuffer that you can start appending to
-            //Set buffer regenation mode to off and set parameters
-            stimAnalogTask.Stop();
-            stimDigitalTask.Stop();
-
-            stimAnalogTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            stimDigitalTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            stimAnalogTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-            stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-
-            //Commit the stimulation tasks
-            stimAnalogTask.Control(TaskAction.Commit);
-            stimDigitalTask.Control(TaskAction.Commit);
-            buffer = new StimBuffer(wavelength, BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
-            
-        
-        }
+       
 
         //wavestim
         public void waveStim(int[] timeVec, int[] channelVec, double[,] waveMat) 
@@ -125,7 +104,7 @@ namespace NeuroRighter
            
         }
 
-        public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
+        public void appendStim(double[] timeVec, int[] channelVec, double[,] waveMat)
         {
             buffer.append(timeVec, channelVec, waveMat);
         }
@@ -150,30 +129,7 @@ namespace NeuroRighter
         #region simpler buffer
         //outer buffer is list
 
-        //initialize- this will eventually be user independent(and will be called automatically), but right now need to specify wave length by user
-        public void initializeStim(int wavelength)
-        {
-            //stolen from JN's file2stim3 code
-            //create a stimbuffer that you can start appending to
-            //Set buffer regenation mode to off and set parameters
-            stimAnalogTask.Stop();
-            stimDigitalTask.Stop();
-
-            stimAnalogTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            stimDigitalTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            stimAnalogTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-            stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-
-            //Commit the stimulation tasks
-            stimAnalogTask.Control(TaskAction.Commit);
-            stimDigitalTask.Control(TaskAction.Commit);
-            buffer = new StimBuffer(wavelength, BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
-                //bufferlength, 
-
-
-        }
+       
         //wavestim- add these stimuli to the buffer
 
         //start- start the experiment, all timing based on this point

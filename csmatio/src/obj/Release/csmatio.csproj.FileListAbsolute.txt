@@ -53,3 +53,8 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\csmatio\s
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\csmatio\src\bin\Release\zlib.net.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\appending197\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\csmatio\src\obj\Release\csmatio.dll

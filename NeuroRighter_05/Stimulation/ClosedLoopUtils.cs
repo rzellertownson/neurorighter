@@ -118,6 +118,15 @@ namespace NeuroRighter
             
         }
 
+        public double currentStimTime()
+        {
+            if (buffer != null)
+                return buffer.time();
+            else
+                return -1.0;
+
+        }
+
         public bool StimRunning()
         {
             return buffer.running;

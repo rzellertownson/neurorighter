@@ -710,7 +710,7 @@ namespace NeuroRighter
 
         public double time()
         {
-            return (double)((NumBuffLoadsCompleted * BUFFSIZE + BufferIndex) * STIM_SAMPLING_FREQ / 1000);
+            return (double)((stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
         }
         #region MUX conversion Functions
         internal static UInt32 channel2MUX(double channel)

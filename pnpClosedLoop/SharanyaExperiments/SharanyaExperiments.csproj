@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2FBD3066-367F-4B2E-8629-284971D9AF7D}</ProjectGuid>
+    <ProjectGuid>{6E8664EA-3670-4E7D-97FB-921E519805A5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RileyClosedLoops</RootNamespace>
-    <AssemblyName>RileyClosedLoops</AssemblyName>
+    <RootNamespace>SharanyaExperiments</RootNamespace>
+    <AssemblyName>SharanyaExperiments</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,12 +33,7 @@
   <ItemGroup>
     <Reference Include="NeuroRighter, Version=0.5.4.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <ExecutableExtension>.exe</ExecutableExtension>
       <HintPath>..\..\NeuroRighter_05\bin\Release\NeuroRighter.exe</HintPath>
-    </Reference>
-    <Reference Include="pnpClosedLoop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\pnpClosedLoop\obj\Debug\pnpClosedLoop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -55,10 +50,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BakkumExpt.cs" />
-    <Compile Include="burstSuppression.cs" />
-    <Compile Include="exampleClosedLoop.cs" />
+    <Compile Include="twoElectrodePulses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pnpClosedLoop\pnpClosedLoop.csproj">
+      <Project>{C92F5278-96E0-4E2D-9814-81FB69588D7B}</Project>
+      <Name>pnpClosedLoop</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

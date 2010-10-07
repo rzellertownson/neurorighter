@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pnpClosedLoop", "pnpClosedL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakkumExpt", "BakkumExpt\BakkumExpt.csproj", "{2FBD3066-367F-4B2E-8629-284971D9AF7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharanyaExperiments", "SharanyaExperiments\SharanyaExperiments.csproj", "{6E8664EA-3670-4E7D-97FB-921E519805A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{2FBD3066-367F-4B2E-8629-284971D9AF7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FBD3066-367F-4B2E-8629-284971D9AF7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FBD3066-367F-4B2E-8629-284971D9AF7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E8664EA-3670-4E7D-97FB-921E519805A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8664EA-3670-4E7D-97FB-921E519805A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8664EA-3670-4E7D-97FB-921E519805A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8664EA-3670-4E7D-97FB-921E519805A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

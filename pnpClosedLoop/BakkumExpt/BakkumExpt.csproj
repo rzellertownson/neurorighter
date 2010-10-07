@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BakkumExpt.cs" />
-    <Compile Include="burstSuppression.cs" />
     <Compile Include="exampleClosedLoop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

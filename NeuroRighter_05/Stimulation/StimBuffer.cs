@@ -240,7 +240,7 @@ namespace NeuroRighter
             }
             catch (Exception me)
             {
-                MessageBox.Show("stim buffer (append mode) error:  please close NeuroRighter after saving your data. flag:"+flag +". "+ me.Message, "stimbuffer exception thrown");
+                MessageBox.Show("stim buffer (append mode) error:  please close NeuroRighter after saving your data. flag:"+flag +". "+ me.Message,  "stimbuffer exception thrown");
             }
             }
 
@@ -511,7 +511,7 @@ namespace NeuroRighter
 
                 currentStim = outerbuffer.ElementAt(0);
                 outerbuffer.RemoveAt(0);
-
+                //WaveMatrix = currentStim.waveform;
                 NumSampWrittenForCurrentStim = 0;
                 BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
                 if (currentStim.StimSample < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
@@ -690,7 +690,7 @@ namespace NeuroRighter
                 }
                 else
                 {
-                    AnalogPoint[0] = WaveMatrix[StimulusIndex, NumSamplesLoadedForWave];
+                    AnalogPoint[0] = currentStim.waveform[NumSamplesLoadedForWave]; 
                     AnalogPoint[1] = 0;
                 }
 

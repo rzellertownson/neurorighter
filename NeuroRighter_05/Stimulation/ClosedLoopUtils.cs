@@ -15,7 +15,7 @@ namespace NeuroRighter
         #region stim params
         Int32 BUFFSIZE;
         int STIM_SAMPLING_FREQ;
-        int NUM_SAMPLES_BLANKING = 1;
+        int NUM_SAMPLES_BLANKING = 10;
         private StimBuffer buffer;
         double stim_spike_offset = -1.0;
         #endregion
@@ -110,12 +110,21 @@ namespace NeuroRighter
             buffer.append(timeVec, channelVec, waveMat);
         }
 
+        public void appendStim(List<StimulusData> stim)
+        {
+            buffer.append(stim);
+        }
       //what is the time delay between the spike file and the stimulus indices?
         public double StimOffset()
         {
             
                 return stim_spike_offset;
             
+        }
+
+        public int StimSampFreq()
+        {
+            return STIM_SAMPLING_FREQ;
         }
 
         public double currentStimTime()
@@ -227,40 +236,8 @@ namespace NeuroRighter
         }
         #endregion
 
-        public void stim(stimWave sw)
-{
-    stimAnalogTask.Timing.SamplesPerChannel = sw.analogPulse.GetLength(1);
-    stimDigitalTask.Timing.SamplesPerChannel = sw.digitalData.GetLength(0);
-
-    stimAnalogWriter.WriteMultiSample(true, sw.analogPulse);
-    if (Properties.Settings.Default.StimPortBandwidth == 32)
-        stimDigitalWriter.WriteMultiSamplePort(true, sw.digitalData);
-    else if (Properties.Settings.Default.StimPortBandwidth == 8)
-        stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(sw.digitalData));
-    stimDigitalTask.WaitUntilDone();
-    stimAnalogTask.WaitUntilDone();
-    stimAnalogTask.Stop();
-    stimDigitalTask.Stop();
-}
+       
     }
 
-    public class stimWave
-    {
-            internal Double[,] analogPulse;
-            internal UInt32[] digitalData;
-            public stimWave(int ms)
-            {
-                int totalLength = 0;
-                int numRows = 4;
-                totalLength += 1 + StimPulse.STIM_SAMPLING_FREQ * ms / 1000;
-                analogPulse = new double[numRows, totalLength]; //Only make one pulse of train, the padding zeros will ensure proper rate when sampling is regenerative
-                //digitalData = new UInt32[totalLength + 2 * (StimPulse.NUM_SAMPLES_BLANKING + 2)];
-               // digitalData = new UInt32
-                int offset = 0;
-                int size = 0;
-                for (int j = size; j < StimPulse.STIM_SAMPLING_FREQ * ms / 1000; ++j)
-                    analogPulse[0, j + offset] = 4.0; //4 Volts, TTL-compatible
-                analogPulse[0, analogPulse.GetLength(1) - 1] = 0.0;
-            }
-    }
+    
 }

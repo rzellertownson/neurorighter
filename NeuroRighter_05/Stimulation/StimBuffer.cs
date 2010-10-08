@@ -141,6 +141,7 @@ namespace NeuroRighter
                // double[] w = {1.0,1.0};
                // stim = new StimulusData(1,1.0,w);
                 stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
+                wave = null;
               //  MessageBox.Show("created a stim");
                 stim.calcIndex(STIM_SAMPLING_FREQ);
               //  MessageBox.Show("calc'd the index");

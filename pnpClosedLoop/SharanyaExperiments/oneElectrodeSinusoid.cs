@@ -11,31 +11,31 @@ using NeuroRighter;
 
 namespace SharanyaExperiments
 {
-    public class twoElectrodePulses : pnpClosedLoopAbs
+    public class oneElectrodeSinusoid : pnpClosedLoopAbs
     
     {
-
+       
         
         
-        double amplitude = 0.5;//voltage
+        
+        
 
-
+        //int STIM_SAMP_FREQ = 100000;//hz
         
 
         public  override void  run()
         {
-            
-            //THIS STUFF WOULD NORMALLY BE IN MATLAB FOR OPEN LOOP STIM
+              //THIS STUFF WOULD NORMALLY BE IN MATLAB FOR OPEN LOOP STIM
 
             //params
-            double trainFrequency = 7.7;//hz
-            double pulseFrequency = 500;//hz
-            int pulsesPerTrain = 5;
-            int[] channels = new int[2] { 1, 2 };
+            double amplitude = 0.5;//voltage
+            double frequency = 7.7;//hz
+            double duration = 12987;
+
+            int[] channels = new int[1] { 1};//, 2 };
 
             //calculate timing stuff here:
-            double isi = 1000.0 / trainFrequency;//ms- what is the spacing between each stimulus?
-            double phaseLength = 1000.0 / pulseFrequency;//ms
+            double isi = duration;//1000.0 / trainFrequency;//ms- what is the spacing between each stimulus?
             double[] phaseOffset = new double[channels.GetLength(0)];
             for (int i = 0; i < phaseOffset.Length; i++)
             {
@@ -43,7 +43,7 @@ namespace SharanyaExperiments
             }
             
             //create the waveform
-            double[] wave =  waveform(phaseLength, pulsesPerTrain, amplitude);
+            double[] wave = sinusoid(frequency, duration, amplitude);// waveform(phaseLength, pulsesPerTrain, amplitude);
             double[,] wavemat = new double[wave.Length, channels.Length];
             for (int i = 0; i < channels.Length; i++)
             {
@@ -76,7 +76,7 @@ namespace SharanyaExperiments
                 {
                     if (CLE.stimuliInQueue() < 2)//lets put an upper bound of one stimulus 'on deck' before we add more
                     {
-                       currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
+                        currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
                         stimTimes = calcTimeVec(phaseOffset, currentTime);//when do we stimulate next?
 
 

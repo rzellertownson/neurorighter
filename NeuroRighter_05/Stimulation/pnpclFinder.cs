@@ -29,8 +29,8 @@ namespace NeuroRighter
                     plugInAssemblyList.Add(Assembly.LoadFile(file.FullName));
                 }
             }
-          //  files = null;
-           // dInfo = null;
+            files = null;
+            dInfo = null;
             return plugInAssemblyList;
         }
 

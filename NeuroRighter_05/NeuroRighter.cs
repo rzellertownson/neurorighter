@@ -4676,6 +4676,9 @@ ch = 1;
                 pnpcl_available_dropdown.Items.Clear();
                 foreach (pnpClosedLoopAbs exp in experiments)
                     pnpcl_available_dropdown.Items.Add(exp.ToString());
+
+                //LAZY EDITS
+                experiments = null;
             }
             catch (Exception me)
             {

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharanyaExperiments", "Shar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleExperimentLibrary", "ExampleExperimentLibrary\ExampleExperimentLibrary.csproj", "{AF3DAFFC-7103-4A4B-ABF2-644D96AAF8A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "classicExperiments", "classicExperiments\classicExperiments.csproj", "{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{AF3DAFFC-7103-4A4B-ABF2-644D96AAF8A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF3DAFFC-7103-4A4B-ABF2-644D96AAF8A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF3DAFFC-7103-4A4B-ABF2-644D96AAF8A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

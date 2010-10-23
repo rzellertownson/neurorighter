@@ -21,3 +21,15 @@ C:\Users\Jon\Desktop\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop
 C:\Users\Jon\Desktop\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\pnpClosedLoop.dll
 C:\Users\Jon\Desktop\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\pnpClosedLoop.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\pnpClosedLoop.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\pnpClosedLoop.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\NeuroRighter.exe
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\NeuroRighter.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\NeuroRighter.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\bin\Debug\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\pnpClosedLoop\obj\Debug\pnpClosedLoop.pdb

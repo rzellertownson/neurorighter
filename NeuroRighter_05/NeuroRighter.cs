@@ -462,8 +462,8 @@ namespace NeuroRighter
                         {
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
-                            
-                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq) 
+
+                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq) 
                                 spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
                         }
                         else

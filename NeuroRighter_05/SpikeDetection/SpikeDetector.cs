@@ -38,6 +38,7 @@ namespace NeuroRighter
         protected rawType[] _appendedData;
         protected rawType[,] threshold;
         protected rawType _thresholdMultiplier;
+        protected float[][] returnThresh;
 
         protected const int DEADTIME = 20; //Num samples overlap between possible spike detections
 
@@ -71,6 +72,27 @@ namespace NeuroRighter
         }
 
         protected virtual void updateThreshold(rawType[] data, int channel) { }
+
+        internal virtual float[][] GetCurrentThresholds()
+        {
+
+
+                returnThresh = new float[2][];
+
+                for (int i = 0; i < 2; ++i)
+                {
+                    returnThresh[i] = new float[numChannels];
+                }
+
+                for (int i = 0; i < numChannels; ++i)
+                {
+                    returnThresh[0][i] = (float)(threshold[0, i]);
+                    returnThresh[1][i] = (float)(-threshold[0, i]);
+                }
+ 
+
+            return returnThresh;
+        }
 
         public virtual void detectSpikes(rawType[] data, List<SpikeWaveform> waveforms, int channel)
         {

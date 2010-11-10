@@ -147,7 +147,7 @@ namespace NeuroRighter
 
         //Plots
         private GridGraph spikeGraph;
-        private GridGraph spkWfmGraph;
+        private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;
         private RowGraph muaGraph;
 
@@ -463,7 +463,7 @@ namespace NeuroRighter
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
 
-                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq) 
+                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
                                 spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
                         }
                         else
@@ -1303,6 +1303,7 @@ namespace NeuroRighter
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 spikeDetector.detectSpikes(filtSpikeData[i], newWaveforms, i);
 
+
             #region SpikeValidation
             double Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
             int numSamplesPeak = (int)Math.Ceiling(0.0005*Fs); //Search the first half millisecond after thresh crossing      
@@ -1505,13 +1506,19 @@ namespace NeuroRighter
         private void spikePlotData_dataAcquired(object sender)
         {
             PlotData pd = (PlotData)sender;
+
             if (spikeGraph.Visible && !checkBox_freeze.Checked)
             {
-                float[][] data = pd.read();
+                float[][] data = pd.read(); 
+                float[][] currentThresh = spikeDetector.GetCurrentThresholds();
+                float[][] threshdata1  = pd.readthresh(currentThresh[0]);
+                float[][] threshdata2 =  pd.readthresh(currentThresh[1]);
+
                 for (int i = 0; i < data.Length; ++i)
-                    spikeGraph.plotY(data[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                    spikeGraph.plotYWithThresh(data[i], threshdata1[i], threshdata2[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, Microsoft.Xna.Framework.Graphics.Color.SlateGray, i);
                 spikeGraph.Invalidate();
             }
+  
             else { pd.skipRead(); }
 
             #region Recording_LED
@@ -2158,7 +2165,7 @@ namespace NeuroRighter
                     numRows = numCols = 4; break;
             }
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
-            spkWfmGraph = new GridGraph();
+            spkWfmGraph = new SnipGridGraph();
             if (spikeTask != null && spikeTask[0] != null)
                 spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
             else

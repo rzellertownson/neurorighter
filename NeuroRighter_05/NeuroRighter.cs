@@ -330,6 +330,9 @@ namespace NeuroRighter
         //Main body of code in this function
         private void buttonStart_Click(object sender, EventArgs e)
         {
+
+            updateSettings();
+
             if (!taskRunning)
             {
                 //Ensure that, if recording is setup, that it has been done properly
@@ -1777,6 +1780,8 @@ namespace NeuroRighter
     logFile.Close();
     logFile.Dispose();
 #endif
+
+            updateSettings();
         }
 
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -2718,6 +2723,13 @@ namespace NeuroRighter
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (tabControl.SelectedIndex == 4 && buttonStart.Enabled) 
+            {
+                
+                MessageBox.Show("Please start the scope before accessing the stimulation tab.");
+                tabControl.SelectedIndex = 0;
+            }
+
             switch (tabControl.SelectedTab.Text)
             //switch (tabControl.SelectedIndex)
             {
@@ -2854,6 +2866,7 @@ namespace NeuroRighter
         /* ************************************************************************
          *  STIMULATION
          * ************************************************************************/
+
         #region On Demand Stimulation
         private void button_stim_Click(object sender, EventArgs e)
         {
@@ -2914,6 +2927,7 @@ namespace NeuroRighter
             stim_params[4] = rate;
             stim_params[5] = inOffsetVoltage;
             stim_params[6] = interphaseLength;
+
             bw_stim.RunWorkerAsync(stim_params);
         }
 
@@ -3242,15 +3256,6 @@ namespace NeuroRighter
             if (listBox_stimChannels.SelectedIndices.Count > 0)
             {
 
-                button_stim.Enabled = false;
-                button_stimExpt.Enabled = false;
-                openLoopStart.Enabled = false;
-                openLoopStop.Enabled = true;
-                button_stim.Refresh();
-                button_stimExpt.Refresh();
-                listBox_exptStimChannels.Enabled = false;
-                listBox_stimChannels.Enabled = false;
-
                 stim_params sp = new stim_params();
 
                 sp.v1 = Convert.ToDouble(openLoopVoltage1.Value);
@@ -3274,8 +3279,16 @@ namespace NeuroRighter
                 stimDigitalTask.Timing.SamplesPerChannel = sizeSeq;
                 stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples; //When these are set to continuous, the sampling is regenerative
                 stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples;
-
                 bw_openLoop.RunWorkerAsync(sp);
+
+                button_stim.Enabled = false;
+                button_stimExpt.Enabled = false;
+                openLoopStart.Enabled = false;
+                openLoopStop.Enabled = true;
+                button_stim.Refresh();
+                button_stimExpt.Refresh();
+                listBox_exptStimChannels.Enabled = false;
+                listBox_stimChannels.Enabled = false;
             }
             else //Display error that no channels are selected
                 MessageBox.Show("Stimulation not started. No channels selected for stimulation. Please select at least one channel.", "NeuroRighter Stimulation Error",

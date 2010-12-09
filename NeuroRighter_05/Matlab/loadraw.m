@@ -3,7 +3,7 @@
 %    raw or LFP file and returns traces in an MxN matrix, where M  
 %    is the number of channels and N is the number of data points.
 %
-%    y = LOADRAW(filename, ch) extracts only the specified channel (0-based)
+%    y = LOADRAW(filename, ch) extracts only the specified channel (1-based)
 %
 %    y = LOADRAW(filename, timespan) extracts all channel data
 %    for the specific time range.  'timespan' is a 1x2 vector, [t0 t1].
@@ -21,6 +21,6 @@
 % 
 %    Created by: John Rolston (rolston2@gmail.com)
 %    Created on: June 26, 2007
-%    Last modified: April 22, 2009
+%    Last modified: Dec 08, 2010
 %    
 %    Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt

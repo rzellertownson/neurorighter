@@ -17,6 +17,12 @@ Matlab command prompt, where [function file name] is the *.c file for the desire
 example, “mex loadraw.c”.  This should produce a working function. 
 
 
+*****
+[EDIT, JN 08-12-2010]
+In newer version of NR, code revision 150 and up, you do not need to compile loadspike.c in matlab. You can use the interpreted code, loadspike.m instead.If you are having weird results, completely remove the loadspike.c, loadspike.mex and loadspike.mex32 from the path where loadspike.m is.
+
+
+
 In addition to these files for loading data, there is a matlab script for creating the .olstim files needed
 for open loop stimulation from file: makestimfile.m. Finally, There is a matlab class, SqueakySpk, that can be used
 to do basic preprocessing on the extracellular 'snippet' data that NeuroRighter nominally produces. This

@@ -174,6 +174,7 @@ namespace NeuroRighter
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
+        private const short CHAN_INDEX_START = 1;
         #endregion
 
         #region Constructor
@@ -1392,8 +1393,8 @@ namespace NeuroRighter
                             //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
                             //for (int k = 0; k < numPre + numPost + 1; ++k)
                             //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
-                            fsSpks.WriteSpikeToFile(newWaveforms[j].channel, startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);
+                            fsSpks.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData);// JN +1 in channel field switches to 1-based channel numbering
                         }
                     }
                     #endregion
@@ -1414,8 +1415,8 @@ namespace NeuroRighter
                             //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
                             //for (int k = 0; k < numPre + numPost + 1; ++k)
                             //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
-                            fsSpks.WriteSpikeToFile(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);
+                            fsSpks.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData); // JN +1 in channel field switches to 1-based channel numbering
                         }
                     }
                     #endregion

@@ -2213,7 +2213,7 @@ namespace NeuroRighter
        }
 
 
-        #region The region resets the SALPA parameters in real time when the user changes them
+        #region Resets the SALPA parameters
 
 
         private void numericUpDown_salpa_halfwidth_ValueChanged(object sender, EventArgs e)
@@ -3492,6 +3492,165 @@ namespace NeuroRighter
             drawOpenLoopStimPulse();
         }
         #endregion //End DrawStimPulse region
+
+        #region arbitrary stimulation from file
+        File2Stim3 custprot;
+
+        private void button_startStimFromFile_Click(object sender, EventArgs e)
+        {
+            if (textBox_protocolFileLocations.Text.Length < 1)
+            {
+                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
+            }
+            else
+            {
+                button_startStimFromFile.Enabled = false;
+                button_stopStimFromFile.Enabled = true;
+
+                string stimfile = textBox_protocolFileLocations.Text;
+
+                // Make sure that the user has input a valid file path
+                if (!checkFilePath(stimfile))
+                {
+                    MessageBox.Show("The *.olstim file provided does not exist");
+                    button_startStimFromFile.Enabled = true;
+                    button_stopStimFromFile.Enabled = false;
+                    return;
+                }
+
+                // Refresh DAQ tasks as they are needed for file2stim
+                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+
+                // Create new DAQ tasks and corresponding writers
+                stimPulseTask = new Task("stimPulseTask");
+                stimDigitalTask = new Task("stimDigitalTask");
+
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                }
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                }
+
+                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+
+                // Setup the AO and DO tasks for continuous stimulaiton
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.SynchronizeCallbacks = false;
+                stimPulseTask.SynchronizeCallbacks = false;
+
+                //Create output writers
+                stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+                stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+                //Verify the tasks
+                stimPulseTask.Control(TaskAction.Verify);
+                stimDigitalTask.Control(TaskAction.Verify);
+
+                // Create a File2Stim object and start to run the protocol via its methods
+                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                buttonStart.PerformClick();
+                custprot.start();
+                buttonStop.Enabled = false;
+                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
+
+                progressBar_protocolFromFile.Minimum = 0;
+                progressBar_protocolFromFile.Maximum = 100;
+                progressBar_protocolFromFile.Value = 0;
+
+            }
+        }
+
+        private void button_stopStimFromFile_Click(object sender, EventArgs e)
+        {
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            custprot.stop();
+            buttonStop.Enabled = true;
+            buttonStop.PerformClick();
+
+            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+
+            stimDigitalTask = new Task("stimDigitalTask");
+
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+
+            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
+            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+            //De-select channel on mux
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            //stimDigitalTask.Start();
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
+            updateSettings();
+        }
+
+        private void protProgressChangedHandler(object sender, int percentage)
+        {
+            progressBar_protocolFromFile.Value = percentage;
+        }
+
+        // Return buttons to default configuration when finished
+        private void protFinisheddHandler(object sender)
+        {
+            buttonStop.Enabled = true;
+            progressBar_protocolFromFile.Value = 0;
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
+        }
+
+        private bool checkFilePath(string filePath)
+        {
+            string sourcefile = @filePath;
+            bool check = File.Exists(sourcefile);
+            return (check);
+        }
+
+
+        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
+            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
+            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = OLStimFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = OLStimFileDialog.FileName;
+                textBox_protocolFileLocations.Text = filenameOutput;
+            }
+        }
+        #endregion
+
         #endregion //End stimulation section
 
         #region Impedance Testing
@@ -4500,164 +4659,6 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
-
-        #region arbitrary stimulation from file
-        File2Stim3 custprot;
-
-        private void button_startStimFromFile_Click(object sender, EventArgs e)
-        {
-            if (textBox_protocolFileLocations.Text.Length < 1)
-            {
-                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
-            }
-            else
-            {
-                button_startStimFromFile.Enabled = false;
-                button_stopStimFromFile.Enabled = true;
-
-                string stimfile = textBox_protocolFileLocations.Text;
-
-                // Make sure that the user has input a valid file path
-                if (!checkFilePath(stimfile))
-                {
-                    MessageBox.Show("The *.olstim file provided does not exist");
-                    button_startStimFromFile.Enabled = true;
-                    button_stopStimFromFile.Enabled = false;
-                    return;
-                }
-
-                // Refresh DAQ tasks as they are needed for file2stim
-                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-
-                // Create new DAQ tasks and corresponding writers
-                stimPulseTask = new Task("stimPulseTask");
-                stimDigitalTask = new Task("stimDigitalTask");
-
-                if (Properties.Settings.Default.StimPortBandwidth == 32)
-                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                if (Properties.Settings.Default.StimPortBandwidth == 32)
-                {
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
-                }
-                else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                {
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                }
-
-                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-
-                // Setup the AO and DO tasks for continuous stimulaiton
-                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase",Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-                stimDigitalTask.SynchronizeCallbacks = false;
-                stimPulseTask.SynchronizeCallbacks = false;
-
-                //Create output writers
-                stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-                stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-                //Verify the tasks
-                stimPulseTask.Control(TaskAction.Verify);
-                stimDigitalTask.Control(TaskAction.Verify);
-
-                // Create a File2Stim object and start to run the protocol via its methods
-                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
-                buttonStart.PerformClick();
-                custprot.start();
-                buttonStop.Enabled = false;
-                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
-                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
-
-                progressBar_protocolFromFile.Minimum = 0;
-                progressBar_protocolFromFile.Maximum = 100;
-                progressBar_protocolFromFile.Value = 0;
-
-            }
-        }
-
-        private void button_stopStimFromFile_Click(object sender, EventArgs e)
-        {
-            button_startStimFromFile.Enabled = true;
-            button_stopStimFromFile.Enabled = false;
-            custprot.stop();
-            buttonStop.Enabled = true;
-            buttonStop.PerformClick();
-
-            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-
-            stimDigitalTask = new Task("stimDigitalTask");
-
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-
-            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
-            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-            //De-select channel on mux
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
-            //stimDigitalTask.Start();
-            stimDigitalTask.WaitUntilDone();
-            stimDigitalTask.Stop();
-            updateSettings();
-        }
-
-        private void protProgressChangedHandler(object sender, int percentage)
-        {
-            progressBar_protocolFromFile.Value = percentage;
-        }
-
-        // Return buttons to default configuration when finished
-        private void protFinisheddHandler(object sender)
-        {
-            buttonStop.Enabled = true;
-            progressBar_protocolFromFile.Value = 0;
-            button_startStimFromFile.Enabled = true;
-            button_stopStimFromFile.Enabled = false;
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
-        }
-
-        private bool checkFilePath(string filePath)
-        {
-            string sourcefile = @filePath;
-            bool check = File.Exists(sourcefile);
-            return (check);
-        }
-
-
-        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
-        {
-            // Set dialog's default properties
-            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
-            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
-            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
-
-            // Display Save File Dialog (Windows forms control)
-            DialogResult result = OLStimFileDialog.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                filenameOutput = OLStimFileDialog.FileName;
-                textBox_protocolFileLocations.Text = filenameOutput;
-            }
-        }
-        #endregion
 
 
     }

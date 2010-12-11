@@ -37,12 +37,14 @@ namespace NeuroRighter
         protected int[] _currentLocationWrite;
         protected const int BUFFER_LENGTH = 25000; //Num pts to store for each channel
         protected int numChannels;
+        protected double preampgain;
         protected Stream outStream;
         protected BackgroundWorker _bgWorker;
 
-        internal FileOutput(string filenameBase, int numChannels, int samplingRate, int fileType, Task recordingTask, string extension)
+        internal FileOutput(string filenameBase, int numChannels, int samplingRate, int fileType, Task recordingTask, string extension, double preampgain)
         {
             this.numChannels = numChannels;
+            this.preampgain = preampgain;
             _bgWorker = new BackgroundWorker();
             _bgWorker.WorkerSupportsCancellation = true;
             _bgWorker.DoWork += new DoWorkEventHandler(_bgWorker_doWork);
@@ -55,7 +57,7 @@ namespace NeuroRighter
             //Create output file
             outStream = createStream(filenameBase + extension, 256 * 1024);
 
-            writeHeader(numChannels, samplingRate, fileType, recordingTask);
+            writeHeader(numChannels, samplingRate, fileType, recordingTask, preampgain);
             _bgWorker.RunWorkerAsync();
         }
 
@@ -64,7 +66,7 @@ namespace NeuroRighter
             return new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, false);
         }
 
-        protected virtual void writeHeader(int numChannels, int samplingRate, int fileType, Task recordingTask)
+        protected virtual void writeHeader(int numChannels, int samplingRate, int fileType, Task recordingTask, double preampgain)
         {
             DateTime dt = DateTime.Now; //Get current time (local to computer)
             double[] scalingCoeffs = recordingTask.AIChannels[0].DeviceScalingCoefficients;
@@ -76,14 +78,14 @@ namespace NeuroRighter
             switch (fileType)
             {
                 case 0: //Raw or LFP
-                    outStream.Write(BitConverter.GetBytes(scalingCoeffs[0]), 0, 8); //Double: Scaling coefficients
-                    outStream.Write(BitConverter.GetBytes(scalingCoeffs[1]), 0, 8);
-                    outStream.Write(BitConverter.GetBytes(scalingCoeffs[2]), 0, 8);
-                    outStream.Write(BitConverter.GetBytes(scalingCoeffs[3]), 0, 8);
+                    outStream.Write(BitConverter.GetBytes((1 / preampgain) * scalingCoeffs[0]), 0, 8); //Double: Scaling coefficients
+                    outStream.Write(BitConverter.GetBytes((1 / preampgain) * scalingCoeffs[1]), 0, 8);
+                    outStream.Write(BitConverter.GetBytes((1 / preampgain) * scalingCoeffs[2]), 0, 8);
+                    outStream.Write(BitConverter.GetBytes((1 / preampgain) * scalingCoeffs[3]), 0, 8);
                     break;
                 case 1: //Derived
                     outStream.Write(BitConverter.GetBytes(0.0), 0, 8); //Double: Scaling coefficients
-                    outStream.Write(BitConverter.GetBytes(recordingTask.AIChannels.All.RangeHigh / 32768.0), 0, 8);
+                    outStream.Write(BitConverter.GetBytes((1 / preampgain) * recordingTask.AIChannels.All.RangeHigh / 32768.0), 0, 8);
                     outStream.Write(BitConverter.GetBytes(0.0), 0, 8);
                     outStream.Write(BitConverter.GetBytes(0.0), 0, 8);
                     break;

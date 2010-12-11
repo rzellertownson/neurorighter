@@ -8,8 +8,8 @@ namespace NeuroRighter
 {
     internal class FileOutputRemapped : FileOutput
     {
-        internal FileOutputRemapped(string filenameBase, int numChannels, int samplingRate, int fileType, Task recordingTask, string extension) :
-            base( filenameBase,  numChannels,  samplingRate,  fileType,  recordingTask, extension) {}
+        internal FileOutputRemapped(string filenameBase, int numChannels, int samplingRate, int fileType, Task recordingTask, string extension, double preampgain) :
+            base( filenameBase,  numChannels,  samplingRate,  fileType,  recordingTask, extension, preampgain) {}
 
         internal override void read(short[,] data, int numChannelsData, int startChannelData, int length)
         {

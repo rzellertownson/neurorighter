@@ -25,11 +25,11 @@ namespace NeuroRighter
 {
     using rawType = System.Double;
 
-    /// <author>John Rolston (rolston2@gmail.com)</author>
+    /// <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
     class RMSThresholdFixed : SpikeDetector
     {
-        private const int TOTAL_NUM_UPDATES = 4;
-        private int[] numUpdates; //We want to calculate RMS based on the first few calls, then stop updating
+        private const int TOTAL_NUM_UPDATES = 500;
+        private int[] numUpdates; //We want to converge on a good estimate of RMS based on the first few calls, then stop updating
 
         public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult) :
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult) 
@@ -45,8 +45,10 @@ namespace NeuroRighter
                 tempData += data[j * downsample] * data[j * downsample]; //Square data
             tempData /= (spikeBufferLength / downsample);
             rawType thresholdTemp = (rawType)(Math.Sqrt(tempData) * _thresholdMultiplier);
-            threshold[0, channel] = (threshold[0, channel] * (numUpdates[channel] - 1) + thresholdTemp) / numUpdates[channel];
-            //threshold[0,channel] = Math.Sqrt(tempData) * _thresholdMultiplier;
+
+            threshold[0, channel] = (threshold[0, channel]*(numUpdates[channel] - 1)) / numUpdates[channel]  + (thresholdTemp / numUpdates[channel]);// Recursive RMS estimate
+
+            //threshold[0, channel] = threshold[0, channel] + thresholdTemp/numUpdates[channel];
         }
 
         public override void detectSpikes(rawType[] data, List<SpikeWaveform> waveforms, int channel)

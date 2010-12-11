@@ -8,8 +8,11 @@ using Microsoft.Xna.Framework.Content;
 
 namespace NeuroRighter
 {
-    ///<author>John Rolston</author>
-    sealed internal class GridGraph : GraphicsDeviceControl
+    /// <summary>
+    /// <author> Jon Newman</author>
+    /// This Class is an extension of the gridgraph class for plotting a grid of data.
+    /// </summary>
+    sealed internal class SnipGridGraph : GraphicsDeviceControl
     {
         private float minX = 0F;
         private float maxX = 1F;
@@ -28,7 +31,7 @@ namespace NeuroRighter
         {
             get { return _isSpikeWaveformPlot; }
         }
-    
+
 
         private Color gridColor = Color.White;
 
@@ -72,10 +75,10 @@ namespace NeuroRighter
                 }
                 idx = new int[numSamplesPerPlot * numCols];
             }
-            else 
+            else
             {
                 lines = new List<VertexPositionColor[]>(numCols * numRows * NUM_WAVEFORMS_PER_PLOT);
-                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i) 
+                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
                 idx = new int[numSamplesPerPlot];
             }
@@ -159,17 +162,11 @@ namespace NeuroRighter
             }
         }
 
-        internal void plotYWithThresh(float[] data, float[] threshold1, float[] threshold2, float firstX, float incrementX, Color colorWave, Color colorThresh, int plotNumber)
+        internal void plotY(float[] data, float firstX, float incrementX, Color c, int plotNumber)
         {
             for (int i = 0; i < data.GetLength(0); ++i)
                 lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                    yScale * ((float)data[i] - maxY), 0), colorWave);
-            for (int i = 0; i < data.GetLength(0); ++i)
-                threshlines1[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                    yScale * (threshold1[i] - maxY), 0), colorThresh);
-            for (int i = 0; i < data.GetLength(0); ++i)
-                threshlines2[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                    yScale * (threshold2[i] - maxY), 0), colorThresh);
+                    yScale * ((float)data[i] - maxY), 0), c);
         }
 
         protected override void Draw()
@@ -184,20 +181,12 @@ namespace NeuroRighter
             effect.Begin();
             effect.CurrentTechnique.Passes[0].Begin();
 
-
-            for (int i = 0; i < lines.Count; ++i)
-                GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
-                    lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
-            for (int i = 0; i < threshlines1.Count; ++i)
-            {
-                GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
-                    threshlines1[i], 0, idx.Length, idx, 0, idx.Length - 1);
-                GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
-                    threshlines2[i], 0, idx.Length, idx, 0, idx.Length - 1);
-            }
             for (int i = 0; i < gridLines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     gridLines[i], 0, 2, gridIdx, 0, 1);
+            for (int i = 0; i < lines.Count; ++i)
+                GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
+                    lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
 
             effect.CurrentTechnique.Passes[0].End();
             effect.End();
@@ -240,7 +229,7 @@ namespace NeuroRighter
             float boxWidth = (float)this.Width / numCols;
 
             const int MARGIN = 5; //Pixels from vert/horz grid for each label
-                //labels will be in upper left of each box
+            //labels will be in upper left of each box
 
             if (channelNumberLocations == null)
                 channelNumberLocations = new Dictionary<int, Vector2>(numCols * numRows);
@@ -307,9 +296,10 @@ namespace NeuroRighter
 
         protected override void Dispose(bool disposing)
         {
-            if (content != null) 
+            if (content != null)
                 content.Unload();
- 	        base.Dispose(disposing);
+            base.Dispose(disposing);
         }
     }
 }
+

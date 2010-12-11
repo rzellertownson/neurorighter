@@ -128,6 +128,7 @@ namespace NeuroRighter
         private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA
         private SALPA2 SALPAFilter;
+        private bool skipSecondVal;
         private int numChannels;
         private int numChannelsPerDev;
         private int[] currentRef;
@@ -153,7 +154,7 @@ namespace NeuroRighter
 
         //Plots
         private GridGraph spikeGraph;
-        private GridGraph spkWfmGraph;
+        private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;
         private RowGraph muaGraph;
 
@@ -180,6 +181,7 @@ namespace NeuroRighter
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
+        private const short CHAN_INDEX_START = 1;
         #endregion
 
         #region Constructor
@@ -234,9 +236,7 @@ namespace NeuroRighter
 
 
             //Select default channels for Bakkum expt.
-            for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.Items.Count; ++i)
-                listBox_closedLoopLearningPTSElectrodes.SetSelected(i, true);
-
+           
             updateSettings();
 
             setSpikeDetector();
@@ -293,8 +293,7 @@ namespace NeuroRighter
             LFPHighCut.Value = Convert.ToDecimal(Properties.Settings.Default.LFPHighCut);
             LFPFiltOrder.Value = Convert.ToDecimal(Properties.Settings.Default.LFPNumPoles);
 
-            //Set default for closed-loop follower expt.
-            comboBox_ClosedLoopFollowerAlgorithm.SelectedIndex = 0;
+           
         }
         #endregion
 
@@ -335,6 +334,9 @@ namespace NeuroRighter
         //Main body of code in this function
         private void buttonStart_Click(object sender, EventArgs e)
         {
+
+            updateSettings();
+
             if (!taskRunning)
             {
                 //Ensure that, if recording is setup, that it has been done properly
@@ -468,8 +470,8 @@ namespace NeuroRighter
                         {
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
-                            
-                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq) 
+
+                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
                                 spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
                         }
                         else
@@ -712,9 +714,9 @@ namespace NeuroRighter
                             if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
                             {
                                 if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
                                 else
-                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw");
+                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
                             }
 
                             //File for clipped waveforms and spike times
@@ -733,13 +735,13 @@ namespace NeuroRighter
                             if (Properties.Settings.Default.UseLFPs)
                             {
                                 if (Properties.Settings.Default.SeparateLFPBoard)
-                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp");
+                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp", Properties.Settings.Default.PreAmpGain);
                                 else //Using spikes A/D card to capture LFP data, too.
                                 {
                                     if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
                                     else
-                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp");
+                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
                                 }
                             }
 
@@ -1186,7 +1188,7 @@ namespace NeuroRighter
             //Write data to file
             if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
             {
-                rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
                 rawType tempVal;
                 for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                     for (int j = 0; j < spikeBufferLength; ++j)
@@ -1274,8 +1276,14 @@ namespace NeuroRighter
             #endregion
 
             #region SALPA Filtering
-            if (checkBox_SALPA.Checked)
+            if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
+            {
+                SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, 0);
+            }
+            else if (checkBox_SALPA.Checked)
+            {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
+            }
             #endregion SALPA Filtering
 
             #region SpikeFiltering
@@ -1322,10 +1330,11 @@ namespace NeuroRighter
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 spikeDetector.detectSpikes(filtSpikeData[i], newWaveforms, i);
 
+
             #region SpikeValidation
-            const int numSamplesPeak = 10; //Number of samples to search for max peak after threshold crossing
-            int numSamplesToSearch = 64;
-            if ((numPre + numPost + 1) < numSamplesToSearch) numSamplesToSearch = (numPre + numPost + 1);
+            double Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
+            int numSamplesPeak = (int)Math.Ceiling(0.0005*Fs); //Search the first half millisecond after thresh crossing      
+            int numSamplesToSearch = (numPre + numPost + 1);
 
             if (checkBox_spikeValidation.Checked)
             {
@@ -1346,19 +1355,47 @@ namespace NeuroRighter
 
                     //Find peak
                     double maxVal = 0.0;
-                    for (int k = 0; k < numSamplesPeak; ++k)
+                    for (int k = numPre; k < numPre+numSamplesPeak; ++k)
                     {
-                        if (Math.Abs(newWaveforms[w].waveform[k + numPre]) > maxVal)
-                            maxVal = Math.Abs(newWaveforms[w].waveform[k + numPre]);
+                        if (Math.Abs(newWaveforms[w].waveform[k ]) > maxVal)
+                            maxVal = Math.Abs(newWaveforms[w].waveform[k]);
                     }
-                    //Search pts. before and after for bigger, disqualifying if there are larger peaks
-                    for (int k = 0; k < numSamplesToSearch; ++k)
-                    {
-                        if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
+                    //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
+                    if (maxVal > 1e-6*Convert.ToDouble(textBox_AbsArtThresh.Text))
                         {
                             newWaveforms.RemoveAt(w);
                             --w;
-                            break;
+                        }
+                    else
+                    {
+                        skipSecondVal = false;
+
+                        for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
+                        {
+
+                            if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
+                            {
+                                newWaveforms.RemoveAt(w);
+                                --w;
+                                skipSecondVal = true;
+                                break;
+                            }
+                      
+                        }
+
+                        if (!skipSecondVal)
+                        {
+                            for (int k = 0; k < numPre; ++k)
+                            {
+
+                                if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
+                                {
+                                    newWaveforms.RemoveAt(w);
+                                    --w;
+                                    break;
+                                }
+
+                            }
                         }
                     }
 
@@ -1382,8 +1419,8 @@ namespace NeuroRighter
                             //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
                             //for (int k = 0; k < numPre + numPost + 1; ++k)
                             //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
-                            fsSpks.WriteSpikeToFile(newWaveforms[j].channel, startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);
+                            fsSpks.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData);// JN +1 in channel field switches to 1-based channel numbering
                         }
                     }
                     #endregion
@@ -1404,8 +1441,8 @@ namespace NeuroRighter
                             //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
                             //for (int k = 0; k < numPre + numPost + 1; ++k)
                             //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
-                            fsSpks.WriteSpikeToFile(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);
+                            fsSpks.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData); // JN +1 in channel field switches to 1-based channel numbering
                         }
                     }
                     #endregion
@@ -1418,9 +1455,6 @@ namespace NeuroRighter
             #region WriteSpikeWfmsToListeningProcesses
             //Alert any listening processes that we have new spikes.  It's up to them to clear wavefroms periodically.
             //That's definitely not the best way to do it.
-
-
-            //
             if (spikesAcquired != null)
             {
                 SpikeWaveform raw;
@@ -1506,13 +1540,19 @@ namespace NeuroRighter
         private void spikePlotData_dataAcquired(object sender)
         {
             PlotData pd = (PlotData)sender;
+
             if (spikeGraph.Visible && !checkBox_freeze.Checked)
             {
-                float[][] data = pd.read();
+                float[][] data = pd.read(); 
+                float[][] currentThresh = spikeDetector.GetCurrentThresholds();
+                float[][] threshdata1  = pd.readthresh(currentThresh[0]);
+                float[][] threshdata2 =  pd.readthresh(currentThresh[1]);
+
                 for (int i = 0; i < data.Length; ++i)
-                    spikeGraph.plotY(data[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                    spikeGraph.plotYWithThresh(data[i], threshdata1[i], threshdata2[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, Microsoft.Xna.Framework.Graphics.Color.SlateGray, i);
                 spikeGraph.Invalidate();
             }
+  
             else { pd.skipRead(); }
 
             #region Recording_LED
@@ -1770,6 +1810,8 @@ namespace NeuroRighter
     logFile.Close();
     logFile.Dispose();
 #endif
+
+            updateSettings();
         }
 
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -2106,16 +2148,13 @@ namespace NeuroRighter
             numericUpDown_impChannel.Maximum = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             listBox_stimChannels.Items.Clear();
             listBox_exptStimChannels.Items.Clear();
-            listBox_closedLoopLearningProbeElectrodes.Items.Clear();
-            listBox_closedLoopLearningCPSElectrodes.Items.Clear();
-            listBox_closedLoopLearningPTSElectrodes.Items.Clear();
+           
             for (int i = 0; i < Convert.ToInt32(comboBox_numChannels.SelectedItem); ++i)
             {
                 listBox_stimChannels.Items.Add(i + 1);
-                listBox_closedLoopLearningCPSElectrodes.Items.Add(i + 1);
+  
                 listBox_exptStimChannels.Items.Add(i + 1);
-                listBox_closedLoopLearningProbeElectrodes.Items.Add(i + 1);
-                listBox_closedLoopLearningPTSElectrodes.Items.Add(i + 1);
+
             }
 
             //Ensure that sampling rates are okay
@@ -2159,7 +2198,7 @@ namespace NeuroRighter
                     numRows = numCols = 4; break;
             }
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
-            spkWfmGraph = new GridGraph();
+            spkWfmGraph = new SnipGridGraph();
             if (spikeTask != null && spikeTask[0] != null)
                 spkWfmGraph.setup(numRows, numCols, numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
             else
@@ -2206,7 +2245,7 @@ namespace NeuroRighter
        }
 
 
-        #region The region resets the SALPA parameters in real time when the user changes them
+        #region Resets the SALPA parameters
 
 
         private void numericUpDown_salpa_halfwidth_ValueChanged(object sender, EventArgs e)
@@ -2711,6 +2750,13 @@ namespace NeuroRighter
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (tabControl.SelectedIndex == 4 && buttonStart.Enabled) 
+            {
+                
+                MessageBox.Show("Please start the scope before accessing the stimulation tab.");
+                tabControl.SelectedIndex = 0;
+            }
+
             switch (tabControl.SelectedTab.Text)
             //switch (tabControl.SelectedIndex)
             {
@@ -2847,6 +2893,7 @@ namespace NeuroRighter
         /* ************************************************************************
          *  STIMULATION
          * ************************************************************************/
+
         #region On Demand Stimulation
         private void button_stim_Click(object sender, EventArgs e)
         {
@@ -2907,6 +2954,7 @@ namespace NeuroRighter
             stim_params[4] = rate;
             stim_params[5] = inOffsetVoltage;
             stim_params[6] = interphaseLength;
+
             bw_stim.RunWorkerAsync(stim_params);
         }
 
@@ -3235,15 +3283,6 @@ namespace NeuroRighter
             if (listBox_stimChannels.SelectedIndices.Count > 0)
             {
 
-                button_stim.Enabled = false;
-                button_stimExpt.Enabled = false;
-                openLoopStart.Enabled = false;
-                openLoopStop.Enabled = true;
-                button_stim.Refresh();
-                button_stimExpt.Refresh();
-                listBox_exptStimChannels.Enabled = false;
-                listBox_stimChannels.Enabled = false;
-
                 stim_params sp = new stim_params();
 
                 sp.v1 = Convert.ToDouble(openLoopVoltage1.Value);
@@ -3267,8 +3306,16 @@ namespace NeuroRighter
                 stimDigitalTask.Timing.SamplesPerChannel = sizeSeq;
                 stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples; //When these are set to continuous, the sampling is regenerative
                 stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples;
-
                 bw_openLoop.RunWorkerAsync(sp);
+
+                button_stim.Enabled = false;
+                button_stimExpt.Enabled = false;
+                openLoopStart.Enabled = false;
+                openLoopStop.Enabled = true;
+                button_stim.Refresh();
+                button_stimExpt.Refresh();
+                listBox_exptStimChannels.Enabled = false;
+                listBox_stimChannels.Enabled = false;
             }
             else //Display error that no channels are selected
                 MessageBox.Show("Stimulation not started. No channels selected for stimulation. Please select at least one channel.", "NeuroRighter Stimulation Error",
@@ -3485,6 +3532,165 @@ namespace NeuroRighter
             drawOpenLoopStimPulse();
         }
         #endregion //End DrawStimPulse region
+
+        #region arbitrary stimulation from file
+        File2Stim3 custprot;
+
+        private void button_startStimFromFile_Click(object sender, EventArgs e)
+        {
+            if (textBox_protocolFileLocations.Text.Length < 1)
+            {
+                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
+            }
+            else
+            {
+                button_startStimFromFile.Enabled = false;
+                button_stopStimFromFile.Enabled = true;
+
+                string stimfile = textBox_protocolFileLocations.Text;
+
+                // Make sure that the user has input a valid file path
+                if (!checkFilePath(stimfile))
+                {
+                    MessageBox.Show("The *.olstim file provided does not exist");
+                    button_startStimFromFile.Enabled = true;
+                    button_stopStimFromFile.Enabled = false;
+                    return;
+                }
+
+                // Refresh DAQ tasks as they are needed for file2stim
+                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+
+                // Create new DAQ tasks and corresponding writers
+                stimPulseTask = new Task("stimPulseTask");
+                stimDigitalTask = new Task("stimDigitalTask");
+
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                if (Properties.Settings.Default.StimPortBandwidth == 32)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                }
+                else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                {
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                }
+
+                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+
+                // Setup the AO and DO tasks for continuous stimulaiton
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.SynchronizeCallbacks = false;
+                stimPulseTask.SynchronizeCallbacks = false;
+
+                //Create output writers
+                stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+                stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+                //Verify the tasks
+                stimPulseTask.Control(TaskAction.Verify);
+                stimDigitalTask.Control(TaskAction.Verify);
+
+                // Create a File2Stim object and start to run the protocol via its methods
+                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                buttonStart.PerformClick();
+                custprot.start();
+                buttonStop.Enabled = false;
+                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
+
+                progressBar_protocolFromFile.Minimum = 0;
+                progressBar_protocolFromFile.Maximum = 100;
+                progressBar_protocolFromFile.Value = 0;
+
+            }
+        }
+
+        private void button_stopStimFromFile_Click(object sender, EventArgs e)
+        {
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            custprot.stop();
+            buttonStop.Enabled = true;
+            buttonStop.PerformClick();
+
+            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+
+            stimDigitalTask = new Task("stimDigitalTask");
+
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+
+            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
+            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+
+            //De-select channel on mux
+            if (Properties.Settings.Default.StimPortBandwidth == 32)
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            //stimDigitalTask.Start();
+            stimDigitalTask.WaitUntilDone();
+            stimDigitalTask.Stop();
+            updateSettings();
+        }
+
+        private void protProgressChangedHandler(object sender, int percentage)
+        {
+            progressBar_protocolFromFile.Value = percentage;
+        }
+
+        // Return buttons to default configuration when finished
+        private void protFinisheddHandler(object sender)
+        {
+            buttonStop.Enabled = true;
+            progressBar_protocolFromFile.Value = 0;
+            button_startStimFromFile.Enabled = true;
+            button_stopStimFromFile.Enabled = false;
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
+        }
+
+        private bool checkFilePath(string filePath)
+        {
+            string sourcefile = @filePath;
+            bool check = File.Exists(sourcefile);
+            return (check);
+        }
+
+
+        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
+            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
+            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = OLStimFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = OLStimFileDialog.FileName;
+                textBox_protocolFileLocations.Text = filenameOutput;
+            }
+        }
+        #endregion
+
         #endregion //End stimulation section
 
         #region Impedance Testing
@@ -4164,41 +4370,7 @@ ch = 1;
         }
         #endregion
 
-        #region bakkum experiment
-        BakkumExpt expt;
-        //rtzt3 edit
-        private void button_closedLoopLearningStart_Click(object sender, EventArgs e)
-        {
-            button_closedLoopLearningStart.Enabled = false;
-            button_closedLoopLearningStop.Enabled = true;
-
-            List<int> probeChannels = new List<int>();
-            List<int> CPSChannels = new List<int>();
-            List<int> PTSChannels = new List<int>();
-
-            for (int i = 0; i < listBox_closedLoopLearningProbeElectrodes.SelectedItems.Count; ++i)
-                probeChannels.Add(Convert.ToInt32(listBox_closedLoopLearningProbeElectrodes.SelectedItems[i]));
-            for (int i = 0; i < listBox_closedLoopLearningCPSElectrodes.SelectedItems.Count; ++i)
-                CPSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningCPSElectrodes.SelectedItems[i]));
-            for (int i = 0; i < listBox_closedLoopLearningPTSElectrodes.SelectedItems.Count; ++i)
-                PTSChannels.Add(Convert.ToInt32(listBox_closedLoopLearningPTSElectrodes.SelectedItems[i]));
-
-            //Get user's desired votlage
-            double voltage = Convert.ToDouble(numericUpDown_bakkumVoltage.Value);
-
-            expt = new BakkumExpt(CPSChannels, probeChannels, PTSChannels, voltage, stimDigitalTask, stimPulseTask,
-                stimDigitalWriter, stimPulseWriter);
-            expt.linkToSpikes(this);
-            expt.start();
-        }
-
-        private void button_closedLoopLearningStop_Click(object sender, EventArgs e)
-        {
-            expt.stop();
-            button_closedLoopLearningStart.Enabled = true;
-            button_closedLoopLearningStop.Enabled = false;
-        }
-        #endregion
+     
 
         #region IISZapper (Experimental)
 
@@ -4337,142 +4509,7 @@ ch = 1;
             numericUpDown_timedRecordingDuration.Enabled = checkBox_enableTimedRecording.Checked;
             numericUpDown_timedRecordingDurationSeconds.Enabled = checkBox_enableTimedRecording.Checked;
         }
-        #region open loop follower
-        private Stimulation.OpenLoopFollowerTest olfTest;
-        private void button_OpenLoopFollowerStart_Click(object sender, EventArgs e)
-        {
-            //Take care of buttons
-            button_stim.Enabled = false;
-            button_stimExpt.Enabled = false;
-            button_OpenLoopFollowerStart.Enabled = false;
-            button_OpenLoopFollowerStop.Enabled = true;
-            button_ClosedLoopFollowerStart.Enabled = false;
-            button_stim.Refresh();
-            button_stimExpt.Refresh();
-
-            List<int> channels = new List<int>(listBox_OpenLoopFollowerChannels.SelectedIndices.Count); //Only use these channels
-            for (int i = 0; i < listBox_OpenLoopFollowerChannels.SelectedIndices.Count; ++i)
-                channels.Add(Convert.ToInt32(listBox_OpenLoopFollowerChannels.SelectedItems[i]));
-
-            char[] delimiterChars = { ' ', ',', ':', '\t', '\n' };
-            string[] s = textBox_OpenLoopFollowerFrequencies.Text.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-            List<double> frequencies = new List<double>(s.Length);
-            for (int i = 0; i < s.Length; ++i) frequencies.Add(Convert.ToDouble(s[i]));
-            double voltage = Convert.ToDouble(numericUpDown_OpenLoopFollowerVoltage.Value);
-
-            //Get durations
-            double Duration = Convert.ToDouble(numericUpDown_OpenLoopFollowerDuration.Value);
-            double WaitDuration = Convert.ToDouble(numericUpDown_OpenLoopFollowerWaitDuration.Value);
-
-            olfTest = new Stimulation.OpenLoopFollowerTest(channels, frequencies, voltage, Duration, WaitDuration,
-                stimPulseTask, stimDigitalTask, stimPulseWriter, stimDigitalWriter);
-            olfTest.alertAllFinished += new Stimulation.OpenLoopFollowerTest.AllFinishedHandler(OpenLoopFollowerFinished);
-            olfTest.alertProgressChanged += new Stimulation.OpenLoopFollowerTest.ProgressChangedHandler(OpenLoopFollowerProgressChanged);
-            progressBar__OpenLoopFollowerProgressBar.Minimum = 0;
-            progressBar__OpenLoopFollowerProgressBar.Maximum = 100;
-            progressBar__OpenLoopFollowerProgressBar.Value = 0;
-            olfTest.Start();
-        }
-
-        private void OpenLoopFollowerProgressChanged(object sender, int percent, int channel, double frequency)
-        {
-            progressBar__OpenLoopFollowerProgressBar.Value = percent;
-            label_OpenLoopFollowerStatus.Text = "Channel: " + channel.ToString() + "\r\nFreq. (Hz): " + frequency.ToString("F1");
-        }
-
-        private void OpenLoopFollowerFinished(object sender)
-        {
-            olfTest = null;
-
-            button_stim.Enabled = true;
-            button_stimExpt.Enabled = true;
-            button_OpenLoopFollowerStart.Enabled = true;
-            button_OpenLoopFollowerStop.Enabled = false;
-            button_ClosedLoopFollowerStart.Enabled = true;
-        }
-
-        private void button_OpenLoopFollowerStop_Click(object sender, EventArgs e)
-        {
-            olfTest.Stop();
-            olfTest = null;
-
-            button_stim.Enabled = true;
-            button_stimExpt.Enabled = true;
-            button_OpenLoopFollowerStart.Enabled = true;
-            button_OpenLoopFollowerStop.Enabled = false;
-            button_ClosedLoopFollowerStart.Enabled = true;
-        }
-        #endregion
-        #region closed loop follower
-        private Stimulation.ClosedLoopFollowerTest clfTest;
-        private void button_ClosedLoopFollowerStart_Click(object sender, EventArgs e)
-        {
-            if (checkBox_SALPA.Checked)
-            {
-                //Take care of buttons
-                button_stim.Enabled = false;
-                button_stimExpt.Enabled = false;
-                button_OpenLoopFollowerStart.Enabled = false;
-                button_ClosedLoopFollowerStop.Enabled = true;
-                button_ClosedLoopFollowerStart.Enabled = false;
-                button_stim.Refresh();
-                button_stimExpt.Refresh();
-
-                List<int> channels = new List<int>(listBox_ClosedLoopFollowerChannels.SelectedIndices.Count); //Only use these channels
-                for (int i = 0; i < listBox_ClosedLoopFollowerChannels.SelectedIndices.Count; ++i)
-                    channels.Add(Convert.ToInt32(listBox_ClosedLoopFollowerChannels.SelectedItems[i]));
-                double voltage = Convert.ToDouble(numericUpDown_ClosedLoopFollowerVoltage.Value);
-
-                //calculate blanking time
-                double blankingTime = 0.0;
-                blankingTime += (double)(SALPAFilter.postPeg + SALPAFilter.postPegZero + SALPAFilter.prePeg) / spikeSamplingRate;
-
-                clfTest = new Stimulation.ClosedLoopFollowerTest(channels, voltage, stimPulseTask, stimDigitalTask, stimPulseWriter,
-                    stimDigitalWriter, blankingTime);
-                clfTest.alertProgressChanged += new Stimulation.ClosedLoopFollowerTest.ProgressChangedHandler(ClosedLoopFollowerProgressChanged);
-                clfTest.alertAllFinished += new Stimulation.ClosedLoopFollowerTest.AllFinishedHandler(ClosedLoopFollowerFinished);
-                clfTest.linkToSpikes(this);
-                clfTest.Start();
-
-            }
-
-            else
-                MessageBox.Show("SALPA must be running.", "Closed-loop Follower Error", MessageBoxButtons.OK);
-
-        }
-
-        private void ClosedLoopFollowerProgressChanged(object sender, int channel, double frequency, double metric, double metricDifference)
-        {
-            label_ClosedLoopFollowerData.Text = "Ch #" + channel.ToString() + ", " + frequency.ToString("F1") + " Hz\r\n" +
-                "Value = " + metric.ToString("F2") + "\r\nDifference = " + metricDifference.ToString("F2") + "%";
-        }
-
-        private void ClosedLoopFollowerFinished(object sender)
-        {
-            clfTest = null;
-
-            button_stim.Enabled = true;
-            button_stimExpt.Enabled = true;
-            button_OpenLoopFollowerStart.Enabled = true;
-            button_ClosedLoopFollowerStop.Enabled = false;
-            button_ClosedLoopFollowerStart.Enabled = true;
-        }
-
-        private void button_ClosedLoopFollowerStop_Click(object sender, EventArgs e)
-        {
-            if (clfTest != null)
-            {
-                clfTest.Stop(this);
-                clfTest = null;
-
-                button_stim.Enabled = true;
-                button_stimExpt.Enabled = true;
-                button_OpenLoopFollowerStart.Enabled = true;
-                button_ClosedLoopFollowerStop.Enabled = false;
-                button_ClosedLoopFollowerStart.Enabled = true;
-            }
-        }
-        #endregion
+       
         private void button_ElectrodeScreeningSelectAll_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < listBox_exptStimChannels.Items.Count; ++i)
@@ -4498,165 +4535,6 @@ ch = 1;
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
 
-        #region arbitrary stimulation from file
-        File2Stim3 custprot;
-
-        private void button_startStimFromFile_Click(object sender, EventArgs e)
-        {
-            if (textBox_protocolFileLocations.Text.Length < 1)
-            {
-                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
-            }
-            else
-            {
-                button_startStimFromFile.Enabled = false;
-                button_stopStimFromFile.Enabled = true;
-
-                string stimfile = textBox_protocolFileLocations.Text;
-
-                // Make sure that the user has input a valid file path
-                if (!checkFilePath(stimfile))
-                {
-                    MessageBox.Show("The *.olstim file provided does not exist");
-                    button_startStimFromFile.Enabled = true;
-                    button_stopStimFromFile.Enabled = false;
-                    return;
-                }
-
-                // Refresh DAQ tasks as they are needed for file2stim
-                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-
-                // Create new DAQ tasks and corresponding writers
-                stimPulseTask = new Task("stimPulseTask");
-                stimDigitalTask = new Task("stimDigitalTask");
-
-                if (Properties.Settings.Default.StimPortBandwidth == 32)
-                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                if (Properties.Settings.Default.StimPortBandwidth == 32)
-                {
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
-                }
-                else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                {
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                    stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                }
-
-                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-
-                // Setup the AO and DO tasks for continuous stimulaiton
-                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase",Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-                stimDigitalTask.SynchronizeCallbacks = false;
-                stimPulseTask.SynchronizeCallbacks = false;
-
-                //Create output writers
-                stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-                stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-                //Verify the tasks
-                stimPulseTask.Control(TaskAction.Verify);
-                stimDigitalTask.Control(TaskAction.Verify);
-
-                // Create a File2Stim object and start to run the protocol via its methods
-                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
-                buttonStart.PerformClick();
-                custprot.start();
-                buttonStop.Enabled = false;
-                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
-                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
-
-                progressBar_protocolFromFile.Minimum = 0;
-                progressBar_protocolFromFile.Maximum = 100;
-                progressBar_protocolFromFile.Value = 0;
-
-            }
-        }
-
-        private void button_stopStimFromFile_Click(object sender, EventArgs e)
-        {
-            button_startStimFromFile.Enabled = true;
-            button_stopStimFromFile.Enabled = false;
-            custprot.stop();
-            buttonStop.Enabled = true;
-            buttonStop.PerformClick();
-
-            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-
-            stimDigitalTask = new Task("stimDigitalTask");
-
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-
-            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
-            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-
-            //De-select channel on mux
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
-            //stimDigitalTask.Start();
-            stimDigitalTask.WaitUntilDone();
-            stimDigitalTask.Stop();
-            updateSettings();
-        }
-
-        private void protProgressChangedHandler(object sender, int percentage)
-        {
-            progressBar_protocolFromFile.Value = percentage;
-        }
-
-        // Return buttons to default configuration when finished
-        private void protFinisheddHandler(object sender)
-        {
-            buttonStop.Enabled = true;
-            progressBar_protocolFromFile.Value = 0;
-            button_startStimFromFile.Enabled = true;
-            button_stopStimFromFile.Enabled = false;
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
-        }
-
-        private bool checkFilePath(string filePath)
-        {
-            string sourcefile = @filePath;
-            bool check = File.Exists(sourcefile);
-            return (check);
-        }
-
-
-        private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
-        {
-            // Set dialog's default properties
-            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
-            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
-            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
-
-            // Display Save File Dialog (Windows forms control)
-            DialogResult result = OLStimFileDialog.ShowDialog();
-
-            if (result == DialogResult.OK)
-            {
-                filenameOutput = OLStimFileDialog.FileName;
-                textBox_protocolFileLocations.Text = filenameOutput;
-            }
-        }
-        #endregion
-
-        
 
         #region plug-n-play closed loop
 
@@ -4834,6 +4712,11 @@ ch = 1;
         }
 
         #endregion
+
+        private void groupBox33_Enter(object sender, EventArgs e)
+        {
+
+        }
 
        
 

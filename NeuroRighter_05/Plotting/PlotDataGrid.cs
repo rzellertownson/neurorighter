@@ -148,5 +148,110 @@ namespace NeuroRighter
 
             return outputData;
         }
+        internal override float[][] readthresh(float[] currentThresholds)
+        {
+            float temp;
+            if (numChannels == 16 || numChannels == 64)
+            {
+                for (int i = 0; i < numRows; ++i) //row
+                {
+                    for (int j = 0; j < numCols; ++j) //col
+                    {
+                        int outRow = i;
+                        int outCol = j;
+                        if (numChannels == 64 && channelMapping == "invitro")
+                        {
+                            outRow = MEAChannelMappings.ch2rc[i * numRows + j, 0] - 1;
+                            outCol = MEAChannelMappings.ch2rc[i * numRows + j, 1] - 1;
+                        }
+
+                        if (readHead + numSamplesPerPlot < bufferLength)
+                        {
+                            for (int k = 0; k < numSamplesPerPlot; ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = currentThresholds[i * numRows + j] * gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputThreshData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
+                        }
+                        else
+                        {
+                            for (int k = 0; k < bufferLength - readHead; ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = currentThresholds[i * numRows + j]* gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputThreshData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
+                            for (int k = 0; k < numSamplesPerPlot - (bufferLength - readHead); ++k) //sample
+                            {
+                                //Adjust for display gain and overshoots
+                                temp = currentThresholds[i * numRows + j] * gain;
+                                if (temp > halfBoxHeight)
+                                    temp = halfBoxHeight;
+                                else if (temp < -halfBoxHeight)
+                                    temp = -halfBoxHeight;
+                                //Translate data down and into output buffer
+                                outputThreshData[outRow][numSamplesPerPlot * outCol + k] = temp - outRow * boxHeight;
+                            }
+                        }
+                    }
+                }
+            }
+            if (numChannels == 32)
+            {
+                for (int i = 0; i < numRows - 1; ++i) //row - 1, since last row only has two channels
+                {
+                    for (int j = 0; j < numCols; ++j) //col
+                    {
+                        for (int k = 0; k < numSamplesPerPlot; ++k) //sample
+                        {
+                            //Adjust for display gain and overshoots
+                            temp = currentThresholds[i * numRows + j] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
+                            if (temp > halfBoxHeight)
+                                temp = halfBoxHeight;
+                            else if (temp < -halfBoxHeight)
+                                temp = -halfBoxHeight;
+                            //Translate data down and into output buffer
+                            outputThreshData[i][numSamplesPerPlot * j + k] = temp - i * boxHeight;
+                        }
+                    }
+                }
+                //Last row
+                for (int i = 0; i < 2; ++i)
+                {
+                    for (int k = 0; k < numSamplesPerPlot; ++k) //sample
+                    {
+                        //Adjust for display gain and overshoots
+                        temp = currentThresholds[i + 30] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
+                        if (temp > halfBoxHeight)
+                            temp = halfBoxHeight;
+                        else if (temp < -halfBoxHeight)
+                            temp = -halfBoxHeight;
+                        //Translate data down and into output buffer
+                        outputThreshData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5F * boxHeight;
+                    }
+                }
+            }
+
+            float[][] outThreshDat;
+            outThreshDat = new float[numRows][];
+            for (int i = 0; i < numRows; ++i)
+            {
+                outThreshDat[i] = new float[outputThreshData[i].Length];
+                Array.Copy(outputThreshData[i], outThreshDat[i], outputThreshData[i].Length);
+            }
+            return outThreshDat;
+        }
+
     }
 }

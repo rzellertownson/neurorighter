@@ -6,7 +6,7 @@
  *     raw or LFP file and returns traces in an MxN matrix, where M  
  *     is the number of channels and N is the number of data points.
  *
- * y = LOADRAW(filename, ch) extracts only the specified channel (0-based)
+ * y = LOADRAW(filename, ch) extracts only the specified channel (1-based)
  *
  * y = LOADRAW(filename, timespan) extracts all channel data
  *     for the specific time range.  'timespan' is a 1x2 vector, [t0 t1].
@@ -25,7 +25,7 @@
  * 
  * Created by: John Rolston (rolston2@gmail.com)
  * Created on: June 26, 2007
- * Last modified: April 21, 2009
+ * Last modified: Dec 08, 2010
  *
  * Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt
  *
@@ -230,7 +230,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     if (ch < 0) /* default, all channels */
         plhs[0] = mxCreateDoubleMatrix(numChannels,outN,mxREAL);
     else { /* just the specified channel */
-        if (ch > numChannels - 1) {
+        if (ch == 0 || ch > numChannels) {
             fclose(fp);
             mexErrMsgTxt("Specified extraction channel does not exist in dataset.");
         }
@@ -264,7 +264,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
         }
         else { /* just extract one channel */
             getFilePos(fp, (fpos_T*) &position);
-            offset = position + (int64_T)(2*ch);
+            offset = position + (int64_T)(2*(ch-1));
             setFilePos(fp, (fpos_T*) &offset);
             /*fseek(fp, 2*ch, SEEK_CUR); /* advance to next time channel appears */
             fread(&val,2,1,fp); /* Read value */
@@ -272,7 +272,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                 scalingCoeffs[2] * scalingCoeffs[2] * (double)val +
                 scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)val;
             getFilePos(fp, (fpos_T*) &position);
-            offset = position + (int64_T)(2*(numChannels - 1 -ch));
+            offset = position + (int64_T)(2*(numChannels - 1 - (ch-1)));
             setFilePos(fp, (fpos_T*) &offset);
             /*fseek(fp, 2*(numChannels - 1 - ch), SEEK_CUR); /* skip past remaining channels */
             /* NB: We could just do one initial seek, then always seek ahead by all channels,

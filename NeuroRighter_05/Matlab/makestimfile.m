@@ -24,6 +24,9 @@ end
 if size(channel,1) ~= size(time,1) || size(waveform,1) ~= size(time,1)
     error('Error:dim','The number of indicies in the first dimension of the time channel \n and waveform matracies must be equal since it is the number of stimuli to be delivered');
 end
+if size(waveform,2) < 80
+    error('Error:Wavelength','The length of your stimulus waveforms Should be at least 80 Samples long so that its parameters can be encoded by the DAQ in four 20 sample chunks. For shorter stimuli, you can define multiple ones per line so they are effictively one stimulus.');
+end
 
 % open file and write header
 fid = fopen(strcat([filename,'.olstim']),'w');

@@ -150,7 +150,10 @@ namespace NeuroRighter
                 }
                 catch (DaqException err)
                 {
-                    MessageBox.Show(err.Message);
+                    if (!bw.CancellationPending)
+                    {
+                        MessageBox.Show(err.Message);
+                    }
                 }
 
             }

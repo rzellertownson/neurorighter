@@ -144,6 +144,7 @@ namespace NeuroRighter
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (AlertAllFinished != null) AlertAllFinished(this);
+            buffer.stop();
             pnpcl.close();
         }
 
@@ -157,6 +158,7 @@ namespace NeuroRighter
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
+            
             try
             {
                 //pnpcl = new pnpClosedLoop();

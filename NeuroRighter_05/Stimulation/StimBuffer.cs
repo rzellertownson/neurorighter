@@ -129,9 +129,10 @@ namespace NeuroRighter
              
             //okay, passed the tests, start appending
             StimulusData stim;
-            double[] wave = new double[WaveMatrix.GetLength(0)];
+            
             for (int i = 0; i < WaveMatrix.GetLength(1); i++)
             {
+                double[] wave = new double[WaveMatrix.GetLength(0)];
                 //this.TimeVector[outerIndexWrite] = TimeVector[i];
                 for (int j = 0; j < WaveMatrix.GetLength(0); j++)
                 {
@@ -141,7 +142,7 @@ namespace NeuroRighter
                // double[] w = {1.0,1.0};
                // stim = new StimulusData(1,1.0,w);
                 stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
-                wave = null;
+                
               //  MessageBox.Show("created a stim");
                 stim.calcIndex(STIM_SAMPLING_FREQ);
               //  MessageBox.Show("calc'd the index");

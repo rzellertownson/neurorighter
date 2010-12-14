@@ -238,6 +238,7 @@ namespace NeuroRighter
             //Select default channels for Bakkum expt.
            
             updateSettings();
+            updateStim();
 
             setSpikeDetector();
 
@@ -386,7 +387,7 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
-                    //Create new tasks
+            #region Create new tasks, set timing
                     int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
                     spikeTask = new List<Task>(numDevices);
                     for (int i = 0; i < numDevices; ++i)
@@ -466,13 +467,13 @@ namespace NeuroRighter
                     }
                     else
                     {
-                        if (!Properties.Settings.Default.UseStimulator)
+                        if ((!Properties.Settings.Default.UseStimulator) || (stimPulseTask==null))
                         {
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
 
-                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
-                                spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                            //if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
+                             //   spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
                         }
                         else
                         {
@@ -566,7 +567,7 @@ namespace NeuroRighter
                         scalingCoeffsLFPs = lfpTask.AIChannels[0].DeviceScalingCoefficients;
                     if (Properties.Settings.Default.UseEEG)
                         scalingCoeffsEEG = eegTask.AIChannels[0].DeviceScalingCoefficients;
-
+            #endregion
 
                     #region Setup_Plotting
                     /**************************************************
@@ -1812,6 +1813,7 @@ namespace NeuroRighter
 #endif
 
             updateSettings();
+            updateStim();
         }
 
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -2468,6 +2470,7 @@ namespace NeuroRighter
             HardwareSettings nc_s = new HardwareSettings();
             nc_s.ShowDialog();
             updateSettings();
+            updateStim();
         }
 
         //******************************
@@ -2483,8 +2486,7 @@ namespace NeuroRighter
                     spikeTask.Clear();  spikeTask = null;
                 }
                 if (stimTimeTask != null) { stimTimeTask.Dispose();  stimTimeTask = null; }
-                if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-                if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+           
                 if (stimIvsVTask != null) { stimIvsVTask.Dispose(); stimIvsVTask = null; }
                 if (serialOut != null) { serialOut.Close(); serialOut.Dispose(); }
                 if (Properties.Settings.Default.UseCineplex)
@@ -2504,114 +2506,7 @@ namespace NeuroRighter
                 else
                     checkBox_video.Enabled = false;
 
-                if (Properties.Settings.Default.UseStimulator)
-                {
-                    if (stimDigitalTask == null)
-                    {
-                        stimDigitalTask = new Task("stimDigitalTask");
-                        stimPulseTask = new Task("stimPulseTask");
-                        if (Properties.Settings.Default.StimPortBandwidth == 32)
-                            stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                                ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                        else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                            stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                                ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-                        if (Properties.Settings.Default.StimPortBandwidth == 32)
-                        {
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
-                        }
-                        else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                        {
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                            stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                        }
-
-                       
-                        if (Properties.Settings.Default.UseCineplex)
-                        {
-                            stimPulseTask.Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
-                            stimPulseTask.Timing.ReferenceClockRate = videoTask.Timing.ReferenceClockRate;
-                        }
-                        else
-                        {
-                            stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-                            //stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
-                        }
-                        stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
-                           SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                        stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
-                            SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                        stimDigitalTask.SynchronizeCallbacks = false;
-                        stimPulseTask.SynchronizeCallbacks = false;
-
-                        stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-                        stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-
-                        stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
-                            "/" + Properties.Settings.Default.StimulatorDevice + "/PFI6", DigitalEdgeStartTriggerEdge.Rising);
-
-                        stimDigitalTask.Control(TaskAction.Verify);
-                        stimPulseTask.Control(TaskAction.Verify);
-
-                        //Check to ensure one of the I/V buttons is checked
-                        if (!radioButton_impCurrent.Checked && !radioButton_impVoltage.Checked)
-                        {
-                            radioButton_impCurrent.Checked = true;
-                            radioButton_impVoltage.Checked = false;
-                            radioButton_stimCurrentControlled.Checked = true;
-                            radioButton_stimVoltageControlled.Checked = false;
-                        }
-
-                        if (Properties.Settings.Default.UseStimulator)
-                        {
-                            stimIvsVTask = new Task("stimIvsV");
-                            //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
-                            //    ChannelLineGrouping.OneChannelForAllLines);
-                            stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
-                                ChannelLineGrouping.OneChannelForAllLines);
-                            stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
-                            //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                            //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                            stimIvsVTask.Control(TaskAction.Verify);
-                            //byte[] b_array;
-                            //if (radioButton_impCurrent.Checked)
-                            //    b_array = new byte[5] { 255, 255, 255, 255, 255 };
-                            //else 
-                            //    b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                            //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                            //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                            //stimIvsVWriter.WriteWaveform(true, wfm);
-                            if (radioButton_impCurrent.Checked) stimIvsVWriter.WriteSingleSampleSingleLine(true, true);
-                            else stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
-                            stimIvsVTask.WaitUntilDone();
-                            stimIvsVTask.Stop();
-                            stimIvsVTask.Dispose();
-                        }
-                    }
-
-                    button_stim.Enabled = true;
-                    button_stimExpt.Enabled = true;
-                    openLoopStart.Enabled = true;
-                    radioButton_impCurrent.Enabled = true;
-                    radioButton_impVoltage.Enabled = true;
-                    radioButton_stimCurrentControlled.Enabled = true;
-                    radioButton_stimVoltageControlled.Enabled = true;
-                    button_impedanceTest.Enabled = true;
-                }
-                else
-                {
-                    button_stim.Enabled = false;
-                    button_stimExpt.Enabled = false;
-                    openLoopStart.Enabled = false;
-                    radioButton_impCurrent.Enabled = false;
-                    radioButton_impVoltage.Enabled = false;
-                    radioButton_stimCurrentControlled.Enabled = false;
-                    radioButton_stimVoltageControlled.Enabled = false;
-                    button_impedanceTest.Enabled = false;
-                }
+               
                 comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
 
                 if (Properties.Settings.Default.UseProgRef)
@@ -2644,6 +2539,176 @@ namespace NeuroRighter
             {
                 MessageBox.Show(exception.Message); //Display Errors
                 reset();
+            }
+        }
+
+        //call this method after changing stimulation settings, or finishing a stimulation experiment
+        //includes code to set dc offsets back to zero
+        private void updateStim()
+        {
+            bool placedzeros = false;
+                if (stimPulseTask != null) 
+                {
+                    try
+                    {
+                        double[,] AnalogBuffer = new double[stimPulseTask.AOChannels.Count, STIMBUFFSIZE]; // buffer for analog channels
+                        UInt32[] DigitalBuffer = new UInt32[STIMBUFFSIZE];
+
+                        stimPulseTask.Stop();
+                        stimDigitalTask.Stop();
+
+                        stimPulseWriter.WriteMultiSample(true, AnalogBuffer);
+                        stimDigitalWriter.WriteMultiSamplePort(true, DigitalBuffer);
+
+                        //stimPulseTask.Start();
+
+                        //stimDigitalTask.Start();
+                        //stimPulseTask.WaitUntilDone();
+                        stimPulseTask.Stop();
+                        stimDigitalTask.Stop();
+                        placedzeros = true;
+                    }
+                    catch (Exception me)
+                    {
+                        placedzeros = false;
+                    }
+
+                    stimPulseTask.Dispose();
+                    stimPulseTask = null;
+                }
+
+               if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            if (Properties.Settings.Default.UseStimulator)
+            {
+                if (stimDigitalTask == null)
+                {
+                    stimDigitalTask = new Task("stimDigitalTask");
+                    stimPulseTask = new Task("stimPulseTask");
+                    if (Properties.Settings.Default.StimPortBandwidth == 32)
+                        stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+                            ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                    else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                        stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+                            ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+                    if (Properties.Settings.Default.StimPortBandwidth == 32)
+                    {
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                    }
+                    else if (Properties.Settings.Default.StimPortBandwidth == 8)
+                    {
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                        stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
+                    }
+
+
+                    if (Properties.Settings.Default.UseCineplex)
+                    {
+                        stimPulseTask.Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
+                        stimPulseTask.Timing.ReferenceClockRate = videoTask.Timing.ReferenceClockRate;
+                    }
+                    else
+                    {
+                        stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+                        //stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
+                    }
+                    stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
+                       SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                    stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
+                        SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                    stimDigitalTask.SynchronizeCallbacks = false;
+                    stimPulseTask.SynchronizeCallbacks = false;
+
+                    stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+                    stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+
+                    stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
+                        "/" + Properties.Settings.Default.StimulatorDevice + "/PFI6", DigitalEdgeStartTriggerEdge.Rising);
+
+                    stimDigitalTask.Control(TaskAction.Verify);
+                    stimPulseTask.Control(TaskAction.Verify);
+
+                    //Check to ensure one of the I/V buttons is checked
+                    if (!radioButton_impCurrent.Checked && !radioButton_impVoltage.Checked)
+                    {
+                        radioButton_impCurrent.Checked = true;
+                        radioButton_impVoltage.Checked = false;
+                        radioButton_stimCurrentControlled.Checked = true;
+                        radioButton_stimVoltageControlled.Checked = false;
+                    }
+
+                    if (Properties.Settings.Default.UseStimulator)
+                    {
+                        stimIvsVTask = new Task("stimIvsV");
+                        //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
+                        //    ChannelLineGrouping.OneChannelForAllLines);
+                        stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
+                            ChannelLineGrouping.OneChannelForAllLines);
+                        stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
+                        //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
+                        //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
+                        stimIvsVTask.Control(TaskAction.Verify);
+                        //byte[] b_array;
+                        //if (radioButton_impCurrent.Checked)
+                        //    b_array = new byte[5] { 255, 255, 255, 255, 255 };
+                        //else 
+                        //    b_array = new byte[5] { 0, 0, 0, 0, 0 };
+                        //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
+                        //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                        //stimIvsVWriter.WriteWaveform(true, wfm);
+                        if (radioButton_impCurrent.Checked) stimIvsVWriter.WriteSingleSampleSingleLine(true, true);
+                        else stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
+                        stimIvsVTask.WaitUntilDone();
+                        stimIvsVTask.Stop();
+                        stimIvsVTask.Dispose();
+
+                        if (!placedzeros)//try again
+                        {
+
+                            double[,] AnalogBuffer = new double[stimPulseTask.AOChannels.Count, STIMBUFFSIZE]; // buffer for analog channels
+                            UInt32[] DigitalBuffer = new UInt32[STIMBUFFSIZE];
+
+                            stimPulseTask.Stop();
+                            stimDigitalTask.Stop();
+
+                            stimPulseWriter.WriteMultiSample(true, AnalogBuffer);
+                            stimDigitalWriter.WriteMultiSamplePort(true, DigitalBuffer);
+
+                            //stimPulseTask.Start();
+
+                            //stimDigitalTask.Start();
+                            //stimPulseTask.WaitUntilDone();
+                            stimPulseTask.Stop();
+                            stimDigitalTask.Stop();
+
+                        }
+                        
+                    }
+                }
+                
+
+
+                button_stim.Enabled = true;
+                button_stimExpt.Enabled = true;
+                openLoopStart.Enabled = true;
+                radioButton_impCurrent.Enabled = true;
+                radioButton_impVoltage.Enabled = true;
+                radioButton_stimCurrentControlled.Enabled = true;
+                radioButton_stimVoltageControlled.Enabled = true;
+                button_impedanceTest.Enabled = true;
+            }
+            else
+            {
+                button_stim.Enabled = false;
+                button_stimExpt.Enabled = false;
+                openLoopStart.Enabled = false;
+                radioButton_impCurrent.Enabled = false;
+                radioButton_impVoltage.Enabled = false;
+                radioButton_stimCurrentControlled.Enabled = false;
+                radioButton_stimVoltageControlled.Enabled = false;
+                button_impedanceTest.Enabled = false;
             }
         }
 
@@ -3622,11 +3687,11 @@ namespace NeuroRighter
             button_stopStimFromFile.Enabled = false;
             custprot.stop();
             buttonStop.Enabled = true;
-            buttonStop.PerformClick();
-
+            
+            
             if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
             if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-
+            
             stimDigitalTask = new Task("stimDigitalTask");
 
             if (Properties.Settings.Default.StimPortBandwidth == 32)
@@ -3647,7 +3712,12 @@ namespace NeuroRighter
             //stimDigitalTask.Start();
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
-            updateSettings();
+            //stimPulseTask.WaitUntilDone();
+            //stimPulseTask.Stop();
+            
+            updateStim();
+            //buttonStop.PerformClick();
+            
         }
 
         private void protProgressChangedHandler(object sender, int percentage)
@@ -3795,6 +3865,7 @@ namespace NeuroRighter
 
             //Now, destroy the objects we made
             updateSettings();
+            updateStim();
         }
 
         private void button_impedanceCancel_Click(object sender, EventArgs e)
@@ -3939,6 +4010,7 @@ namespace NeuroRighter
 
             //Now, destroy the objects we made
             updateSettings();
+            updateStim();
             this.Cursor = Cursors.Default;
         }
 
@@ -4193,6 +4265,7 @@ namespace NeuroRighter
 
             //Now, destroy the objects we made
             updateSettings();
+            updateStim();
             gains = null;
             diagnosticsReaders = null;
         }
@@ -4398,7 +4471,7 @@ ch = 1;
             button_IISZapper_start.Enabled = true;
         }
         #endregion //IISZapper
-
+#region misc buttons
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox ab = new AboutBox();
@@ -4410,6 +4483,7 @@ ch = 1;
             ProcessingSettings ps = new ProcessingSettings();
             ps.ShowDialog();
             updateSettings();
+            updateStim();
         }
 
         private void radioButton_spikesReferencingCommonAverage_CheckedChanged(object sender, EventArgs e)
@@ -4478,6 +4552,7 @@ ch = 1;
 
 
             updateSettings();
+            updateStim();
         }
 
         private void timer_timeElapsed_Tick(object sender, EventArgs e)
@@ -4534,6 +4609,7 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
+#endregion
 
 
         #region plug-n-play closed loop
@@ -4600,8 +4676,9 @@ ch = 1;
                     stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
                     stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
                 }
-
-                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+              
+                    stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+               
 
                 // Setup the AO and DO tasks for continuous stimulaiton
                 stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
@@ -4610,8 +4687,8 @@ ch = 1;
                 stimPulseTask.SynchronizeCallbacks = false;
 
                 //Create output writers
-                stimCLAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-                stimCLDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+                stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+                stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
 
                 //Verify the tasks
                 stimPulseTask.Control(TaskAction.Verify);
@@ -4630,7 +4707,7 @@ ch = 1;
                     if (works)
                     {
                         //pnpClosedLoopAbs pnpcl = (pnpClosedLoopAbs) pnpcl_available_dropdown.SelectedItem;
-                        CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimCLDigitalWriter, stimCLAnalogWriter, pnpcl);
+                        CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter, pnpcl);
                         //MessageBox.Show(pnpcl1.ToString());
                         CLE.linkToSpikes(this);
                         CLE.linkToStim(this);
@@ -4661,37 +4738,39 @@ ch = 1;
             stimAcquired = null;
             spikesAcquired = null;
             //stop recording
+            updateSettings();
+            updateStim();
             buttonStop.Enabled = true;
             buttonStop.PerformClick();
             startPNPCL.Enabled = true;
             stopPNPCL.Enabled = false;
 
-            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+            //if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            //if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
 
-            stimDigitalTask = new Task("stimDigitalTask");
+            //stimDigitalTask = new Task("stimDigitalTask");
 
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+            //if (Properties.Settings.Default.StimPortBandwidth == 32)
+            //    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
+            //        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
+            //else if (Properties.Settings.Default.StimPortBandwidth == 8)
+            //    stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
+            //        ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
 
-            stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
-            stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
+            //stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples, 3);
+            //stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
 
-            //De-select channel on mux
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
-            //stimDigitalTask.Start();
-            stimDigitalTask.WaitUntilDone();
-            stimDigitalTask.Stop();
-            updateSettings();
-
-
+            ////De-select channel on mux
+            //if (Properties.Settings.Default.StimPortBandwidth == 32)
+            //    stimFromFileDigitalWriter.WriteMultiSamplePort(true, new UInt32[] { 0, 0, 0 });
+            //else if (Properties.Settings.Default.StimPortBandwidth == 8)
+            //    stimFromFileDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
+            ////stimDigitalTask.Start();
+            //stimDigitalTask.WaitUntilDone();
+            //stimDigitalTask.Stop();
+           
+            pnpClosedLoopAbs pnpcl = experiments[pnpcl_available_dropdown.SelectedIndex];
+            MessageBox.Show("Stimulation protocol " + pnpcl.ToString()+ " is complete.");
             CLE = null;
         }
 
@@ -4708,15 +4787,17 @@ ch = 1;
             progressBar_pnpcl.Value = 0;
             startPNPCL.Enabled = true;
             stopPNPCL.Enabled = false;
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete.");
+            
         }
 
         #endregion
 
-        private void groupBox33_Enter(object sender, EventArgs e)
+        //just for fun
+        private void DebugButton_Click(object sender, EventArgs e)
         {
-
         }
+
+       
 
        
 

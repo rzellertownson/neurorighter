@@ -13,14 +13,10 @@
     <RootNamespace>NeuroRighter</RootNamespace>
     <ApplicationIcon>NeuroRighter_v04.ico</ApplicationIcon>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <SccProjectName>Svn</SccProjectName>
+    <SccLocalPath>Svn</SccLocalPath>
+    <SccAuxPath>Svn</SccAuxPath>
+    <SccProvider>SubversionScc</SccProvider>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -70,11 +66,16 @@
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.Common, Version=8.9.35.302, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.32, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=8.6.35.131, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.DAQmx.ComponentModel, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="pnpClosedLoop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\pnpClosedLoop\pnpClosedLoop\bin\Debug\pnpClosedLoop.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -191,14 +192,21 @@
     <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\BakkumExpt.cs" />
+    <Compile Include="Stimulation\Class1.cs" />
+    <Compile Include="Stimulation\ClosedLoopExpt.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
+    <Compile Include="Stimulation\ClosedLoopUtils.cs" />
     <Compile Include="Stimulation\File2Stim3.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
     <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
+    <Compile Include="Stimulation\pnpclFinder.cs" />
     <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
     <Compile Include="Stimulation\StimulatorShowcaser.cs" />
+    <Compile Include="Stimulation\StimulusData.cs" />
     <Compile Include="Stimulation\StimWave.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +326,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
+    <Folder Include="Stimulation\closed loop protocols\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

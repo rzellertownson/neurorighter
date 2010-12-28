@@ -1,0 +1,6 @@
+﻿19:10:41.9590000:closed loop burst suppression experiment started
+19:10:43.0960000:appended at times 0ms 
+19:10:43.4080000:appended at times 129870ms 
+19:12:53.2070000:appended at times 259740ms 
+19:15:03.1000000:appended at times 389610ms 
+two electrode pulse experiment stopped at 19:17:04.0660000

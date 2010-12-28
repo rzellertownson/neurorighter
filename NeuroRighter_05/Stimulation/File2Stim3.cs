@@ -150,7 +150,10 @@ namespace NeuroRighter
                 }
                 catch (DaqException err)
                 {
+                    if (!bw.CancellationPending)
+                    {
                     MessageBox.Show(err.Message);
+                }
                 }
 
             }
@@ -163,7 +166,7 @@ namespace NeuroRighter
 
             // Wait for space to open in the buffer
             samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-            while ((stimulusbuffer.NumBuffLoadsCompleted-1) * BUFFSIZE - samplessent > BUFFSIZE)
+            while ((stimulusbuffer.NumBuffLoadsCompleted - 1) * (ulong)BUFFSIZE - (ulong)samplessent > (ulong)BUFFSIZE)
             {
                 samplessent = stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
             }
@@ -175,6 +178,7 @@ namespace NeuroRighter
             // Report protocol progress
             int percentComplete = (int)Math.Round((double)100 * (stimulusbuffer.NumBuffLoadsCompleted) / (stimulusbuffer.NumBuffLoadsRequired+1));
             bw.ReportProgress(percentComplete);
+
 
         }
 

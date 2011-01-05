@@ -56,7 +56,7 @@ namespace classicExperiments
            }
            Random r = new Random();
            CLE.initializeStim();
-           List<int> stim_history = new List<int>;
+           List<int> stim_history = new List<int>();
            int channel_index = r.Next(channelSDR_list.Length);
             double current_time = 0;
             StimulusData nextStim = new StimulusData(channel_index,current_time,wave*overalScale*wave_amplitude[channel_index]);

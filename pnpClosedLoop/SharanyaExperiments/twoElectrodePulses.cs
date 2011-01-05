@@ -70,7 +70,17 @@ namespace SharanyaExperiments
                 
 
                 CLE.initializeStim();//create the buffer
+
+                //initialize
                 CLE.appendStim(stimTimes, channels, wavemat);//append the first pair to the buffer
+                for (int i = 1; i < 3; i++)
+                {
+                    currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
+                    stimTimes = calcTimeVec(phaseOffset, currentTime);//when do we stimulate next?
+                    CLE.appendStim(stimTimes, channels, wavemat);
+                }
+
+
                 CLE.stimBuffStart();//start stimin'
                 while (!CLE.isCancelled & DateTime.Now < timeend)//wait for 1 day to pass, or for the experiment to be cancelled.
                 {

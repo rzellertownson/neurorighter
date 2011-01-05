@@ -13,3 +13,5 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoo
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\classicExperiments\bin\Debug\csmatio.xml
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\classicExperiments\obj\Debug\classicExperiments.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler\pnpClosedLoop\classicExperiments\obj\Debug\classicExperiments.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\pnpClosedLoop\classicExperiments\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\pnpClosedLoop\classicExperiments\obj\Debug\classicExperiments.dll

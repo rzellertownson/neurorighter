@@ -7,18 +7,18 @@
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NR_PNPCL_4\NeuroRighter_05\bin\Release\Content\Arial.xnb</Output>
-      <Time>2010-12-13T17:27:20.0587668-05:00</Time>
+      <Output>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\bin\Release\Content\Arial.xnb</Output>
+      <Time>2010-12-28T14:45:57.713375-05:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>
       <BuildConfiguration>Release</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NR_PNPCL_4\NeuroRighter_05\Content\</RootDirectory>
+      <RootDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\Content\</RootDirectory>
       <LoggerRootDirectory Null="true" />
-      <IntermediateDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NR_PNPCL_4\NeuroRighter_05\Content\obj\Release\</IntermediateDirectory>
-      <OutputDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NR_PNPCL_4\NeuroRighter_05\bin\Release\Content\</OutputDirectory>
+      <IntermediateDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\Content\obj\Release\</IntermediateDirectory>
+      <OutputDirectory>C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\bin\Release\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>

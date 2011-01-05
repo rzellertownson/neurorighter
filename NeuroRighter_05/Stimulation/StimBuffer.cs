@@ -62,6 +62,9 @@ namespace NeuroRighter
         private BackgroundWorker bw_stimbuffer; //handles reads and writes to the inner (waveform) buffer, the parent thread handles reads and writes to the outer (stimulus) buffer
         public bool running =false;
 
+        AsyncCallback stimAnalogCallback;
+        AsyncCallback stimDigitalCallback;
+
         //background worker requires the DAQ constructs so that it can encapsulate the asynchronous stimulation task
         AnalogMultiChannelWriter stimAnalogWriter;
         DigitalSingleChannelWriter stimDigitalWriter;
@@ -116,10 +119,7 @@ namespace NeuroRighter
             //
             outerbuffer = new List<StimulusData>();
 
-            //create background worker, which will run in a second thread to load up stimuli into the outer buffer
-            bw_stimbuffer = new BackgroundWorker();
-            bw_stimbuffer.DoWork += new DoWorkEventHandler(bw_stimbuffer_DoWork);
-            bw_stimbuffer.WorkerSupportsCancellation = true;
+          
         }
 
         internal void append(double[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
@@ -165,87 +165,44 @@ namespace NeuroRighter
             outerbuffer.AddRange(stimlist);
         }
         
+      
+
         internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)//, ulong starttime)
         {
             this.stimAnalogTask = stimAnalogTask;
             this.stimDigitalTask = stimDigitalTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
-            //calculate what time stimulation is starting at- start is controlled by user, so can't anticipate that
-            // it is synched to the overall start
-            //starttime is in microseconds
-
-
-         //   NumBuffLoadsCompleted = starttime / (BUFFSIZE * 1000000 / STIM_SAMPLING_FREQ);
-          //  BufferIndex = starttime % (BUFFSIZE * 1000000 / STIM_SAMPLING_FREQ);
-
-
-            bw_stimbuffer.RunWorkerAsync();
             running = true;
+            stimAnalogCallback  = new AsyncCallback(stimCallback);
+            populateBufferAppending();
+            stimAnalogWriter.BeginWriteMultiSample(true, AnalogBuffer, stimAnalogCallback, 1);
+            stimDigitalWriter.BeginWriteMultiSamplePort(true, DigitalBuffer, null, 1);
+            populateBufferAppending();
+            
         }
-
-        internal void stop()
+        internal void stimCallback(IAsyncResult ar)
         {
-            bw_stimbuffer.CancelAsync();
-        }
-
-        //rather straightforward- wait until buffer clears, and then call populate buffer.  keep on doing so until cancelled.
-        internal void bw_stimbuffer_DoWork(object sender, DoWorkEventArgs e)
-        {
-            int flag = 0;
-            try
+            if (running)
             {
-                //Populate the 1st stimulus buffer
-                flag++;
+                stimAnalogWriter.BeginWriteMultiSample(true, AnalogBuffer, stimAnalogCallback, 1);
+                stimDigitalWriter.BeginWriteMultiSamplePort(true, DigitalBuffer, null, 1);
                 populateBufferAppending();
-                flag++;
-                //Write Samples to the hardware buffer
-                stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
-                stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
-                flag++;
-                //Populate the 2nd stimulus buffer
-                populateBufferAppending();
-                flag++;
-                //Write Samples to the hardware buffer
-                stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
-                stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
-                flag++;
-                stimDigitalTask.Start();
-                stimAnalogTask.Start();
-                flag++;
-                ulong samplessent = 0;
-
-                while (!bw_stimbuffer.CancellationPending)
-                {
-                    
-                    //Populate the stimulus buffer
-                    populateBufferAppending();
-                    flag = 1000;
-                    // Wait for space to open in the buffer
-                    samplessent = (ulong)stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                    flag++;
-                    while (((NumBuffLoadsCompleted - 1) * BUFFSIZE - samplessent > BUFFSIZE) && !bw_stimbuffer.CancellationPending)
-                    {
-                        samplessent = (ulong)stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel;
-                    }
-                    flag++;
-                    if (bw_stimbuffer.CancellationPending) break;
-                    //Write Samples to the hardware buffer
-                    stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
-                    stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
-                    flag++;
-                }
+            }
+            else
+            {
                 stimAnalogTask.Stop();
                 stimDigitalTask.Stop();
+            }
+        }
+        internal void stop()
+        {
+            running = false;
+        }
 
-                running = false;
-            }
-            catch (Exception me)
-            {
-                MessageBox.Show("stim buffer (append mode) error:  please close NeuroRighter after saving your data. flag:"+flag +". "+ me.Message,  "stimbuffer exception thrown");
-            }
-            }
+    
 
+       
       
 
         internal void precompute()//not used for appending- instead, append needs to perform these actions
@@ -338,7 +295,7 @@ namespace NeuroRighter
 
             #region Populate the buffers if a stimulus occurs in this particular buffer length
 
-            // Finish up writting the stimulus from the last buffer load if you didn't finish then
+            // Finish up writing the stimulus from the last buffer load if you didn't finish then
             if (NumSampWrittenForCurrentStim < StimulusLength && NumSampWrittenForCurrentStim != 0)
             {
                 uint Samples2Finish = StimulusLength - NumSampWrittenForCurrentStim;

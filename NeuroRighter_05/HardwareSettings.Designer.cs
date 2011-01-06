@@ -89,6 +89,11 @@ namespace NeuroRighter
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_analogInputDevice1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage_DO = new System.Windows.Forms.TabPage();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.checkBox_useDIO = new System.Windows.Forms.CheckBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.comboBox_digIODev = new System.Windows.Forms.ComboBox();
             this.tabPage_misc.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.groupBox11.SuspendLayout();
@@ -107,6 +112,8 @@ namespace NeuroRighter
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage_DO.SuspendLayout();
+            this.groupBox17.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_accept
@@ -490,7 +497,7 @@ namespace NeuroRighter
             this.tabPage_input.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage_input.Size = new System.Drawing.Size(300, 417);
             this.tabPage_input.TabIndex = 0;
-            this.tabPage_input.Text = "Input";
+            this.tabPage_input.Text = "Analog In";
             this.tabPage_input.UseVisualStyleBackColor = true;
             // 
             // groupBox15
@@ -742,6 +749,7 @@ namespace NeuroRighter
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage_input);
+            this.tabControl1.Controls.Add(this.tabPage_DO);
             this.tabControl1.Controls.Add(this.tabPage_stim);
             this.tabControl1.Controls.Add(this.tabPage_misc);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
@@ -749,6 +757,57 @@ namespace NeuroRighter
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(308, 443);
             this.tabControl1.TabIndex = 16;
+            // 
+            // tabPage_DO
+            // 
+            this.tabPage_DO.Controls.Add(this.groupBox17);
+            this.tabPage_DO.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_DO.Name = "tabPage_DO";
+            this.tabPage_DO.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_DO.Size = new System.Drawing.Size(300, 417);
+            this.tabPage_DO.TabIndex = 3;
+            this.tabPage_DO.Text = "Digital";
+            this.tabPage_DO.UseVisualStyleBackColor = true;
+            // 
+            // groupBox17
+            // 
+            this.groupBox17.Controls.Add(this.checkBox_useDIO);
+            this.groupBox17.Controls.Add(this.label15);
+            this.groupBox17.Controls.Add(this.comboBox_digIODev);
+            this.groupBox17.Location = new System.Drawing.Point(7, 6);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Size = new System.Drawing.Size(286, 82);
+            this.groupBox17.TabIndex = 13;
+            this.groupBox17.TabStop = false;
+            this.groupBox17.Text = "Digital Input";
+            // 
+            // checkBox_useDIO
+            // 
+            this.checkBox_useDIO.AutoSize = true;
+            this.checkBox_useDIO.Location = new System.Drawing.Point(9, 19);
+            this.checkBox_useDIO.Name = "checkBox_useDIO";
+            this.checkBox_useDIO.Size = new System.Drawing.Size(250, 17);
+            this.checkBox_useDIO.TabIndex = 12;
+            this.checkBox_useDIO.Text = "Use Dedicated Devices for Digital Input/Output";
+            this.checkBox_useDIO.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 53);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(145, 13);
+            this.label15.TabIndex = 1;
+            this.label15.Text = "NI-DAQ Device for Digital IO:";
+            // 
+            // comboBox_digIODev
+            // 
+            this.comboBox_digIODev.FormattingEnabled = true;
+            this.comboBox_digIODev.Location = new System.Drawing.Point(162, 50);
+            this.comboBox_digIODev.Name = "comboBox_digIODev";
+            this.comboBox_digIODev.Size = new System.Drawing.Size(97, 21);
+            this.comboBox_digIODev.TabIndex = 0;
+            this.comboBox_digIODev.Text = "Dev1";
             // 
             // HardwareSettings
             // 
@@ -798,6 +857,9 @@ namespace NeuroRighter
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage_DO.ResumeLayout(false);
+            this.groupBox17.ResumeLayout(false);
+            this.groupBox17.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -865,5 +927,10 @@ namespace NeuroRighter
         private System.Windows.Forms.GroupBox groupBox16;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox textBox_PreAmpGain;
+        private System.Windows.Forms.TabPage tabPage_DO;
+        private System.Windows.Forms.GroupBox groupBox17;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ComboBox comboBox_digIODev;
+        private System.Windows.Forms.CheckBox checkBox_useDIO;
     }
 }

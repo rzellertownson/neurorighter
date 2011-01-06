@@ -16,14 +16,14 @@ namespace NeuroRighter
         private const int PORT_OFFSET_8bitPort = 0;
 
         public Int16 channel; //1 based
-        public double time; // write time (in ms)
+        public int time; // write time (in 10ths of ms)
         public double[] waveform; //Stim voltage
         public ulong StimSample; //what sample number does this stimulus start on
         public double[] AnalogEncode;
         public UInt32[] DigitalEncode;
         private uint STIM_SAMPLING_FREQ;
 
-        public StimulusData(int channel, double time, double[] waveform)
+        public StimulusData(int channel, int time, double[] waveform)
         {
             this.channel = (short)channel;
             this.time = time;
@@ -57,7 +57,7 @@ namespace NeuroRighter
         {
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             
-            this.StimSample = (uint)Math.Round((double)(time * (STIM_SAMPLING_FREQ / 1000)));
+            this.StimSample = (uint)Math.Round((double)(time * (STIM_SAMPLING_FREQ / 10000)));
             return StimSample;
         }
         #region MUX conversion Functions

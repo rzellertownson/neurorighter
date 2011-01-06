@@ -105,7 +105,7 @@ namespace NeuroRighter
            
         }
 
-        public void appendStim(double[] timeVec, int[] channelVec, double[,] waveMat)
+        public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
         {
             buffer.append(timeVec, channelVec, waveMat);
         }

@@ -31,7 +31,7 @@ using NationalInstruments.UI.WindowsForms;
 namespace NeuroRighter
 {
 
-    /// <author>John Rolston (rolston2@gmail.com)</author>
+    /// <author>John Rolston (rolston2@gmail.com) Jon Newman (jnewman6 at gatech dot edu)</author>
     public partial class HardwareSettings : Form
     {
         /// <summary>
@@ -41,6 +41,7 @@ namespace NeuroRighter
         {
             InitializeComponent();
 
+            // Analog Input
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)
             {
@@ -63,6 +64,18 @@ namespace NeuroRighter
                 else
                     comboBox_analogInputDevice2.SelectedIndex = 0;
             }
+
+            // Digital Input/Output
+            comboBox_digIODev.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_digIODev.Items.Count > 0)
+            {
+                int idx = comboBox_analogInputDevice1.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[0]);
+                if (idx >= 0)
+                    comboBox_digIODev.SelectedIndex = idx;
+                else
+                    comboBox_digIODev.SelectedIndex = 0;
+            }
+
             comboBox_stimulatorDevice.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_stimulatorDevice.Items.Count > 0)
             {
@@ -155,6 +168,7 @@ namespace NeuroRighter
             }
 
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
+            checkBox_useDIO.Checked = Properties.Settings.Default.UseDIO;
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
             checkBox_recordStimulationInfo.Checked = Properties.Settings.Default.RecordStimTimes;
@@ -167,6 +181,7 @@ namespace NeuroRighter
             checkBox_useChannelPlayback.Checked = Properties.Settings.Default.UseSingleChannelPlayback;
             comboBox_singleChannelPlaybackDevice.Enabled = (Properties.Settings.Default.UseSingleChannelPlayback ? true : false);
             comboBox_analogInputDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
+            comboBox_digIODev.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_useSecondBoard.Checked = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_sepLFPBoard2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             comboBox_LFPDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
@@ -203,6 +218,7 @@ namespace NeuroRighter
             if (checkBox_useSecondBoard.Checked)
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
             Properties.Settings.Default.UseCineplex = checkBox_useCineplex.Checked;
+            Properties.Settings.Default.UseDIO = checkBox_useDIO.Checked;
             Properties.Settings.Default.UseStimulator = checkBox_useStimulator.Checked;
             Properties.Settings.Default.RecordStimTimes = checkBox_recordStimulationInfo.Checked;
             Properties.Settings.Default.SeparateLFPBoard = checkBox_sepLFPBoard1.Checked;
@@ -214,7 +230,8 @@ namespace NeuroRighter
             if (checkBox_sepLFPBoard1.Checked)
                 Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);
             //if (checkBox_sepLFPBoard2.Checked)
-                
+            if (checkBox_useDIO.Checked)
+                Properties.Settings.Default.DIODevice = Convert.ToString(comboBox_digIODev.SelectedItem);
             if (checkBox_useCineplex.Checked)
                 Properties.Settings.Default.CineplexDevice = Convert.ToString(comboBox_cineplexDevice.SelectedItem);
             if (checkBox_useStimulator.Checked)
@@ -239,7 +256,12 @@ namespace NeuroRighter
             this.Close();
         }
 
-
+        private void checkBox_useDIO_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_useDIO.Checked) comboBox_digIODev.Enabled = true;
+            else comboBox_digIODev.Enabled = false;
+        }
+        
         private void checkBox_useStimulator_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_useStimulator.Checked) comboBox_stimulatorDevice.Enabled = true;
@@ -334,6 +356,8 @@ namespace NeuroRighter
         {
             comboBox_singleChannelPlaybackDevice.Enabled = checkBox_useChannelPlayback.Checked;
         }
+
+
 
     }
 }

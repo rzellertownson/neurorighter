@@ -2,15 +2,15 @@ function makestimfile(time, channel, waveform, filename)
 
 %MAKESTIMFILE turns data matracies and vectors into a *.olstim file for use by
 %neurorighter
-% 
-%    y = LOADSPIKE(time, channel, waveform, filename) takes as input:   
+%
+%    y = LOADSPIKE(time, channel, waveform, filename) takes as input:
 %         channel     [N 1] vector of channels to stimulate on
-%         time        [N 1] vector of stimulation times (in milliseconds)
-%         waveform    [N M] matrix of stimulation waveforms (in Volts) 
+%         time        [N 1] vector of stimulation times (in seconds)
+%         waveform    [N M] matrix of stimulation waveforms (in Volts)
 %                           each with M samples
 %    and returns a .olstim file that specifies an open-loop stimulation
 %    protocol for use with the NeuroRighter system
-% 
+%
 %    Created by: Jon Newman (jonathan.p.newman at gmail dot com)
 %    Created on: Sept 30, 2009
 %    Last modified: July, 23 2010
@@ -37,26 +37,35 @@ fprintf(fid,'%s \n',strcat([filename, ': a stimulation file for use with Neurori
 numstim = length(time);
 fprintf(fid,'%d \n',numstim);
 
-% save stimulation times
+% Write the number of samples per stim waveform
+fprintf(fid,'%d \n',size(waveform,2));
+
+% Next log10 of max stim time
+time = time*10000; % Convert to 10th of millisecond precision
 otime = ceil(log10(max(time)));
-cformat = strcat(['%0',num2str(otime)+1,'.0f \n']);
-fprintf(fid,cformat,time);
 
-% save channels
-fprintf(fid,'%02.0f \n',channel);
-
-% save waveforms
-cformat = [];
+% Make c formating strings
+cformat_t = strcat(['%0',num2str(otime)+1,'.0f \n']);
+cformat_c = '%02.0f \n';
+cformat_w = [];
 for j = 1:size(waveform,2)-1
-    cformat = [cformat '%f '];
+    cformat_w = [cformat_w '%f '];
 end
-cformat = [cformat '%f\n'];
+cformat_w = [cformat_w '%f\n'];
 
+% Write the file
 for i = 1:numstim
+    
+    % save stimulation times
+    fprintf(fid,cformat_t,time(i));
+    
+    % save channels
+    fprintf(fid,cformat_c,channel(i));
+    
+    % save waveforms
     wave = waveform(i,:);
-    fprintf(fid,cformat,wave);
+    fprintf(fid,cformat_w,wave);
+    
 end
 
 fclose(fid);
-
-end

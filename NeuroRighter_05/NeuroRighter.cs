@@ -1086,7 +1086,7 @@ namespace NeuroRighter
                                         if (stimAcquired != null)
                                         {
                                            double[] w = {};
-                                           double time = (double)(index) / spikeSamplingRate * 1000.0;
+                                           int time = (int)Math.Round((index) / spikeSamplingRate * 10000.0);
                                             _stimulations.Add(new StimulusData(channel,time,w));
                                         }
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
@@ -2815,12 +2815,6 @@ namespace NeuroRighter
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl.SelectedIndex == 4 && buttonStart.Enabled) 
-            {
-                
-                MessageBox.Show("Please start the scope before accessing the stimulation tab.");
-                tabControl.SelectedIndex = 0;
-            }
 
             switch (tabControl.SelectedTab.Text)
             //switch (tabControl.SelectedIndex)
@@ -3599,7 +3593,7 @@ namespace NeuroRighter
         #endregion //End DrawStimPulse region
 
         #region arbitrary stimulation from file
-        File2Stim3 custprot;
+        File2Stim4 custprot;
 
         private void button_startStimFromFile_Click(object sender, EventArgs e)
         {
@@ -3667,12 +3661,12 @@ namespace NeuroRighter
                 stimDigitalTask.Control(TaskAction.Verify);
 
                 // Create a File2Stim object and start to run the protocol via its methods
-                custprot = new File2Stim3(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
                 buttonStart.PerformClick();
                 custprot.start();
                 buttonStop.Enabled = false;
-                custprot.AlertProgChanged += new File2Stim3.ProgressChangedHandler(protProgressChangedHandler);
-                custprot.AlertAllFinished += new File2Stim3.AllFinishedHandler(protFinisheddHandler);
+                custprot.AlertProgChanged += new File2Stim4.ProgressChangedHandler(protProgressChangedHandler);
+                custprot.AlertAllFinished += new File2Stim4.AllFinishedHandler(protFinisheddHandler);
 
                 progressBar_protocolFromFile.Minimum = 0;
                 progressBar_protocolFromFile.Maximum = 100;
@@ -4796,6 +4790,7 @@ ch = 1;
         private void DebugButton_Click(object sender, EventArgs e)
         {
             }
+
 
        
 

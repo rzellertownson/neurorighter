@@ -1,4 +1,1 @@
-C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter_ClosedLoop_simpler2\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
-C:\Users\Jon\Desktop\NeuroRighter_ClosedLoop_simpler\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NR_PNPCL_4\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NeuroRighter\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache

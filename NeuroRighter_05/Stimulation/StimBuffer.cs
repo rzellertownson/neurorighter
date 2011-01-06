@@ -122,7 +122,7 @@ namespace NeuroRighter
           
         }
 
-        internal void append(double[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
+        internal void append(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
         {
 
             //needs to include precompute stuff!  ie, convert to stimsample, analog encode, etc
@@ -156,6 +156,7 @@ namespace NeuroRighter
           //  MessageBox.Show("finished append");
             
         }
+
         internal void append(List<StimulusData> stimlist)
         {
             foreach(StimulusData stim in stimlist)
@@ -165,8 +166,6 @@ namespace NeuroRighter
             outerbuffer.AddRange(stimlist);
         }
         
-      
-
         internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)//, ulong starttime)
         {
             this.stimAnalogTask = stimAnalogTask;
@@ -181,6 +180,7 @@ namespace NeuroRighter
             populateBufferAppending();
             
         }
+        
         internal void stimCallback(IAsyncResult ar)
         {
             if (running)
@@ -195,16 +195,12 @@ namespace NeuroRighter
                 stimDigitalTask.Stop();
             }
         }
+        
         internal void stop()
         {
             running = false;
         }
-
-    
-
-       
-      
-
+        
         internal void precompute()//not used for appending- instead, append needs to perform these actions
         {
            
@@ -252,7 +248,7 @@ namespace NeuroRighter
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
             NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
            
-        }
+        }      
         
         internal void validateStimulusParameters()
         {
@@ -284,7 +280,7 @@ namespace NeuroRighter
             }
 
         }
-
+        
         //this is the scary one
         internal void populateBuffer()
         {
@@ -426,7 +422,7 @@ namespace NeuroRighter
             NumBuffLoadsCompleted++; 
 
         }
-
+        
         //write as much of the current stimulus as possible
         //agnostic as to whether or not you've finished this stimulus or not.
         //returns if finished the stimulus or not
@@ -460,7 +456,7 @@ namespace NeuroRighter
 
             return finishedIt;
         }
-
+        
         //examines the next stimulus, determines if it is within range, and loads it if it is
         //returns if stimulus is within range or not
         internal bool nextStimulusAppending()
@@ -496,9 +492,6 @@ namespace NeuroRighter
             
             calculateDigPointAppending(NumSampWrittenForCurrentStim);
 
-
-
-
             AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
             AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
             DigitalBuffer[(int)BufferIndex] = DigitalPoint;
@@ -531,8 +524,6 @@ namespace NeuroRighter
             }
 
         }
-
-
         
         internal void calculateAnalogPoint(ulong StimulusIndex, uint NumSampLoadedForCurr, int NumAOChannels)
         {
@@ -580,7 +571,6 @@ namespace NeuroRighter
                 }
             }
         }
-
 
         //appending versions
         internal void calculateDigPointAppending(uint NumSampLoadedForCurr)
@@ -653,13 +643,9 @@ namespace NeuroRighter
                     AnalogPoint[1] = 0;
                 }
 
-
-
-
             }
 
         }
-
 
         //appending tools
         public int stimuliInQueue()
@@ -671,6 +657,7 @@ namespace NeuroRighter
         {
             return (double)((stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
         }
+
         #region MUX conversion Functions
         internal static UInt32 channel2MUX(double channel)
         {

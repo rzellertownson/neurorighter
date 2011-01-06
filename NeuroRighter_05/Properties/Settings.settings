@@ -117,13 +117,19 @@
       <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="EEGGain" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="EEGNumChannels" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="PreAmpGain" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="UseDIO" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DIODevice" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dev1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

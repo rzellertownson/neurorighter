@@ -41,7 +41,7 @@ fprintf(fid,'%d \n',numstim);
 fprintf(fid,'%d \n',size(waveform,2));
 
 % Next log10 of max stim time
-time = time*10000; % Convert to 10th of millisecond precision
+time = time*100000; % Convert to 100th of millisecond precision
 otime = ceil(log10(max(time)));
 
 % Make c formating strings

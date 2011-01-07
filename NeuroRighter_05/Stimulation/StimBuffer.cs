@@ -10,6 +10,15 @@ using System.Threading;
 
 namespace NeuroRighter
 {
+    // called when the Queue is empty
+    public delegate void QueueEmptyHandler(object sender, EventArgs e);
+
+    // called when the Queue falls below a user defined threshold
+    public delegate void QueueLessThanThresholdHandler(object sender, EventArgs e);
+
+
+    
+
     public class StimBuffer
     {
         // Public Properties
@@ -61,7 +70,7 @@ namespace NeuroRighter
         private StimulusData currentStim;
         private BackgroundWorker bw_stimbuffer; //handles reads and writes to the inner (waveform) buffer, the parent thread handles reads and writes to the outer (stimulus) buffer
         public bool running =false;
-
+        public int queueTheshold = 0;
         AsyncCallback stimAnalogCallback;
         AsyncCallback stimDigitalCallback;
 
@@ -69,6 +78,10 @@ namespace NeuroRighter
         AnalogMultiChannelWriter stimAnalogWriter;
         DigitalSingleChannelWriter stimDigitalWriter;
         Task stimDigitalTask, stimAnalogTask;
+
+        //events
+        public event QueueLessThanThresholdHandler QueueLessThanThreshold;
+        public event QueueEmptyHandler QueueEmpty;
         
 
         //Constructor to create a Stim Buffer object for use by File2Stim (one-shot mode)
@@ -130,13 +143,13 @@ namespace NeuroRighter
             //okay, passed the tests, start appending
             StimulusData stim;
             
-            for (int i = 0; i < WaveMatrix.GetLength(1); i++)
+            for (int i = 0; i < WaveMatrix.GetLength(0); i++)
             {
-                double[] wave = new double[WaveMatrix.GetLength(0)];
+                double[] wave = new double[WaveMatrix.GetLength(1)];
                 //this.TimeVector[outerIndexWrite] = TimeVector[i];
-                for (int j = 0; j < WaveMatrix.GetLength(0); j++)
+                for (int j = 0; j < WaveMatrix.GetLength(1); j++)
                 {
-                    wave[j] = WaveMatrix[j, i];
+                    wave[j] = WaveMatrix[i, j];
                 }
                // MessageBox.Show("finished a wave");
                // double[] w = {1.0,1.0};
@@ -149,9 +162,6 @@ namespace NeuroRighter
                 outerbuffer.Add(stim);
                // MessageBox.Show("added it");
 
-                
-
-               
             }
           //  MessageBox.Show("finished append");
             
@@ -463,9 +473,13 @@ namespace NeuroRighter
         {
             if (outerbuffer.ElementAt(0).StimSample < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
             {
-
+               
                 currentStim = outerbuffer.ElementAt(0);
                 outerbuffer.RemoveAt(0);
+                if (outerbuffer.Count == 0)
+                    onEmpty(EventArgs.Empty);
+                if (outerbuffer.Count == (queueTheshold - 1))
+                    onThreshold(EventArgs.Empty);
                 //WaveMatrix = currentStim.waveform;
                 NumSampWrittenForCurrentStim = 0;
                 BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
@@ -656,6 +670,20 @@ namespace NeuroRighter
         public double time()
         {
             return (double)((stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
+        }
+
+
+
+        private void onThreshold(EventArgs e)
+        {
+            if (QueueLessThanThreshold != null)
+                QueueLessThanThreshold(this, e);
+        }
+
+        private void onEmpty(EventArgs e)
+        {
+            if (QueueEmpty != null)
+                QueueEmpty(this, e);
         }
 
         #region MUX conversion Functions

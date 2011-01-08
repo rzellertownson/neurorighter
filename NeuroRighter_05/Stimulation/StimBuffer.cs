@@ -139,41 +139,51 @@ namespace NeuroRighter
         {
 
             //needs to include precompute stuff!  ie, convert to stimsample, analog encode, etc
-             
-            //okay, passed the tests, start appending
-            StimulusData stim;
-            
-            for (int i = 0; i < WaveMatrix.GetLength(0); i++)
+            lock (this)
             {
-                double[] wave = new double[WaveMatrix.GetLength(1)];
-                //this.TimeVector[outerIndexWrite] = TimeVector[i];
-                for (int j = 0; j < WaveMatrix.GetLength(1); j++)
-                {
-                    wave[j] = WaveMatrix[i, j];
-                }
-               // MessageBox.Show("finished a wave");
-               // double[] w = {1.0,1.0};
-               // stim = new StimulusData(1,1.0,w);
-                stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
-                
-              //  MessageBox.Show("created a stim");
-                stim.calcIndex(STIM_SAMPLING_FREQ);
-              //  MessageBox.Show("calc'd the index");
-                outerbuffer.Add(stim);
-               // MessageBox.Show("added it");
+                //okay, passed the tests, start appending
+                StimulusData stim;
 
+                for (int i = 0; i < WaveMatrix.GetLength(0); i++)
+                {
+                    double[] wave = new double[WaveMatrix.GetLength(1)];
+                    //this.TimeVector[outerIndexWrite] = TimeVector[i];
+                    for (int j = 0; j < WaveMatrix.GetLength(1); j++)
+                    {
+                        wave[j] = WaveMatrix[i, j];
+                    }
+                    // MessageBox.Show("finished a wave");
+                    // double[] w = {1.0,1.0};
+                    // stim = new StimulusData(1,1.0,w);
+                    stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
+
+                    //  MessageBox.Show("created a stim");
+                    stim.calcIndex(STIM_SAMPLING_FREQ);
+                    //  MessageBox.Show("calc'd the index");
+                    lock (outerbuffer)
+                    {
+                        outerbuffer.Add(stim);
+                    }
+                    // MessageBox.Show("added it");
+
+                }
+                //  MessageBox.Show("finished append");
             }
-          //  MessageBox.Show("finished append");
-            
         }
 
         internal void append(List<StimulusData> stimlist)
         {
-            foreach(StimulusData stim in stimlist)
+            lock (this)
             {
-                stim.calcIndex(STIM_SAMPLING_FREQ);
+                foreach (StimulusData stim in stimlist)
+                {
+                    stim.calcIndex(STIM_SAMPLING_FREQ);
+                }
+                lock (outerbuffer)
+                {
+                    outerbuffer.AddRange(stimlist);
+                }
             }
-            outerbuffer.AddRange(stimlist);
         }
         
         internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask)//, ulong starttime)
@@ -385,52 +395,54 @@ namespace NeuroRighter
         //lets see if we can simplify things here...
         internal void populateBufferAppending()
         {
-            //clear buffers and reset index
-            AnalogBuffer = new double[NumAOChannels, BUFFSIZE]; // buffer for analog channels
-            DigitalBuffer = new UInt32[BUFFSIZE]; // buffer for digital channels
-            BufferIndex = 0;
-           // MessageBox.Show("cleared buffer");
-            //current stim- stimulus we are in the middle of.  if null, not yet stimming.  
-            //dont load a stim to current stim until you actually start stimulating with it
-            //empty array- nothing to stim with.
-
-
-
-            //are we in the middle of a stimulus?  if so, finish as much as you can
-
-            if (currentStim != null)
-        {
-             //   MessageBox.Show("examining first stim");
-                bool finished = applyCurrentStimulus();
-                if (finished)
-                {
-                    finishStim();
-                }
-
-            }
-          //  MessageBox.Show("cleared first stim check");
-            //at this point, we have either finished a stimulus, or finished the buffer.
-            //therefore, if there is room left in this buffer, find the next stimulus and move to it.
-
-            while (BufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+            lock (this)
             {
-                //is next stimulus within range of this buffload?
-                bool ready = nextStimulusAppending();
+                //clear buffers and reset index
+                AnalogBuffer = new double[NumAOChannels, BUFFSIZE]; // buffer for analog channels
+                DigitalBuffer = new UInt32[BUFFSIZE]; // buffer for digital channels
+                BufferIndex = 0;
+                // MessageBox.Show("cleared buffer");
+                //current stim- stimulus we are in the middle of.  if null, not yet stimming.  
+                //dont load a stim to current stim until you actually start stimulating with it
+                //empty array- nothing to stim with.
 
-                if (ready)
+
+
+                //are we in the middle of a stimulus?  if so, finish as much as you can
+
+                if (currentStim != null)
                 {
+                    //   MessageBox.Show("examining first stim");
                     bool finished = applyCurrentStimulus();
                     if (finished)
                     {
                         finishStim();
                     }
+
+                }
+                //  MessageBox.Show("cleared first stim check");
+                //at this point, we have either finished a stimulus, or finished the buffer.
+                //therefore, if there is room left in this buffer, find the next stimulus and move to it.
+
+                while (BufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+                {
+                    //is next stimulus within range of this buffload?
+                    bool ready = nextStimulusAppending();
+
+                    if (ready)
+                    {
+                        bool finished = applyCurrentStimulus();
+                        if (finished)
+                        {
+                            finishStim();
+                        }
+                    }
+
                 }
 
+                //congratulations!  we finished the buffer!
+                NumBuffLoadsCompleted++;
             }
-
-            //congratulations!  we finished the buffer!
-            NumBuffLoadsCompleted++; 
-
         }
         
         //write as much of the current stimulus as possible
@@ -444,27 +456,28 @@ namespace NeuroRighter
             ulong Samples2Finish = (ulong)currentStim.waveform.Length+NUM_SAMPLES_BLANKING*2 - NumSampWrittenForCurrentStim;
 
             //how many samples can we write?
-            ulong SamplesAvailable = BUFFSIZE - BufferIndex;
+            //ulong SamplesAvailable = BUFFSIZE - BufferIndex;
 
-            ulong Samples2Write;
-            if (SamplesAvailable >= Samples2Finish)//have enough room to finish stimulus
-            {
-                Samples2Write = Samples2Finish;
-                finishedIt = true;
-            }
-            else//do not have enough room to finish stimulus
-            {
-                Samples2Write = SamplesAvailable;
-                finishedIt = false;
-            }
+            //ulong Samples2Write;
+            //if (SamplesAvailable >= Samples2Finish)//have enough room to finish stimulus
+            //{
+            //    Samples2Write = Samples2Finish;
+            //    finishedIt = true;
+            //}
+            //else//do not have enough room to finish stimulus
+            //{
+            //    Samples2Write = SamplesAvailable;
+            //    finishedIt = false;
+            //}
 
             //write samples to the buffer
-            for (ulong i = 0; i < Samples2Write; i++)
+            for (ulong i = 0; (i < Samples2Finish) & (BufferIndex < BUFFSIZE - 1); i++)
             {
                 writeSample();
             }
 
-            return finishedIt;
+
+            return (BufferIndex < BUFFSIZE);
         }
         
         //examines the next stimulus, determines if it is within range, and loads it if it is
@@ -473,26 +486,40 @@ namespace NeuroRighter
         {
             if (outerbuffer.ElementAt(0).StimSample < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
             {
-               
-                currentStim = outerbuffer.ElementAt(0);
-                outerbuffer.RemoveAt(0);
-                if (outerbuffer.Count == 0)
-                    onEmpty(EventArgs.Empty);
-                if (outerbuffer.Count == (queueTheshold - 1))
-                    onThreshold(EventArgs.Empty);
-                //WaveMatrix = currentStim.waveform;
-                NumSampWrittenForCurrentStim = 0;
-                BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                if (currentStim.StimSample < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                lock (this)
                 {
-                    //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                    throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
+                        outerbuffer.RemoveAt(0);
+
+
+                    currentStim.calcIndex(STIM_SAMPLING_FREQ);
+
+                    if (outerbuffer.Count == 0)
+                        onEmpty(EventArgs.Empty);
+                    if (outerbuffer.Count == (queueTheshold - 1))
+                        onThreshold(EventArgs.Empty);
+
+                    if (currentStim == null)
+                    {
+                        MessageBox.Show("hi");
+                    }
+
+                    NumSampWrittenForCurrentStim = 0;
+                    BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
+                    if (currentStim.StimSample < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    {
+                        //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                    }
                 }
                 return true;
             }
             else
             {
-                currentStim = null;//we aren't currently stimulating
+                lock (this)
+                {
+                    currentStim = null;//we aren't currently stimulating
+                }
                 NumSampWrittenForCurrentStim = 0;//we haven't written anything
                 BufferIndex = BUFFSIZE;//we are done with this buffer
                 return false;
@@ -516,7 +543,10 @@ namespace NeuroRighter
 
         internal void finishStim()
         {
-            currentStim = null;
+            lock (this)
+            {
+                currentStim = null;//we aren't currently stimulating
+            }
         }
 
         internal void calculateDigPoint(ulong StimulusIndex, uint NumSampLoadedForCurr)
@@ -608,17 +638,21 @@ namespace NeuroRighter
         internal void calculateAnalogPointAppending(uint NumSampLoadedForCurr, int NumAOChannels)
         {
             uint WaveLength = (uint)currentStim.waveform.Length;
+
             //Get the analog encoding for this stimulus
+            // Case when we are in blanking before a stimulus
             if (NumSampLoadedForCurr < (NUM_SAMPLES_BLANKING + 1))
             {
                 AnalogPoint[0] = 0;
                 AnalogPoint[1] = 0;
             }
+            // Case when we are in blanking after stimulus
             if (NumSampLoadedForCurr >= NUM_SAMPLES_BLANKING + 1 + WaveLength)
             {
                 AnalogPoint[0] = 0;
                 AnalogPoint[1] = 0;
             }
+            // OK, we actually need to load the buffer with some meat
             if (NumSampLoadedForCurr >= NUM_SAMPLES_BLANKING + 1 && NumSampLoadedForCurr < NUM_SAMPLES_BLANKING + 1 + WaveLength)
             {
                 //how much has been loaded so far?
@@ -630,7 +664,8 @@ namespace NeuroRighter
                     voltageOut = currentStim.waveform[NumSamplesLoadedForWave];
                 else
                     voltageOut = 0;
-
+                
+                // NeuroWronger's crazy analog simulus encoding scheme
                 if (NumSamplesLoadedForWave < 20)
                 {
                     AnalogPoint[0] = voltageOut;

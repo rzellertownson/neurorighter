@@ -1,5 +1,4 @@
-function makestimfile(time, channel, waveform, filename)
-
+function makestimfile(filename, time, channel, waveform)
 %MAKESTIMFILE turns data matracies and vectors into a *.olstim file for use by
 %neurorighter
 %

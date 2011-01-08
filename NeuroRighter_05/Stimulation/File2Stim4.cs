@@ -18,7 +18,7 @@ namespace NeuroRighter
         internal string line; // line from the .olstim file
         internal int wavesize; // the number of samples per stimulation waveform
         internal int numstim; // number of stimuli specified in open-loop file
-        internal int numStimPerLoad = 500; // Number of stimuli loaded per read of the olstim file
+        internal int numStimPerLoad = 200; // Number of stimuli loaded per read of the olstim file
         internal int numLoadsCompleted = 0; // Number loads completed
 
         internal int[] TimeVector; //interstim times (NX1 vector)

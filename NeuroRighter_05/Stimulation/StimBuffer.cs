@@ -11,13 +11,14 @@ using System.Threading;
 namespace NeuroRighter
 {
     // called when the Queue is empty
-    public delegate void QueueEmptyHandler(object sender, EventArgs e);
+    public delegate void StimulationCompleteHandler(object sender, EventArgs e);
 
     // called when the Queue falls below a user defined threshold
     public delegate void QueueLessThanThresholdHandler(object sender, EventArgs e);
 
+    // called when the stimBuffer finishes a DAQ load
+    public delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-    
 
     public class StimBuffer
     {
@@ -27,7 +28,7 @@ namespace NeuroRighter
         public UInt32[] DigitalBuffer;
         public bool StillWritting = false;
         public ulong NumBuffLoadsCompleted = 0;
-        public uint NumBuffLoadsRequired;
+        public uint NumBuffLoadsRequired = 0;
         
 
         // Private Properties
@@ -81,8 +82,8 @@ namespace NeuroRighter
 
         //events
         public event QueueLessThanThresholdHandler QueueLessThanThreshold;
-        public event QueueEmptyHandler QueueEmpty;
-        
+        public event StimulationCompleteHandler StimulationComplete;
+        public event DAQLoadCompletedHandler DAQLoadCompleted;
 
         //Constructor to create a Stim Buffer object for use by File2Stim (one-shot mode)
         internal StimBuffer(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix, int LengthWave,
@@ -192,6 +193,7 @@ namespace NeuroRighter
             this.stimDigitalTask = stimDigitalTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
+
             running = true;
             stimAnalogCallback  = new AsyncCallback(stimCallback);
             populateBufferAppending();
@@ -225,7 +227,7 @@ namespace NeuroRighter
         {
            
             // Does as much pre computation of the buffers that will be populated as possible to prevent buffer load lag and resulting DAQ exceptions
-                StimSample = new ulong[TimeVector.Length];
+            StimSample = new ulong[TimeVector.Length];
             AnalogEncode = new double[2, ChannelVector.Length];
             DigitalEncode = new UInt32[3, ChannelVector.Length];
 
@@ -442,6 +444,13 @@ namespace NeuroRighter
 
                 //congratulations!  we finished the buffer!
                 NumBuffLoadsCompleted++;
+                if (NumBuffLoadsCompleted > NumBuffLoadsRequired)
+                    onStimComplete(EventArgs.Empty);
+
+                onBufferLoad(EventArgs.Empty);
+
+
+
             }
         }
         
@@ -450,9 +459,8 @@ namespace NeuroRighter
         //returns if finished the stimulus or not
         internal bool applyCurrentStimulus()
         {
-            bool finishedIt;
 
-            //how many samples should we write, including blanking?
+           //how many samples should we write, including blanking?
             ulong Samples2Finish = (ulong)currentStim.waveform.Length+NUM_SAMPLES_BLANKING*2 - NumSampWrittenForCurrentStim;
 
             //how many samples can we write?
@@ -488,21 +496,13 @@ namespace NeuroRighter
             {
                 lock (this)
                 {
-                        currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
-                        outerbuffer.RemoveAt(0);
-
+                    currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
+                    outerbuffer.RemoveAt(0);
 
                     currentStim.calcIndex(STIM_SAMPLING_FREQ);
 
-                    if (outerbuffer.Count == 0)
-                        onEmpty(EventArgs.Empty);
                     if (outerbuffer.Count == (queueTheshold - 1))
                         onThreshold(EventArgs.Empty);
-
-                    if (currentStim == null)
-                    {
-                        MessageBox.Show("hi");
-                    }
 
                     NumSampWrittenForCurrentStim = 0;
                     BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
@@ -530,9 +530,7 @@ namespace NeuroRighter
         internal void writeSample()
         {
             calculateAnalogPointAppending(NumSampWrittenForCurrentStim, NumAOChannels);
-            
             calculateDigPointAppending(NumSampWrittenForCurrentStim);
-
             AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
             AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
             DigitalBuffer[(int)BufferIndex] = DigitalPoint;
@@ -547,6 +545,13 @@ namespace NeuroRighter
             {
                 currentStim = null;//we aren't currently stimulating
             }
+        }
+
+        internal void calculateLoadsRequired(double finalStimTime)
+        {
+            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
+            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
+            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ*finalStimTime / (double)BUFFSIZE));
         }
 
         internal void calculateDigPoint(ulong StimulusIndex, uint NumSampLoadedForCurr)
@@ -707,7 +712,10 @@ namespace NeuroRighter
             return (double)((stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
         }
 
-
+        public uint getBufferSize()
+        {
+            return BUFFSIZE;
+        }
 
         private void onThreshold(EventArgs e)
         {
@@ -715,10 +723,16 @@ namespace NeuroRighter
                 QueueLessThanThreshold(this, e);
         }
 
-        private void onEmpty(EventArgs e)
+        private void onStimComplete(EventArgs e)
         {
-            if (QueueEmpty != null)
-                QueueEmpty(this, e);
+            if (StimulationComplete != null)
+                StimulationComplete(this, e);
+        }
+
+        private void onBufferLoad(EventArgs e)
+        {
+            if (DAQLoadCompleted != null)
+                DAQLoadCompleted(this, e);
         }
 
         #region MUX conversion Functions

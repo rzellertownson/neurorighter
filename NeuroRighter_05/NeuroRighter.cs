@@ -2687,8 +2687,6 @@ namespace NeuroRighter
                         
                     }
                 }
-                
-
 
                     button_stim.Enabled = true;
                     button_stimExpt.Enabled = true;
@@ -3550,6 +3548,31 @@ namespace NeuroRighter
 
             waveformGraph_openLoopStimPulse.YAxes[0].Range = new Range(min, max);
         }
+        private double[] returnOpenLoopStimPulse()
+        {
+            double v1 = Convert.ToDouble(openLoopVoltage1.Value);
+            double v2 = Convert.ToDouble(openLoopVoltage2.Value);
+            int width1 = Convert.ToInt32(openLoopWidth1.Value);
+            int width2 = Convert.ToInt32(openLoopWidth2.Value);
+            int interWidth = Convert.ToInt32(openLoopInterphaseLength.Value);
+            int pre = Convert.ToInt32(openLoopPrephaseLength.Value);
+            int post = Convert.ToInt32(openLoopPostphaseLength.Value);
+            double offsetV = Convert.ToInt32(offsetVoltage.Value);
+
+            double[] pulse = new double[STIM_SAMPLING_FREQ * (pre + width1 + interWidth + width2 + post) / 1000000];
+            for (int i = 0; i < STIM_SAMPLING_FREQ * pre / 1000000; ++i)
+                pulse[i] = offsetV;
+            for (int i = STIM_SAMPLING_FREQ * pre / 1000000; i < STIM_SAMPLING_FREQ * (pre + width1) / 1000000; ++i)
+                pulse[i] = offsetV + v1;
+            for (int i = STIM_SAMPLING_FREQ * (pre + width1) / 1000000; i < STIM_SAMPLING_FREQ * (pre + width1 + interWidth) / 1000000; ++i)
+                pulse[i] = offsetV;
+            for (int i = STIM_SAMPLING_FREQ * (pre + width1 + interWidth) / 1000000; i < STIM_SAMPLING_FREQ * (pre + width1 + interWidth + width2) / 1000000; ++i)
+                pulse[i] = offsetV + v2;
+            for (int i = STIM_SAMPLING_FREQ * (pre + width1 + interWidth + width2) / 1000000; i < STIM_SAMPLING_FREQ * (pre + width1 + interWidth + width2 + post) / 1000000; ++i)
+                pulse[i] = offsetV;
+
+            return pulse;
+        }
 
         private void openLoopVoltage1_ValueChanged(object sender, EventArgs e)
         {
@@ -3599,13 +3622,14 @@ namespace NeuroRighter
         {
             if (textBox_protocolFileLocations.Text.Length < 1)
             {
-                MessageBox.Show("Please enter the directory and file base of your stimulation protcol");
+                MessageBox.Show("Please provide a .olstim file defining your protocol");
             }
             else
             {
                 button_startStimFromFile.Enabled = false;
                 button_stopStimFromFile.Enabled = true;
-
+                
+                bool useManStimWave = checkBox_useManStimWaveform.Checked;
                 string stimfile = textBox_protocolFileLocations.Text;
 
                 // Make sure that the user has input a valid file path
@@ -3661,7 +3685,16 @@ namespace NeuroRighter
                 stimDigitalTask.Control(TaskAction.Verify);
 
                 // Create a File2Stim object and start to run the protocol via its methods
-                custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                if (useManStimWave)
+                {
+                    double[] waveform = returnOpenLoopStimPulse();
+                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter, waveform);
+                }
+                else
+                {
+                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                }
+               
                 buttonStart.PerformClick();
                 custprot.start();
                 buttonStop.Enabled = false;
@@ -4437,8 +4470,6 @@ ch = 1;
         }
         #endregion
 
-     
-
         #region IISZapper (Experimental)
 
         internal delegate void IISDetectedHandler(object sender, double[][] lfpData, int numReads);
@@ -4465,7 +4496,8 @@ ch = 1;
             button_IISZapper_start.Enabled = true;
         }
         #endregion //IISZapper
-#region misc buttons
+
+        #region misc buttons
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox ab = new AboutBox();
@@ -4604,7 +4636,6 @@ ch = 1;
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
 #endregion
-
 
         #region plug-n-play closed loop
 

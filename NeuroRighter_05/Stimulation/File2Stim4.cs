@@ -18,7 +18,7 @@ namespace NeuroRighter
         internal string line; // line from the .olstim file
         internal int wavesize; // the number of samples per stimulation waveform
         internal int numstim; // number of stimuli specified in open-loop file
-        internal int numStimPerLoad = 400; // Number of stimuli loaded per read of the olstim file
+        internal int numStimPerLoad = 50; // Number of stimuli loaded per read of the olstim file
         internal int numLoadsCompleted = 0; // Number loads completed
         internal ulong NumBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         internal bool lastLoad;
@@ -30,7 +30,7 @@ namespace NeuroRighter
 
         internal StimBuffer stimbuff;
         private BackgroundWorker bw;//loads stimuli into the buffer when needed
-        private Task stimDigitalTask, stimAnalogTask;
+        private Task stimDigitalTask, stimAnalogTask, buffLoadTask;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimAnalogWriter;
 
@@ -44,7 +44,8 @@ namespace NeuroRighter
         internal delegate void AllFinishedHandler(object sender);
         internal event AllFinishedHandler AlertAllFinished;
 
-        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ ,Int32 BUFFSIZE, Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
+        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
+            Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
             this.stimfile = stimfile;
@@ -53,14 +54,16 @@ namespace NeuroRighter
             this.BUFFSIZE = BUFFSIZE;
             this.stimDigitalTask = stimDigitalTask;
             this.stimAnalogTask = stimAnalogTask;
+            this.buffLoadTask = buffLoadTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
 
-            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2);
+            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
-        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask, Task stimAnalogTask, DigitalSingleChannelWriter stimDigitalWriter,
+        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
+            Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter, double[] cannedWave)
         {
             this.stimfile = stimfile;
@@ -69,12 +72,13 @@ namespace NeuroRighter
             this.BUFFSIZE = BUFFSIZE;
             this.stimDigitalTask = stimDigitalTask;
             this.stimAnalogTask = stimAnalogTask;
+            this.buffLoadTask = buffLoadTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.cannedWaveform = cannedWave;
 
-            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ,2);
+            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
         internal void start()
@@ -113,7 +117,7 @@ namespace NeuroRighter
             // Stop the StimBuffer When its finished
             stimbuff.StimulationComplete +=new StimulationCompleteHandler(stimbuff_StimulationComplete);
             // Alert that stimbuff just completed a DAQ bufferload
-            stimbuff.DAQLoadCompleted += new DAQLoadCompletedHandler(stimbuff_DAQLoadCompleted);
+            //stimbuff.DAQLoadCompleted += new DAQLoadCompletedHandler(stimbuff_DAQLoadCompleted);
             
             //open .olstim file
             olstimfile = new StreamReader(stimfile);
@@ -162,10 +166,13 @@ namespace NeuroRighter
                 loadStimWithWave(olstimfile,numstim);
 
                 // Append the first stimuli to the stim buffer
+                Console.Write("one big load");
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask);
+                numLoadsCompleted = numstim;
+                lastLoad = true;
+                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
-                while (NumBuffLoadsRequired > stimbuff.NumBuffLoadsCompleted + 1)
+                while (NumBuffLoadsRequired > stimbuff.NumBuffLoadsCompleted)
                 {
                 }
             }
@@ -183,9 +190,9 @@ namespace NeuroRighter
                 // Append the first stimuli to the stim buffer
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask);
+                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
-                while (NumBuffLoadsRequired > stimbuff.NumBuffLoadsCompleted + 1)
+                while (NumBuffLoadsRequired > stimbuff.NumBuffLoadsCompleted)
                 {
                 }
 
@@ -197,6 +204,7 @@ namespace NeuroRighter
         {
             if (numstim - (numLoadsCompleted * numStimPerLoad) > numStimPerLoad)
             {
+                Console.Write("file2stim4: normal load numstimperload:" + numStimPerLoad + " numLoadsCompleted:" + numLoadsCompleted + " numstim:" + numstim );
                 loadStimWithWave(olstimfile, numStimPerLoad);
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
                 numLoadsCompleted++;
@@ -207,6 +215,7 @@ namespace NeuroRighter
                 {
 
                     // load the last few stimuli
+                    Console.Write("file2stim4: last load");
                     TimeVector = new int[numstim - numLoadsCompleted * numStimPerLoad];
                     ChannelVector = new int[numstim - numLoadsCompleted * numStimPerLoad];
                     WaveMatrix = new double[numstim - numLoadsCompleted * numStimPerLoad, wavesize];
@@ -220,16 +229,17 @@ namespace NeuroRighter
 
         internal void stimbuff_StimulationComplete(object sender, EventArgs e)
         {
-            stimbuff.DAQLoadCompleted -= new DAQLoadCompletedHandler(stimbuff_DAQLoadCompleted);
+            //stimbuff.DAQLoadCompleted -= new DAQLoadCompletedHandler(stimbuff_DAQLoadCompleted);
+            Console.WriteLine("STIMULATION STOP CALLED");
             stimbuff.stop();
         }
         
-        internal void stimbuff_DAQLoadCompleted(object sender, EventArgs e)
-        {
-            // Report protocol progress
-            int percentComplete = (int)Math.Round((double)100 * (stimbuff.NumBuffLoadsCompleted) / (NumBuffLoadsRequired + 1));
-            bw.ReportProgress(percentComplete);
-        }
+        //internal void stimbuff_DAQLoadCompleted(object sender, EventArgs e)
+        //{
+        //    // Report protocol progress
+        //    int percentComplete = (int)Math.Round((double)100 * (stimbuff.NumBuffLoadsCompleted) / (NumBuffLoadsRequired + 1));
+        //    bw.ReportProgress(percentComplete);
+        //}
 
 
         internal void loadStimWithWave(StreamReader olstimFile, int numStimToRead)

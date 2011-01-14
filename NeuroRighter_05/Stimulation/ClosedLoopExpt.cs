@@ -15,7 +15,7 @@ namespace NeuroRighter
     {
         //private variables
         private BackgroundWorker bw;
-        private Task stimDigitalTask, stimAnalogTask;
+        private Task stimDigitalTask, stimAnalogTask, buffLoadTask;
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimAnalogWriter;
         public Boolean isCancelled;

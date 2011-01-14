@@ -65,6 +65,7 @@ namespace NeuroRighter
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
         private Task stimIvsVTask; //Determines whether stim is current or voltage controlled
+        private Task buffLoadTask; //Used to decide when buffer reload is needed in stimbuffer class
         private List<AnalogMultiChannelReader> spikeReader;
         private List<AnalogWaveform<double>[]> spikeData;
         private AnalogUnscaledReader lfpReader;
@@ -176,7 +177,7 @@ namespace NeuroRighter
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
-        private int STIMBUFFSIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
+        private int STIMBUFFSIZE = 100000; // Number of samples delivered to DAQ per buffer load during stimulation from file
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
@@ -3648,7 +3649,12 @@ namespace NeuroRighter
                 // Create new DAQ tasks and corresponding writers
                 stimPulseTask = new Task("stimPulseTask");
                 stimDigitalTask = new Task("stimDigitalTask");
+                buffLoadTask = new Task("stimBufferTask");
 
+                // Trigger a load event off every edge of this channel
+                buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.StimulatorDevice + "/ctr1",
+                    "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)STIMBUFFSIZE) / 2.0, 0.5);
+                
                 if (Properties.Settings.Default.StimPortBandwidth == 32)
                     stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
                         ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
@@ -3671,28 +3677,33 @@ namespace NeuroRighter
                 stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
 
                 // Setup the AO and DO tasks for continuous stimulaiton
-                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,STIMBUFFSIZE);
+                //buffLoadTask.COChannels[0].CounterTimebaseSource = "100kHzTimebase";
+                buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
                 stimDigitalTask.SynchronizeCallbacks = false;
                 stimPulseTask.SynchronizeCallbacks = false;
+                buffLoadTask.SynchronizeCallbacks = false;
 
                 //Create output writers
                 stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
                 stimFromFileDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
 
-                //Verify the tasks
+                // Verify Tasks
                 stimPulseTask.Control(TaskAction.Verify);
                 stimDigitalTask.Control(TaskAction.Verify);
+                buffLoadTask.Timing.ReferenceClockSource = stimPulseTask.Timing.ReferenceClockSource;
+                buffLoadTask.Control(TaskAction.Verify);
 
                 // Create a File2Stim object and start to run the protocol via its methods
                 if (useManStimWave)
                 {
                     double[] waveform = returnOpenLoopStimPulse();
-                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter, waveform);
+                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, buffLoadTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter, waveform);
                 }
                 else
                 {
-                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
+                    custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, buffLoadTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
                 }
                
                 buttonStart.PerformClick();

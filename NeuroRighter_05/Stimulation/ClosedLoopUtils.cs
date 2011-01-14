@@ -40,7 +40,7 @@ namespace NeuroRighter
             //Commit the stimulation tasks
             stimAnalogTask.Control(TaskAction.Commit);
             stimDigitalTask.Control(TaskAction.Commit);
-            buffer = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING);
+            buffer = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, NUM_SAMPLES_BLANKING,50);
             
         }
 
@@ -143,7 +143,7 @@ namespace NeuroRighter
         public void stimBuffStart()
         {
 
-            buffer.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask);
+            buffer.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
             
         }
 

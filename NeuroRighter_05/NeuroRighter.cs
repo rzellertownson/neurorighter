@@ -163,6 +163,7 @@ namespace NeuroRighter
         private FileOutput lfpFile;
         private SpikeDetector spikeDetector;
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety
+        private delegate void crossThreadFormUpdateDelegate(int item); //Used for making cross thread calls from stimbuffer, file2stim, etc to NR
         #endregion
 
         #region DebugVariables
@@ -177,7 +178,7 @@ namespace NeuroRighter
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
-        private int STIMBUFFSIZE = 100000; // Number of samples delivered to DAQ per buffer load during stimulation from file
+        private int STIMBUFFSIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
@@ -3758,19 +3759,34 @@ namespace NeuroRighter
             
         }
 
-        private void protProgressChangedHandler(object sender, int percentage)
+        private void protProgressChangedHandler(object sender, EventArgs e, int percentage)
         {
-            progressBar_protocolFromFile.Value = percentage;
+            Console.WriteLine("Percent complete : " + percentage);
+            updateProgressPercentage(percentage);
+        }
+
+        private void updateProgressPercentage(int percentage)
+        {
+            if(progressBar_protocolFromFile.InvokeRequired)
+            {
+                crossThreadFormUpdateDelegate del = updateProgressPercentage;
+                progressBar_protocolFromFile.Invoke(del, new object[] {percentage});
+            }
+            else
+            {
+                progressBar_protocolFromFile.Value = percentage;
+            }
+
         }
 
         // Return buttons to default configuration when finished
-        private void protFinisheddHandler(object sender)
+        private void protFinisheddHandler(object sender, EventArgs e)
         {
+            updateProgressPercentage(0);
+            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
             buttonStop.Enabled = true;
-            progressBar_protocolFromFile.Value = 0;
             button_startStimFromFile.Enabled = true;
             button_stopStimFromFile.Enabled = false;
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
         }
 
         private bool checkFilePath(string filePath)

@@ -175,16 +175,9 @@ namespace NeuroRighter
 
         }
 
-        void timer_Tick(object sender, EventArgs e)
+        internal void finishStimulation(EventArgs e)
         {
-            if(running)
-            {
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ half-load event.");
-                writeToBuffer();
-            }
-            else
+            if (StimulationComplete != null)
             {
                 // Stop the tasks and dispose of them
                 buffLoadTask.Stop();
@@ -196,8 +189,23 @@ namespace NeuroRighter
                 buffLoadTask.Dispose();
 
                 // Tell NR that stimulation has finished
-                StimulationComplete(this, e);
 
+                StimulationComplete(this, e);
+            }
+        }
+        
+        void timer_Tick(object sender, EventArgs e)
+        {
+            if (running)
+            {
+                tickTime = DateTime.Now;
+                tickDiff = tickTime.Subtract(startTime);
+                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ half-load event.");
+                writeToBuffer();
+            }
+            else
+            {
+                finishStimulation(e);
             }
         }
 
@@ -214,8 +222,6 @@ namespace NeuroRighter
             stimDigitalWriter.BeginWriteMultiSamplePort(false, DigitalBuffer, null, 2);
             analogdone = true;
             digitaldone = true;
-
-
             
         }
 
@@ -269,7 +275,7 @@ namespace NeuroRighter
 
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
+            NumBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
            
         }      
         
@@ -401,9 +407,9 @@ namespace NeuroRighter
             lock (this)
             {
                 
-                 tickTime = DateTime.Now;
+                tickTime = DateTime.Now;
                 tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + "populate buffer started...");
+                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
                 
                 Stopwatch ws = new Stopwatch();
                 ws.Start();
@@ -452,11 +458,11 @@ namespace NeuroRighter
 
                 //congratulations!  we finished the buffer!
                 NumBuffLoadsCompleted++;
-                
                 // Check if protocol is completed
                 if (NumBuffLoadsCompleted >= NumBuffLoadsRequired)
-                    onStimComplete(EventArgs.Empty);
-              
+                {
+                    running = false; // Start clean up cascade
+                }
 
                 onBufferLoad(EventArgs.Empty);
 
@@ -768,13 +774,6 @@ namespace NeuroRighter
         {
             if (QueueLessThanThreshold != null)
                 QueueLessThanThreshold(this, e);
-        }
-
-        private void onStimComplete(EventArgs e)
-        {
-            Console.WriteLine("complete evented triggered b/c num-buff-loads = " + NumBuffLoadsRequired + " > num-buff-req = " + NumBuffLoadsCompleted);
-            if (StimulationComplete != null)
-                running = false;
         }
 
         private void onBufferLoad(EventArgs e)

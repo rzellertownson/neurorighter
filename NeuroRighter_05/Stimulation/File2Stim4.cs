@@ -18,7 +18,7 @@ namespace NeuroRighter
         internal string line; // line from the .olstim file
         internal int wavesize; // the number of samples per stimulation waveform
         internal int numstim; // number of stimuli specified in open-loop file
-        internal int numStimPerLoad = 50; // Number of stimuli loaded per read of the olstim file
+        internal int numStimPerLoad = 200; // Number of stimuli loaded per read of the olstim file
         internal int numLoadsCompleted = 0; // Number loads completed
         internal ulong NumBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         internal bool lastLoad;
@@ -94,6 +94,7 @@ namespace NeuroRighter
         internal void stop()
         {
             bw.CancelAsync();
+            stimbuff.stop();
         }
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
@@ -222,7 +223,7 @@ namespace NeuroRighter
         {
             // Report protocol progress
             int percentComplete = (int)Math.Round((double)100 * (stimbuff.NumBuffLoadsCompleted) / NumBuffLoadsRequired);
-            AlertProgChanged(this, e, percentComplete);
+            //AlertProgChanged(this, e, percentComplete);
         }
 
         internal void loadStimWithWave(StreamReader olstimFile, int numStimToRead)

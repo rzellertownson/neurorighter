@@ -99,8 +99,7 @@ namespace NeuroRighter
             //isAppending = false;
 
         }
-        //constructor if using stim buffer in append mode
-       
+
         //constructor if using stim buffer in append mode- with lists!
         internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold)
         {
@@ -134,10 +133,12 @@ namespace NeuroRighter
             outerbuffer = new List<StimulusData>();
             }
 
-        internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
+        internal void initialize(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)
         {
+            // Add reload method to the Counter output event
+            buffLoadTask.CounterOutput += new CounterOutputEventHandler(timer_Tick);
 
-            startTime = DateTime.Now;
+            //constructor if using stim buffer in append mode
             this.stimAnalogTask = stimAnalogTask;
             this.stimDigitalTask = stimDigitalTask;
             this.buffLoadTask = buffLoadTask;
@@ -151,28 +152,30 @@ namespace NeuroRighter
             stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
             stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
             stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-            
-            // Add reload method to the Counter output event
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(timer_Tick);
-            
-            // Populate the outer-buffer twice
-            populateBufferAppending();
-            
-            // Start the counter that tells when to reload the daq
-            stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
-            stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
 
+
+        }
+        
+        internal void start()
+        {
+            // Populate the DAQ twice to intialize
             populateBufferAppending();
 
             // Start the counter that tells when to reload the daq
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
 
+            populateBufferAppending();
+
+            // Start the counter that tells when to reload the daq
+            stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
+            stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
+
+            startTime = DateTime.Now;
             running = true;
             buffLoadTask.Start();
             stimDigitalTask.Start();
             stimAnalogTask.Start();
-
         }
 
         internal void finishStimulation(EventArgs e)

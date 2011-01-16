@@ -142,8 +142,8 @@ namespace NeuroRighter
         }
         public void stimBuffStart()
         {
-
-            buffer.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+            buffer.initialize(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+            buffer.start();
             
         }
 

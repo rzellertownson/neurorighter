@@ -91,6 +91,11 @@ namespace NeuroRighter
             bw.RunWorkerAsync();
         }
 
+        internal void SetupStimBuff()
+        {
+            stimbuff.initialize(stimAnalogWriter,stimDigitalWriter,stimDigitalTask,stimAnalogTask,buffLoadTask);
+        }
+
         internal void stop()
         {
             bw.CancelAsync();
@@ -148,7 +153,7 @@ namespace NeuroRighter
             int numFullLoads = (int)Math.Floor((double)numstim / (double)numStimPerLoad);
 
             
-            if (2*numStimPerLoad > numstim)
+            if (2*numStimPerLoad >= numstim)
             {
                 // Create Stimulus data arrays, just load all the data because the file is not that big
                 TimeVector = new int[numstim];
@@ -163,7 +168,7 @@ namespace NeuroRighter
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted = numstim;
                 lastLoad = true;
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.start();
 
             }
             else
@@ -180,7 +185,7 @@ namespace NeuroRighter
                 // Append the first stimuli to the stim buffer
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.start();
 
             }
 

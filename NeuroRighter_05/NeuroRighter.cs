@@ -3622,26 +3622,53 @@ namespace NeuroRighter
 
         private void button_startStimFromFile_Click(object sender, EventArgs e)
         {
-            if (textBox_protocolFileLocations.Text.Length < 1)
-            {
-                MessageBox.Show("Please provide a .olstim file defining your protocol");
-            }
-            else
-            {
-                button_startStimFromFile.Enabled = false;
-                button_stopStimFromFile.Enabled = true;
-                
-                bool useManStimWave = checkBox_useManStimWaveform.Checked;
-                string stimfile = textBox_protocolFileLocations.Text;
 
-                // Make sure that the user has input a valid file path
-                if (!checkFilePath(stimfile))
-                {
-                    MessageBox.Show("The *.olstim file provided does not exist");
-                    button_startStimFromFile.Enabled = true;
-                    button_stopStimFromFile.Enabled = false;
-                    return;
-                }
+            // Get info off of open-loop stimulation form
+            bool useManStimWave = checkBox_useManStimWaveform.Checked;
+            string stimfile = textBox_protocolFileLocations.Text;
+            string digfile = textBox_digitalProtocolFileLocation.Text;
+            bool stimFileProvided = stimfile.Length > 0;
+            bool digFileProvided = digfile.Length > 0;
+
+            // Make sure that the user provided a file of some sort
+            if (!stimFileProvided && !digFileProvided)
+            {
+                MessageBox.Show("You need to provide a *.olstim and/or a *.oldig to use the open-loop stimulator.");
+                return;
+            }
+
+            // Make sure that the user has input a valid file path for the stimulation file
+            if (stimFileProvided && !checkFilePath(stimfile))
+            {
+                MessageBox.Show("The *.olstim file provided does not exist");
+                return;
+            }
+
+            // Make sure that the user has input a valid file path for the digital file
+            if (digFileProvided && !checkFilePath(digfile))
+            {
+                MessageBox.Show("The *.oldig file provided does not exist");
+                return;
+            }
+
+            // Prep for take-off
+            button_startStimFromFile.Enabled = false;
+            button_stopStimFromFile.Enabled = true;
+            
+            // This task will govern the periodicity of DAQ circular-buffer loading so that
+            // all digital and stimulus output from the system is hardware timed
+            buffLoadTask = new Task("stimBufferTask");
+
+            // Trigger a load event off every edge of this channel
+            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.StimulatorDevice + "/ctr1",
+                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)STIMBUFFSIZE) / 2.0, 0.5);
+            buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+            buffLoadTask.SynchronizeCallbacks = false;
+            buffLoadTask.Control(TaskAction.Verify);
+
+            if (stimFileProvided)
+            {
+                # region If the user gave a .olstim file
 
                 // Refresh DAQ tasks as they are needed for file2stim
                 if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
@@ -3650,12 +3677,7 @@ namespace NeuroRighter
                 // Create new DAQ tasks and corresponding writers
                 stimPulseTask = new Task("stimPulseTask");
                 stimDigitalTask = new Task("stimDigitalTask");
-                buffLoadTask = new Task("stimBufferTask");
 
-                // Trigger a load event off every edge of this channel
-                buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.StimulatorDevice + "/ctr1",
-                    "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)STIMBUFFSIZE) / 2.0, 0.5);
-                
                 if (Properties.Settings.Default.StimPortBandwidth == 32)
                     stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
                         ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
@@ -3678,13 +3700,10 @@ namespace NeuroRighter
                 stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
 
                 // Setup the AO and DO tasks for continuous stimulaiton
-                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,STIMBUFFSIZE);
-                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples,STIMBUFFSIZE);
-                //buffLoadTask.COChannels[0].CounterTimebaseSource = "100kHzTimebase";
-                buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+                stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+                stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
                 stimDigitalTask.SynchronizeCallbacks = false;
                 stimPulseTask.SynchronizeCallbacks = false;
-                buffLoadTask.SynchronizeCallbacks = false;
 
                 //Create output writers
                 stimFromFileAnalogWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
@@ -3694,7 +3713,6 @@ namespace NeuroRighter
                 stimPulseTask.Control(TaskAction.Verify);
                 stimDigitalTask.Control(TaskAction.Verify);
                 buffLoadTask.Timing.ReferenceClockSource = stimPulseTask.Timing.ReferenceClockSource;
-                buffLoadTask.Control(TaskAction.Verify);
 
                 // Create a File2Stim object and start to run the protocol via its methods
                 if (useManStimWave)
@@ -3706,18 +3724,32 @@ namespace NeuroRighter
                 {
                     custprot = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, buffLoadTask, stimFromFileDigitalWriter, stimFromFileAnalogWriter);
                 }
-               
-                buttonStart.PerformClick();
-                custprot.start();
-                buttonStop.Enabled = false;
-                custprot.AlertProgChanged += new File2Stim4.ProgressChangedHandler(protProgressChangedHandler);
-                custprot.AlertAllFinished += new File2Stim4.AllFinishedHandler(protFinisheddHandler);
 
-                progressBar_protocolFromFile.Minimum = 0;
-                progressBar_protocolFromFile.Maximum = 100;
-                progressBar_protocolFromFile.Value = 0;
+                // Intialize the protocol
+                custprot.SetupStimBuff();
 
+                #endregion
             }
+
+            if (digFileProvided)
+            {
+                #region If the user provided a .oldig file
+
+                #endregion
+            }
+
+
+            // Start up the experiment
+            buttonStart.PerformClick();
+            custprot.start();
+            buttonStop.Enabled = false;
+            custprot.AlertProgChanged += new File2Stim4.ProgressChangedHandler(protProgressChangedHandler);
+            custprot.AlertAllFinished += new File2Stim4.AllFinishedHandler(protFinisheddHandler);
+
+            progressBar_protocolFromFile.Minimum = 0;
+            progressBar_protocolFromFile.Maximum = 100;
+            progressBar_protocolFromFile.Value = 0;
+
         }
 
         private void button_stopStimFromFile_Click(object sender, EventArgs e)
@@ -3795,7 +3827,6 @@ namespace NeuroRighter
             bool check = File.Exists(sourcefile);
             return (check);
         }
-
 
         private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
         {

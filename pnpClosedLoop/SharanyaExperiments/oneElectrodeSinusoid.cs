@@ -69,7 +69,7 @@ namespace SharanyaExperiments
             {
                 
 
-                CLE.initializeStim();//create the buffer
+                CLE.initializeStim(2);//create the buffer
                 CLE.appendStim(stimTimes, channels, wavemat);//append the first pair to the buffer
                 CLE.stimBuffStart();//start stimin'
                 while (!CLE.isCancelled & DateTime.Now < timeend)//wait for 1 day to pass, or for the experiment to be cancelled.

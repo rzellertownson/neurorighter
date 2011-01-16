@@ -44,12 +44,12 @@ namespace SharanyaExperiments
             
             //create the waveform
             double[] wave =  waveform(phaseLength, pulsesPerTrain, amplitude);
-            double[,] wavemat = new double[wave.Length, channels.Length];
+            double[,] wavemat = new double[channels.Length,wave.Length];
             for (int i = 0; i < channels.Length; i++)
             {
                 for (int j = 0; j < wave.Length; j++)
                 {
-                    wavemat[j, i] = wave[j];
+                    wavemat[i, j] = wave[j];
                 }
             }
             //END OF MATLAB-STUFF
@@ -69,19 +69,22 @@ namespace SharanyaExperiments
             {
                 
 
-                CLE.initializeStim();//create the buffer
-
+                CLE.initializeStim(2);//create the buffer
+               // MessageBox.Show("initialized buffer");
                 //initialize
                 CLE.appendStim(stimTimes, channels, wavemat);//append the first pair to the buffer
+               // MessageBox.Show("first append handled");
                 for (int i = 1; i < 3; i++)
                 {
                     currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
                     stimTimes = calcTimeVec(phaseOffset, currentTime);//when do we stimulate next?
                     CLE.appendStim(stimTimes, channels, wavemat);
                 }
-
+               // MessageBox.Show("next three appends handled");
 
                 CLE.stimBuffStart();//start stimin'
+
+                //MessageBox.Show("loop: " + CLE.isCancelled + " " + DateTime.Now);
                 while (!CLE.isCancelled & DateTime.Now < timeend)//wait for 1 day to pass, or for the experiment to be cancelled.
                 {
                     if (CLE.stimuliInQueue() < 2)//lets put an upper bound of one stimulus 'on deck' before we add more
@@ -97,7 +100,9 @@ namespace SharanyaExperiments
             }
             catch (Exception me)
                 {
-                    close();
+                    MessageBox.Show("exception thrown: " + me.Message);
+                    
+                close();
                 }
             
         }

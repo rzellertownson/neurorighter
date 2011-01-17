@@ -1,2 +1,3 @@
 C:\Users\Jon\Desktop\NeuroRighter\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter2\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\NeuroRighter_05\Content\obj\Release\ResolveAssemblyReference.cache

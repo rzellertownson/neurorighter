@@ -16,14 +16,14 @@ namespace NeuroRighter
         private const int PORT_OFFSET_8bitPort = 0;
 
         public Int16 channel; //1 based
-        public int time; // write time (in 100ths of ms)
+        public ulong time; // write time (in 100ths of ms)
         public double[] waveform; //Stim voltage
-        public ulong StimSample; //what sample number does this stimulus start on
+ 
         public double[] AnalogEncode;
         public UInt32[] DigitalEncode;
-        private uint STIM_SAMPLING_FREQ;
 
-        public StimulusData(int channel, int time, double[] waveform)
+
+        public StimulusData(int channel, ulong time, double[] waveform)
         {
             this.channel = (short)channel;
             this.time = time;
@@ -53,13 +53,7 @@ namespace NeuroRighter
         //User should need to only call the constructor, first instance in which this data is being used by code that knows the 
         //stim sampling frequency, perform this operation.  shouldn't be a problem if it is called twice, assuming using the same
         //sampling frequency data.
-        public ulong calcIndex(uint STIM_SAMPLING_FREQ)
-        {
-            this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
-            
-            this.StimSample = (uint)Math.Round((double)(time * (STIM_SAMPLING_FREQ / 100000)));
-            return StimSample;
-        }
+       
         #region MUX conversion Functions
         internal static UInt32 channel2MUX(double channel)
         {

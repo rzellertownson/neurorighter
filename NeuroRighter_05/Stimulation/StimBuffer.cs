@@ -471,7 +471,7 @@ namespace NeuroRighter
             }
         }
 
-        internal void append(int[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
+        internal void append(ulong[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
         {
 
             //needs to include precompute stuff!  ie, convert to stimsample, analog encode, etc
@@ -497,7 +497,7 @@ namespace NeuroRighter
                     stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
 
                     //  MessageBox.Show("created a stim");
-                    stim.calcIndex(STIM_SAMPLING_FREQ);
+                   
                     //  MessageBox.Show("calc'd the index");
 
                     outerbuffer.Add(stim);
@@ -515,10 +515,7 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                foreach (StimulusData stim in stimlist)
-                {
-                    stim.calcIndex(STIM_SAMPLING_FREQ);
-                }
+               
 
                 outerbuffer.AddRange(stimlist);
 
@@ -549,23 +546,23 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                if (outerbuffer.ElementAt(0).StimSample < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
+                if (outerbuffer.ElementAt(0).time < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
 
                     currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
                     outerbuffer.RemoveAt(0);
                   //  Console.Write("starting stim at " + currentStim.time);
-                    currentStim.calcIndex(STIM_SAMPLING_FREQ);
+                    
 
                     if (outerbuffer.Count == (queueThreshold - 1))
                         onThreshold(EventArgs.Empty);
 
                     NumSampWrittenForCurrentStim = 0;
-                    BufferIndex = currentStim.StimSample - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                    if (currentStim.StimSample < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    BufferIndex = currentStim.time - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
+                    if (currentStim.time < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                     {
                         //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.time + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
                     }
 
                     return true;

@@ -24,7 +24,7 @@ namespace NeuroRighter
         internal bool lastLoad;
 
         internal double[] cannedWaveform; // if the user is just repeating the same waveform, then this holds that info
-        internal int[] TimeVector; //interstim times (NX1 vector)
+        internal ulong[] TimeVector; //interstim times (NX1 vector)
         internal int[] ChannelVector; // stimulation locations (NX1 vector)
         internal double[,] WaveMatrix; // stimulation waveforms (NXM vector, M samples per waveform)
 
@@ -151,7 +151,7 @@ namespace NeuroRighter
             if (2*numStimPerLoad > numstim)
             {
                 // Create Stimulus data arrays, just load all the data because the file is not that big
-                TimeVector = new int[numstim];
+                TimeVector = new ulong[numstim];
                 ChannelVector = new int [numstim];
                 WaveMatrix = new double [numstim, wavesize];
 
@@ -170,7 +170,7 @@ namespace NeuroRighter
             {
 
                 // Create Stimulus data arrays
-                TimeVector = new int [numStimPerLoad];
+                TimeVector = new ulong [numStimPerLoad];
                 ChannelVector = new int [numStimPerLoad];
                 WaveMatrix = new double[numStimPerLoad, wavesize];
 
@@ -202,7 +202,7 @@ namespace NeuroRighter
 
                     // load the last few stimuli
                     Console.Write("file2stim4: last load");
-                    TimeVector = new int[numstim - numLoadsCompleted * numStimPerLoad];
+                    TimeVector = new ulong[numstim - numLoadsCompleted * numStimPerLoad];
                     ChannelVector = new int[numstim - numLoadsCompleted * numStimPerLoad];
                     WaveMatrix = new double[numstim - numLoadsCompleted * numStimPerLoad, wavesize];
                     loadStimWithWave(olstimfile, numstim - numLoadsCompleted * numStimPerLoad);
@@ -238,7 +238,7 @@ namespace NeuroRighter
                     break;
                         
                 // load stim time
-                TimeVector[j] = Convert.ToInt32(line);
+                TimeVector[j] = Convert.ToUInt64(line);
 
                 // load stime chan
                 line = olstimFile.ReadLine();

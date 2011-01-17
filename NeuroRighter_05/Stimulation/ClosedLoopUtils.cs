@@ -105,8 +105,17 @@ namespace NeuroRighter
            
         }
 
-        public void appendStim(int[] timeVec, int[] channelVec, double[,] waveMat)
+        public void appendStim(ulong[] timeVec, int[] channelVec, double[,] waveMat)
         {
+            buffer.append(timeVec, channelVec, waveMat);
+        }
+        public void appendStim(double[] timeVecms, int[] channelVec, double[,] waveMat)
+        {
+            ulong[] timeVec = new ulong[timeVecms.Length];
+            for (int i = 0; i < timeVecms.Length; i++)
+            {
+                timeVec[i] = (ulong)(timeVecms[i] * STIM_SAMPLING_FREQ / 1000);
+            }
             buffer.append(timeVec, channelVec, waveMat);
         }
 

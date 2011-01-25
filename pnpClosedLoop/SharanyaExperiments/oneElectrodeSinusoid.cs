@@ -44,12 +44,12 @@ namespace SharanyaExperiments
             
             //create the waveform
             double[] wave = sinusoid(frequency, duration, amplitude);// waveform(phaseLength, pulsesPerTrain, amplitude);
-            double[,] wavemat = new double[wave.Length, channels.Length];
+            double[,] wavemat = new double[ channels.Length,wave.Length];
             for (int i = 0; i < channels.Length; i++)
             {
                 for (int j = 0; j < wave.Length; j++)
                 {
-                    wavemat[j, i] = wave[j];
+                    wavemat[i, j] = wave[j];
                 }
             }
             //END OF MATLAB-STUFF
@@ -69,24 +69,28 @@ namespace SharanyaExperiments
             {
                 
 
-                CLE.initializeStim(2);//create the buffer
+                CLE.initializeStim(20);//create the buffer
                 CLE.appendStim(stimTimes, channels, wavemat);//append the first pair to the buffer
                 CLE.stimBuffStart();//start stimin'
+                Console.WriteLine("CLE stimbuffer started");
                 while (!CLE.isCancelled & DateTime.Now < timeend)//wait for 1 day to pass, or for the experiment to be cancelled.
                 {
-                    if (CLE.stimuliInQueue() < 2)//lets put an upper bound of one stimulus 'on deck' before we add more
+                    if (CLE.stimuliInQueue() < 20)//lets put an upper bound of one stimulus 'on deck' before we add more
                     {
                         currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
                         stimTimes = calcTimeVec(phaseOffset, currentTime);//when do we stimulate next?
-
+                        Console.WriteLine("stimtimes calculated");
 
                         CLE.appendStim(stimTimes, channels, wavemat);
+                        Console.WriteLine("stims appended");
                     }
                 }
+                Console.WriteLine("closed loop experiment stopped");
                 CLE.stimBuffStop();
             }
             catch (Exception me)
                 {
+                    Console.WriteLine("exception thrown: " + me.Message);
                     close();
                 }
             

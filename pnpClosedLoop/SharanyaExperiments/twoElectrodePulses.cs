@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using NeuroRighter;
 
 
+
 namespace SharanyaExperiments
 {
     public class twoElectrodePulses : pnpClosedLoopAbs
@@ -17,9 +18,8 @@ namespace SharanyaExperiments
 
         
         
-        double amplitude = 0.5;//voltage
-
-
+        
+       
         
 
         public  override void  run()
@@ -28,6 +28,7 @@ namespace SharanyaExperiments
             //THIS STUFF WOULD NORMALLY BE IN MATLAB FOR OPEN LOOP STIM
 
             //params
+            double amplitude = 1;
             double trainFrequency = 7.7;//hz
             double pulseFrequency = 500;//hz
             int pulsesPerTrain = 5;
@@ -69,7 +70,7 @@ namespace SharanyaExperiments
             {
                 
 
-                CLE.initializeStim(2);//create the buffer
+                CLE.initializeStim(20);//create the buffer
                // MessageBox.Show("initialized buffer");
                 //initialize
                 CLE.appendStim(stimTimes, channels, wavemat);//append the first pair to the buffer
@@ -87,20 +88,22 @@ namespace SharanyaExperiments
                 //MessageBox.Show("loop: " + CLE.isCancelled + " " + DateTime.Now);
                 while (!CLE.isCancelled & DateTime.Now < timeend)//wait for 1 day to pass, or for the experiment to be cancelled.
                 {
-                    if (CLE.stimuliInQueue() < 2)//lets put an upper bound of one stimulus 'on deck' before we add more
+                    if (CLE.stimuliInQueue() < 20)//lets put an upper bound of one stimulus 'on deck' before we add more
                     {
                        currentTime += isi;//this is in ms, and is timed to the start of the stimbuffer
                         stimTimes = calcTimeVec(phaseOffset, currentTime);//when do we stimulate next?
 
 
                         CLE.appendStim(stimTimes, channels, wavemat);
+                        Console.WriteLine("closed loop stim appended starting at time: " + stimTimes[0]);
                     }
                 }
+                Console.WriteLine("closed loop experiment stopped");
                 CLE.stimBuffStop();
             }
             catch (Exception me)
                 {
-                    MessageBox.Show("exception thrown: " + me.Message);
+                Console.WriteLine("closed loop experiment error " + me.Message);
                     
                 close();
                 }

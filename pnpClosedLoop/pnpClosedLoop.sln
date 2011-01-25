@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleExperimentLibrary", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "classicExperiments", "classicExperiments\classicExperiments.csproj", "{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilentBarrage", "SilentBarrage\SilentBarrage.csproj", "{B07E0513-71F0-45A1-BCFB-B006082FE0A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EC3D333-3F5D-4D9A-92E3-ABFFE579C01E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07E0513-71F0-45A1-BCFB-B006082FE0A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07E0513-71F0-45A1-BCFB-B006082FE0A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07E0513-71F0-45A1-BCFB-B006082FE0A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07E0513-71F0-45A1-BCFB-B006082FE0A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

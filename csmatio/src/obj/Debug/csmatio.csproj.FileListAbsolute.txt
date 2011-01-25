@@ -12,3 +12,10 @@ C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Debug\zlib.net.dll
 C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Debug\csmatio.dll
 C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Debug\csmatio.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\bin\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\bin\Debug\csmatio.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\bin\Debug\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\bin\Debug\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\obj\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\NeuroRighter\csmatio\src\obj\Debug\csmatio.pdb

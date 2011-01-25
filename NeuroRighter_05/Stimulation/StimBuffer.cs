@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+//using System.Diagnostic;
 
 namespace NeuroRighter
 {   
@@ -134,6 +135,11 @@ namespace NeuroRighter
             outerbuffer = new List<StimulusData>();
             }
 
+        internal void setThreshold(int queueThreshold)
+        {
+            this.queueThreshold = queueThreshold;
+        }
+
         internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
         {
 
@@ -165,9 +171,11 @@ namespace NeuroRighter
             populateBufferAppending();
 
             // Start the counter that tells when to reload the daq
+            //stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
+           // stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
-
+            Console.WriteLine("start: first two bufloads, write to buffers completed");
             running = true;
             buffLoadTask.Start();
             stimDigitalTask.Start();
@@ -196,6 +204,7 @@ namespace NeuroRighter
         
         void timer_Tick(object sender, EventArgs e)
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             if (running)
             {
                 tickTime = DateTime.Now;
@@ -205,23 +214,38 @@ namespace NeuroRighter
             }
             else
             {
+                Console.WriteLine("stimbuffer is not running");
                 finishStimulation(e);
+                buffLoadTask.Stop();
+                stimAnalogTask.Stop();
+                stimDigitalTask.Stop();
             }
-        }
+            Thread.CurrentThread.Priority = ThreadPriority.Normal;
+        } 
 
         internal void writeToBuffer()
         {
-            thrd = Thread.CurrentThread;
-            thrd.Priority = ThreadPriority.Highest;
+            try
+            {
+                thrd = Thread.CurrentThread;
+                thrd.Priority = ThreadPriority.Highest;
 
-            analogdone = false;
-            digitaldone = false;
-            populateBufferAppending();
-            Console.WriteLine("Write to Buffer Started");
-            stimAnalogWriter.BeginWriteMultiSample(false, AnalogBuffer, null, 1);
-            stimDigitalWriter.BeginWriteMultiSamplePort(false, DigitalBuffer, null, 2);
-            analogdone = true;
-            digitaldone = true;
+                analogdone = false;
+                digitaldone = false;
+                populateBufferAppending();
+             //   Console.WriteLine("Write to Buffer Started");
+                stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
+                stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
+               // stimAnalogWriter.BeginWriteMultiSample(false, AnalogBuffer, null, 1);
+               // stimDigitalWriter.BeginWriteMultiSamplePort(false, DigitalBuffer, null, 2);
+                analogdone = true;
+                digitaldone = true;
+            }
+            catch (DaqException e)
+            {
+                Console.WriteLine("Daq exception: write to buffer error: " + e.Message);
+                MessageBox.Show("Daq exception: write to buffer error: " + e.Message);
+            }
             
         }
 
@@ -409,7 +433,7 @@ namespace NeuroRighter
                 
                 tickTime = DateTime.Now;
                 tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
                 
                 Stopwatch ws = new Stopwatch();
                 ws.Start();
@@ -429,7 +453,7 @@ namespace NeuroRighter
 
                 if (currentStim != null)
                 {
-                    //   MessageBox.Show("examining first stim");
+                    Console.WriteLine("populateBufferAppending(" +NumBuffLoadsCompleted+") : stim on deck");
                     bool finished = applyCurrentStimulus();
                     if (finished)
                     {
@@ -453,21 +477,23 @@ namespace NeuroRighter
                         {
                             finishStim();
                         }
+
                     }
                 }
 
                 //congratulations!  we finished the buffer!
                 NumBuffLoadsCompleted++;
                 // Check if protocol is completed
-                if (NumBuffLoadsCompleted >= NumBuffLoadsRequired)
+                if ((NumBuffLoadsRequired!=0)&(NumBuffLoadsCompleted >= NumBuffLoadsRequired))
                 {
                     running = false; // Start clean up cascade
                 }
 
                 onBufferLoad(EventArgs.Empty);
-
+                if (currentStim != null)
+                    Console.WriteLine("populateBufferAppending(" + NumBuffLoadsCompleted + "): finishing in the middle of stim");
                 ws.Stop();
-                Console.WriteLine("Buffer load took " + ws.Elapsed);
+                Console.WriteLine("populateBufferAppending(" + NumBuffLoadsCompleted + "): took " + ws.Elapsed);
             }
         }
 
@@ -480,7 +506,7 @@ namespace NeuroRighter
             Stopwatch sw = new Stopwatch();
             sw.Start();
             StimulusData stim;
-            Console.WriteLine("append started...");
+           // Console.WriteLine("append started...");
             lock (this)
             {
                 for (int i = 0; i < WaveMatrix.GetLength(0); i++)
@@ -501,12 +527,12 @@ namespace NeuroRighter
                     //  MessageBox.Show("calc'd the index");
 
                     outerbuffer.Add(stim);
-                    Console.Write(stim.time + ",");
+                    Console.WriteLine("append:" +stim.time );
                     // MessageBox.Show("added it");
                 }
             }
             sw.Stop();
-            Console.WriteLine("append took " + sw.Elapsed);
+            Console.WriteLine("append: took " + sw.Elapsed);
             //  MessageBox.Show("finished append");
 
         }
@@ -532,12 +558,13 @@ namespace NeuroRighter
             ulong Samples2Finish = (ulong)currentStim.waveform.Length+NUM_SAMPLES_BLANKING*2 - NumSampWrittenForCurrentStim;
 
             //write samples to the buffer
-            for (ulong i = 0; (i < Samples2Finish) & (BufferIndex < BUFFSIZE - 1); i++)
+            ulong i;
+            for (i = 0; (i < Samples2Finish) & (BufferIndex < BUFFSIZE ); i++)
             {
                 writeSample();
             }
 
-            return (BufferIndex < BUFFSIZE);
+            return ((BufferIndex < BUFFSIZE));//is the number of samples written equal to the number of samples we have to write?
         }
         
         //examines the next stimulus, determines if it is within range, and loads it if it is
@@ -593,7 +620,7 @@ namespace NeuroRighter
 
         internal void finishStim()
         {
-           // Console.Write("stim at " + currentStim.time + ",");
+            Console.WriteLine("populateBufferAppending(" + NumBuffLoadsCompleted + "): " + currentStim.time + " stim finished");
                 currentStim = null;//we aren't currently stimulating
             
         }

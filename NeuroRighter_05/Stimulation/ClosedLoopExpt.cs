@@ -19,6 +19,7 @@ namespace NeuroRighter
         private DigitalSingleChannelWriter stimDigitalWriter;
         private AnalogMultiChannelWriter stimAnalogWriter;
         public Boolean isCancelled;
+        private Boolean bw_returned= false;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private List<SpikeWaveform> waveforms;
         private List<StimulusData> stimulations;
@@ -39,21 +40,20 @@ namespace NeuroRighter
         internal event AllFinishedHandler AlertAllFinished;
 
         //constructor
-        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE, Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl)
-            :this(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimDigitalWriter, stimAnalogWriter, pnpcl, 100, 100)
-        {}
 
-        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE, Task stimDigitalTask, Task stimPulseTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl, int StimsSaved, int SpikesSaved)
+
+        public ClosedLoopExpt(int STIM_SAMPLING_FREQ, Int32 STIMBUFFSIZE, Task stimDigitalTask, Task stimPulseTask, Task buffloadTask, DigitalSingleChannelWriter stimDigitalWriter, AnalogMultiChannelWriter stimAnalogWriter, pnpClosedLoopAbs pnpcl)
         {
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.BUFFSIZE = STIMBUFFSIZE;
             this.stimDigitalTask = stimDigitalTask;
+            this.buffLoadTask = buffloadTask;
             this.stimAnalogTask = stimPulseTask;
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
             this.pnpcl = pnpcl;
-            this.SpikesSaved = SpikesSaved;
-            this.StimSaved = StimsSaved;
+            this.SpikesSaved = 100;
+            this.StimSaved = 100;
         }
        
         //start
@@ -78,7 +78,10 @@ namespace NeuroRighter
         {
             isCancelled = true;
             bw.CancelAsync();
-            
+            while (!bw_returned)//wait for the pnpcl to say that it is done
+            {
+                System.Threading.Thread.Sleep(100);
+            }
         }
 
         internal void linkToSpikes(NeuroRighter nr) { nr.spikesAcquired += new NeuroRighter.spikesAcquiredHandler(spikeAcquired); }
@@ -144,8 +147,9 @@ namespace NeuroRighter
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (AlertAllFinished != null) AlertAllFinished(this);
-            buffer.stop();
-            pnpcl.close();
+            
+           // buffer.stop();
+           // pnpcl.close();
         }
 
         void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -165,6 +169,7 @@ namespace NeuroRighter
                 pnpcl.grab(this);
                 
                 pnpcl.run();
+                bw_returned = true;
                 //simpleExample();
                 //spikeCounter();
             }
@@ -178,7 +183,7 @@ namespace NeuroRighter
         private void simpleExample()
         {
 
-            initializeStim();//sets stim params for wavestimming
+            initializeStim(3);//sets stim params for wavestimming
             //int percentProgress = 0;
             List<SpikeWaveform> recording;
             //initialize experiment
@@ -206,8 +211,7 @@ namespace NeuroRighter
                     }
                 }
 
-                waveStim(timeVec,channelVec,waveMat);//takes the timeVec, channelVec, waveMat and lengWave values and stims with them, as if
-                //a .olstim file with those params had been loaded.
+              
                 
 
                 //record spikes for 100ms

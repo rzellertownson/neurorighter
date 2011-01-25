@@ -3829,6 +3829,17 @@ namespace NeuroRighter
             stimPulseTask.Control(TaskAction.Verify);
             stimDigitalTask.Control(TaskAction.Verify);
         }
+        private void killCounter()
+        {
+            if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
+ 
+        }
+        private void killStim()
+        {
+            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
+            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
+ 
+        }
 
         #endregion
 
@@ -3885,7 +3896,7 @@ namespace NeuroRighter
                     if (works)
                     {
                         //pnpClosedLoopAbs pnpcl = (pnpClosedLoopAbs) pnpcl_available_dropdown.SelectedItem;
-                        CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter, pnpcl);
+                        CLE = new ClosedLoopExpt(STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask,buffLoadTask, stimDigitalWriter, stimPulseWriter, pnpcl);
                         //MessageBox.Show(pnpcl1.ToString());
                         CLE.linkToSpikes(this);
                         CLE.linkToStim(this);
@@ -3916,6 +3927,8 @@ namespace NeuroRighter
             stimAcquired = null;
             spikesAcquired = null;
             //stop recording
+            killCounter();
+            killStim();
             updateSettings();
             updateStim();
             buttonStop.Enabled = true;

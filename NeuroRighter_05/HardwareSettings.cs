@@ -256,7 +256,7 @@ namespace NeuroRighter
             this.Close();
         }
 
-        private void checkBox_useDIO_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_useDIO_CheckedChanged_1(object sender, EventArgs e)
         {
             if (checkBox_useDIO.Checked) comboBox_digIODev.Enabled = true;
             else comboBox_digIODev.Enabled = false;
@@ -356,6 +356,7 @@ namespace NeuroRighter
         {
             comboBox_singleChannelPlaybackDevice.Enabled = checkBox_useChannelPlayback.Checked;
         }
+
 
 
 

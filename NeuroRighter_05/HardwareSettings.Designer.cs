@@ -790,6 +790,7 @@ namespace NeuroRighter
             this.checkBox_useDIO.TabIndex = 12;
             this.checkBox_useDIO.Text = "Use Dedicated Devices for Digital Input/Output";
             this.checkBox_useDIO.UseVisualStyleBackColor = true;
+            this.checkBox_useDIO.CheckedChanged += new System.EventHandler(this.checkBox_useDIO_CheckedChanged_1);
             // 
             // label15
             // 
@@ -802,6 +803,7 @@ namespace NeuroRighter
             // 
             // comboBox_digIODev
             // 
+            this.comboBox_digIODev.Enabled = false;
             this.comboBox_digIODev.FormattingEnabled = true;
             this.comboBox_digIODev.Location = new System.Drawing.Point(162, 50);
             this.comboBox_digIODev.Name = "comboBox_digIODev";

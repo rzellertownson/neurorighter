@@ -104,22 +104,10 @@ namespace NeuroRighter
         //constructor if using stim buffer in append mode- with lists!
         internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold)
         {
-            //this.SamplesPerStim = (uint)SamplesPerStim;
-           // this.outerbufferSize = (uint)OUTERBUFFSIZE;
             this.BUFFSIZE = (uint)INNERBUFFSIZE;
             this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
             this.NUM_SAMPLES_BLANKING = (uint)NUM_SAMPLES_BLANKING;
             this.queueThreshold = queueThreshold;
-
-            //this.WaveMatrix = new double[OUTERBUFFSIZE + 1, SamplesPerStim];
-            //this.ChannelVector = new int[OUTERBUFFSIZE + 1];
-            //PRECOMPUTE STUFF
-            // initialize the outer buffer- we don't use the this.timevec, channelvec, or wavemat, just load directly into the vectors below:
-            //StimSample = new ulong[outerbufferSize + 1];//buffer size is plus one, such that if the read and write indices are at the same point, the buffer is empty, while at the same time providing the specified effective buffer size
-           
-
-            //  WaveLength = (uint)SamplesPerStim;
-            //  StimulusLength = (uint)(WaveLength + 2 * NUM_SAMPLES_BLANKING + 2); //length of waveform + padding on either side due to digital signaling.
 
             // What are the buffer offset settings for this system?
             NumAOChannels = 2;
@@ -134,7 +122,7 @@ namespace NeuroRighter
             outerbuffer = new List<StimulusData>();
             }
 
-        internal void start(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
+        internal void setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
         {
 
             startTime = DateTime.Now;
@@ -149,8 +137,8 @@ namespace NeuroRighter
             stimDigitalTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
             stimAnalogTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
             stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-            stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
+            //stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
+            //stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
             
             // Add reload method to the Counter output event
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(timer_Tick);
@@ -167,12 +155,13 @@ namespace NeuroRighter
             // Start the counter that tells when to reload the daq
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
+        }
 
+        internal void start()
+        {
             running = true;
-            buffLoadTask.Start();
             stimDigitalTask.Start();
             stimAnalogTask.Start();
-
         }
 
         internal void finishStimulation(EventArgs e)
@@ -180,16 +169,13 @@ namespace NeuroRighter
             if (StimulationComplete != null)
             {
                 // Stop the tasks and dispose of them
-                buffLoadTask.Stop();
                 stimDigitalTask.Stop();
                 stimAnalogTask.Stop();
 
                 stimDigitalTask.Dispose();
                 stimAnalogTask.Dispose();
-                buffLoadTask.Dispose();
 
                 // Tell NR that stimulation has finished
-
                 StimulationComplete(this, e);
             }
         }
@@ -218,8 +204,8 @@ namespace NeuroRighter
             digitaldone = false;
             populateBufferAppending();
             Console.WriteLine("Write to Buffer Started");
-            stimAnalogWriter.BeginWriteMultiSample(false, AnalogBuffer, null, 1);
-            stimDigitalWriter.BeginWriteMultiSamplePort(false, DigitalBuffer, null, 2);
+            stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
+            stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
             analogdone = true;
             digitaldone = true;
             
@@ -515,10 +501,7 @@ namespace NeuroRighter
         {
             lock (this)
             {
-               
-
                 outerbuffer.AddRange(stimlist);
-
             }
         }
         

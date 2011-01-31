@@ -18,7 +18,7 @@ namespace NeuroRighter
         internal string line; // line from the .olstim file
         internal int wavesize; // the number of samples per stimulation waveform
         internal int numstim; // number of stimuli specified in open-loop file
-        internal int numStimPerLoad = 200; // Number of stimuli loaded per read of the olstim file
+        internal int numStimPerLoad = 50; // Number of stimuli loaded per read of the olstim file
         internal int numLoadsCompleted = 0; // Number loads completed
         internal ulong NumBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         internal bool lastLoad;
@@ -83,21 +83,12 @@ namespace NeuroRighter
             stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
-        internal void start()
-        {
-            bw = new BackgroundWorker();
-            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-            bw.WorkerSupportsCancellation = true;
-            bw.RunWorkerAsync();
-        }
-
         internal void stop()
         {
-            bw.CancelAsync();
             stimbuff.stop();
         }
 
-        private void bw_DoWork(Object sender, DoWorkEventArgs e)
+        internal void setup()
         {
             // Load the stimulus buffer
             stimbuff.QueueLessThanThreshold += new QueueLessThanThresholdHandler(appendStimBufferAtThresh);
@@ -159,11 +150,11 @@ namespace NeuroRighter
                 loadStimWithWave(olstimfile,numstim);
 
                 // Append the first stimuli to the stim buffer
-                Console.Write("one big load");
+                Console.WriteLine("one big load");
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted = numstim;
                 lastLoad = true;
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
             }
             else
@@ -180,17 +171,22 @@ namespace NeuroRighter
                 // Append the first stimuli to the stim buffer
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.start(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
             }
 
+        }
+
+        internal void start()
+        {
+            stimbuff.start();
         }
 
         internal void appendStimBufferAtThresh(object sender, EventArgs e)
         {
             if (numstim - (numLoadsCompleted * numStimPerLoad) > numStimPerLoad)
             {
-                Console.Write("file2stim4: normal load numstimperload:" + numStimPerLoad + " numLoadsCompleted:" + numLoadsCompleted + " numstim:" + numstim );
+                Console.WriteLine("file2stim4: normal load numstimperload:" + numStimPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
                 loadStimWithWave(olstimfile, numStimPerLoad);
                 stimbuff.append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
                 numLoadsCompleted++;

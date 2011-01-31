@@ -1,4 +1,4 @@
-﻿19:10:41.9590000:closed loop burst suppression experiment started
+19:10:41.9590000:closed loop burst suppression experiment started
 19:10:43.0960000:appended at times 0ms 
 19:10:43.4080000:appended at times 129870ms 
 19:12:53.2070000:appended at times 259740ms 

@@ -79,6 +79,7 @@ namespace NeuroRighter
         private AsyncCallback eegCallback;
         private bool taskRunning;  //Shows whether data are being acquired or not
         private string filenameOutput;
+        private string originalNameBase;
         private string filenameBase;
         private string filenameEEG;
         private string filenameSpks;  //Spike times and waveforms
@@ -313,11 +314,7 @@ namespace NeuroRighter
                 textBox_OutputFile.Text = filenameOutput;
                 toolTip_outputFilename.SetToolTip(textBox_OutputFile, filenameOutput);
                 filenameBase = filenameOutput.Substring(0, filenameOutput.Length - 4);
-                filenameSpks = filenameBase + ".spk";
-                if (Properties.Settings.Default.UseStimulator)
-                    filenameStim = filenameBase + ".stim";
-                if (Properties.Settings.Default.UseEEG)
-                    filenameEEG = filenameBase + ".eeg";
+                originalNameBase = filenameBase;// Save original namebase for repeated recording
             }
         }
 
@@ -330,32 +327,56 @@ namespace NeuroRighter
         //Main body of code in this function
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (!taskRunning)
+            //Ensure that, if recording is setup, that it has been done properly
+            if (switch_record.Value)
             {
-                //Ensure that, if recording is setup, that it has been done properly
-                if (switch_record.Value)
+                if (filenameBase == null) //user hasn't specified a file
+                    button_BrowseOutputFile_Click(null, null); //call file selection routine
+                if (filenameBase == null) //this happens if the user pressed cancel for the dialog
                 {
-                    if (filenameBase == null) //user hasn't specified a file
-                        button_BrowseOutputFile_Click(null, null); //call file selection routine
-                    if (filenameBase == null) //this happens if the user pressed cancel for the dialog
-                    {
-                        MessageBox.Show("An output file must be selected before recording."); //display an error message
-                        return;
-                    }
-
-                    //If file exists, verify over-writing
-                    if (File.Exists(filenameOutput))
-                    {
-                        DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?", 
-                            "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-
-                        if (dr == DialogResult.No)
-                            button_BrowseOutputFile_Click(null, null); //call file selection routine
-                        else if (dr == DialogResult.Cancel)
-                            return;
-                    }
+                    MessageBox.Show("An output file must be selected before recording."); //display an error message
+                    return;
                 }
 
+
+
+                //If file exists, verify over-writing
+                if (File.Exists(filenameOutput))
+                {
+                    DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
+                        "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                    if (dr == DialogResult.No)
+                        button_BrowseOutputFile_Click(null, null); //call file selection routine
+                    else if (dr == DialogResult.Cancel)
+                        return;
+                }
+                // If the user is just doing a single recording
+                if (checkbox_repeatRecord.Checked)
+                {
+                    DateTime nowDate = DateTime.Now;//Get current time (local to computer);
+                    string datePrefix = nowDate.ToString("'-'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss");
+                    filenameBase = originalNameBase + datePrefix;
+                }
+
+                filenameSpks = filenameBase + ".spk";
+                if (Properties.Settings.Default.UseStimulator)
+                    filenameStim = filenameBase + ".stim";
+                if (Properties.Settings.Default.UseEEG)
+                    filenameEEG = filenameBase + ".eeg";
+                NRRecord();
+            }
+            else
+            {
+                NRRecord();
+            }
+
+        }
+
+        private void NRRecord()
+        {
+            if (!taskRunning)
+            {
                 try
                 {
                     // Modify the UI, so user doesn't try running multiple instances of tasks
@@ -1496,8 +1517,15 @@ namespace NeuroRighter
             if (!checkBox_enableTimedRecording.Checked || DateTime.Now < timedRecordingStopTime)
                 //Setup next callback
                 spikeReader[taskNumber].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, taskNumber, spikeData[taskNumber]);
-            else
+            else if (DateTime.Now >= timedRecordingStopTime && checkbox_repeatRecord.Checked)
+            {
                 buttonStop.PerformClick();
+                buttonStart.PerformClick();
+            }
+            else
+            {
+                buttonStop.PerformClick();
+            }
         }
 
         //***********************
@@ -1772,11 +1800,6 @@ namespace NeuroRighter
         private void buttonStop_Click(object sender, EventArgs e) 
         { 
             if (taskRunning) reset();
-#if (USE_LOG_FILE)
-        logFile.Flush();
-    logFile.Close();
-    logFile.Dispose();
-#endif
         }
 
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -4659,6 +4682,7 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
+
 
 
     }

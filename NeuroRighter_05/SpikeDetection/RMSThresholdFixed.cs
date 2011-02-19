@@ -20,44 +20,69 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace NeuroRighter
 {
     using rawType = System.Double;
 
+
     /// <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
     class RMSThresholdFixed : SpikeDetector
     {
-        private const int TOTAL_NUM_UPDATES = 500;
+
+        private const int TOTAL_NUM_UPDATES = 1000;
         private int[] numUpdates; //We want to converge on a good estimate of RMS based on the first few calls, then stop updating
+        private double[,] RMSList;
+        private double[] ChanThresh;
+        private double[] ThreshSorted;
 
         public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult) :
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult) 
         {
             threshold = new rawType[1, numChannels];
             numUpdates = new int[numChannels];
+            RMSList = new double[numChannels,TOTAL_NUM_UPDATES];
+            ChanThresh = new double[TOTAL_NUM_UPDATES];
+            ThreshSorted = new double[(int)Math.Floor((double)(TOTAL_NUM_UPDATES - 2 * TOTAL_NUM_UPDATES / 10))];
         }
 
-        protected override void updateThreshold(rawType[] data, int channel)
+        protected override void updateThreshold(rawType[] data, int channel, int idx)
         {
             rawType tempData = 0;
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
                 tempData += data[j * downsample] * data[j * downsample]; //Square data
             tempData /= (spikeBufferLength / downsample);
             rawType thresholdTemp = (rawType)(Math.Sqrt(tempData) * _thresholdMultiplier);
+            RMSList[channel,idx] = thresholdTemp;
+            threshold[0, channel] = (threshold[0, channel]*(numUpdates[channel])) / (numUpdates[channel]+1)  + (thresholdTemp / (numUpdates[channel]+1));// Recursive RMS estimate
 
-            threshold[0, channel] = (threshold[0, channel]*(numUpdates[channel] - 1)) / numUpdates[channel]  + (thresholdTemp / numUpdates[channel]);// Recursive RMS estimate
-
-            //threshold[0, channel] = threshold[0, channel] + thresholdTemp/numUpdates[channel];
         }
 
         public override void detectSpikes(rawType[] data, List<SpikeWaveform> waveforms, int channel)
         {
-            if (++numUpdates[channel] > TOTAL_NUM_UPDATES) { /* do nothing */ }
-            else
-                updateThreshold(data, channel);
+            if (numUpdates[channel] > TOTAL_NUM_UPDATES) { /* do nothing */ }
+            else if (numUpdates[channel] == TOTAL_NUM_UPDATES)
+            {
+                // Estimate the threshold based on the lower 25% percentile of threshold estimates gathered duringthe updating process
+                for (int j = 0; j < TOTAL_NUM_UPDATES; ++j)
+                    ChanThresh[j] = RMSList[channel, j];
 
+                Array.Sort(ChanThresh);
+
+                for (int j = 0; j < ThreshSorted.Length; ++j)
+                    ThreshSorted[j] = RMSList[channel, j];
+
+                threshold[0, channel] = ThreshSorted.Average();
+                ++numUpdates[channel]; // prevent further updates
+            }
+            else
+            {
+                updateThreshold(data, channel, numUpdates[channel]);
+                ++numUpdates[channel];
+            }
             int i;
+
             //Check carried-over samples for spikes
             for (i = spikeBufferSize - numPost; i < spikeBufferSize; ++i)
             {

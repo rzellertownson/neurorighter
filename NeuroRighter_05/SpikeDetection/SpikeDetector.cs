@@ -73,6 +73,8 @@ namespace NeuroRighter
 
         protected virtual void updateThreshold(rawType[] data, int channel) { }
 
+        protected virtual void updateThreshold(rawType[] data, int channel, int idx) { }
+
         internal virtual float[][] GetCurrentThresholds()
         {
 

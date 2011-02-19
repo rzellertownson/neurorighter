@@ -194,7 +194,7 @@ namespace NeuroRighter
             
 
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
-            this.comboBox_spikeDetAlg.SelectedIndex = 1; //Default spike det. algorithm is RMS
+            this.comboBox_spikeDetAlg.SelectedIndex = 2; //Default spike det. algorithm is fixed RMS
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             //this.spikeBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 8); //Take quarter second samples
@@ -487,8 +487,8 @@ namespace NeuroRighter
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
 
-                            if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
-                                spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                            //if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
+                                //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
                         }
                         else
                         {
@@ -1348,73 +1348,75 @@ namespace NeuroRighter
 
             if (checkBox_spikeValidation.Checked)
             {
-                
-                for (int w = 0; w < newWaveforms.Count; w++) //For each waveform
+                lock (this)
                 {
-                    if (w < 0)
-                        break;
+                    for (int w = 0; w < newWaveforms.Count; w++) //For each waveform
+                    {
+                        if (w < 0)
+                            break;
 
-                    //Ensure that first and last few samples aren't blanked (this happens with artifact suppressions sometimes)
-                    if ((newWaveforms[w].waveform[0] <= newWaveforms[w].waveform[1] + VOLTAGE_EPSILON && newWaveforms[w].waveform[0] >= newWaveforms[w].waveform[1] - VOLTAGE_EPSILON &&
-                        newWaveforms[w].waveform[1] <= newWaveforms[w].waveform[2] + VOLTAGE_EPSILON && newWaveforms[w].waveform[1] >= newWaveforms[w].waveform[2] - VOLTAGE_EPSILON) ||
-                        (newWaveforms[w].waveform[numPost + numPre] <= newWaveforms[w].waveform[numPost + numPre - 1] + VOLTAGE_EPSILON &&
-                        newWaveforms[w].waveform[numPost + numPre] >= newWaveforms[w].waveform[numPost + numPre - 1] - VOLTAGE_EPSILON &&
-                        newWaveforms[w].waveform[numPost + numPre - 1] <= newWaveforms[w].waveform[numPost + numPre - 2] + VOLTAGE_EPSILON &&
-                        newWaveforms[w].waveform[numPost + numPre - 1] >= newWaveforms[w].waveform[numPost + numPre - 2] - VOLTAGE_EPSILON))
-                    {
-                        newWaveforms.RemoveAt(w);
-                        --w;
-                        continue;
-                    }
-
-                    //Find peak
-                    double maxVal = 0.0;
-                    for (int k = numPre; k < numPre + numSamplesPeak; ++k)
-                    {
-                        if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
-                            maxVal = Math.Abs(newWaveforms[w].waveform[k]);
-                    }
-                    //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
-                    if (maxVal > 1e-6 * Convert.ToDouble(textBox_AbsArtThresh.Text))
-                    {
-                        newWaveforms.RemoveAt(w);
-                        --w;
-                        continue;
-                    }
-                    else
-                    {
-                        skipSecondVal = false;
-
-                        for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
+                        //Ensure that first and last few samples aren't blanked (this happens with artifact suppressions sometimes)
+                        if ((newWaveforms[w].waveform[0] <= newWaveforms[w].waveform[1] + VOLTAGE_EPSILON && newWaveforms[w].waveform[0] >= newWaveforms[w].waveform[1] - VOLTAGE_EPSILON &&
+                            newWaveforms[w].waveform[1] <= newWaveforms[w].waveform[2] + VOLTAGE_EPSILON && newWaveforms[w].waveform[1] >= newWaveforms[w].waveform[2] - VOLTAGE_EPSILON) ||
+                            (newWaveforms[w].waveform[numPost + numPre] <= newWaveforms[w].waveform[numPost + numPre - 1] + VOLTAGE_EPSILON &&
+                            newWaveforms[w].waveform[numPost + numPre] >= newWaveforms[w].waveform[numPost + numPre - 1] - VOLTAGE_EPSILON &&
+                            newWaveforms[w].waveform[numPost + numPre - 1] <= newWaveforms[w].waveform[numPost + numPre - 2] + VOLTAGE_EPSILON &&
+                            newWaveforms[w].waveform[numPost + numPre - 1] >= newWaveforms[w].waveform[numPost + numPre - 2] - VOLTAGE_EPSILON))
                         {
-
-                            if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
-                            {
-                                newWaveforms.RemoveAt(w);
-                                --w;
-                                skipSecondVal = true;
-                                break;
-                            }
-
+                            newWaveforms.RemoveAt(w);
+                            --w;
+                            continue;
                         }
 
-                        if (!skipSecondVal)
+                        //Find peak
+                        double maxVal = 0.0;
+                        for (int k = numPre; k < numPre + numSamplesPeak; ++k)
                         {
-                            for (int k = 0; k < numPre; ++k)
+                            if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
+                                maxVal = Math.Abs(newWaveforms[w].waveform[k]);
+                        }
+                        //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
+                        if (maxVal > 1e-6 * Convert.ToDouble(textBox_AbsArtThresh.Text))
+                        {
+                            newWaveforms.RemoveAt(w);
+                            --w;
+                            continue;
+                        }
+                        else
+                        {
+                            skipSecondVal = false;
+
+                            for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
                             {
 
                                 if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
                                 {
                                     newWaveforms.RemoveAt(w);
                                     --w;
+                                    skipSecondVal = true;
                                     break;
                                 }
 
                             }
+
+                            if (!skipSecondVal)
+                            {
+                                for (int k = 0; k < numPre; ++k)
+                                {
+
+                                    if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
+                                    {
+                                        newWaveforms.RemoveAt(w);
+                                        --w;
+                                        break;
+                                    }
+
+                                }
+                            }
                         }
+
+
                     }
-
-
                 }
             }
             #endregion
@@ -2340,6 +2342,7 @@ namespace NeuroRighter
         }
 
         private void comboBox_spikeDetAlg_SelectedIndexChanged(object sender, EventArgs e) { setSpikeDetector(); }
+        private void button_ForceDetectTrain_Click(object sender, EventArgs e) { setSpikeDetector(); }
 
         /***************************************************************************
         * Check sampling rates for hardware capabilities                          *
@@ -4716,7 +4719,6 @@ ch = 1;
             if (radioButton_spikesReferencingCommonMedianLocal.Checked)
                 referncer = new Filters.CommonMedianLocalReferencer(spikeBufferLength, channelsPerGroup, numChannels / channelsPerGroup);
         }
-
 
 
     }

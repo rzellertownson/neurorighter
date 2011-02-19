@@ -44,7 +44,7 @@ namespace NeuroRighter
             numUpdates = new int[numChannels];
             RMSList = new double[numChannels,TOTAL_NUM_UPDATES];
             ChanThresh = new double[TOTAL_NUM_UPDATES];
-            ThreshSorted = new double[(int)Math.Floor((double)(TOTAL_NUM_UPDATES - 2 * TOTAL_NUM_UPDATES / 10))];
+            ThreshSorted = new double[(int)Math.Floor((double)(TOTAL_NUM_UPDATES - 9 * TOTAL_NUM_UPDATES / 10))];
         }
 
         protected override void updateThreshold(rawType[] data, int channel, int idx)

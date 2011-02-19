@@ -327,6 +327,10 @@ namespace NeuroRighter
         //Main body of code in this function
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            trackingreads = new int[2];
+            //trackingreads = {0 ,0};
+            trackingproc = new int[2];
+            //trackingproc = [0 ,0];
             //Ensure that, if recording is setup, that it has been done properly
             if (switch_record.Value)
             {
@@ -338,19 +342,6 @@ namespace NeuroRighter
                     return;
                 }
 
-
-
-                //If file exists, verify over-writing
-                if (File.Exists(filenameOutput))
-                {
-                    DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
-                        "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-
-                    if (dr == DialogResult.No)
-                        button_BrowseOutputFile_Click(null, null); //call file selection routine
-                    else if (dr == DialogResult.Cancel)
-                        return;
-                }
                 // If the user is just doing a single recording
                 if (checkbox_repeatRecord.Checked)
                 {
@@ -364,6 +355,17 @@ namespace NeuroRighter
                     filenameStim = filenameBase + ".stim";
                 if (Properties.Settings.Default.UseEEG)
                     filenameEEG = filenameBase + ".eeg";
+
+                if (File.Exists(filenameSpks))
+                {
+                    DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
+                        "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                    if (dr == DialogResult.No)
+                        button_BrowseOutputFile_Click(null, null); //call file selection routine
+                    else if (dr == DialogResult.Cancel)
+                        return;
+                }
                 NRRecord();
             }
             else
@@ -923,6 +925,7 @@ namespace NeuroRighter
                         bwSpikes.Add(new BackgroundWorker());
                         bwSpikes[i].DoWork += new DoWorkEventHandler(bwSpikes_DoWork);
                         bwSpikes[i].RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwSpikes_RunWorkerCompleted);
+                        bwSpikes[i].WorkerSupportsCancellation = true;
                     }
 
 
@@ -1000,7 +1003,6 @@ namespace NeuroRighter
          * Spike data acquisition and plotting              *
          ****************************************************/
         private List<BackgroundWorker> bwSpikes;
-
         /// <summary>
         /// Keeps track of when a stimulus pulse occurred
         /// </summary>
@@ -1022,6 +1024,7 @@ namespace NeuroRighter
         private double triggerStopTime = double.PositiveInfinity; //offset of integration trigger
         private bool inTrigger = false;
         private Object numStimReadsLock = new object();
+        
         private void AnalogInCallback_spikes(IAsyncResult ar)
         {
             try
@@ -1029,7 +1032,7 @@ namespace NeuroRighter
                 if (taskRunning)
                 {
                     int taskNumber = (int)ar.AsyncState;
-
+                    trackingreads[taskNumber]++;
                     #region Stim_Timing_Acquisition
                     if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                     {
@@ -1147,8 +1150,16 @@ namespace NeuroRighter
                     }
                     #endregion
 
-                    //Start background worker to process newly acquired data
-                    bwSpikes[taskNumber].RunWorkerAsync(new Object[] { taskNumber, ar });
+
+                    if (!bwSpikes[taskNumber].IsBusy)
+                        bwSpikes[taskNumber].RunWorkerAsync(new Object[] { taskNumber, ar });
+                    else
+                    {
+                        DateTime errortime = DateTime.Now;
+                        string format = "HH:mm:ss";    // Use this format
+                        Console.WriteLine("Warning: bwSpikes was busy at: " + errortime.ToString(format));  // Write to console
+                    }
+ 
                 }
             }
             catch (DaqException exception)
@@ -1164,11 +1175,15 @@ namespace NeuroRighter
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// 
+        int[] trackingreads;
+        int[] trackingproc;
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
+            
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
-
+            trackingproc[taskNumber]++;
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
@@ -1333,8 +1348,12 @@ namespace NeuroRighter
 
             if (checkBox_spikeValidation.Checked)
             {
-                for (int w = 0; w < newWaveforms.Count; ++w) //For each waveform
+                
+                for (int w = 0; w < newWaveforms.Count; w++) //For each waveform
                 {
+                    if (w < 0)
+                        break;
+
                     //Ensure that first and last few samples aren't blanked (this happens with artifact suppressions sometimes)
                     if ((newWaveforms[w].waveform[0] <= newWaveforms[w].waveform[1] + VOLTAGE_EPSILON && newWaveforms[w].waveform[0] >= newWaveforms[w].waveform[1] - VOLTAGE_EPSILON &&
                         newWaveforms[w].waveform[1] <= newWaveforms[w].waveform[2] + VOLTAGE_EPSILON && newWaveforms[w].waveform[1] >= newWaveforms[w].waveform[2] - VOLTAGE_EPSILON) ||
@@ -1350,17 +1369,18 @@ namespace NeuroRighter
 
                     //Find peak
                     double maxVal = 0.0;
-                    for (int k = numPre; k < numPre+numSamplesPeak; ++k)
+                    for (int k = numPre; k < numPre + numSamplesPeak; ++k)
                     {
-                        if (Math.Abs(newWaveforms[w].waveform[k ]) > maxVal)
+                        if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
                             maxVal = Math.Abs(newWaveforms[w].waveform[k]);
                     }
                     //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
-                    if (maxVal > 1e-6*Convert.ToDouble(textBox_AbsArtThresh.Text))
-                        {
-                            newWaveforms.RemoveAt(w);
-                            --w;
-                        }
+                    if (maxVal > 1e-6 * Convert.ToDouble(textBox_AbsArtThresh.Text))
+                    {
+                        newWaveforms.RemoveAt(w);
+                        --w;
+                        continue;
+                    }
                     else
                     {
                         skipSecondVal = false;
@@ -1375,7 +1395,7 @@ namespace NeuroRighter
                                 skipSecondVal = true;
                                 break;
                             }
-                      
+
                         }
 
                         if (!skipSecondVal)
@@ -1514,18 +1534,30 @@ namespace NeuroRighter
             int taskNumber = (int)e.Result;
             
             //Check whether timed recording is done
-            if (!checkBox_enableTimedRecording.Checked || DateTime.Now < timedRecordingStopTime)
-                //Setup next callback
-                spikeReader[taskNumber].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, taskNumber, spikeData[taskNumber]);
-            else if (DateTime.Now >= timedRecordingStopTime && checkbox_repeatRecord.Checked)
+            if (checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime)
             {
-                buttonStop.PerformClick();
-                buttonStart.PerformClick();
+                if (taskNumber == spikeReader.Count - 1)
+                {
+                    if (checkbox_repeatRecord.Checked)//make sure this is the last spike processor so that this only gets called once  -&& (((int)e.Result)==(bwSpikes.Count-1))
+                    {
+
+                        //if (taskRunning) reset();
+                        buttonStop.PerformClick();
+                        reset();
+                        buttonStart.PerformClick();
+
+                    }
+                    else
+                    {
+
+                        //if (taskRunning) reset();
+                        buttonStop.PerformClick();
+
+                    }
+                }
             }
             else
-            {
-                buttonStop.PerformClick();
-            }
+                spikeReader[taskNumber].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, taskNumber, spikeData[taskNumber]);
         }
 
         //***********************
@@ -1896,7 +1928,7 @@ namespace NeuroRighter
         }
 
         //Called after data acq. is complete, resets buttons and stops tasks.
-        private void reset()
+        private void reset()                                          
         {
             //Grab display gains for later use
             Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
@@ -1925,6 +1957,8 @@ namespace NeuroRighter
                         while (bwSpikes[i].IsBusy) { Application.DoEvents(); }//block while bw finishes
 
                     //All the bw workers are done, so we'll kill them
+                    for (int i = 0; i < bwSpikes.Count; ++i)
+                        bwSpikes[i].Dispose();
                     bwSpikes.Clear();
                     bwSpikes = null;
                 }
@@ -1940,7 +1974,6 @@ namespace NeuroRighter
             if (BNCOutput != null) { BNCOutput.Dispose(); BNCOutput = null; }
             if (stimTimeTask != null) stimTimeTask.Dispose();
             if (triggerTask != null) triggerTask.Dispose();
-
 
             buttonStop.Enabled = false;
             buttonStart.Enabled = true;
@@ -4522,6 +4555,7 @@ ch = 1;
         {
             numericUpDown_timedRecordingDuration.Enabled = checkBox_enableTimedRecording.Checked;
             numericUpDown_timedRecordingDurationSeconds.Enabled = checkBox_enableTimedRecording.Checked;
+            checkbox_repeatRecord.Enabled = checkBox_enableTimedRecording.Checked;
         }
 
         private Stimulation.OpenLoopFollowerTest olfTest;

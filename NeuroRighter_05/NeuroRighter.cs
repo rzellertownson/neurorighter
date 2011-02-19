@@ -1003,6 +1003,21 @@ namespace NeuroRighter
         }
         #endregion
 
+        #region Note Writing
+        private void button_EnterNote_Click(object sender, EventArgs e)
+        {
+            if (originalNameBase != null)
+            {
+                RecordingNote rc = new RecordingNote(originalNameBase);
+                rc.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Please enter a filename to use this feature");
+            }
+        }
+        #endregion
+
         #region Spike_Acquisition
         /****************************************************
          * Spike data acquisition and plotting              *

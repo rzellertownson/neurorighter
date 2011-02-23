@@ -819,6 +819,11 @@ namespace NeuroRighter
 
         }
 
+        //private void configureAO()
+        //{
+        //    if (generalAnalogOutTask != null) { generalAnalogOutTask.Dispose(); generalAnalogOutTask = null; }
+
+        //}
         #endregion
 
         #region IISZapper

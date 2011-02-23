@@ -70,9 +70,9 @@
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.Common, Version=8.6.35.131, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=8.9.35.8, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=8.9.35.302, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.32, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -86,7 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Matlab\loadraw.mexw32" />
     <None Include="Matlab\loadspike.mexw32" />
     <None Include="Matlab\loadstim.mexw32" />
@@ -100,22 +99,53 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutBox.cs">
+    <Compile Include="dbg\ExecptDBG.cs" />
+    <Compile Include="NR-UI\diagnostics.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutBox.Designer.cs">
+    <Compile Include="NR-UI\elesion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\formcont.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\aqset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\rectime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\plotcont.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\progref.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\clnup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\spkdet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\stim.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings-UI\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings-UI\AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChannelOutput.cs" />
+    <Compile Include="Playback\ChannelOutput.cs" />
     <Compile Include="FileWriting\FileOutputRemapped.cs" />
     <Compile Include="FileWriting\SpikeFileOutput.cs" />
     <Compile Include="Filters\ArtiFilt_Interpolation.cs" />
     <Compile Include="Filters\ArtiFilt.cs" />
     <Compile Include="Filters\ButterworthFilter.cs" />
-    <Compile Include="DisplaySettings.cs">
+    <Compile Include="Settings-UI\DisplaySettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DisplaySettings.Designer.cs">
+    <Compile Include="Settings-UI\DisplaySettings.Designer.cs">
       <DependentUpon>DisplaySettings.cs</DependentUpon>
     </Compile>
     <Compile Include="FileWriting\FileOutput.cs" />
@@ -124,19 +154,40 @@
     <Compile Include="Filters\CommonMedianReferencer.cs" />
     <Compile Include="Filters\MUAFilter.cs" />
     <Compile Include="Filters\Referencer.cs" />
-    <Compile Include="HardwareSettings.cs">
+    <Compile Include="Settings-UI\HardwareSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HardwareSettings.Designer.cs">
+    <Compile Include="Settings-UI\HardwareSettings.Designer.cs">
       <DependentUpon>HardwareSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Impedance\ImpedanceMeasurer.cs" />
     <Compile Include="Matlab\NRLab.cs" />
     <Compile Include="Miscellaneous\MEAChannelMappings.cs" />
-    <Compile Include="NeuroRighter.cs">
+    <Compile Include="NR-UI\rawproc.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NeuroRighter.Designer.cs">
+    <Compile Include="NR-UI\impedance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\note.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\ephysaquire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\defs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\plotting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\filepath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\NeuroRighter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\NeuroRighter.Designer.cs">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
     </Compile>
     <Compile Include="Plotting\GraphicsDeviceControl.cs">
@@ -158,10 +209,10 @@
     <Compile Include="Plotting\SnipGridGraph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ProcessingSettings.cs">
+    <Compile Include="Settings-UI\ProcessingSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProcessingSettings.Designer.cs">
+    <Compile Include="Settings-UI\ProcessingSettings.Designer.cs">
       <DependentUpon>ProcessingSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -171,10 +222,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RecordingNote.cs">
+    <Compile Include="Note-UI\RecordingNote.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RecordingNote.Designer.cs">
+    <Compile Include="Note-UI\RecordingNote.Designer.cs">
       <DependentUpon>RecordingNote.cs</DependentUpon>
     </Compile>
     <Compile Include="SALPA\inv.cs" />
@@ -196,36 +247,35 @@
     <Compile Include="SpikeDetection\SpikeWaveform.cs" />
     <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
     <Compile Include="SpikeDetection\StimSafeMedian.cs" />
-    <Compile Include="Stimulation\BakkumExpt.cs" />
-    <Compile Include="Stimulation\ClosedLoopFollowerTest.cs" />
-    <Compile Include="Stimulation\File2Stim3.cs" />
+    <Compile Include="Stimulation\DigitalData.cs" />
+    <Compile Include="Stimulation\DigtialBuffer.cs" />
+    <Compile Include="Stimulation\File2Dig.cs" />
+    <Compile Include="Stimulation\File2Stim4.cs" />
     <Compile Include="Stimulation\IISZapper.cs" />
-    <Compile Include="Stimulation\OpenLoopFollowerTest.cs" />
     <Compile Include="Stimulation\StimBuffer.cs" />
     <Compile Include="Stimulation\StimPulse.cs" />
     <Compile Include="Stimulation\StimTrain.cs" />
-    <Compile Include="Stimulation\StimulatorShowcaser.cs" />
-    <Compile Include="Stimulation\StimWave.cs" />
+    <Compile Include="Stimulation\StimulusData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AboutBox.resx">
+    <EmbeddedResource Include="Settings-UI\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="DisplaySettings.resx">
+    <EmbeddedResource Include="Settings-UI\DisplaySettings.resx">
       <DependentUpon>DisplaySettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="HardwareSettings.resx">
+    <EmbeddedResource Include="Settings-UI\HardwareSettings.resx">
       <DependentUpon>HardwareSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="licenses.licx" />
-    <EmbeddedResource Include="NeuroRighter.resx">
+    <EmbeddedResource Include="NR-UI\NeuroRighter.resx">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProcessingSettings.resx">
+    <EmbeddedResource Include="Settings-UI\ProcessingSettings.resx">
       <DependentUpon>ProcessingSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -234,7 +284,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="RecordingNote.resx">
+    <EmbeddedResource Include="Note-UI\RecordingNote.resx">
       <DependentUpon>RecordingNote.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -325,9 +375,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

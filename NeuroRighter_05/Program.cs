@@ -1,5 +1,5 @@
-// NeuroRighter
-// Copyright (c) 2008-2009 John Rolston
+// PROGRAM.CS
+// Copyright (c) 2008-2011 John Rolston
 //
 // This file is part of NeuroRighter.
 //
@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace NeuroRighter
 {
@@ -28,11 +29,32 @@ namespace NeuroRighter
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
+
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new NeuroRighter());
+            Type reflectedClass = typeof(NeuroRighter);
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new NeuroRighter());
+            }
+
+            //Using reflection, you invoke a method that generates an exception. 
+            //You want to obtain the real exception object and its information in order to diagnose and fix the problem.
+            //The real exception and its information can be obtained through the InnerException property of
+            //the TargetInvocationException exception that is thrown by MethodInfo.Invoke. -J.N.
+            catch (Exception startEx)
+            {
+                dbg.ExecptDBG startErrorHandler = new dbg.ExecptDBG();
+                startErrorHandler.DisplayInnerException(startEx, reflectedClass);
+            }
+
+
+
+
+
+
         }
     }
 }

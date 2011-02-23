@@ -47,13 +47,13 @@ namespace NeuroRighter
             this.label3 = new System.Windows.Forms.Label();
             this.comboBox_cineplexDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_stim = new System.Windows.Forms.TabPage();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.checkBox_useDO = new System.Windows.Forms.CheckBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.comboBox_digODev = new System.Windows.Forms.ComboBox();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.comboBox_IVControlDevice = new System.Windows.Forms.ComboBox();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.comboBox_stimInfoDevice = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.checkBox_recordStimulationInfo = new System.Windows.Forms.CheckBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.radioButton_32bit = new System.Windows.Forms.RadioButton();
             this.radioButton_8bit = new System.Windows.Forms.RadioButton();
@@ -64,6 +64,10 @@ namespace NeuroRighter
             this.comboBox_stimulatorDevice = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPage_input = new System.Windows.Forms.TabPage();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.textBox_PreAmpGain = new System.Windows.Forms.TextBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
@@ -89,17 +93,21 @@ namespace NeuroRighter
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_analogInputDevice1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.comboBox_stimInfoDevice = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.checkBox_recordStimulationInfo = new System.Windows.Forms.CheckBox();
             this.tabPage_misc.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPage_stim.SuspendLayout();
+            this.groupBox17.SuspendLayout();
             this.groupBox13.SuspendLayout();
-            this.groupBox10.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage_input.SuspendLayout();
+            this.groupBox10.SuspendLayout();
             this.groupBox15.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -111,7 +119,7 @@ namespace NeuroRighter
             // 
             // button_accept
             // 
-            this.button_accept.Location = new System.Drawing.Point(164, 463);
+            this.button_accept.Location = new System.Drawing.Point(164, 543);
             this.button_accept.Name = "button_accept";
             this.button_accept.Size = new System.Drawing.Size(75, 23);
             this.button_accept.TabIndex = 2;
@@ -121,7 +129,7 @@ namespace NeuroRighter
             // 
             // button_cancel
             // 
-            this.button_cancel.Location = new System.Drawing.Point(245, 463);
+            this.button_cancel.Location = new System.Drawing.Point(245, 543);
             this.button_cancel.Name = "button_cancel";
             this.button_cancel.Size = new System.Drawing.Size(75, 23);
             this.button_cancel.TabIndex = 10;
@@ -137,7 +145,7 @@ namespace NeuroRighter
             this.tabPage_misc.Controls.Add(this.groupBox2);
             this.tabPage_misc.Location = new System.Drawing.Point(4, 22);
             this.tabPage_misc.Name = "tabPage_misc";
-            this.tabPage_misc.Size = new System.Drawing.Size(300, 417);
+            this.tabPage_misc.Size = new System.Drawing.Size(300, 499);
             this.tabPage_misc.TabIndex = 2;
             this.tabPage_misc.Text = "Miscellaneous";
             this.tabPage_misc.UseVisualStyleBackColor = true;
@@ -296,8 +304,8 @@ namespace NeuroRighter
             // 
             // tabPage_stim
             // 
+            this.tabPage_stim.Controls.Add(this.groupBox17);
             this.tabPage_stim.Controls.Add(this.groupBox13);
-            this.tabPage_stim.Controls.Add(this.groupBox10);
             this.tabPage_stim.Controls.Add(this.groupBox9);
             this.tabPage_stim.Controls.Add(this.groupBox1);
             this.tabPage_stim.Controls.Add(this.checkBox_useStimulator);
@@ -306,16 +314,58 @@ namespace NeuroRighter
             this.tabPage_stim.Location = new System.Drawing.Point(4, 22);
             this.tabPage_stim.Name = "tabPage_stim";
             this.tabPage_stim.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_stim.Size = new System.Drawing.Size(300, 417);
+            this.tabPage_stim.Size = new System.Drawing.Size(300, 499);
             this.tabPage_stim.TabIndex = 1;
-            this.tabPage_stim.Text = "Stimulation";
+            this.tabPage_stim.Text = "Output";
             this.tabPage_stim.UseVisualStyleBackColor = true;
+            // 
+            // groupBox17
+            // 
+            this.groupBox17.Controls.Add(this.checkBox_useDO);
+            this.groupBox17.Controls.Add(this.label13);
+            this.groupBox17.Controls.Add(this.comboBox_digODev);
+            this.groupBox17.Location = new System.Drawing.Point(4, 171);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Size = new System.Drawing.Size(286, 70);
+            this.groupBox17.TabIndex = 19;
+            this.groupBox17.TabStop = false;
+            this.groupBox17.Text = "Digital Output";
+            // 
+            // checkBox_useDO
+            // 
+            this.checkBox_useDO.AutoSize = true;
+            this.checkBox_useDO.Location = new System.Drawing.Point(11, 19);
+            this.checkBox_useDO.Name = "checkBox_useDO";
+            this.checkBox_useDO.Size = new System.Drawing.Size(108, 17);
+            this.checkBox_useDO.TabIndex = 20;
+            this.checkBox_useDO.Text = "Use digital output";
+            this.checkBox_useDO.UseVisualStyleBackColor = true;
+            this.checkBox_useDO.CheckedChanged += new System.EventHandler(this.checkBox_useDO_CheckedChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(8, 46);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(153, 13);
+            this.label13.TabIndex = 8;
+            this.label13.Text = "NI-DAQ Device for I/V Control:";
+            // 
+            // comboBox_digODev
+            // 
+            this.comboBox_digODev.Enabled = false;
+            this.comboBox_digODev.FormattingEnabled = true;
+            this.comboBox_digODev.Location = new System.Drawing.Point(176, 43);
+            this.comboBox_digODev.Name = "comboBox_digODev";
+            this.comboBox_digODev.Size = new System.Drawing.Size(97, 21);
+            this.comboBox_digODev.TabIndex = 7;
+            this.comboBox_digODev.Text = "Dev1";
             // 
             // groupBox13
             // 
             this.groupBox13.Controls.Add(this.label12);
             this.groupBox13.Controls.Add(this.comboBox_IVControlDevice);
-            this.groupBox13.Location = new System.Drawing.Point(6, 192);
+            this.groupBox13.Location = new System.Drawing.Point(6, 110);
             this.groupBox13.Name = "groupBox13";
             this.groupBox13.Size = new System.Drawing.Size(286, 55);
             this.groupBox13.TabIndex = 18;
@@ -339,46 +389,6 @@ namespace NeuroRighter
             this.comboBox_IVControlDevice.Size = new System.Drawing.Size(97, 21);
             this.comboBox_IVControlDevice.TabIndex = 7;
             this.comboBox_IVControlDevice.Text = "Dev1";
-            // 
-            // groupBox10
-            // 
-            this.groupBox10.Controls.Add(this.comboBox_stimInfoDevice);
-            this.groupBox10.Controls.Add(this.label10);
-            this.groupBox10.Controls.Add(this.checkBox_recordStimulationInfo);
-            this.groupBox10.Location = new System.Drawing.Point(6, 110);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(287, 76);
-            this.groupBox10.TabIndex = 14;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "Stimulation Timing";
-            // 
-            // comboBox_stimInfoDevice
-            // 
-            this.comboBox_stimInfoDevice.FormattingEnabled = true;
-            this.comboBox_stimInfoDevice.Location = new System.Drawing.Point(96, 42);
-            this.comboBox_stimInfoDevice.Name = "comboBox_stimInfoDevice";
-            this.comboBox_stimInfoDevice.Size = new System.Drawing.Size(91, 21);
-            this.comboBox_stimInfoDevice.TabIndex = 18;
-            this.comboBox_stimInfoDevice.Text = "Dev1";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 45);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(84, 13);
-            this.label10.TabIndex = 19;
-            this.label10.Text = "NI-DAQ Device:";
-            // 
-            // checkBox_recordStimulationInfo
-            // 
-            this.checkBox_recordStimulationInfo.AutoSize = true;
-            this.checkBox_recordStimulationInfo.Location = new System.Drawing.Point(6, 19);
-            this.checkBox_recordStimulationInfo.Name = "checkBox_recordStimulationInfo";
-            this.checkBox_recordStimulationInfo.Size = new System.Drawing.Size(167, 17);
-            this.checkBox_recordStimulationInfo.TabIndex = 15;
-            this.checkBox_recordStimulationInfo.Text = "Record stimulation information";
-            this.checkBox_recordStimulationInfo.UseVisualStyleBackColor = true;
             // 
             // groupBox9
             // 
@@ -481,6 +491,7 @@ namespace NeuroRighter
             // 
             // tabPage_input
             // 
+            this.tabPage_input.Controls.Add(this.groupBox10);
             this.tabPage_input.Controls.Add(this.groupBox15);
             this.tabPage_input.Controls.Add(this.groupBox7);
             this.tabPage_input.Controls.Add(this.groupBox6);
@@ -488,10 +499,50 @@ namespace NeuroRighter
             this.tabPage_input.Location = new System.Drawing.Point(4, 22);
             this.tabPage_input.Name = "tabPage_input";
             this.tabPage_input.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_input.Size = new System.Drawing.Size(300, 417);
+            this.tabPage_input.Size = new System.Drawing.Size(300, 499);
             this.tabPage_input.TabIndex = 0;
             this.tabPage_input.Text = "Input";
             this.tabPage_input.UseVisualStyleBackColor = true;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.comboBox2);
+            this.groupBox10.Controls.Add(this.label15);
+            this.groupBox10.Controls.Add(this.checkBox2);
+            this.groupBox10.Location = new System.Drawing.Point(6, 415);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(287, 76);
+            this.groupBox10.TabIndex = 17;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Stimulation Timing";
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(180, 42);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(91, 21);
+            this.comboBox2.TabIndex = 18;
+            this.comboBox2.Text = "Dev1";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 45);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(84, 13);
+            this.label15.TabIndex = 19;
+            this.label15.Text = "NI-DAQ Device:";
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(6, 19);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(167, 17);
+            this.checkBox2.TabIndex = 15;
+            this.checkBox2.Text = "Record stimulation information";
+            this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // groupBox15
             // 
@@ -747,14 +798,42 @@ namespace NeuroRighter
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(308, 443);
+            this.tabControl1.Size = new System.Drawing.Size(308, 525);
             this.tabControl1.TabIndex = 16;
+            // 
+            // comboBox_stimInfoDevice
+            // 
+            this.comboBox_stimInfoDevice.FormattingEnabled = true;
+            this.comboBox_stimInfoDevice.Location = new System.Drawing.Point(96, 42);
+            this.comboBox_stimInfoDevice.Name = "comboBox_stimInfoDevice";
+            this.comboBox_stimInfoDevice.Size = new System.Drawing.Size(91, 21);
+            this.comboBox_stimInfoDevice.TabIndex = 18;
+            this.comboBox_stimInfoDevice.Text = "Dev1";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 45);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(84, 13);
+            this.label10.TabIndex = 19;
+            this.label10.Text = "NI-DAQ Device:";
+            // 
+            // checkBox_recordStimulationInfo
+            // 
+            this.checkBox_recordStimulationInfo.AutoSize = true;
+            this.checkBox_recordStimulationInfo.Location = new System.Drawing.Point(6, 19);
+            this.checkBox_recordStimulationInfo.Name = "checkBox_recordStimulationInfo";
+            this.checkBox_recordStimulationInfo.Size = new System.Drawing.Size(167, 17);
+            this.checkBox_recordStimulationInfo.TabIndex = 15;
+            this.checkBox_recordStimulationInfo.Text = "Record stimulation information";
+            this.checkBox_recordStimulationInfo.UseVisualStyleBackColor = true;
             // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(335, 494);
+            this.ClientSize = new System.Drawing.Size(335, 576);
             this.ControlBox = false;
             this.Controls.Add(this.button_cancel);
             this.Controls.Add(this.button_accept);
@@ -776,15 +855,17 @@ namespace NeuroRighter
             this.groupBox2.PerformLayout();
             this.tabPage_stim.ResumeLayout(false);
             this.tabPage_stim.PerformLayout();
+            this.groupBox17.ResumeLayout(false);
+            this.groupBox17.PerformLayout();
             this.groupBox13.ResumeLayout(false);
             this.groupBox13.PerformLayout();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage_input.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
             this.groupBox15.ResumeLayout(false);
             this.groupBox15.PerformLayout();
             this.groupBox7.ResumeLayout(false);
@@ -846,10 +927,6 @@ namespace NeuroRighter
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.RadioButton radioButton_32bit;
         private System.Windows.Forms.RadioButton radioButton_8bit;
-        private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.CheckBox checkBox_recordStimulationInfo;
-        private System.Windows.Forms.ComboBox comboBox_stimInfoDevice;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox_impedanceDevice;
@@ -857,13 +934,24 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_useChannelPlayback;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox comboBox_singleChannelPlaybackDevice;
-        private System.Windows.Forms.GroupBox groupBox13;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox comboBox_IVControlDevice;
         private System.Windows.Forms.GroupBox groupBox14;
         private System.Windows.Forms.GroupBox groupBox15;
         private System.Windows.Forms.GroupBox groupBox16;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox textBox_PreAmpGain;
+        private System.Windows.Forms.GroupBox groupBox17;
+        private System.Windows.Forms.CheckBox checkBox_useDO;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox comboBox_digODev;
+        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox comboBox_IVControlDevice;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.ComboBox comboBox_stimInfoDevice;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.CheckBox checkBox_recordStimulationInfo;
     }
 }

@@ -1,5 +1,5 @@
-﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+﻿// SETTINGS.CS
+// Copyright (c) 2008-2011 John Rolston
 //
 // This file is part of NeuroRighter.
 //

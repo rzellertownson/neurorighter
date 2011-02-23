@@ -154,6 +154,16 @@ namespace NeuroRighter
                     comboBox_IVControlDevice.SelectedIndex = 0;
             }
 
+            comboBox_digODev.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_digODev.Items.Count > 0)
+            {
+                int idx = comboBox_digODev.Items.IndexOf(Properties.Settings.Default.DODevice);
+                if (idx >= 0)
+                    comboBox_digODev.SelectedIndex = idx;
+                else
+                    comboBox_digODev.SelectedIndex = 0;
+            }
+
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -209,6 +219,7 @@ namespace NeuroRighter
             Properties.Settings.Default.UseProgRef = checkBox_useProgRef.Checked;
             Properties.Settings.Default.UseEEG = checkBox_useEEG.Checked;
             Properties.Settings.Default.UseSingleChannelPlayback = checkBox_useChannelPlayback.Checked;
+            Properties.Settings.Default.UseDO = checkBox_useDO.Checked;
             if (checkBox_useChannelPlayback.Checked)
                 Properties.Settings.Default.SingleChannelPlaybackDevice = Convert.ToString(comboBox_singleChannelPlaybackDevice.SelectedItem);
             if (checkBox_sepLFPBoard1.Checked)
@@ -227,6 +238,8 @@ namespace NeuroRighter
                 Properties.Settings.Default.EEGDevice = Convert.ToString(comboBox_EEG.SelectedItem);
             if (radioButton_8Mux.Checked)
                 Properties.Settings.Default.MUXChannels = 8;
+            if (checkBox_useDO.Checked)
+                Properties.Settings.Default.DODevice = Convert.ToString(comboBox_digODev.SelectedItem);
             else
                 Properties.Settings.Default.MUXChannels = 16;
             if (radioButton_8bit.Checked) { Properties.Settings.Default.StimPortBandwidth = 8; }
@@ -334,6 +347,12 @@ namespace NeuroRighter
         {
             comboBox_singleChannelPlaybackDevice.Enabled = checkBox_useChannelPlayback.Checked;
         }
+
+        private void checkBox_useDO_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_digODev.Enabled = checkBox_useDO.Checked;
+        }
+
 
     }
 }

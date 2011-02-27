@@ -99,6 +99,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aquisition\SpikeTaskSetup.cs" />
     <Compile Include="dbg\ExecptDBG.cs" />
     <Compile Include="NR-UI\diagnostics.cs">
       <SubType>Form</SubType>

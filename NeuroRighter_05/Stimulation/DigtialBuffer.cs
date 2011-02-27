@@ -144,8 +144,6 @@ namespace NeuroRighter
         {
             thrd = Thread.CurrentThread;
             thrd.Priority = ThreadPriority.Highest;
-
-
             digitaldone = false;
             populateBufferAppending();
             Console.WriteLine("Write to Digital Buffer Started");

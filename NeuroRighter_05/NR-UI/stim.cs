@@ -562,8 +562,10 @@ namespace NeuroRighter
             bool useManStimWave = checkBox_useManStimWaveform.Checked;
             string stimfile = textBox_protocolFileLocations.Text;
             string digfile = textBox_digitalProtocolFileLocation.Text;
+            string auxfile = textBox_AuxFile.Text;
             bool stimFileProvided = stimfile.Length > 0;
             bool digFileProvided = digfile.Length > 0;
+            bool auxFileProvided = auxfile.Length > 0;
 
 
             // Make sure that the user provided a file of some sort
@@ -635,14 +637,12 @@ namespace NeuroRighter
                     return;
                 }
 
+                configureAux(stimFileProvided); // Needed for digital out timing even if its not being used to throw voltage about.
                 configureDig(stimFileProvided);
                 OLDigitalProtocol = new File2Dig(digfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, digitalOutputTask, buffLoadTask, digitalOutputWriter);
                 OLDigitalProtocol.setup();
                 #endregion
             }
-
-            // Start NeuroRighter's visual/recording functions
-            buttonStart.PerformClick();
 
             // Start the master load syncing task
             buffLoadTask.Start();
@@ -650,14 +650,20 @@ namespace NeuroRighter
             // Start the output tasks
             if (digFileProvided && stimFileProvided)
             {
-                OLStimProtocol.start();
                 OLDigitalProtocol.start();
-                
+                auxOutputTask.Start();
+                OLStimProtocol.start();    
             }
             else if (digFileProvided)
+            {
                 OLDigitalProtocol.start();
+                auxOutputTask.Start();
+            }
             else if (stimFileProvided)
                 OLStimProtocol.start();
+
+            // Start NeuroRighter's visual/recording functions
+            buttonStart.PerformClick();
 
             // UI care-taking
             buttonStop.Enabled = false;
@@ -674,6 +680,7 @@ namespace NeuroRighter
             if (textBox_digitalProtocolFileLocation.Text.Length > 0) { OLDigitalProtocol.stop(); updateDig(); }
 
             if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
+            if (auxOutputTask != null) { auxOutputTask.Dispose(); auxOutputTask = null; }
             buttonStop.Enabled = true;
         }
 
@@ -772,6 +779,9 @@ namespace NeuroRighter
             stimDigitalTask.SynchronizeCallbacks = false;
             stimDigitalTask.Control(TaskAction.Verify);
 
+            stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
+            "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+
             stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
             stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
             stimPulseTask.Control(TaskAction.Verify);
@@ -793,22 +803,18 @@ namespace NeuroRighter
                 ChannelLineGrouping.OneChannelForAllLines);
 
             // Setup DO tasks for continuous output
-            if (!usingOLStim)
-            {
+            //if (!usingOLStim)
+            //{
                 digitalOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            }
-            else
-            {
-                // Reference Clock source
-                string RefClkSource = "/" + Properties.Settings.Default.StimulatorDevice + "/" + stimPulseTask.Timing.ReferenceClockSource;
-                double RefClckRate = stimPulseTask.Timing.ReferenceClockRate;
+            //}
+            //else
+            //{
+            //    // Sample Clock source
+            //    string SampClkSource = stimPulseTask.Timing.SampleClockSource;
 
-                // Sample Clock source
-                string SampClkSource = stimPulseTask.Timing.SampleClockSource;
-
-                // Set up DO sample clock
-                digitalOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            }
+            //    // Set up DO sample clock
+            //    digitalOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+            //}
             digitalOutputTask.SynchronizeCallbacks = false;
 
             // Create writer
@@ -819,11 +825,57 @@ namespace NeuroRighter
 
         }
 
-        //private void configureAO()
-        //{
-        //    if (generalAnalogOutTask != null) { generalAnalogOutTask.Dispose(); generalAnalogOutTask = null; }
+        private void configureAux(bool usingOLStim)
+        {
+            if (auxOutputTask != null) { auxOutputTask.Dispose(); auxOutputTask = null; }
+            // Create new DAQ tasks and corresponding writers
+            auxOutputTask = new Task("auxOutputTask ");
 
-        //}
+            //  Create aux channels
+            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux1
+            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux2
+            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux3
+            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux4
+
+            // Setup the AO task for continuous stimulaiton
+            auxOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+            auxOutputTask.SynchronizeCallbacks = false;
+            auxOutputTask.Control(TaskAction.Verify);
+
+            // Setup DO tasks for continuous output
+            //if (!usingOLStim)
+            //{
+                // auxOutputTask now serves as master clock for Digital out
+                auxOutputTask.Timing.ReferenceClockSource = "OnboardClock";
+                // Setup the AO task for continuous stimulaiton
+                auxOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+            //}
+            //else
+            //{
+            //    // Reference Clock source
+            //    string refClkSource = "/" + Properties.Settings.Default.StimulatorDevice + "/" + stimPulseTask.Timing.ReferenceClockSource;
+            //    double refClckRate = stimPulseTask.Timing.ReferenceClockRate;
+
+            //    // Sample Clock source
+            //    string SampClkSource = stimPulseTask.Timing.SampleClockSource;
+
+            //    // Set up AO sample clock
+            //    auxOutputTask.Timing.ReferenceClockSource = refClkSource;
+            //    auxOutputTask.Timing.ReferenceClockRate = refClckRate;
+            //    auxOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
+               auxOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
+               "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+            //}
+            
+            auxOutputTask.SynchronizeCallbacks = false;
+
+            // Create writer
+            auxOutputWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
+
+            // Verify Task
+            auxOutputTask.Control(TaskAction.Verify);
+        }
+
         #endregion
 
         #region IISZapper

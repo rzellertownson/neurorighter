@@ -353,6 +353,5 @@ namespace NeuroRighter
             comboBox_digODev.Enabled = checkBox_useDO.Checked;
         }
 
-
     }
 }

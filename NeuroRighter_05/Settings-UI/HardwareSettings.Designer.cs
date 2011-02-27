@@ -31,10 +31,6 @@ namespace NeuroRighter
             this.button_accept = new System.Windows.Forms.Button();
             this.button_cancel = new System.Windows.Forms.Button();
             this.tabPage_misc = new System.Windows.Forms.TabPage();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.checkBox_useChannelPlayback = new System.Windows.Forms.CheckBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.comboBox_singleChannelPlaybackDevice = new System.Windows.Forms.ComboBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox_impedanceDevice = new System.Windows.Forms.ComboBox();
@@ -47,6 +43,7 @@ namespace NeuroRighter
             this.label3 = new System.Windows.Forms.Label();
             this.comboBox_cineplexDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_stim = new System.Windows.Forms.TabPage();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
             this.checkBox_useDO = new System.Windows.Forms.CheckBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -96,8 +93,14 @@ namespace NeuroRighter
             this.comboBox_stimInfoDevice = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.checkBox_recordStimulationInfo = new System.Windows.Forms.CheckBox();
+            this.checkBox_useChannelPlayback = new System.Windows.Forms.CheckBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.comboBox_singleChannelPlaybackDevice = new System.Windows.Forms.ComboBox();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.tabPage_misc.SuspendLayout();
-            this.groupBox12.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -115,6 +118,7 @@ namespace NeuroRighter
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_accept
@@ -139,7 +143,6 @@ namespace NeuroRighter
             // 
             // tabPage_misc
             // 
-            this.tabPage_misc.Controls.Add(this.groupBox12);
             this.tabPage_misc.Controls.Add(this.groupBox11);
             this.tabPage_misc.Controls.Add(this.groupBox5);
             this.tabPage_misc.Controls.Add(this.groupBox2);
@@ -149,47 +152,6 @@ namespace NeuroRighter
             this.tabPage_misc.TabIndex = 2;
             this.tabPage_misc.Text = "Miscellaneous";
             this.tabPage_misc.UseVisualStyleBackColor = true;
-            // 
-            // groupBox12
-            // 
-            this.groupBox12.Controls.Add(this.checkBox_useChannelPlayback);
-            this.groupBox12.Controls.Add(this.label11);
-            this.groupBox12.Controls.Add(this.comboBox_singleChannelPlaybackDevice);
-            this.groupBox12.Location = new System.Drawing.Point(3, 218);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(286, 69);
-            this.groupBox12.TabIndex = 17;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "Single Channel Playback";
-            // 
-            // checkBox_useChannelPlayback
-            // 
-            this.checkBox_useChannelPlayback.AutoSize = true;
-            this.checkBox_useChannelPlayback.Location = new System.Drawing.Point(6, 19);
-            this.checkBox_useChannelPlayback.Name = "checkBox_useChannelPlayback";
-            this.checkBox_useChannelPlayback.Size = new System.Drawing.Size(217, 17);
-            this.checkBox_useChannelPlayback.TabIndex = 9;
-            this.checkBox_useChannelPlayback.Text = "Enable Single Channel Playback/Output";
-            this.checkBox_useChannelPlayback.UseVisualStyleBackColor = true;
-            this.checkBox_useChannelPlayback.CheckedChanged += new System.EventHandler(this.checkBox_useChannelPlayback_CheckedChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 41);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(159, 13);
-            this.label11.TabIndex = 8;
-            this.label11.Text = "NI-DAQ Device for BNC Output:";
-            // 
-            // comboBox_singleChannelPlaybackDevice
-            // 
-            this.comboBox_singleChannelPlaybackDevice.FormattingEnabled = true;
-            this.comboBox_singleChannelPlaybackDevice.Location = new System.Drawing.Point(174, 38);
-            this.comboBox_singleChannelPlaybackDevice.Name = "comboBox_singleChannelPlaybackDevice";
-            this.comboBox_singleChannelPlaybackDevice.Size = new System.Drawing.Size(97, 21);
-            this.comboBox_singleChannelPlaybackDevice.TabIndex = 7;
-            this.comboBox_singleChannelPlaybackDevice.Text = "Dev1";
             // 
             // groupBox11
             // 
@@ -304,6 +266,7 @@ namespace NeuroRighter
             // 
             // tabPage_stim
             // 
+            this.tabPage_stim.Controls.Add(this.groupBox12);
             this.tabPage_stim.Controls.Add(this.groupBox17);
             this.tabPage_stim.Controls.Add(this.groupBox13);
             this.tabPage_stim.Controls.Add(this.groupBox9);
@@ -319,17 +282,28 @@ namespace NeuroRighter
             this.tabPage_stim.Text = "Output";
             this.tabPage_stim.UseVisualStyleBackColor = true;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(11, 42);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(151, 17);
+            this.checkBox1.TabIndex = 20;
+            this.checkBox1.Text = "Use auxilary analog output";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // groupBox17
             // 
+            this.groupBox17.Controls.Add(this.checkBox1);
             this.groupBox17.Controls.Add(this.checkBox_useDO);
             this.groupBox17.Controls.Add(this.label13);
             this.groupBox17.Controls.Add(this.comboBox_digODev);
             this.groupBox17.Location = new System.Drawing.Point(4, 171);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(286, 70);
+            this.groupBox17.Size = new System.Drawing.Size(286, 94);
             this.groupBox17.TabIndex = 19;
             this.groupBox17.TabStop = false;
-            this.groupBox17.Text = "Digital Output";
+            this.groupBox17.Text = "General Signal Output";
             // 
             // checkBox_useDO
             // 
@@ -345,17 +319,17 @@ namespace NeuroRighter
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(8, 46);
+            this.label13.Location = new System.Drawing.Point(8, 67);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(153, 13);
+            this.label13.Size = new System.Drawing.Size(159, 13);
             this.label13.TabIndex = 8;
-            this.label13.Text = "NI-DAQ Device for I/V Control:";
+            this.label13.Text = "NI-DAQ Device for signal output";
             // 
             // comboBox_digODev
             // 
             this.comboBox_digODev.Enabled = false;
             this.comboBox_digODev.FormattingEnabled = true;
-            this.comboBox_digODev.Location = new System.Drawing.Point(176, 43);
+            this.comboBox_digODev.Location = new System.Drawing.Point(176, 64);
             this.comboBox_digODev.Name = "comboBox_digODev";
             this.comboBox_digODev.Size = new System.Drawing.Size(97, 21);
             this.comboBox_digODev.TabIndex = 7;
@@ -829,6 +803,74 @@ namespace NeuroRighter
             this.checkBox_recordStimulationInfo.Text = "Record stimulation information";
             this.checkBox_recordStimulationInfo.UseVisualStyleBackColor = true;
             // 
+            // checkBox_useChannelPlayback
+            // 
+            this.checkBox_useChannelPlayback.AutoSize = true;
+            this.checkBox_useChannelPlayback.Location = new System.Drawing.Point(6, 19);
+            this.checkBox_useChannelPlayback.Name = "checkBox_useChannelPlayback";
+            this.checkBox_useChannelPlayback.Size = new System.Drawing.Size(217, 17);
+            this.checkBox_useChannelPlayback.TabIndex = 9;
+            this.checkBox_useChannelPlayback.Text = "Enable Single Channel Playback/Output";
+            this.checkBox_useChannelPlayback.UseVisualStyleBackColor = true;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 41);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(159, 13);
+            this.label11.TabIndex = 8;
+            this.label11.Text = "NI-DAQ Device for BNC Output:";
+            // 
+            // comboBox_singleChannelPlaybackDevice
+            // 
+            this.comboBox_singleChannelPlaybackDevice.FormattingEnabled = true;
+            this.comboBox_singleChannelPlaybackDevice.Location = new System.Drawing.Point(174, 38);
+            this.comboBox_singleChannelPlaybackDevice.Name = "comboBox_singleChannelPlaybackDevice";
+            this.comboBox_singleChannelPlaybackDevice.Size = new System.Drawing.Size(97, 21);
+            this.comboBox_singleChannelPlaybackDevice.TabIndex = 7;
+            this.comboBox_singleChannelPlaybackDevice.Text = "Dev1";
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.checkBox3);
+            this.groupBox12.Controls.Add(this.label17);
+            this.groupBox12.Controls.Add(this.comboBox3);
+            this.groupBox12.Location = new System.Drawing.Point(4, 271);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(286, 69);
+            this.groupBox12.TabIndex = 22;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Single Channel Playback";
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(6, 19);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(217, 17);
+            this.checkBox3.TabIndex = 9;
+            this.checkBox3.Text = "Enable Single Channel Playback/Output";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 41);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(159, 13);
+            this.label17.TabIndex = 8;
+            this.label17.Text = "NI-DAQ Device for BNC Output:";
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Location = new System.Drawing.Point(174, 38);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(97, 21);
+            this.comboBox3.TabIndex = 7;
+            this.comboBox3.Text = "Dev1";
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -845,8 +887,6 @@ namespace NeuroRighter
             this.Text = "Settings";
             this.TopMost = true;
             this.tabPage_misc.ResumeLayout(false);
-            this.groupBox12.ResumeLayout(false);
-            this.groupBox12.PerformLayout();
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -879,6 +919,8 @@ namespace NeuroRighter
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -930,10 +972,6 @@ namespace NeuroRighter
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox_impedanceDevice;
-        private System.Windows.Forms.GroupBox groupBox12;
-        private System.Windows.Forms.CheckBox checkBox_useChannelPlayback;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox comboBox_singleChannelPlaybackDevice;
         private System.Windows.Forms.GroupBox groupBox14;
         private System.Windows.Forms.GroupBox groupBox15;
         private System.Windows.Forms.GroupBox groupBox16;
@@ -953,5 +991,13 @@ namespace NeuroRighter
         private System.Windows.Forms.ComboBox comboBox_stimInfoDevice;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox checkBox_recordStimulationInfo;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.CheckBox checkBox_useChannelPlayback;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox comboBox_singleChannelPlaybackDevice;
     }
 }

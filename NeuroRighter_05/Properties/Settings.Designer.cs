@@ -528,5 +528,17 @@ namespace NeuroRighter.Properties {
                 this["DODevice"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseAux {
+            get {
+                return ((bool)(this["UseAux"]));
+            }
+            set {
+                this["UseAux"] = value;
+            }
+        }
     }
 }

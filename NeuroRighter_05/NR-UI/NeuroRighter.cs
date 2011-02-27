@@ -42,6 +42,7 @@ using NationalInstruments.Analysis.Math;
 using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
+using NeuroRighter.Aquisition;
 using rawType = System.Double;
 
 
@@ -245,26 +246,23 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
-                    //Create new tasks
+                    // Find out how many devs and channels/dev we are going to need
                     int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
+                    numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
+
+                    // Create spike aquisition task list
                     spikeTask = new List<Task>(numDevices);
-                    for (int i = 0; i < numDevices; ++i)
-                    {
-                        spikeTask.Add(new Task("analogInTask_" + i));
-                        //Create virtual channels for analog input
-                        numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
-                        for (int j = 0; j < numChannelsPerDev; ++j)
-                        {
-                            spikeTask[i].AIChannels.CreateVoltageChannel(Properties.Settings.Default.AnalogInDevice[i] + "/ai" + j.ToString(),
-                                "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
-                        }
-                    }
-                    //if (Properties.Settings.Default.UseSingleChannelPlayback)
-                    //    spikeOutTask = new Task("spikeOutTask"); //For audio output
+                    SpikeTaskSetup spikeAqSet = new SpikeTaskSetup(numDevices, numChannelsPerDev);
+                    spikeTask = spikeAqSet.GetAITaskCollection();
+
+
+                    // Check audio and video properties
+                    if (Properties.Settings.Default.UseSingleChannelPlayback)
+                        spikeOutTask = new Task("spikeOutTask"); //For audio output
                     if (checkBox_video.Checked) //NB: This can't be checked unless video is enabled (no need to check properties)
                         triggerTask = new Task("triggerTask");
 
-
+                    // 
                     int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
 
 
@@ -846,6 +844,7 @@ namespace NeuroRighter
             if (taskRunning) reset();
             updateRecSettings();
         }
+
 
         
 

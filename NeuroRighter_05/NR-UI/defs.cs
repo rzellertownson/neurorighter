@@ -39,6 +39,7 @@ using NationalInstruments.Analysis.Dsp.Filters;
 //using NationalInstruments.Analysis.Math;
 //using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
+using NeuroRighter.Aquisition;
 
 namespace NeuroRighter
 {
@@ -58,6 +59,8 @@ namespace NeuroRighter
         private Task stimTimeTask; //Records timing of stim pulses
         private Task stimIvsVTask; //Determines whether stim is current or voltage controlled
         private Task buffLoadTask; //Used to decide when buffer reload is needed in stimbuffer class
+        private Task auxOutputTask;
+        private Task spikeOutTask;
         private List<AnalogMultiChannelReader> spikeReader;
         private List<AnalogWaveform<double>[]> spikeData;
         private AnalogUnscaledReader lfpReader;
@@ -70,6 +73,7 @@ namespace NeuroRighter
         private AnalogMultiChannelWriter stimFromFileAnalogWriter;
         private AnalogMultiChannelReader stimTimeReader;
         private DigitalSingleChannelWriter stimIvsVWriter;
+        private AnalogMultiChannelWriter auxOutputWriter;
         private AsyncCallback spikeCallback;
         private AsyncCallback lfpCallback;
         private AsyncCallback eegCallback;

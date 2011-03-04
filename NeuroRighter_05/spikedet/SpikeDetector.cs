@@ -39,8 +39,7 @@ namespace NeuroRighter
         protected rawType[,] threshold;
         protected rawType _thresholdMultiplier;
         protected float[][] returnThresh;
-
-        protected const int DEADTIME = 20; //Num samples overlap between possible spike detections
+        protected  int deadtime; //Num samples overlap between possible spike detections
 
         public rawType thresholdMultiplier
         {
@@ -53,7 +52,8 @@ namespace NeuroRighter
             get { return _appendedData; }
         }
 
-        public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult)
+        public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, 
+            int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime)
         {
             spikeBufferLength = spikeBufferLengthIn;
             numChannels = numChannelsIn;
@@ -62,6 +62,7 @@ namespace NeuroRighter
             numPost = numPostIn;
             numPre = numPreIn;
             _thresholdMultiplier = threshMult;
+            deadtime = detectionDeadTime;
 
             spikeDetectionBuffer = new rawType[numChannels][];
             for (int i = 0; i < numChannels; ++i)
@@ -119,7 +120,7 @@ namespace NeuroRighter
                     for (int j = 0; j < numPost - (spikeBufferSize - i) + 1; ++j)
                         waveform[j + numPre + (spikeBufferSize - i)] = data[j];
                     waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, threshold[0, channel], waveform));
-                    i += numPost - DEADTIME;
+                    i += numPost - deadtime;
                 }
             }
             for (i = 0; i < numPre; ++i)
@@ -133,7 +134,7 @@ namespace NeuroRighter
                     for (int j = 0; j < (numPost + 1) + i; ++j)
                         waveform[j + (numPre - i)] = data[j];
                     waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
-                    i += numPost - DEADTIME;
+                    i += numPost - deadtime;
                 }
             }
             for ( ; i < spikeBufferLength - numPost; ++i)
@@ -145,7 +146,7 @@ namespace NeuroRighter
                     for (int j = i - numPre; j < i + numPost + 1; ++j)
                         waveform[j - i + numPre] = data[j];
                     waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
-                    i += numPost - DEADTIME;
+                    i += numPost - deadtime;
                 }
             }
 

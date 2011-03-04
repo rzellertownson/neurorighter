@@ -246,6 +246,41 @@ namespace NeuroRighter
         }
 
         // Deal with changes to filter parameters
+        private void button_EnableFilterChanges_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("The Potter Lab standard settings for spike detection are: \n" +
+                "\tLow-Cut = 100 Hz\n" +
+                "\tHigh-Cut = 7000 Hz\n" +
+                "\tFilter = 2nd order Butterworth\n" +
+                "Be careful with these settings because they will affect spike\n" +
+                "detection and detected spike shape.");
+
+            checkBox_spikesFilter.Enabled = true;
+            SpikeLowCut.Enabled = true;
+            SpikeHighCut.Enabled = true;
+            SpikeFiltOrder.Enabled = true;
+            checkBox_LFPsFilter.Enabled = true;
+            LFPFiltOrder.Enabled = true;
+            LFPHighCut.Enabled = true;
+            LFPLowCut.Enabled = true;
+            checkBox_artiFilt.Enabled = true;
+            button_DisableFilterChanges.Enabled = true;
+            button_EnableFilterChanges.Enabled = false;
+        }
+        private void button_DisableFilterChanges_Click(object sender, EventArgs e)
+        {
+            checkBox_spikesFilter.Enabled = false;
+            SpikeLowCut.Enabled = false;
+            SpikeHighCut.Enabled = false;
+            SpikeFiltOrder.Enabled = false;
+            checkBox_LFPsFilter.Enabled = false;
+            LFPFiltOrder.Enabled = false;
+            LFPHighCut.Enabled = false;
+            LFPLowCut.Enabled = false;
+            checkBox_artiFilt.Enabled = false;
+            button_DisableFilterChanges.Enabled = false;
+            button_EnableFilterChanges.Enabled = true;
+        }
         private void SpikeLowCut_ValueChanged(object sender, EventArgs e)
         {
             resetSpikeFilter();

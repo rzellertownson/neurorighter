@@ -31,41 +31,42 @@ namespace NeuroRighter
     class RMSThresholdFixed : SpikeDetector
     {
 
-        private const int TOTAL_NUM_UPDATES = 1000;
+        private int numUpdatesForTrain; 
         private int[] numUpdates; //We want to converge on a good estimate of RMS based on the first few calls, then stop updating
         private double[,] RMSList;
         private double[] ChanThresh;
         private double[] ThreshSorted;
 
-        public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult) :
-            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult) 
+        public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn,
+            int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime, double deviceRefresh) :
+            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult, detectionDeadTime) 
         {
+            numUpdatesForTrain = (int)Math.Round(10/deviceRefresh); // ten seconds worth of data used in training
             threshold = new rawType[1, numChannels];
             numUpdates = new int[numChannels];
-            RMSList = new double[numChannels,TOTAL_NUM_UPDATES];
-            ChanThresh = new double[TOTAL_NUM_UPDATES];
-            ThreshSorted = new double[(int)Math.Floor((double)(TOTAL_NUM_UPDATES - 9 * TOTAL_NUM_UPDATES / 10))];
+            RMSList = new double[numChannels,numUpdatesForTrain];
+            ChanThresh = new double[numUpdatesForTrain];
+            ThreshSorted = new double[(int)Math.Floor((double)(numUpdatesForTrain - 9 * numUpdatesForTrain / 10))];
         }
 
-        protected override void updateThreshold(rawType[] data, int channel, int idx)
+        internal void calcThreshForOneBlock(rawType[] data, int channel, int idx)
         {
             rawType tempData = 0;
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
                 tempData += data[j * downsample] * data[j * downsample]; //Square data
             tempData /= (spikeBufferLength / downsample);
             rawType thresholdTemp = (rawType)(Math.Sqrt(tempData) * _thresholdMultiplier);
-            RMSList[channel,idx] = thresholdTemp;
-            threshold[0, channel] = (threshold[0, channel]*(numUpdates[channel])) / (numUpdates[channel]+1)  + (thresholdTemp / (numUpdates[channel]+1));// Recursive RMS estimate
-
+            RMSList[channel, idx] = thresholdTemp;
+            threshold[0, channel] = (threshold[0, channel] * (numUpdates[channel])) / (numUpdates[channel] + 1) + (thresholdTemp / (numUpdates[channel] + 1));// Recursive RMS estimate
         }
 
-        public override void detectSpikes(rawType[] data, List<SpikeWaveform> waveforms, int channel)
+        protected override void updateThreshold(rawType[] data, int channel)
         {
-            if (numUpdates[channel] > TOTAL_NUM_UPDATES) { /* do nothing */ }
-            else if (numUpdates[channel] == TOTAL_NUM_UPDATES)
+            if (numUpdates[channel] > numUpdatesForTrain) { /* do nothing */ }
+            else if (numUpdates[channel] == numUpdatesForTrain)
             {
                 // Estimate the threshold based on the lower 25% percentile of threshold estimates gathered duringthe updating process
-                for (int j = 0; j < TOTAL_NUM_UPDATES; ++j)
+                for (int j = 0; j < numUpdatesForTrain; ++j)
                     ChanThresh[j] = RMSList[channel, j];
 
                 Array.Sort(ChanThresh);
@@ -78,57 +79,11 @@ namespace NeuroRighter
             }
             else
             {
-                updateThreshold(data, channel, numUpdates[channel]);
+                calcThreshForOneBlock(data, channel, numUpdates[channel]);
                 ++numUpdates[channel];
             }
-            int i;
 
-            //Check carried-over samples for spikes
-            for (i = spikeBufferSize - numPost; i < spikeBufferSize; ++i)
-            {
-                if (spikeDetectionBuffer[channel][i] < threshold[0, channel] &&
-                    spikeDetectionBuffer[channel][i] > -threshold[0, channel]) { /*do nothing, pt. is within thresh*/ }
-                else
-                {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = i - numPre; j < spikeBufferSize; ++j)
-                        waveform[j - i + numPre] = spikeDetectionBuffer[channel][j];
-                    for (int j = 0; j < numPost - (spikeBufferSize - i) + 1; ++j)
-                        waveform[j + numPre + (spikeBufferSize - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, threshold[0, channel], waveform));
-                    i += numPost - 10;
-                }
-            }
-            for (i = 0; i < numPre; ++i)
-            {
-                if (data[i] < threshold[0, channel] && data[i] > -threshold[0, channel]) { }
-                else
-                {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = spikeBufferSize - (numPre - i); j < spikeBufferSize; ++j)
-                        waveform[j - spikeBufferSize + (numPre - i)] = spikeDetectionBuffer[channel][j];
-                    for (int j = 0; j < numPost + 1; ++j)
-                        waveform[j + (numPre - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
-                    i += numPost - 10;
-                }
-            }
-            for (; i < spikeBufferLength - numPost; ++i)
-            {
-                if (data[i] < threshold[0, channel] && data[i] > -threshold[0, channel]) { }
-                else
-                {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = i - numPre; j < i + numPost + 1; ++j)
-                        waveform[j - i + numPre] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[0, channel], waveform));
-                    i += numPost - 10;
-                }
-            }
-
-
-            for (int j = 0; j < spikeBufferSize; ++j)
-                spikeDetectionBuffer[channel][j] = data[j + spikeBufferLength - spikeBufferSize];
         }
+     
     }
 }

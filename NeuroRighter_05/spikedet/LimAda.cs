@@ -42,8 +42,9 @@ namespace NeuroRighter
         private rawType[] limAdaPrevious;
 
 
-        public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn, int numPreIn, rawType threshMult, int spikeSamplingRateIn) : 
-            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult)
+        public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn,
+            int numPreIn, rawType threshMult, int detectionDeadTime, int spikeSamplingRateIn) : 
+            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult, detectionDeadTime)
         {
             chunkSize = (int)(0.01 * (rawType)spikeSamplingRateIn); //Big enough for 10ms of data
             numChunks = spikeBufferLength / chunkSize;
@@ -54,7 +55,7 @@ namespace NeuroRighter
             threshold = new rawType[numChannels, spikeBufferLength];
             limAdaPrevious = new rawType[numChannels];
             for (int i = 0; i < numChannels; ++i)
-                limAdaPrevious[i] = 0.01;
+                limAdaPrevious[i] = 0.0001;
         }
 
         protected override void updateThreshold(rawType[] data, int channel)
@@ -180,5 +181,26 @@ namespace NeuroRighter
             for (int j = 0; j < spikeBufferSize; ++j)
                 spikeDetectionBuffer[channel][j] = data[j + spikeBufferLength - spikeBufferSize];
         }
+
+        internal override float[][] GetCurrentThresholds()
+        {
+            returnThresh = new float[2][];
+
+            for (int i = 0; i < 2; ++i)
+            {
+                returnThresh[i] = new float[numChannels];
+            }
+
+            for (int i = 0; i < numChannels; ++i)
+            {
+                returnThresh[0][i] = (float)(threshold[i, 0]);
+                returnThresh[1][i] = (float)(-threshold[i, 0]);
+            }
+
+
+            return returnThresh;
+        }
+
+
     }
 }

@@ -52,31 +52,29 @@ namespace NeuroRighter
 
         private void button_ForceDetectTrain_Click(object sender, EventArgs e) { setSpikeDetector(); }
 
+        private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)
+        {
+            setSpikeDetector();
+        }
+
         private void setSpikeDetector()
         {
+            detectionDeadTime = (int)Math.Round(Convert.ToDouble(textBox_spikeSamplingRate.Text)*
+                (double)numericUpDown_DeadTime.Value/1.0e6);
             switch (comboBox_spikeDetAlg.SelectedIndex)
             {
-                case 0:  //RMS Adaptive
-                    spikeDetector = new RMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
+                case 0:  //RMS Fixed
+                    spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value),detectionDeadTime, DEVICE_REFRESH);
                     break;
-                case 1:  //Improved RMS Adaptive
-                    spikeDetector = new SpikeDetection.StimSafeAdaptiveRMS(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre,
-                        Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH);
+                case 1:  //RMS Adaptive
+                    spikeDetector = new AdaptiveRMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, DEVICE_REFRESH);
                     break;
-                case 2:  //RMS Fixed
-                    spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value));
-                    break;
-                case 3:  //Median method
-                    spikeDetector = new MedianThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, Convert.ToDouble(thresholdMultiplier.Value), DEVICE_REFRESH, spikeSamplingRate);
-                    break;
-                case 4:  //Improved Median
-                    spikeDetector = new SpikeDetection.StimSafeMedian(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre,
-                        (double)thresholdMultiplier.Value, DEVICE_REFRESH, spikeSamplingRate);
-                    break;
-                case 5:  //LimAda
-                    spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost, numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), Convert.ToInt32(textBox_spikeSamplingRate.Text));
+                case 2:  //Limada
+                    spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime,
+                        Convert.ToInt32(textBox_spikeSamplingRate.Text));
                     break;
                 default:
                     break;

@@ -128,7 +128,6 @@ namespace NeuroRighter
         private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA
         private SALPA2 SALPAFilter;
-        private bool skipSecondVal;
         private int numChannels;
         private int numChannelsPerDev;
         private int[] currentRef;
@@ -151,6 +150,7 @@ namespace NeuroRighter
         private Filters.MUAFilter muaFilter;
         private double[][] muaData;
         private int SALPA_WIDTH;
+        private int detectionDeadTime;
 
         //Plots
         private GridGraph spikeGraph;

@@ -226,6 +226,8 @@ namespace NeuroRighter
 
             if (checkBox_spikeValidation.Checked)
             {
+                bool skipSecondValidation;
+
                 lock (this)
                 {
                     for (int w = 0; w < newWaveforms.Count; w++) //For each waveform
@@ -272,7 +274,7 @@ namespace NeuroRighter
                         }
                         else
                         {
-                            skipSecondVal = false;
+                            skipSecondValidation = false;
 
                             for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
                             {
@@ -281,13 +283,13 @@ namespace NeuroRighter
                                 {
                                     newWaveforms.RemoveAt(w);
                                     --w;
-                                    skipSecondVal = true;
+                                    skipSecondValidation = true;
                                     break;
                                 }
 
                             }
 
-                            if (!skipSecondVal)
+                            if (!skipSecondValidation)
                             {
                                 for (int k = 0; k < numPre; ++k)
                                 {
@@ -320,10 +322,6 @@ namespace NeuroRighter
                     {
                         lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
                         {
-                            //fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
-                            //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
-                            //for (int k = 0; k < numPre + numPost + 1; ++k)
-                            //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
                             fsSpks.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
                                 newWaveforms[j].threshold, waveformData);// JN +1 in channel field switches to 1-based channel numbering
                         }
@@ -341,11 +339,6 @@ namespace NeuroRighter
                     {
                         lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
                         {
-                            //fsSpks.Write(BitConverter.GetBytes((short)newWaveforms[j].channel), 0, 2); //Write channel num.
-                            //fsSpks.Write(BitConverter.GetBytes(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel)), 0, 2); //Write channel num.
-                            //fsSpks.Write(BitConverter.GetBytes(startTime + newWaveforms[j].index), 0, 4); //Write time (index number)
-                            //for (int k = 0; k < numPre + numPost + 1; ++k)
-                            //    fsSpks.Write(BitConverter.GetBytes(waveformData[k]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
                             fsSpks.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
                                 newWaveforms[j].threshold, waveformData); // JN +1 in channel field switches to 1-based channel numbering
                         }

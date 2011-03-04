@@ -240,14 +240,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
     <Compile Include="SpikeDetection\LimAda.cs" />
-    <Compile Include="SpikeDetection\MedianThreshold.cs" />
-    <Compile Include="SpikeDetection\RMSThreshold.cs" />
     <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
     <Compile Include="SpikeDetection\SpikeDetector.cs" />
     <Compile Include="SpikeDetection\SpikeWaveform.cs" />
-    <Compile Include="SpikeDetection\StimSafeAdaptiveRMS.cs" />
-    <Compile Include="SpikeDetection\StimSafeMedian.cs" />
     <Compile Include="Stimulation\DigitalData.cs" />
     <Compile Include="Stimulation\DigtialBuffer.cs" />
     <Compile Include="Stimulation\File2Dig.cs" />

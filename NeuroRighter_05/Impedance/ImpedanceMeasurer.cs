@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using csmatio.common;
 using csmatio.io;
 using csmatio.types;
+using NeuroRighter.Output;
 
 namespace NeuroRighter.Impedance
 {

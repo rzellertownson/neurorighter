@@ -9,9 +9,9 @@ using System.Windows.Forms;
 using System.Threading;
 
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
-    class File2Stim4
+    class File2Stim
     {
         StreamReader olstimfile; // The stream reader for the .olstim file being used
         internal string stimfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
@@ -20,7 +20,7 @@ namespace NeuroRighter
         internal int numstim; // number of stimuli specified in open-loop file
         internal int numStimPerLoad = 50; // Number of stimuli loaded per read of the olstim file
         internal int numLoadsCompleted = 0; // Number loads completed
-        internal ulong NumBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
+        internal ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         internal bool lastLoad;
 
         internal double[] cannedWaveform; // if the user is just repeating the same waveform, then this holds that info
@@ -39,12 +39,12 @@ namespace NeuroRighter
         internal int STIM_SAMPLING_FREQ;
 
         //Event Handling
-        internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
-        internal event ProgressChangedHandler AlertProgChanged;
+        //internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
+        //internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
 
-        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
+        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
             Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter)
         {
@@ -63,7 +63,7 @@ namespace NeuroRighter
             stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
-        internal File2Stim4(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
+        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
             Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
             AnalogMultiChannelWriter stimAnalogWriter, double[] cannedWave)
         {
@@ -83,19 +83,19 @@ namespace NeuroRighter
             stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
-        internal void stop()
+        internal void Stop()
         {
-            stimbuff.stop();
+            stimbuff.Stop();
         }
 
-        internal void setup()
+        internal bool Setup()
         {
             // Load the stimulus buffer
-            stimbuff.QueueLessThanThreshold += new QueueLessThanThresholdHandler(appendStimBufferAtThresh);
+            stimbuff.QueueLessThanThreshold += new QueueLessThanThresholdHandler(AppendStimBufferAtThresh);
             // Stop the StimBuffer When its finished
-            stimbuff.StimulationComplete +=new StimulationCompleteHandler(stimbuff_StimulationComplete);
+            stimbuff.StimulationComplete +=new StimulationCompleteHandler(StimbuffStimulationComplete);
             // Alert that stimbuff just completed a DAQ bufferload
-            stimbuff.DAQLoadCompleted += new DAQLoadCompletedHandler(stimbuff_DAQLoadCompleted);
+            stimbuff.DAQLoadCompleted += new DAQLoadCompletedHandler(StimbuffDAQLoadCompleted);
             
             //open .olstim file
             olstimfile = new StreamReader(stimfile);
@@ -106,10 +106,10 @@ namespace NeuroRighter
 
             line = olstimfile.ReadLine(); // this read has the final stimulus time
             double finalStimTime = Convert.ToDouble(line); // find the number of stimuli specified in the file
-            stimbuff.calculateLoadsRequired(finalStimTime); // inform the stimbuffer how many DAQ loads it needs to take care of
+            stimbuff.CalculateLoadsRequired(finalStimTime); // inform the stimbuffer how many DAQ loads it needs to take care of
             
             //Compute the amount of bufferloads needed to take care of this stimulation experiment
-            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling(finalStimTime*STIM_SAMPLING_FREQ / (double)stimbuff.getBufferSize());
+            numBuffLoadsRequired = 3 + (uint)Math.Ceiling(finalStimTime*STIM_SAMPLING_FREQ / (double)stimbuff.GetBufferSize());
 
             line = olstimfile.ReadLine(); // this read has the number samples in each stimulus
             wavesize = Convert.ToInt32(line); // find the number of stimuli specified in the file
@@ -121,14 +121,16 @@ namespace NeuroRighter
                                              "You can provide waveforms in the file following the makestimfile.m instructions. " +
                                              "Additionally, you can create a waveform using the GUI in the manual stimulation box" +
                                              "and select to use that for all stimuli with the checkbox in the open-loop stimulation box.";
-                throw new Exception(WaveformError);                       
+                MessageBox.Show(WaveformError);
+                return true;   // Tell everyone there was an error
             }
             else if (wavesize > 0 && cannedWaveform != null)
             {
                 string WaveformError = "Your .olstim file has stimulus waveform data in it, but you are trying to provide a  " +
                                              "a waveform made using the GUI in the manual stimulation box. Please provide a .olstim file" +
                                              "without waveform data to use the GUI to make your stimulus waveform.";
-                throw new Exception(WaveformError);
+                MessageBox.Show(WaveformError);
+                return true; // Tell everyone there was an error
             }
             else if (wavesize == 0)
             {
@@ -147,14 +149,14 @@ namespace NeuroRighter
                 WaveMatrix = new double [numstim, wavesize];
 
                 // Load the stimuli
-                loadStimWithWave(olstimfile,numstim);
+                LoadStimWithWave(olstimfile,numstim);
 
                 // Append the first stimuli to the stim buffer
-                Console.WriteLine("one big load");
-                stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
+                Console.WriteLine("File2Stim : Only a single load is needed because there are less than " + 2 * numStimPerLoad + " stimuli");
+                stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted = numstim;
                 lastLoad = true;
-                stimbuff.setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
             }
             else
@@ -166,29 +168,30 @@ namespace NeuroRighter
                 WaveMatrix = new double[numStimPerLoad, wavesize];
 
                 // Load the first stimuli
-                loadStimWithWave(olstimfile,numStimPerLoad);
+                LoadStimWithWave(olstimfile,numStimPerLoad);
 
                 // Append the first stimuli to the stim buffer
-                stimbuff.append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
+                stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
 
             }
 
+            return false; // Tell everyone there were no errors
         }
 
-        internal void start()
+        internal void Start()
         {
-            stimbuff.start();
+            stimbuff.Start();
         }
 
-        internal void appendStimBufferAtThresh(object sender, EventArgs e)
+        internal void AppendStimBufferAtThresh(object sender, EventArgs e)
         {
             if (numstim - (numLoadsCompleted * numStimPerLoad) > numStimPerLoad)
             {
                 Console.WriteLine("file2stim4: normal load numstimperload:" + numStimPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
-                loadStimWithWave(olstimfile, numStimPerLoad);
-                stimbuff.append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
+                LoadStimWithWave(olstimfile, numStimPerLoad);
+                stimbuff.Append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
                 numLoadsCompleted++;
             }
             else
@@ -201,28 +204,28 @@ namespace NeuroRighter
                     TimeVector = new ulong[numstim - numLoadsCompleted * numStimPerLoad];
                     ChannelVector = new int[numstim - numLoadsCompleted * numStimPerLoad];
                     WaveMatrix = new double[numstim - numLoadsCompleted * numStimPerLoad, wavesize];
-                    loadStimWithWave(olstimfile, numstim - numLoadsCompleted * numStimPerLoad);
-                    stimbuff.append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
+                    LoadStimWithWave(olstimfile, numstim - numLoadsCompleted * numStimPerLoad);
+                    stimbuff.Append(TimeVector, ChannelVector, WaveMatrix); //add N more stimuli
 
                     lastLoad = true;
                 }
             }
         }
 
-        internal void stimbuff_StimulationComplete(object sender, EventArgs e)
+        internal void StimbuffStimulationComplete(object sender, EventArgs e)
         {
             Console.WriteLine("STIMULATION STOP CALLED");
             AlertAllFinished(this, e);
         }
 
-        internal void stimbuff_DAQLoadCompleted(object sender, EventArgs e)
+        internal void StimbuffDAQLoadCompleted(object sender, EventArgs e)
         {
             // Report protocol progress
-            int percentComplete = (int)Math.Round((double)100 * (stimbuff.NumBuffLoadsCompleted) / NumBuffLoadsRequired);
+            int percentComplete = (int)Math.Round((double)100 * (stimbuff.numBuffLoadsCompleted) / numBuffLoadsRequired);
             //AlertProgChanged(this, e, percentComplete);
         }
 
-        internal void loadStimWithWave(StreamReader olstimFile, int numStimToRead)
+        internal void LoadStimWithWave(StreamReader olstimFile, int numStimToRead)
         {
             int j = 0;
             char delimiter = ' ';

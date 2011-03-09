@@ -77,7 +77,7 @@ namespace NeuroRighter
                 if (taskRunning)
                 {
                     int taskNumber = (int)ar.AsyncState;
-                    trackingreads[taskNumber]++;
+                    trackingReads[taskNumber]++;
 
                     #region Stim_Timing_Acquisition
                     if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)

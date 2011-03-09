@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {   
     // called when the 2+requested number of buffer loads have occured
     public delegate void StimulationCompleteHandler(object sender, EventArgs e);
@@ -31,12 +31,12 @@ namespace NeuroRighter
         Thread thrd;
 
         // Public Properties
-        public ulong BufferIndex = 0;
+        public ulong bufferIndex = 0;
         public double[,] AnalogBuffer;
         public UInt32[] DigitalBuffer;
         public bool StillWritting = false;
-        public ulong NumBuffLoadsCompleted = 0;
-        public uint NumBuffLoadsRequired = 0;
+        public ulong numBuffLoadsCompleted = 0;
+        public uint numBuffLoadsRequired = 0;
         public bool running = false;
 
         // Private Properties
@@ -99,9 +99,9 @@ namespace NeuroRighter
             //isAppending = false;
 
         }
-        //constructor if using stim buffer in append mode
+        //constructor if using stim buffer in Append mode
        
-        //constructor if using stim buffer in append mode- with lists!
+        //constructor if using stim buffer in Append mode- with lists!
         internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold)
         {
             this.BUFFSIZE = (uint)INNERBUFFSIZE;
@@ -118,11 +118,11 @@ namespace NeuroRighter
                 RowOffset = 2;
             }
 
-            // Make an outer buffer to append stimuli to before loading into DAQ's memory
+            // Make an outer buffer to Append stimuli to before loading into DAQ's memory
             outerbuffer = new List<StimulusData>();
             }
 
-        internal void setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
+        internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
         {
 
             startTime = DateTime.Now;
@@ -137,34 +137,32 @@ namespace NeuroRighter
             stimDigitalTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
             stimAnalogTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
             stimDigitalTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-            //stimDigitalTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
-            //stimAnalogTask.Timing.SampleClockRate = STIM_SAMPLING_FREQ;
             
             // Add reload method to the Counter output event
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(timer_Tick);
+            buffLoadTask.CounterOutput += new CounterOutputEventHandler(TimerTick);
             
             // Populate the outer-buffer twice
-            populateBufferAppending();
+            PopulateBufferAppending();
             
             // Start the counter that tells when to reload the daq
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
 
-            populateBufferAppending();
+            PopulateBufferAppending();
 
             // Start the counter that tells when to reload the daq
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
         }
 
-        internal void start()
+        internal void Start()
         {
             running = true;
             stimDigitalTask.Start();
             stimAnalogTask.Start();
         }
 
-        internal void finishStimulation(EventArgs e)
+        internal void FinishStimulation(EventArgs e)
         {
             if (StimulationComplete != null)
             {
@@ -180,29 +178,29 @@ namespace NeuroRighter
             }
         }
         
-        void timer_Tick(object sender, EventArgs e)
+        void TimerTick(object sender, EventArgs e)
         {
             if (running)
             {
                 tickTime = DateTime.Now;
                 tickDiff = tickTime.Subtract(startTime);
                 Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ half-load event.");
-                writeToBuffer();
+                WriteToBuffer();
             }
             else
             {
-                finishStimulation(e);
+                FinishStimulation(e);
             }
         }
 
-        internal void writeToBuffer()
+        internal void WriteToBuffer()
         {
             thrd = Thread.CurrentThread;
             thrd.Priority = ThreadPriority.Highest;
 
             analogdone = false;
             digitaldone = false;
-            populateBufferAppending();
+            PopulateBufferAppending();
             Console.WriteLine("Write to Buffer Started");
             stimAnalogWriter.WriteMultiSample(false, AnalogBuffer);
             stimDigitalWriter.WriteMultiSamplePort(false, DigitalBuffer);
@@ -211,12 +209,12 @@ namespace NeuroRighter
             
         }
 
-        internal void stop()
+        internal void Stop()
         {
             running = false;
         }
 
-        internal void precompute()//not used for appending- instead, append needs to perform these actions
+        internal void PreCompute()//not used for appending- instead, Append needs to perform these actions
         {
            
             // Does as much pre computation of the buffers that will be populated as possible to prevent buffer load lag and resulting DAQ exceptions
@@ -261,11 +259,11 @@ namespace NeuroRighter
 
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            NumBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
+            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(StimSample[StimSample.Length - 1] / BUFFSIZE));
            
         }      
         
-        internal void validateStimulusParameters()
+        internal void ValidateStimulusParameters()
         {
             // This method looks at the parameters of stimulus provided in the .olstim file and decides if they are cool or not
 
@@ -282,7 +280,7 @@ namespace NeuroRighter
                
             }
 
-            // Check to make sure StimulusLength > BuffSize    
+            // Check to make sure StimulusLength < BuffSize    
             if (StimulusLength >= BUFFSIZE)
             {
                 throw new ArgumentException("The length of your stimulus waveforms exceeds that of the buffer size. Your waveforms should be less than " + StimulusLength.ToString() + " samples long.");
@@ -297,69 +295,69 @@ namespace NeuroRighter
         }
         
         //this is the scary one
-        internal void populateBuffer()
+        internal void PopulateBuffer()
         {
             //clear buffers and reset index
             AnalogBuffer = new double[NumAOChannels, BUFFSIZE]; // buffer for analog channels
             DigitalBuffer = new UInt32[BUFFSIZE]; // buffer for digital channels
-            BufferIndex = 0;
+            bufferIndex = 0;
 
             #region Populate the buffers if a stimulus occurs in this particular buffer length
 
             // Finish up writing the stimulus from the last buffer load if you didn't finish then
             if (NumSampWrittenForCurrentStim < StimulusLength && NumSampWrittenForCurrentStim != 0)
             {
-                uint Samples2Finish = StimulusLength - NumSampWrittenForCurrentStim;
-                for (int i = 0; i < Samples2Finish; i++)
+                uint samples2Finish = StimulusLength - NumSampWrittenForCurrentStim;
+                for (int i = 0; i < samples2Finish; i++)
                 {
-                    calculateAnalogPoint(StimulusIndex, NumSampWrittenForCurrentStim, NumAOChannels);
-                    calculateDigPoint(StimulusIndex, NumSampWrittenForCurrentStim);
-                    AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
-                    AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
-                    DigitalBuffer[(int)BufferIndex] = DigitalPoint;
+                    CalculateAnalogPoint(StimulusIndex, NumSampWrittenForCurrentStim, NumAOChannels);
+                    CalculateDigPoint(StimulusIndex, NumSampWrittenForCurrentStim);
+                    AnalogBuffer[0 + RowOffset, (int)bufferIndex] = AnalogPoint[0];
+                    AnalogBuffer[1 + RowOffset, (int)bufferIndex] = AnalogPoint[1];
+                    DigitalBuffer[(int)bufferIndex] = DigitalPoint;
                     NumSampWrittenForCurrentStim++;
-                    BufferIndex++;
+                    bufferIndex++;
                 }
 
                 // Finished writting current stimulus, reset variables
                 NumSampWrittenForCurrentStim = 0;
                 StimulusIndex++;
-                BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
-                if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
+                bufferIndex = StimSample[StimulusIndex] - numBuffLoadsCompleted * BUFFSIZE;
+                if (StimSample[StimulusIndex] < numBuffLoadsCompleted * BUFFSIZE)
                 {
-                    //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
-                    throw new Exception ("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                    //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                    throw new Exception ("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " +numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
             }
             }
             else
             {
                 if (StimulusIndex < (ulong)StimSample.Length)
                     {
-                        BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
-                        if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
+                        bufferIndex = StimSample[StimulusIndex] - numBuffLoadsCompleted * BUFFSIZE;
+                        if (StimSample[StimulusIndex] < numBuffLoadsCompleted * BUFFSIZE)
                         {
-                           // MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
-                            throw new Exception("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                           // MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                            throw new Exception("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
                     }
                     }
                     else
                     {
-                        BufferIndex = BUFFSIZE;
+                        bufferIndex = BUFFSIZE;
                     }
             }
 
             // Write to the buffer if the next stimulus is within this buffer's time span
-            while(BufferIndex < BUFFSIZE  && BufferIndex >= 0)
+            while(bufferIndex < BUFFSIZE  && bufferIndex >= 0)
             {
                 if (NumSampWrittenForCurrentStim < StimulusLength)
                 {
-                    calculateAnalogPoint(StimulusIndex, NumSampWrittenForCurrentStim, NumAOChannels);
-                    calculateDigPoint(StimulusIndex, NumSampWrittenForCurrentStim);
-                    AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
-                    AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
-                    DigitalBuffer[(int)BufferIndex] = DigitalPoint;
+                    CalculateAnalogPoint(StimulusIndex, NumSampWrittenForCurrentStim, NumAOChannels);
+                    CalculateDigPoint(StimulusIndex, NumSampWrittenForCurrentStim);
+                    AnalogBuffer[0 + RowOffset, (int)bufferIndex] = AnalogPoint[0];
+                    AnalogBuffer[1 + RowOffset, (int)bufferIndex] = AnalogPoint[1];
+                    DigitalBuffer[(int)bufferIndex] = DigitalPoint;
                     NumSampWrittenForCurrentStim++;
-                    BufferIndex++;
+                    bufferIndex++;
                 }
                 else
                 {
@@ -368,27 +366,27 @@ namespace NeuroRighter
                     StimulusIndex++;
                    if (StimulusIndex < (ulong)StimSample.Length)
                     {
-                        BufferIndex = StimSample[StimulusIndex] - NumBuffLoadsCompleted * BUFFSIZE;
-                        if (StimSample[StimulusIndex] < NumBuffLoadsCompleted * BUFFSIZE)
+                        bufferIndex = StimSample[StimulusIndex] - numBuffLoadsCompleted * BUFFSIZE;
+                        if (StimSample[StimulusIndex] < numBuffLoadsCompleted * BUFFSIZE)
                         {
-                            //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
-                            throw new Exception("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                            //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
+                            throw new Exception("trying to write an expired stimulus: stimulation at sample no " + StimSample[StimulusIndex] + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + ChannelVector[StimulusIndex]);
                     }
                     }
                     else
                     {
-                        BufferIndex = BUFFSIZE;
+                        bufferIndex = BUFFSIZE;
                     }
                     
                 }
             }
             #endregion
 
-            NumBuffLoadsCompleted++; 
+            numBuffLoadsCompleted++; 
         }
         
         //lets see if we can simplify things here...
-        internal void populateBufferAppending()
+        internal void PopulateBufferAppending()
         {
             lock (this)
             {
@@ -403,7 +401,7 @@ namespace NeuroRighter
                 //clear buffers and reset index
                 AnalogBuffer = new double[NumAOChannels, BUFFSIZE]; // buffer for analog channels
                 DigitalBuffer = new UInt32[BUFFSIZE]; // buffer for digital channels
-                BufferIndex = 0;
+                bufferIndex = 0;
                 // MessageBox.Show("cleared buffer");
                 //current stim- stimulus we are in the middle of.  if null, not yet stimming.  
                 //dont load a stim to current stim until you actually start stimulating with it
@@ -416,10 +414,10 @@ namespace NeuroRighter
                 if (currentStim != null)
                 {
                     //   MessageBox.Show("examining first stim");
-                    bool finished = applyCurrentStimulus();
+                    bool finished = ApplyCurrentStimulus();
                     if (finished)
                     {
-                        finishStim();
+                        FinishStim();
                     }
 
                 }
@@ -427,47 +425,47 @@ namespace NeuroRighter
                 //at this point, we have either finished a stimulus, or finished the buffer.
                 //therefore, if there is room left in this buffer, find the next stimulus and move to it.
 
-                while (BufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+                while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
                 {
                     //is next stimulus within range of this buffload?
-                    bool ready = nextStimulusAppending();
+                    bool ready = NextStimulusAppending();
 
                     if (ready)
                     {
-                        bool finished = applyCurrentStimulus();
+                        bool finished = ApplyCurrentStimulus();
                         if (finished)
                         {
-                            finishStim();
+                            FinishStim();
                         }
                     }
                 }
 
                 //congratulations!  we finished the buffer!
-                NumBuffLoadsCompleted++;
+                numBuffLoadsCompleted++;
 
                 // Check if protocol is completed
-                if (NumBuffLoadsCompleted >= NumBuffLoadsRequired)
+                if (numBuffLoadsCompleted >= numBuffLoadsRequired)
                 {
                     running = false; // Start clean up cascade
                 }
 
-                onBufferLoad(EventArgs.Empty);
+                OnBufferLoad(EventArgs.Empty);
 
                 ws.Stop();
                 Console.WriteLine("Buffer load took " + ws.Elapsed);
             }
         }
 
-        internal void append(ulong[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
+        internal void Append(ulong[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
         {
 
-            //needs to include precompute stuff!  ie, convert to stimsample, analog encode, etc
+            //needs to include PreCompute stuff!  ie, convert to stimsample, analog encode, etc
 
             //okay, passed the tests, start appending
             Stopwatch sw = new Stopwatch();
             sw.Start();
             StimulusData stim;
-            Console.WriteLine("append started...");
+            Console.WriteLine("Append started...");
             lock (this)
             {
                 for (int i = 0; i < WaveMatrix.GetLength(0); i++)
@@ -493,12 +491,12 @@ namespace NeuroRighter
                 }
             }
             sw.Stop();
-            Console.WriteLine("append took " + sw.Elapsed);
-            //  MessageBox.Show("finished append");
+            Console.WriteLine("Append took " + sw.Elapsed);
+            //  MessageBox.Show("finished Append");
 
         }
 
-        internal void append(List<StimulusData> stimlist)
+        internal void Append(List<StimulusData> stimlist)
         {
             lock (this)
             {
@@ -509,28 +507,28 @@ namespace NeuroRighter
         //write as much of the current stimulus as possible
         //agnostic as to whether or not you've finished this stimulus or not.
         //returns if finished the stimulus or not
-        internal bool applyCurrentStimulus()
+        internal bool ApplyCurrentStimulus()
         {
 
            //how many samples should we write, including blanking?
-            ulong Samples2Finish = (ulong)currentStim.waveform.Length+NUM_SAMPLES_BLANKING*2 - NumSampWrittenForCurrentStim;
+            ulong samples2Finish = (ulong)currentStim.waveform.Length+NUM_SAMPLES_BLANKING*2 - NumSampWrittenForCurrentStim;
 
             //write samples to the buffer
-            for (ulong i = 0; (i < Samples2Finish) & (BufferIndex < BUFFSIZE - 1); i++)
+            for (ulong i = 0; (i < samples2Finish) & (bufferIndex < BUFFSIZE - 1); i++)
             {
-                writeSample();
+                WriteSample();
             }
 
-            return (BufferIndex < BUFFSIZE);
+            return (bufferIndex < BUFFSIZE);
         }
         
         //examines the next stimulus, determines if it is within range, and loads it if it is
         //returns if stimulus is within range or not
-        internal bool nextStimulusAppending()
+        internal bool NextStimulusAppending()
         {
             lock (this)
             {
-                if (outerbuffer.ElementAt(0).time < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
+                if (outerbuffer.ElementAt(0).time < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
 
                     currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
@@ -539,14 +537,14 @@ namespace NeuroRighter
                     
 
                     if (outerbuffer.Count == (queueThreshold - 1))
-                        onThreshold(EventArgs.Empty);
+                        OnThreshold(EventArgs.Empty);
 
                     NumSampWrittenForCurrentStim = 0;
-                    BufferIndex = currentStim.time - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                    if (currentStim.time < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    bufferIndex = currentStim.time - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
+                    if (currentStim.time < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                     {
-                        //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.time + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.time + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
                     }
 
                     return true;
@@ -557,40 +555,40 @@ namespace NeuroRighter
                     currentStim = null;//we aren't currently stimulating
                     
                     NumSampWrittenForCurrentStim = 0;//we haven't written anything
-                    BufferIndex = BUFFSIZE;//we are done with this buffer
+                    bufferIndex = BUFFSIZE;//we are done with this buffer
                     return false;
                 }
             }
         }
 
-        internal void writeSample()
+        internal void WriteSample()
         {
-            calculateAnalogPointAppending(NumSampWrittenForCurrentStim, NumAOChannels);
-            calculateDigPointAppending(NumSampWrittenForCurrentStim);
-            AnalogBuffer[0 + RowOffset, (int)BufferIndex] = AnalogPoint[0];
-            AnalogBuffer[1 + RowOffset, (int)BufferIndex] = AnalogPoint[1];
-            DigitalBuffer[(int)BufferIndex] = DigitalPoint;
+            CalculateAnalogPointAppending(NumSampWrittenForCurrentStim, NumAOChannels);
+            CalculateDigPointAppending(NumSampWrittenForCurrentStim);
+            AnalogBuffer[0 + RowOffset, (int)bufferIndex] = AnalogPoint[0];
+            AnalogBuffer[1 + RowOffset, (int)bufferIndex] = AnalogPoint[1];
+            DigitalBuffer[(int)bufferIndex] = DigitalPoint;
             NumSampWrittenForCurrentStim++;
-            BufferIndex++;
+            bufferIndex++;
 
         }
 
-        internal void finishStim()
+        internal void FinishStim()
         {
            // Console.Write("stim at " + currentStim.time + ",");
                 currentStim = null;//we aren't currently stimulating
             
         }
 
-        internal void calculateLoadsRequired(double finalStimTime)
+        internal void CalculateLoadsRequired(double finalStimTime)
         {
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ*finalStimTime / (double)BUFFSIZE));
+            numBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ*finalStimTime / (double)BUFFSIZE));
         }
 
         // Methods to calculate digital and alalog points to send to daq based on required channel and timing
-        internal void calculateDigPoint(ulong StimulusIndex, uint NumSampLoadedForCurr)
+        internal void CalculateDigPoint(ulong StimulusIndex, uint NumSampLoadedForCurr)
         {
 
             //Get the digital encoding for this stimulus
@@ -609,7 +607,8 @@ namespace NeuroRighter
             }
 
         }
-        internal void calculateAnalogPoint(ulong StimulusIndex, uint NumSampLoadedForCurr, int NumAOChannels)
+
+        internal void CalculateAnalogPoint(ulong StimulusIndex, uint NumSampLoadedForCurr, int NumAOChannels)
         {
 
             //Get the analog encoding for this stimulus
@@ -657,7 +656,7 @@ namespace NeuroRighter
         }
 
         //appending versions
-        internal void calculateDigPointAppending(uint NumSampLoadedForCurr)
+        internal void CalculateDigPointAppending(uint NumSampLoadedForCurr)
         {
             uint wavelength = (uint)currentStim.waveform.Length;
             if (NumSampLoadedForCurr < NUM_SAMPLES_BLANKING || NumSampLoadedForCurr > NUM_SAMPLES_BLANKING + wavelength)
@@ -674,7 +673,8 @@ namespace NeuroRighter
             }
 
         }
-        internal void calculateAnalogPointAppending(uint NumSampLoadedForCurr, int NumAOChannels)
+
+        internal void CalculateAnalogPointAppending(uint NumSampLoadedForCurr, int NumAOChannels)
         {
             uint WaveLength = (uint)currentStim.waveform.Length;
 
@@ -736,28 +736,28 @@ namespace NeuroRighter
         }
 
         //appending tools
-        public int stimuliInQueue()
+        public int StimuliInQueue()
         {
             return outerbuffer.Count();
         }
 
-        public double time()
+        public double GetTime()
         {
             return (double)((stimAnalogTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
         }
 
-        public uint getBufferSize()
+        public uint GetBufferSize()
         {
             return BUFFSIZE;
         }
 
-        private void onThreshold(EventArgs e)
+        private void OnThreshold(EventArgs e)
         {
             if (QueueLessThanThreshold != null)
                 QueueLessThanThreshold(this, e);
         }
 
-        private void onBufferLoad(EventArgs e)
+        private void OnBufferLoad(EventArgs e)
         {
             Console.WriteLine("Updating the progress bar");
             if (DAQLoadCompleted != null)

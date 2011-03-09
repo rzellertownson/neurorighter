@@ -508,36 +508,24 @@ namespace NeuroRighter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseDO {
+        public bool UseSigOut {
             get {
-                return ((bool)(this["UseDO"]));
+                return ((bool)(this["UseSigOut"]));
             }
             set {
-                this["UseDO"] = value;
+                this["UseSigOut"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Dev1")]
-        public string DODevice {
+        public string SigOutDev {
             get {
-                return ((string)(this["DODevice"]));
+                return ((string)(this["SigOutDev"]));
             }
             set {
-                this["DODevice"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseAux {
-            get {
-                return ((bool)(this["UseAux"]));
-            }
-            set {
-                this["UseAux"] = value;
+                this["SigOutDev"] = value;
             }
         }
     }

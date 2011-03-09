@@ -44,6 +44,7 @@ using csmatio.types;
 using csmatio.io;
 using NeuroRighter.Aquisition;
 using rawType = System.Double;
+using NeuroRighter.SpkDet;
 
 
 namespace NeuroRighter
@@ -162,14 +163,9 @@ namespace NeuroRighter
         }
 
         // Start button
-        private void buttonStart_Click(object sender, EventArgs e)
+        internal void buttonStart_Click(object sender, EventArgs e)
         {
-            trackingreads = new int[2];
-            //trackingreads = {0 ,0};
-            trackingproc = new int[2];
-            //trackingproc = [0 ,0];
             //Ensure that, if recording is setup, that it has been done properly
-
             //Retrain Spike detector if required
             if (checkBox_RetrainOnRestart.Checked)
                 setSpikeDetector();
@@ -208,17 +204,20 @@ namespace NeuroRighter
                     else if (dr == DialogResult.Cancel)
                         return;
                 }
-                NRAquire();
+                NRAcquisitionSetup();
+                NRStartRecording();
+
             }
             else
             {
-                NRAquire();
+                NRAcquisitionSetup();
+                NRStartRecording();
             }
 
         }
 
-        // Method to start the recording side of neurorighter
-        private void NRAquire()
+        // Method to set up the recording side of neurorighter
+        private void NRAcquisitionSetup()
         {
             updateRecSettings();
             if (!taskRunning)
@@ -227,8 +226,6 @@ namespace NeuroRighter
                 {
                     // Modify the UI, so user doesn't try running multiple instances of tasks
                     this.Cursor = Cursors.WaitCursor;
-                    buttonStop.Enabled = true;
-                    buttonStart.Enabled = false;
                     comboBox_numChannels.Enabled = false;
                     numPreSamples.Enabled = false;
                     numPostSamples.Enabled = false;
@@ -243,6 +240,7 @@ namespace NeuroRighter
                     button_lfpSamplingRate.PerformClick();
                     textBox_lfpSamplingRate.Enabled = false;
                     textBox_MUASamplingRate.Enabled = false;
+                    button_startStimFromFile.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
 
@@ -349,6 +347,7 @@ namespace NeuroRighter
                         //Pipe ai dev0's sample clock to slave devices
                         spikeTask[i].Timing.ConfigureSampleClock("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/SampleClock", spikeSamplingRate,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                        
                         //Trigger off of ai dev0's trigger
                         spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
                             "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
@@ -360,6 +359,7 @@ namespace NeuroRighter
                     //    spikeOutTask.Timing.ConfigureSampleClock("", spikeTask[0].Timing.SampleClockRate,
                     //        SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, spikeBufferLength);
                     //}
+
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     {
                         lfpTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
@@ -367,6 +367,7 @@ namespace NeuroRighter
                         lfpTask.Timing.ConfigureSampleClock("", lfpSamplingRate,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_lfpSamplingRate.Text) / 2));
                     }
+
                     if (Properties.Settings.Default.UseEEG)
                     {
                         eegTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
@@ -374,6 +375,7 @@ namespace NeuroRighter
                         eegTask.Timing.ConfigureSampleClock("", eegSamplingRate,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 2));
                     }
+
                     if (Properties.Settings.Default.UseCineplex)
                     {
                         if (checkBox_video.Checked)
@@ -784,48 +786,6 @@ namespace NeuroRighter
                         BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, DEVICE_REFRESH, spikeTask[0],
                             Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
-
-                    //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
-                    if (checkBox_video.Checked)
-                    {
-                        byte[] b_array = new byte[3] { 255, 255, 255 };
-                        DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
-                        wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                        triggerWriter.BeginWriteWaveform(true, wfm, null, null);
-                    }
-                    if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
-                        stimTimeTask.Start();
-                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
-                        lfpTask.Start();
-                    if (Properties.Settings.Default.UseEEG)
-                        eegTask.Start();
-                    for (int i = spikeTask.Count - 1; i >= 0; --i) spikeTask[i].Start(); //Start first task last, since it has master clock
-
-                    if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
-                        lfpReader.BeginReadInt16(lfpBufferLength, lfpCallback, lfpReader);
-                    if (Properties.Settings.Default.UseEEG)
-                        eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
-                    for (int i = 0; i < spikeReader.Count; ++i)
-                        spikeReader[i].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, i,
-                            spikeData[i]);
-
-                    //Set start time
-                    experimentStartTime = DateTime.Now;
-                    double sec2add = 60 * Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
-                    timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add);
-                    timer_timeElapsed.Enabled = true;
-
-                    if (checkBox_video.Checked)
-                    {
-                        triggerTask.WaitUntilDone();
-                        triggerTask.Dispose();
-                    }
-
-#if (USE_LOG_FILE)
-                    logFile = new StreamWriter("log.txt");
-    logFile.WriteLine("NeuroRighter Log File\r\n" + DateTime.Now + "\r\n\r\n");
-#endif
-
                     this.Cursor = Cursors.Default;
                 }
                 catch (DaqException exception)
@@ -838,12 +798,64 @@ namespace NeuroRighter
             }
         }
 
+        // Start all the tasks having to do with recording
+        private void NRStartRecording()
+        {
+            // Take care of buttons
+            buttonStop.Enabled = true;
+            buttonStart.Enabled = false;
+
+            // integers tracking the number of reads performed
+            trackingReads = new int[2];
+            trackingProc = new int[2];
+
+            //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
+            if (checkBox_video.Checked)
+            {
+                byte[] b_array = new byte[3] { 255, 255, 255 };
+                DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
+                wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                triggerWriter.BeginWriteWaveform(true, wfm, null, null);
+            }
+            if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
+                stimTimeTask.Start();
+            if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
+                lfpTask.Start();
+            if (Properties.Settings.Default.UseEEG)
+                eegTask.Start();
+            for (int i = spikeTask.Count - 1; i >= 0; --i)
+                spikeTask[i].Start(); //Start first task last, since it has master clock
+
+            // Start data collection
+            if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
+                lfpReader.BeginReadInt16(lfpBufferLength, lfpCallback, lfpReader);
+            if (Properties.Settings.Default.UseEEG)
+                eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
+            for (int i = 0; i < spikeReader.Count; ++i)
+                spikeReader[i].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, i,
+                    spikeData[i]);
+
+            //Set start time
+            experimentStartTime = DateTime.Now;
+            double sec2add = 60 * Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
+            timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add);
+            timer_timeElapsed.Enabled = true;
+
+            if (checkBox_video.Checked)
+            {
+                triggerTask.WaitUntilDone();
+                triggerTask.Dispose();
+            }
+        }
+
         // Stop data aquisition and clean up
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (taskRunning) reset();
+            if (taskRunning) 
+                reset();
             updateRecSettings();
         }
+
 
     }
 }

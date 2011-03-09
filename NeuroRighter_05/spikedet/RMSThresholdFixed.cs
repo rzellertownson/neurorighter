@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace NeuroRighter
+namespace NeuroRighter.SpkDet
 {
     using rawType = System.Double;
 

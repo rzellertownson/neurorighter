@@ -31,15 +31,11 @@ using System.Runtime.InteropServices;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 using rawType = System.Double;
-//using NationalInstruments.UI;
-//using NationalInstruments.UI.WindowsForms;
-//using NationalInstruments.Analysis;
-//using NationalInstruments.Analysis.Dsp;
 using NationalInstruments.Analysis.Dsp.Filters;
-//using NationalInstruments.Analysis.Math;
-//using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using NeuroRighter.Aquisition;
+using NeuroRighter.Output;
+using NeuroRighter.SpkDet;
 
 namespace NeuroRighter
 {
@@ -67,13 +63,9 @@ namespace NeuroRighter
         private AnalogUnscaledReader eegReader;
         private DigitalSingleChannelWriter triggerWriter;
         private DigitalSingleChannelWriter stimDigitalWriter;
-        private DigitalSingleChannelWriter digitalOutputWriter;
         private AnalogMultiChannelWriter stimPulseWriter;
-        private DigitalSingleChannelWriter stimFromFileDigitalWriter;
-        private AnalogMultiChannelWriter stimFromFileAnalogWriter;
         private AnalogMultiChannelReader stimTimeReader;
         private DigitalSingleChannelWriter stimIvsVWriter;
-        private AnalogMultiChannelWriter auxOutputWriter;
         private AsyncCallback spikeCallback;
         private AsyncCallback lfpCallback;
         private AsyncCallback eegCallback;
@@ -165,10 +157,8 @@ namespace NeuroRighter
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety
         private delegate void crossThreadFormUpdateDelegate(int item); //Used for making cross thread calls from stimbuffer, file2stim, etc to NR
 
-        // OL and CL Input/Output
-        File2Stim4 OLStimProtocol; // Custom stimulation protocol object
-        File2Dig OLDigitalProtocol; // Custom digital output protocol object
-
+        // For AO/DO from file stuff
+        private OpenLoopOut openLoopSynchronizedOutput;
         #endregion
 
         #region DebugVariables
@@ -183,9 +173,9 @@ namespace NeuroRighter
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
-        private int STIMBUFFSIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer
+        private int STIMBUFFSIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
         private const short CHAN_INDEX_START = 1;

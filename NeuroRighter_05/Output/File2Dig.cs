@@ -8,25 +8,25 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
     class File2Dig
     {
 
-        StreamReader oldigfile; // The stream reader for the .olstim file being used
-        internal string digfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
-        internal string line; // line from the .olstim file
-        internal ulong numDigEvent; // number of stimuli specified in open-loop file
-        internal ulong numEventPerLoad = 50; // Number of stimuli loaded per read of the olstim file
-        internal ulong numLoadsCompleted = 0; // Number loads completed
-        internal ulong NumBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
-        internal bool lastLoad;
+        private StreamReader oldigfile; // The stream reader for the .olstim file being used
+        private string digfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
+        private string line; // line from the .olstim file
+        private ulong numDigEvent; // number of stimuli specified in open-loop file
+        private ulong numEventPerLoad; // Number of stimuli loaded per read of the olstim file
+        private ulong numLoadsCompleted = 0; // Number loads completed
+        private ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
+        private bool lastLoad;
 
         internal List<DigitalData> DigitalDataChunk;
-        internal DigitalData DigitalDatum;
-        internal UInt32 Byte;
-        internal UInt64 EventTime;
-        internal DigitalBuffer digbuff;
+        private DigitalData DigitalDatum;
+        private UInt32 Byte;
+        private UInt64 EventTime;
+        private DigitalBuffer digbuff;
         private BackgroundWorker bw;//loads stimuli into the buffer when needed
         private Task digitalOutputTask, buffLoadTask;
         private DigitalSingleChannelWriter digitalOutputWriter;
@@ -36,13 +36,13 @@ namespace NeuroRighter
         internal int STIM_SAMPLING_FREQ;
 
         //Event Handling
-        internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
-        internal event ProgressChangedHandler AlertProgChanged;
+        //internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
+        //internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
 
         internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task digitalOutputTask,
-            Task buffLoadTask, DigitalSingleChannelWriter digitalOutputWriter)
+            Task buffLoadTask, DigitalSingleChannelWriter digitalOutputWriter, ulong numEventPerLoad)
         {
             this.digfile = digfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -50,25 +50,26 @@ namespace NeuroRighter
             this.buffLoadTask = buffLoadTask;
             this.digitalOutputWriter = digitalOutputWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
+            this.numEventPerLoad = numEventPerLoad;
 
             // Instatiate a DigitalBuffer object
             digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
 
         }
 
-        internal void stop()
+        internal void Stop()
         {
-            digbuff.stop();
+            digbuff.Stop();
         }
 
-        internal void setup()
+        internal void Setup()
         {
             // Load the stimulus buffer
-            digbuff.DigitalQueueLessThanThreshold += new DigitalQueueLessThanThresholdHandler(appendDigBufferAtThresh);
+            digbuff.DigitalQueueLessThanThreshold += new DigitalQueueLessThanThresholdHandler(AppendDigBufferAtThresh);
             // Stop the StimBuffer When its finished
-            digbuff.DigitalOutputComplete +=new DigitalOutputCompleteHandler(digbuff_Complete);
+            digbuff.DigitalOutputComplete +=new DigitalOutputCompleteHandler(DigbuffComplete);
             // Alert that digbuff just completed a DAQ bufferload
-            digbuff.DigitalDAQLoadCompleted += new DigitalDAQLoadCompletedHandler(digbuff_DAQLoadCompleted);
+            digbuff.DigitalDAQLoadCompleted += new DigitalDAQLoadCompletedHandler(DigbuffDAQLoadCompleted);
             
             //open .olstim file
             oldigfile = new StreamReader(digfile);
@@ -80,10 +81,10 @@ namespace NeuroRighter
 
             line = oldigfile.ReadLine(); // this read has the final stimulus time
             double finalEventTime = Convert.ToDouble(line); // find the number of stimuli specified in the file
-            digbuff.calculateLoadsRequired(finalEventTime); // inform the stimbuffer how many DAQ loads it needs to take care of
+            digbuff.CalculateLoadsRequired(finalEventTime); // inform the stimbuffer how many DAQ loads it needs to take care of
             
             //Compute the amount of bufferloads needed to take care of this stimulation experiment
-            NumBuffLoadsRequired = 3 + (ulong)Math.Ceiling(finalEventTime*STIM_SAMPLING_FREQ / (double)digbuff.getBufferSize());
+            numBuffLoadsRequired = 3 + (ulong)Math.Ceiling(finalEventTime*STIM_SAMPLING_FREQ / (double)digbuff.GetBufferSize());
 
             // Half the size of the largest stimulus data array that your computer will have to put in memory
             int numFullLoads = (int)Math.Floor((double)numDigEvent / (double)numEventPerLoad);
@@ -92,7 +93,7 @@ namespace NeuroRighter
             if (2*numEventPerLoad > numDigEvent)
             {
                 // Load the stimuli
-                loadDigEvent(oldigfile, (int)numEventPerLoad);
+                LoadDigEvent(oldigfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
                 Console.WriteLine("All in one digital load");
@@ -105,7 +106,7 @@ namespace NeuroRighter
             else
             {
                 // Load the first stimuli
-                loadDigEvent(oldigfile, (int)numEventPerLoad);
+                LoadDigEvent(oldigfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
                 digbuff.append(DigitalDataChunk);//append first N stimuli
@@ -116,17 +117,17 @@ namespace NeuroRighter
 
         }
 
-        internal void start()
+        internal void Start()
         {
             digbuff.start();
         }
 
-        internal void appendDigBufferAtThresh(object sender, EventArgs e)
+        internal void AppendDigBufferAtThresh(object sender, EventArgs e)
         {
             if (numDigEvent - (numLoadsCompleted * numEventPerLoad) > numEventPerLoad)
             {
                 Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
-                loadDigEvent(oldigfile, (int)numEventPerLoad);
+                LoadDigEvent(oldigfile, (int)numEventPerLoad);
                 digbuff.append(DigitalDataChunk); //add N more stimuli
                 numLoadsCompleted++;
             }
@@ -136,27 +137,27 @@ namespace NeuroRighter
                 {
                     // load the last few stimuli
                     Console.WriteLine("file2dig: last load");
-                    loadDigEvent(oldigfile, (int)(numDigEvent - numLoadsCompleted * numEventPerLoad));
+                    LoadDigEvent(oldigfile, (int)(numDigEvent - numLoadsCompleted * numEventPerLoad));
                     digbuff.append(DigitalDataChunk); //add N more stimuli
                     lastLoad = true;
                 }
             }
         }
 
-        internal void digbuff_Complete(object sender, EventArgs e)
+        internal void DigbuffComplete(object sender, EventArgs e)
         {
             Console.WriteLine("DIGITAL-OUTPUT STOP CALLED");
             AlertAllFinished(this, e);
         }
 
-        internal void digbuff_DAQLoadCompleted(object sender, EventArgs e)
+        internal void DigbuffDAQLoadCompleted(object sender, EventArgs e)
         {
             // Report protocol progress
-            int percentComplete = (int)Math.Round((double)100 * (digbuff.NumBuffLoadsCompleted) / NumBuffLoadsRequired);
+            int percentComplete = (int)Math.Round((double)100 * (digbuff.numBuffLoadsCompleted) / numBuffLoadsRequired);
             //AlertProgChanged(this, e, percentComplete);
         }
 
-        internal void loadDigEvent(StreamReader oldigFile, int numEventToRead)
+        internal void LoadDigEvent(StreamReader oldigFile, int numEventToRead)
         {
             int j = 0;
             DigitalDataChunk = new List<DigitalData>();

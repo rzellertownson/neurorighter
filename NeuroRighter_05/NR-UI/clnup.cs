@@ -118,6 +118,7 @@ namespace NeuroRighter
             textBox_spikeSamplingRate.Enabled = true;
             textBox_lfpSamplingRate.Enabled = true;
             textBox_MUASamplingRate.Enabled = true;
+            button_startStimFromFile.Enabled = true;
 
             if (Properties.Settings.Default.UseEEG)
             {
@@ -530,78 +531,7 @@ namespace NeuroRighter
             }
         }
 
-        private void updateDig()
-        {
-            lock (this)
-            {
-                bool placedzeros = false;
-
-                if (digitalOutputTask != null)
-                {
-                    try
-                    {
-                        UInt32[] DigitalBuffer = new UInt32[2*STIMBUFFSIZE];
-
-                        digitalOutputTask.Stop();
-                        digitalOutputWriter.WriteMultiSamplePort(true, DigitalBuffer);
-                        digitalOutputTask.WaitUntilDone(30);
-                        digitalOutputTask.Stop();
-                        placedzeros = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        placedzeros = false;
-                    }
-                }
-                if (digitalOutputTask != null)
-                {
-                    digitalOutputTask.Dispose();
-                    digitalOutputTask = null;
-                }
-
-                if (Properties.Settings.Default.UseDO)
-                {
-                    try
-                    {
-                    // Create new DAQ tasks and corresponding writers
-                    digitalOutputTask = new Task("digitalOutputTask");
-
-                    // Reference Clock source
-                    string RefClkSource = "/" + Properties.Settings.Default.StimulatorDevice + "/" + stimPulseTask.Timing.ReferenceClockSource;
-                    double RefClckRate = stimPulseTask.Timing.ReferenceClockRate;
-
-                    // Sample Clock source
-                    string SampClkSource = stimPulseTask.Timing.SampleClockSource;
-
-                    // Set up DO sample clock
-                    digitalOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-      
-                    digitalOutputTask.SynchronizeCallbacks = false;
-
-                    // Create writer
-                    digitalOutputWriter = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
-
-                    // Verify Task
-                    digitalOutputTask.Control(TaskAction.Verify);
-
-                    UInt32[] DigitalBuffer = new UInt32[2*STIMBUFFSIZE];
-
-                    digitalOutputTask.Stop();
-                    digitalOutputWriter.WriteMultiSamplePort(true, DigitalBuffer);
-                    digitalOutputTask.WaitUntilDone(30);
-                    digitalOutputTask.Stop();
-                    placedzeros = true;
-                    digitalOutputTask.Dispose();
-                    digitalOutputTask = null;
-
-                    }
-                    catch (Exception ex)
-                    {
-                        placedzeros = false;
-                    }
-                }
-            }
-        }
+       
 
 
     }

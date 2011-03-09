@@ -21,16 +21,16 @@ function makedigfile(filename, bit, t1, t0)
 
 % Make sure that input is correctly formated
 if nargin < 4
-    error('Error:dim','All four arguments are needed');
+    error('Error:arguments','All four arguments are needed');
 end
 if size(bit,2) > 1 || size(t0,2) > 1 || size(t1,2) > 1
-    error('Error:dim','bit, t0, and t1 are digital all must have the same dimensions');
+    error('Error:dim','bit, t0, and t1 are column vectors');
 end
 
 % open file and write header
 fid = fopen(strcat([filename,'.oldig']),'w');
-now = datestr(today,31);
-fprintf(fid,'%s \n',[filename  ' : ' now ' : a digital event file for use with Neurorighter, created by John Rolston']);
+tmake = datestr(now,31);
+fprintf(fid,'%s \n',[filename  ' : ' tmake ' : a digital event file for use with Neurorighter.']);
 
 % Next log10 of max stim time
 t0 = t0*100000; % Convert to 100th of millisecond precision

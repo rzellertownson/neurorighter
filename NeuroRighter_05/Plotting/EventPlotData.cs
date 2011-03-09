@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Threading;
+using NeuroRighter.SpkDet;
 
 namespace NeuroRighter
 {

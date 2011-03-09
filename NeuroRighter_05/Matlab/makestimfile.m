@@ -23,22 +23,19 @@ function makestimfile(filename, time, channel, waveform)
 if nargin < 4
     waveform = [];
 end
-if size(channel,2) > 1 || size(time,2) > 1
-    error('Error:dim','Time and channel vectors are column vectors with the vertical index indicated the stimulus number and the value indicating time or channel');
-end
-if size(channel,1) ~= size(time,1)
-    error('Error:dim','The number of indicies in the first dimension of the time, channel, \n and waveform matracies must be equal since it is the number of stimuli to be delivered');
+if size(channel,1) ~= size(time,1) || size(time,2) > 1 || size(channel,2) > 1
+    error('Error:dim','Time and channel are column vectors. \n The number of indicies in the non-singleton dimension of the time and channel, \n must be equal since it is the number of stimuli to be delivered');
 end
 if ~isempty(waveform) && size(waveform,2) < 80
     error('Error:Wavelength','The length of your stimulus waveforms Should be at least 80 Samples long so that its parameters can be encoded by the DAQ in four 20 sample chunks. For shorter stimuli, you can define multiple ones per line so they are effictively one stimulus.');
-elseif ~isempty(waveform) && size(waveform,1) ~= size(time,1)
-    error('Error:dim','The number of indicies in the first dimension of the time, channel, \n and waveform matracies must be equal since it is the number of stimuli to be delivered');
+elseif ~isempty(waveform) && size(waveform,1) ~= length(time)
+    error('Error:dim','The number of indicies in the non-singleton dimension of the time and channel vectors \n and the first dimension of the waveform matrix must be equal since it is the number of stimuli to be delivered');
 end
 
 % open file and write header
 fid = fopen(strcat([filename,'.olstim']),'w');
-now = datestr(today,31);
-fprintf(fid,'%s \n', [filename  ' : ' now ' : a stimulation file for use with Neurorighter, created by John Rolston']);
+tmake = datestr(now,31);
+fprintf(fid,'%s \n', [filename  ' : ' tmake ' : a stimulation file for use with Neurorighter.']);
 
 % find how many stimuli are created in this protocol and write as second
 % line

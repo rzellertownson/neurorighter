@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
     // called when the 2+requested number of buffer loads have occured
     public delegate void DigitalOutputCompleteHandler(object sender, EventArgs e);
@@ -18,9 +18,8 @@ namespace NeuroRighter
     // called when the stimBuffer finishes a DAQ load
     public delegate void DigitalDAQLoadCompletedHandler(object sender, EventArgs e);
 
-    public class DigitalBuffer
+    internal class DigitalBuffer
     {
-
         //events
         private int queueThreshold = 0;
         public event DigitalQueueLessThanThresholdHandler DigitalQueueLessThanThreshold;
@@ -30,26 +29,26 @@ namespace NeuroRighter
         // This class's thread
         Thread thrd;
 
-        // Public Properties
-        public ulong BufferIndex = 0;
-        public UInt32[] DigitalBufferLoad;
-        public bool StillWritting = false;
-        public ulong NumBuffLoadsCompleted = 0;
-        public uint NumBuffLoadsRequired = 0;
-        public bool running = false;
+        // Intneral Properties
+        internal ulong bufferIndex = 0;
+        internal UInt32[] DigitalBufferLoad;
+        internal bool StillWritting = false;
+        internal ulong numBuffLoadsCompleted = 0;
+        internal uint numBuffLoadsRequired = 0;
+        internal bool running = false;
 
         // Private Properties
-        bool BufferLoadFinished = true;
+        bool bufferLoadFinished = true;
         private ulong NumDigitalEventsWritten = 0;
         private ulong TotalDigitalEvents;
-        private ulong Samples2Finish;
+        private ulong samples2Finish;
         private uint STIM_SAMPLING_FREQ;
-        private uint NumSampWrittenForCurrentDO = 0;
+        private uint numSampWrittenForCurrent = 0;
         private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
         private List<DigitalData> outerbuffer;
         private DigitalData currentDig;
         private DigitalData nextDig;
-        bool digitaldone;
+        private bool digitaldone;
 
         //Stuff that gets defined with input arguments to constructor
         private uint BUFFSIZE;
@@ -68,11 +67,8 @@ namespace NeuroRighter
         //constructor if using stim buffer in append mode- with lists!
         internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
         {
-            //this.SamplesPerStim = (uint)SamplesPerStim;
-            // this.outerbufferSize = (uint)OUTERBUFFSIZE;
             this.BUFFSIZE = (uint)INNERBUFFSIZE;
             this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
-            this.TotalDigitalEvents = TotalDigitalEvents;
             this.queueThreshold = queueThreshold;
 
             outerbuffer = new List<DigitalData>();
@@ -94,12 +90,12 @@ namespace NeuroRighter
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(timerTickDigital);
 
             // Populate the outer-buffer twice
-            populateBufferAppending();
+            PopulateBufferAppending();
 
             // Start the counter that tells when to reload the daq
             digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
 
-            populateBufferAppending();
+            PopulateBufferAppending();
 
             // Start the counter that tells when to reload the daq
             digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
@@ -120,7 +116,7 @@ namespace NeuroRighter
                 digitalOutputTask.Stop();
                 digitalOutputTask.Dispose();
 
-                // Tell NR that DO has BufferLoadFinished
+                // Tell NR that DO has bufferLoadFinished
                 DigitalOutputComplete(this, e);
             }
         }
@@ -132,7 +128,7 @@ namespace NeuroRighter
                 tickTime = DateTime.Now;
                 tickDiff = tickTime.Subtract(startTime);
                 Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Digital half-load event.");
-                writeToBuffer();
+                WriteToBuffer();
             }
             else
             {
@@ -140,25 +136,25 @@ namespace NeuroRighter
             }
         }
 
-        internal void writeToBuffer()
+        internal void WriteToBuffer()
         {
             thrd = Thread.CurrentThread;
             thrd.Priority = ThreadPriority.Highest;
             digitaldone = false;
-            populateBufferAppending();
+            PopulateBufferAppending();
             Console.WriteLine("Write to Digital Buffer Started");
             digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
             digitaldone = true;
 
         }
 
-        internal void stop()
+        internal void Stop()
         {
             running = false;
         }
 
         //lets see if we can simplify things here...
-        internal void populateBufferAppending()
+        internal void PopulateBufferAppending()
         {
             lock (this)
             {
@@ -172,23 +168,15 @@ namespace NeuroRighter
 
                 //clear buffers and reset index
                 DigitalBufferLoad = new UInt32[BUFFSIZE]; // buffer for digital port
-                BufferIndex = 0;
+                bufferIndex = 0;
 
-                //Are we between DO events?  if so, finish as much as you can from the current one
-                //if (currentDig != null)
-                //{
-                    //   MessageBox.Show("examining first stim");
-
-
-                //}
-
-                while (BufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+                while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
                 {
                     // If digital read stimulus is unfinished, finish it
-                    if (!BufferLoadFinished)
+                    if (!bufferLoadFinished)
                     {
-                        BufferLoadFinished = applyCurrentDigitalState();
-                        if (BufferLoadFinished)
+                        bufferLoadFinished = applyCurrentDigitalState();
+                        if (bufferLoadFinished)
                         {
                             NumDigitalEventsWritten++;
                         }
@@ -200,8 +188,8 @@ namespace NeuroRighter
 
                         if (ready)
                         {
-                            BufferLoadFinished = applyCurrentDigitalState();
-                            if (BufferLoadFinished)
+                            bufferLoadFinished = applyCurrentDigitalState();
+                            if (bufferLoadFinished)
                             {
                                 NumDigitalEventsWritten++;
                             }
@@ -210,10 +198,10 @@ namespace NeuroRighter
                 }
 
                 //Finished the buffer
-                NumBuffLoadsCompleted++;
+                numBuffLoadsCompleted++;
 
                 // Check if protocol is completed
-                if (NumBuffLoadsCompleted >= NumBuffLoadsRequired)
+                if (numBuffLoadsCompleted >= numBuffLoadsRequired)
                 {
                     running = false; // Start clean-up cascade
                 }
@@ -243,20 +231,20 @@ namespace NeuroRighter
             //how many samples should we write?
             if (NumDigitalEventsWritten < TotalDigitalEvents)
             {
-                Samples2Finish = nextDig.EventTime-currentDig.EventTime - NumSampWrittenForCurrentDO;
+                samples2Finish = nextDig.EventTime-currentDig.EventTime - numSampWrittenForCurrent;
             }
             else // last digital event sets digital state to 0
             {
-                Samples2Finish = BUFFSIZE;
+                samples2Finish = BUFFSIZE;
             }
 
             //write samples to the buffer
-            for (ulong i = 0; (i < Samples2Finish) & (BufferIndex < BUFFSIZE); i++)
+            for (ulong i = 0; (i < samples2Finish) & (bufferIndex < BUFFSIZE); i++)
             {
-                writeSample();
+                WriteSample();
             }
 
-            return (BufferIndex < BUFFSIZE);
+            return (bufferIndex < BUFFSIZE);
         }
 
         //examines the next stimulus, determines if it is within range, and loads it if it is
@@ -265,7 +253,7 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                if (outerbuffer.ElementAt(0).EventTime < (NumBuffLoadsCompleted + 1) * BUFFSIZE)
+                if (outerbuffer.ElementAt(0).EventTime < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
                     // Current Digital State
                     currentDig = new DigitalData(outerbuffer.ElementAt(0).EventTime, outerbuffer.ElementAt(0).Byte);
@@ -277,49 +265,49 @@ namespace NeuroRighter
                     if (outerbuffer.Count == (queueThreshold - 1))
                         onThreshold(EventArgs.Empty);
 
-                    NumSampWrittenForCurrentDO = 0;
-                    BufferIndex = currentDig.EventTime - NumBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
-                    if (currentDig.EventTime < NumBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    numSampWrittenForCurrent = 0;
+                    bufferIndex = currentDig.EventTime - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
+                    if (currentDig.EventTime < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                     {
-                        throw new Exception("trying to write an expired digital output: event at sample no. " + currentDig.EventTime + " was written at time " + NumBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentDig.Byte);
+                        throw new Exception("trying to write an expired digital output: event at sample no. " + currentDig.EventTime + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentDig.Byte);
                     }
 
                     return true;
                 }
                 else
                 {
-                    NumSampWrittenForCurrentDO = 0;
-                    BufferIndex = BUFFSIZE;//we are done with this buffer
+                    numSampWrittenForCurrent = 0;
+                    bufferIndex = BUFFSIZE;//we are done with this buffer
                     return false;
                 }
             }
         }
 
-        internal void writeSample()
+        internal void WriteSample()
         {
-            DigitalBufferLoad[(int)BufferIndex] = currentDig.Byte;
-            NumSampWrittenForCurrentDO++;
-            BufferIndex++;
+            DigitalBufferLoad[(int)bufferIndex] = currentDig.Byte;
+            numSampWrittenForCurrent++;
+            bufferIndex++;
         }
 
-        internal void calculateLoadsRequired(double finalEventTime)
+        internal void CalculateLoadsRequired(double finalEventTime)
         {
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            NumBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
+            numBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
         }
 
-        public double time()    
+        internal double time()    
         {
             return (double)((digitalOutputTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
         }
 
-        public uint getBufferSize()
+        internal uint GetBufferSize()
         {
             return BUFFSIZE;
         }
         
-        public void setNumberofEvents(ulong totalNumberOfDigitalEvents)
+        internal void setNumberofEvents(ulong totalNumberOfDigitalEvents)
         {
             TotalDigitalEvents = totalNumberOfDigitalEvents;
         }

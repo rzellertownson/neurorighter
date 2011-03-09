@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
 
     /// <author>John Rolston (rolston2@gmail.com)</author>

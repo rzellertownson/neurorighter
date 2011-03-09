@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
     public sealed class DigitalData
     {   

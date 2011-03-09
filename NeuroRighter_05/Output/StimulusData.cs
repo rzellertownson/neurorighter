@@ -35,7 +35,7 @@ namespace NeuroRighter
             }
 
 
-            //need to include precompute functions in here- parallel list with analog, digital encode data.
+            //need to include PreCompute functions in here- parallel list with analog, digital encode data.
 
             //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
             this.AnalogEncode = new double[2];

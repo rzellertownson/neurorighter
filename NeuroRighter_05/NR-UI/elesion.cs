@@ -33,6 +33,7 @@ using NationalInstruments.DAQmx;
 using rawType = System.Double;
 using NationalInstruments.Analysis.Dsp.Filters;
 using csmatio.types;
+using NeuroRighter.Output;
 
 namespace NeuroRighter
 {
@@ -97,6 +98,7 @@ namespace NeuroRighter
                 stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
                 stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
             }
+
             stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
 
             stimPulseTask.Timing.ConfigureSampleClock("",

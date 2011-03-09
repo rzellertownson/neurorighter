@@ -43,6 +43,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using NeuroRighter.Output;
 
 
 namespace NeuroRighter
@@ -493,7 +494,7 @@ namespace NeuroRighter
             drawOpenLoopStimPulse();
         }
 
-        private double[] returnOpenLoopStimPulse()
+        private double[] ReturnOpenLoopStimPulse()
         {
             double v1 = Convert.ToDouble(openLoopVoltage1.Value);
             double v2 = Convert.ToDouble(openLoopVoltage2.Value);
@@ -524,16 +525,16 @@ namespace NeuroRighter
         private void button_BrowseOLStimFile_Click(object sender, EventArgs e)
         {
             // Set dialog's default properties
-            OpenFileDialog OLStimFileDialog = new OpenFileDialog();
-            OLStimFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
-            OLStimFileDialog.Filter = "Open Loop Stim Files|*.olstim|All Files|*.*";
+            OpenFileDialog OLFileDialog = new OpenFileDialog();
+            OLFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
+            OLFileDialog.Filter = "Open Loop Stimulation Files|*.olstim|All Files|*.*";
 
             // Display Save File Dialog (Windows forms control)
-            DialogResult result = OLStimFileDialog.ShowDialog();
+            DialogResult result = OLFileDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                filenameOutput = OLStimFileDialog.FileName;
+                filenameOutput = OLFileDialog.FileName;
                 textBox_protocolFileLocations.Text = filenameOutput;
             }
         }
@@ -541,339 +542,129 @@ namespace NeuroRighter
         private void button_BrowseOLDFile_Click(object sender, EventArgs e)
         {
             // Set dialog's default properties
-            OpenFileDialog OLDigFileDialog = new OpenFileDialog();
-            OLDigFileDialog.DefaultExt = "*.oldig";         //default extension is for olstim files
-            OLDigFileDialog.Filter = "Open Loop Digital Files|*.oldig|All Files|*.*";
+            OpenFileDialog OLFileDialog = new OpenFileDialog();
+            OLFileDialog.DefaultExt = "*.oldig";         //default extension is for olstim files
+            OLFileDialog.Filter = "Open Loop Digital Files|*.oldig|All Files|*.*";
 
             // Display Save File Dialog (Windows forms control)
-            DialogResult result = OLDigFileDialog.ShowDialog();
+            DialogResult result = OLFileDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                filenameOutput = OLDigFileDialog.FileName;
+                filenameOutput = OLFileDialog.FileName;
                 textBox_digitalProtocolFileLocation.Text = filenameOutput;
+            } 
+        }
+
+        private void button_browseAuxFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog OLFileDialog = new OpenFileDialog();
+            OLFileDialog.DefaultExt = "*.olaux";         //default extension is for olstim files
+            OLFileDialog.Filter = "Open Loop Auxiliary Files|*.olaux|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = OLFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = OLFileDialog.FileName;
+                textBox_AuxFile.Text = filenameOutput;
             }
         }
 
         private void button_startStimFromFile_Click(object sender, EventArgs e)
         {
+            bool openLoopSyncFail;
+
             updateSettings();
-            // Get info off of open-loop stimulation form
-            bool useManStimWave = checkBox_useManStimWaveform.Checked;
-            string stimfile = textBox_protocolFileLocations.Text;
-            string digfile = textBox_digitalProtocolFileLocation.Text;
-            string auxfile = textBox_AuxFile.Text;
-            bool stimFileProvided = stimfile.Length > 0;
-            bool digFileProvided = digfile.Length > 0;
-            bool auxFileProvided = auxfile.Length > 0;
 
+            // Get OL filenames
+            string stimFile = textBox_protocolFileLocations.Text;
+            string digFile = textBox_digitalProtocolFileLocation.Text;
+            string auxFile = textBox_AuxFile.Text;
 
-            // Make sure that the user provided a file of some sort
-            if (!stimFileProvided && !digFileProvided)
+            // Set up recording so we can access the task info from spikeTask[0] to sync
+            // clock and start
+            NRAcquisitionSetup();
+
+            // create a syncronized OL Output object
+            if (checkBox_useManStimWaveform.Checked)
             {
-                MessageBox.Show("You need to provide a *.olstim and/or a *.oldig to use the open-loop stimulator.");
-                return;
-            }
-
-            // Make sure that the user has input a valid file path for the stimulation file
-            if (stimFileProvided && !checkFilePath(stimfile))
-            {
-                MessageBox.Show("The *.olstim file provided does not exist");
-                return;
-            }
-
-            // Make sure that the user has input a valid file path for the digital file
-            if (digFileProvided && !checkFilePath(digfile))
-            {
-                MessageBox.Show("The *.oldig file provided does not exist");
-                return;
-            }
-
-            // Prep for take-off
-            button_startStimFromFile.Enabled = false;
-            button_stopStimFromFile.Enabled = true;
-
-            // This task will govern the periodicity of DAQ circular-buffer loading so that
-            // all digital and stimulus output from the system is hardware timed
-            configureCounter();
-
-            // Set up stimulus output support
-            if (stimFileProvided)
-            {
-                #region If the user provided a .olstim file
-
-                if (!Properties.Settings.Default.UseStimulator)
-                {
-                    MessageBox.Show("You must use configure your hardware to use NeuroRighter's Stimulator for this feature");
-                    return;
-                }
-
-                configureStim();
-
-                // Create a File2Stim object and start to run the protocol via its methods
-                if (useManStimWave)
-                {
-                    double[] waveform = returnOpenLoopStimPulse();
-                    OLStimProtocol = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, buffLoadTask, stimDigitalWriter, stimPulseWriter, waveform);
-                }
-                else
-                {
-                    OLStimProtocol = new File2Stim4(stimfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, stimDigitalTask, stimPulseTask, buffLoadTask, stimDigitalWriter, stimPulseWriter);
-                }
-
-                OLStimProtocol.AlertProgChanged += new File2Stim4.ProgressChangedHandler(protProgressChangedHandler);
-                OLStimProtocol.AlertAllFinished += new File2Stim4.AllFinishedHandler(protFinisheddHandler);
-                OLStimProtocol.setup();
-                #endregion
-            }
-
-            // Set up digital output support
-            if (digFileProvided)
-            {
-                #region If the user provided a .oldig file
-                if (!Properties.Settings.Default.UseDO)
-                {
-                    MessageBox.Show("You must use configure your hardware to use NeuroRighter's digital output to use this feature");
-                    return;
-                }
-
-                configureAux(stimFileProvided); // Needed for digital out timing even if its not being used to throw voltage about.
-                configureDig(stimFileProvided);
-                OLDigitalProtocol = new File2Dig(digfile, STIM_SAMPLING_FREQ, STIMBUFFSIZE, digitalOutputTask, buffLoadTask, digitalOutputWriter);
-                OLDigitalProtocol.setup();
-                #endregion
-            }
-
-            // Start the master load syncing task
-            buffLoadTask.Start();
-
-            // Start the output tasks
-            if (digFileProvided && stimFileProvided)
-            {
-                OLDigitalProtocol.start();
-                auxOutputTask.Start();
-                OLStimProtocol.start();    
-            }
-            else if (digFileProvided)
-            {
-                OLDigitalProtocol.start();
-                auxOutputTask.Start();
-            }
-            else if (stimFileProvided)
-                OLStimProtocol.start();
-
-            // Start NeuroRighter's visual/recording functions
-            buttonStart.PerformClick();
-
-            // UI care-taking
-            buttonStop.Enabled = false;
-            progressBar_protocolFromFile.Minimum = 0;
-            progressBar_protocolFromFile.Maximum = 100;
-            progressBar_protocolFromFile.Value = 0;
-        }
-
-        private void button_stopStimFromFile_Click(object sender, EventArgs e)
-        {
-            buttonStop.PerformClick();
-            button_stopStimFromFile.Enabled = false;
-            if (textBox_protocolFileLocations.Text.Length > 0) { OLStimProtocol.stop(); updateStim(); }
-            if (textBox_digitalProtocolFileLocation.Text.Length > 0) { OLDigitalProtocol.stop(); updateDig(); }
-
-            if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
-            if (auxOutputTask != null) { auxOutputTask.Dispose(); auxOutputTask = null; }
-            buttonStop.Enabled = true;
-        }
-
-        private void protProgressChangedHandler(object sender, EventArgs e, int percentage)
-        {
-            Console.WriteLine("Percent complete : " + percentage);
-            updateProgressPercentage(percentage);
-        }
-
-        private void updateProgressPercentage(int percentage)
-        {
-            if (progressBar_protocolFromFile.InvokeRequired)
-            {
-                crossThreadFormUpdateDelegate del = updateProgressPercentage;
-                progressBar_protocolFromFile.Invoke(del, new object[] { percentage });
+                double[] stimWaveform = ReturnOpenLoopStimPulse();
+                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0], stimWaveform);
             }
             else
             {
-                progressBar_protocolFromFile.Value = percentage;
+                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0]);
             }
 
+            // Subscribe the stopStimFromFile Click to the event raised when
+            // OpenLoopOut is finsihed
+            openLoopSynchronizedOutput.OpenLoopOutIsFinished += 
+                new OpenLoopOut.OpenLoopOutFinishedEventHandler(FinishOutputFromFile);
+
+            // Start the OL Output exp
+            openLoopSyncFail = openLoopSynchronizedOutput.Start();
+
+            if (openLoopSyncFail)
+            {
+                ResetUIAfterOpenLoopOut(openLoopSyncFail);
+                return;
+            }
+
+            // Start recording and the master tasks along with it
+            NRStartRecording();
+
+            // UI care-taking
+            button_startStimFromFile.Enabled = false;
+            button_stopStimFromFile.Enabled = true;
+            buttonStop.Enabled = false;
         }
 
-        private void protFinisheddHandler(object sender, EventArgs e)
+        internal void FinishOutputFromFile(object sender, EventArgs e)
         {
-            // Return buttons to default configuration when finished
-            updateProgressPercentage(0);
-            MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
-            buttonStop.Enabled = true;
-            button_startStimFromFile.Enabled = true;
+            ResetUIAfterOpenLoopOut(false);
+            MessageBox.Show("The open loop protocol finished peacefully. Press Stop to end the recording");
+        }
+
+        internal void ResetUIAfterOpenLoopOut(bool comingFromFail)
+        {
+            if (openLoopSynchronizedOutput != null)
+                openLoopSynchronizedOutput.KillAllAODOTasks();
+
+            //ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
+            //    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
+            //    STIM_SAMPLING_FREQ);
+
+            //int[] analogChannelsToZero = { 0, 1, 2, 3 };
+            //zeroOpenLoopOutput.ZeroAOChanOnDev(
+            //    Properties.Settings.Default.SigOutDev, analogChannelsToZero);
+            //zeroOpenLoopOutput.ZeroAOChanOnDev(
+            //    Properties.Settings.Default.StimulatorDevice, analogChannelsToZero);
+            //zeroOpenLoopOutput.ZeroPortOnDev(
+            //    Properties.Settings.Default.SigOutDev, 0);
+            //zeroOpenLoopOutput.ZeroPortOnDev(
+            //    Properties.Settings.Default.StimulatorDevice, 0);
+
+            if (comingFromFail)
+            {
+                button_startStimFromFile.Enabled = true;
+                reset();
+            }
             button_stopStimFromFile.Enabled = false;
+            buttonStop.Enabled = true;
         }
 
-        private bool checkFilePath(string filePath)
-        {
-            string sourcefile = @filePath;
-            bool check = File.Exists(sourcefile);
-            return (check);
-        }
-
-        private void configureCounter()
-        {
-            //configure counter
-            if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
-
-            buffLoadTask = new Task("stimBufferTask");
-            // Trigger a load event off every edge of this channel
-            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.DODevice + "/ctr1",
-                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)STIMBUFFSIZE) / 2.0, 0.5);
-            buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
-            buffLoadTask.SynchronizeCallbacks = false;
-            buffLoadTask.Timing.ReferenceClockSource = "OnboardClock";
-            buffLoadTask.Control(TaskAction.Verify);
-        }
-
-        private void configureStim()
-        {
-
-            //configure stim
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (stimPulseTask != null) { stimPulseTask.Dispose(); stimPulseTask = null; }
-            if (stimDigitalTask != null) { stimDigitalTask.Dispose(); stimDigitalTask = null; }
-
-            // Create new DAQ tasks and corresponding writers
-            stimPulseTask = new Task("stimPulseTask");
-            stimDigitalTask = new Task("stimDigitalTask");
-
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:31", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-                stimDigitalTask.DOChannels.CreateChannel(Properties.Settings.Default.StimulatorDevice + "/Port0/line0:7", "",
-                    ChannelLineGrouping.OneChannelForAllLines); //To control MUXes
-            if (Properties.Settings.Default.StimPortBandwidth == 32)
+        internal void button_stopStimFromFile_Click(object sender, EventArgs e)
+        {            
+            lock (this)
             {
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //Triggers
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //Actual Pulse
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //Timing
+                
+                ResetUIAfterOpenLoopOut(false);
+                buttonStop.PerformClick();
+                Console.WriteLine("Stim, Aux and Digital Outputs were killed mid-process");
             }
-            else if (Properties.Settings.Default.StimPortBandwidth == 8)
-            {
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts);
-                stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
-            }
-
-            stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-
-            // Setup the AO task for continuous stimulaiton
-            stimPulseTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            stimPulseTask.SynchronizeCallbacks = false;
-            stimPulseTask.Control(TaskAction.Verify);
-
-            // Setup the DO task for continuous stimulaiton
-            stimDigitalTask.Timing.ConfigureSampleClock(stimPulseTask.Timing.SampleClockSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            stimDigitalTask.SynchronizeCallbacks = false;
-            stimDigitalTask.Control(TaskAction.Verify);
-
-            stimPulseTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
-            "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
-
-            stimPulseWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-            stimDigitalWriter = new DigitalSingleChannelWriter(stimDigitalTask.Stream);
-            stimPulseTask.Control(TaskAction.Verify);
-            stimDigitalTask.Control(TaskAction.Verify);
-
-        }
-
-        private void configureDig(bool usingOLStim)
-        {
-
-            // Refresh digital output DAQ task
-            if (digitalOutputTask != null) { digitalOutputTask.Dispose(); digitalOutputTask = null; }
-
-            // Create new DAQ tasks and corresponding writers
-            digitalOutputTask = new Task("digitalOutputTask");
-
-            //  Create an Digital Output channel and name it.
-            digitalOutputTask.DOChannels.CreateChannel(Properties.Settings.Default.DODevice + "/Port0/line0:31", "Generic Digital Out",
-                ChannelLineGrouping.OneChannelForAllLines);
-
-            // Setup DO tasks for continuous output
-            //if (!usingOLStim)
-            //{
-                digitalOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            //}
-            //else
-            //{
-            //    // Sample Clock source
-            //    string SampClkSource = stimPulseTask.Timing.SampleClockSource;
-
-            //    // Set up DO sample clock
-            //    digitalOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            //}
-            digitalOutputTask.SynchronizeCallbacks = false;
-
-            // Create writer
-            digitalOutputWriter = new DigitalSingleChannelWriter(digitalOutputTask.Stream);
-
-            // Verify Task
-            digitalOutputTask.Control(TaskAction.Verify);
-
-        }
-
-        private void configureAux(bool usingOLStim)
-        {
-            if (auxOutputTask != null) { auxOutputTask.Dispose(); auxOutputTask = null; }
-            // Create new DAQ tasks and corresponding writers
-            auxOutputTask = new Task("auxOutputTask ");
-
-            //  Create aux channels
-            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao0", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux1
-            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux2
-            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao2", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux3
-            auxOutputTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.DODevice + "/ao3", "", -10.0, 10.0, AOVoltageUnits.Volts); //aux4
-
-            // Setup the AO task for continuous stimulaiton
-            auxOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            auxOutputTask.SynchronizeCallbacks = false;
-            auxOutputTask.Control(TaskAction.Verify);
-
-            // Setup DO tasks for continuous output
-            //if (!usingOLStim)
-            //{
-                // auxOutputTask now serves as master clock for Digital out
-                auxOutputTask.Timing.ReferenceClockSource = "OnboardClock";
-                // Setup the AO task for continuous stimulaiton
-                auxOutputTask.Timing.ConfigureSampleClock("100kHzTimeBase", Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-            //}
-            //else
-            //{
-            //    // Reference Clock source
-            //    string refClkSource = "/" + Properties.Settings.Default.StimulatorDevice + "/" + stimPulseTask.Timing.ReferenceClockSource;
-            //    double refClckRate = stimPulseTask.Timing.ReferenceClockRate;
-
-            //    // Sample Clock source
-            //    string SampClkSource = stimPulseTask.Timing.SampleClockSource;
-
-            //    // Set up AO sample clock
-            //    auxOutputTask.Timing.ReferenceClockSource = refClkSource;
-            //    auxOutputTask.Timing.ReferenceClockRate = refClckRate;
-            //    auxOutputTask.Timing.ConfigureSampleClock(SampClkSource, Convert.ToDouble(STIM_SAMPLING_FREQ), SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, STIMBUFFSIZE);
-               auxOutputTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
-               "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
-            //}
-            
-            auxOutputTask.SynchronizeCallbacks = false;
-
-            // Create writer
-            auxOutputWriter = new AnalogMultiChannelWriter(stimPulseTask.Stream);
-
-            // Verify Task
-            auxOutputTask.Control(TaskAction.Verify);
         }
 
         #endregion

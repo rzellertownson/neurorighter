@@ -43,6 +43,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using NeuroRighter.SpkDet;
 
 
 namespace NeuroRighter
@@ -54,14 +55,14 @@ namespace NeuroRighter
     sealed internal partial class NeuroRighter : Form
     {
 
-        int[] trackingreads;
-        int[] trackingproc;
+        int[] trackingReads;
+        int[] trackingProc;
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
 
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
-            trackingproc[taskNumber]++;
+            trackingProc[taskNumber]++;
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);

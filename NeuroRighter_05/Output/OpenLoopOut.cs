@@ -1,0 +1,479 @@
+﻿// NeuroRighter 
+// Copyright (c) 2008-2009 John Rolston
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using NationalInstruments.DAQmx;
+using System.IO;
+
+namespace NeuroRighter.Output
+{
+    /// <summary>
+    /// <title> OpenLoopOutput</title>
+    /// Implementation class for the open-loop (from file) AO and DO capabilities of NR. This
+    /// class produces AO and DO that is syncronized to the recording clock. It uses a double
+    /// buffering system to allow continous, non-repeating waveform generation.
+    /// <author> Jon Newman </author>
+    /// </summary>
+    internal class OpenLoopOut
+    {
+        // File locations
+        internal string stimFid;
+        internal string digFid;
+        internal string auxFid;
+
+        // Actual Tasks that play with NI DAQ
+        internal Task buffLoadTask;
+        internal ContStimTask stimTaskMaker;
+        internal AuxOutTask auxTaskMaker;
+
+        // Master timing and triggering task
+        internal Task masterTask;
+
+        // Interpreters for open-loop files
+        internal File2Stim stimProtocol;
+        internal File2Dig digProtocol;
+        internal File2Aux auxProtocol;
+
+        // Bools that decide weather the Stim, Dig and Aux outputs are finished
+        internal bool stimDone = false;
+        internal bool digDone = false;
+        internal bool auxDone = false;
+
+        // waveform that gets ripped off NR UI
+        bool useManStimWave;
+        internal double[] guiWave; 
+
+        // Constants
+        private int outputSampFreq;
+        internal int OUTPUT_BUFFER_SIZE = 10000; // Number of samples delivered to DAQ per buffer load during stimulation from file
+        internal ulong EVENTS_PER_BUFFER_LOAD = 50; // Number of events loaded into the buffer everytime it runs low
+
+        // Event system to notify NR that the Open Loop Output protocol is finished
+        public delegate void OpenLoopOutFinishedEventHandler(object sender, EventArgs e);
+        public event OpenLoopOutFinishedEventHandler OpenLoopOutIsFinished;
+
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask)
+        {
+            this.stimFid = sf;
+            this.digFid = df;
+            this.auxFid = af;
+            this.outputSampFreq = fs;
+            this.masterTask = masterTask;
+            this.useManStimWave = false;
+        }
+
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, double[] standardWave)
+        {
+            this.stimFid = sf;
+            this.digFid = df;
+            this.auxFid = af;
+            this.outputSampFreq = fs;
+            this.masterTask = masterTask;
+            this.guiWave = standardWave;
+            this.useManStimWave = true;
+        }
+
+        /// <summary>
+        /// Starts the OpenLoop Experiment by calling methods to create nessesary tasks and 
+        /// create/populate the double buffering system using for loading of continous outputs.
+        /// </summary>
+        /// <returns></returns>
+        internal bool Start() //object sender, EventArgs e
+        {
+            bool stimSetupFail = false;
+
+            try
+            {
+                bool stimFileProvided = stimFid.Length > 0;
+                bool digFileProvided = digFid.Length > 0;
+                bool auxFileProvided = auxFid.Length > 0;
+
+                #region check file paths
+
+                // Make sure that the user provided a file of some sort
+                if (!stimFileProvided && !digFileProvided && !auxFileProvided)
+                {
+                    MessageBox.Show("You need to provide a *.olstim, *.oldig, and/or a *.olaux to use the open-loop stimulator.");
+                    stimSetupFail = true;
+                    return stimSetupFail; 
+                }
+
+                // Make sure that the user has input a valid file path for the stimulation file
+                if (stimFileProvided && !CheckFilePath(stimFid))
+                {
+                    MessageBox.Show("The *.olstim file provided does not exist");
+                    stimSetupFail = true;
+                    return stimSetupFail; 
+                }
+
+                // Make sure that the user has input a valid file path for the digital file
+                if (digFileProvided && !CheckFilePath(digFid))
+                {
+                    MessageBox.Show("The *.oldig file provided does not exist");
+                    stimSetupFail = true;
+                    return stimSetupFail; 
+                }
+
+                // Make sure that the user has input a valid file path for the digital file
+                if (auxFileProvided && !CheckFilePath(auxFid))
+                {
+                    MessageBox.Show("The *.olaux file provided does not exist");
+                    stimSetupFail = true;
+                    return true; 
+                }
+
+                #endregion
+
+                // This task will govern the periodicity of DAQ circular-buffer loading so that
+                // all digital and stimulus output from the system is hardware timed
+                ConfigureCounter();
+
+                // Set up stimulus output support
+                if (stimFileProvided)
+                {
+                    #region If the user provided a .olstim file
+
+                    if (!Properties.Settings.Default.UseStimulator)
+                    {
+                        MessageBox.Show("You must use configure your hardware to use NeuroRighter's Stimulator for this feature");
+                        stimSetupFail = true;
+                        return stimSetupFail; 
+                    }
+
+                    // Call configuration method
+                    ConfigureStim(masterTask);
+
+                    // Create a File2Stim object and start to run the protocol via its methods
+                    if (useManStimWave)
+                    {
+                        stimProtocol = new File2Stim(stimFid,
+                            outputSampFreq,
+                            OUTPUT_BUFFER_SIZE,
+                            stimTaskMaker.digitalTask,
+                            stimTaskMaker.analogTask,
+                            buffLoadTask,
+                            stimTaskMaker.digitalWriter,
+                            stimTaskMaker.analogWriter,
+                            guiWave);
+
+                        stimProtocol.AlertAllFinished +=
+                            new File2Stim.AllFinishedHandler(SetStimDone);
+                        stimProtocol.AlertAllFinished += 
+                            new File2Stim.AllFinishedHandler(StopOpenLoopOut);
+                    }
+                    else
+                    {
+                        stimProtocol = new File2Stim(stimFid,
+                            outputSampFreq,
+                            OUTPUT_BUFFER_SIZE,
+                            stimTaskMaker.digitalTask,
+                            stimTaskMaker.analogTask,
+                            buffLoadTask,
+                            stimTaskMaker.digitalWriter,
+                            stimTaskMaker.analogWriter);
+
+                        stimProtocol.AlertAllFinished +=
+                            new File2Stim.AllFinishedHandler(SetStimDone);
+                        stimProtocol.AlertAllFinished += 
+                            new File2Stim.AllFinishedHandler(StopOpenLoopOut);
+
+                    }
+
+                    stimSetupFail = stimProtocol.Setup();
+                    if (stimSetupFail)
+                    {
+                        return stimSetupFail;
+                    }
+
+                    stimProtocol.Start();
+
+                    #endregion
+                }
+                else
+                {
+                    stimDone = true;
+                }
+
+                // Set up AO/DO support
+                if (digFileProvided || auxFileProvided)
+                {
+                    #region If the user provided a .oldig or .olaux file
+                    if (!Properties.Settings.Default.UseSigOut)
+                    {
+                        MessageBox.Show("You must use configure your hardware to use A0/D0 to use this feature");
+                        stimSetupFail = true;
+                        return stimSetupFail; 
+                    }
+
+                    // If no file was provided, mark dig or aux outputs as completed
+                    if (!digFileProvided)
+                    {
+                        digDone = true;
+                    }
+
+                    if (!auxFileProvided)
+                    {
+                        auxDone = true;
+                    }
+
+                    ConfigureAODO(digFileProvided, masterTask);
+
+                    auxProtocol = new File2Aux(auxFid,
+                        outputSampFreq,
+                        OUTPUT_BUFFER_SIZE,
+                        auxTaskMaker.analogTask,
+                        buffLoadTask,
+                        auxTaskMaker.analogWriter,
+                        EVENTS_PER_BUFFER_LOAD,
+                        auxFileProvided);
+
+                    auxProtocol.AlertAllFinished +=
+                        new File2Aux.AllFinishedHandler(SetAuxDone);
+                    auxProtocol.AlertAllFinished +=
+                        new File2Aux.AllFinishedHandler(StopOpenLoopOut);
+
+                    digProtocol = new File2Dig(digFid,
+                        outputSampFreq,
+                        OUTPUT_BUFFER_SIZE,
+                        auxTaskMaker.digitalTask,
+                        buffLoadTask,
+                        auxTaskMaker.digitalWriter,
+                        EVENTS_PER_BUFFER_LOAD);
+
+                    digProtocol.AlertAllFinished +=
+                        new File2Dig.AllFinishedHandler(SetDigDone);
+                    digProtocol.AlertAllFinished +=
+                        new File2Dig.AllFinishedHandler(StopOpenLoopOut);
+
+                    auxProtocol.Setup();
+                    auxProtocol.Start();
+
+                    if (digFileProvided)
+                    {
+                        digProtocol.Setup();
+                        digProtocol.Start();
+                    }
+
+                    #endregion
+
+                }
+                else
+                {
+                    digDone = true;
+                    auxDone = true;
+                }
+
+                // Start the master load syncing task which you have attached buffer-refill methods to
+                buffLoadTask.Start();
+
+                // Made it through start
+                stimSetupFail = false;
+                return stimSetupFail; 
+
+            }
+            catch(Exception e)
+            {
+                KillAllAODOTasks();
+                MessageBox.Show("Could not make it through OpenLoopOut.Start(): \n" + e.Message);
+                stimSetupFail = true;
+                return stimSetupFail; 
+            }
+        }
+
+        //internal void protProgressChangedHandler(object sender, EventArgs e, int percentage)
+        //{
+        //    Console.WriteLine("Percent complete : " + percentage);
+        //    updateProgressPercentage(percentage);
+        //}
+
+        //internal void updateProgressPercentage(int percentage)
+        //{
+        //    if (progressBar_protocolFromFile.InvokeRequired)
+        //    {
+        //        crossThreadFormUpdateDelegate del = updateProgressPercentage;
+        //        progressBar_protocolFromFile.Invoke(del, new object[] { percentage });
+        //    }
+        //    else
+        //    {
+        //        progressBar_protocolFromFile.Value = percentage;
+        //    }
+
+        //}
+
+        //internal void protFinisheddHandler(object sender, EventArgs e)
+        //{
+        //    // Return buttons to default configuration when finished
+        //    updateProgressPercentage(0);
+        //    MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
+        //    buttonStop.Enabled = true;
+        //    button_startStimFromFile.Enabled = true;
+        //    button_stopStimFromFile.Enabled = false;
+        //}
+
+        internal bool CheckFilePath(string filePath)
+        {
+            string sourceFile = @filePath;
+            bool check = File.Exists(sourceFile);
+            return (check);
+        }
+
+        internal void ConfigureCounter()
+        {
+            //configure counter
+            if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
+
+            buffLoadTask = new Task("stimBufferTask");
+
+            // Trigger a buffer load event off every edge of this channel
+            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.SigOutDev + "/ctr1",
+                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)outputSampFreq / (double)OUTPUT_BUFFER_SIZE) / 2.0, 0.5);
+            buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
+            buffLoadTask.SynchronizeCallbacks = false;
+            buffLoadTask.Timing.ReferenceClockSource = "OnboardClock";
+            buffLoadTask.Control(TaskAction.Verify);
+
+            // Syncronize the start to the master recording task
+            buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
+                masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
+        }
+
+        internal void ConfigureStim(Task masterTask)
+        {
+
+            //configure stim
+            // Refresh DAQ tasks as they are needed for file2stim
+            if (stimTaskMaker != null)
+            {
+                stimTaskMaker.Dispose();
+                stimTaskMaker = null;
+            }
+
+            // Create new DAQ tasks and corresponding writers
+            stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice, 
+                OUTPUT_BUFFER_SIZE);
+            stimTaskMaker.MakeAODOTasks("NeuralStim",
+                Properties.Settings.Default.StimPortBandwidth,
+                outputSampFreq);
+
+            // Verify
+            stimTaskMaker.VerifyTasks();
+
+            // Sync DO start to AO start
+            stimTaskMaker.SyncDOStartToAOStart();
+
+            // Syncronize stimulation with the master task
+            stimTaskMaker.SyncTasksToMasterClock(masterTask);
+            stimTaskMaker.SyncTasksToMasterStart(masterTask);
+
+            // Create buffer writters
+            stimTaskMaker.MakeWriters();
+
+            // Verify
+            stimTaskMaker.VerifyTasks();
+        }
+
+        internal void ConfigureAODO(bool digProvided, Task masterTask)
+        {
+            //configure stim
+            // Refresh DAQ tasks as they are needed for file2stim
+            if (auxTaskMaker != null)
+            {
+                auxTaskMaker.Dispose();
+                auxTaskMaker = null;
+            }
+
+            // Create new DAQ tasks and corresponding writers
+            auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev, 
+                OUTPUT_BUFFER_SIZE);
+            auxTaskMaker.MakeAODOTasks("auxOut", 
+                outputSampFreq, 
+                digProvided);
+
+            // Verify
+            auxTaskMaker.VerifyTasks();
+
+            // Sync DO start to AO start
+            if (digProvided)
+                auxTaskMaker.SyncDOStartToAOStart();
+
+            // Syncronize stimulation with the master task
+            auxTaskMaker.SyncTasksToMasterClock(masterTask);
+            auxTaskMaker.SyncTasksToMasterStart(masterTask);
+
+            // Create buffer writters
+            auxTaskMaker.MakeWriters();
+
+            // Verify
+            auxTaskMaker.VerifyTasks();
+        }
+
+        internal void KillAllAODOTasks()
+        {
+            if (buffLoadTask != null)
+            {
+                buffLoadTask.Dispose();
+                buffLoadTask = null;
+            }
+
+            if (stimTaskMaker != null)
+            {
+                stimTaskMaker.Dispose();
+                stimTaskMaker = null;
+            }
+
+            if (auxTaskMaker != null)
+            {
+                auxTaskMaker.Dispose();
+                auxTaskMaker = null;
+            }
+
+        }
+
+        internal void StopOpenLoopOut(object sender, EventArgs e)
+        {
+
+            // Tell NR that the OpenLoopOut protocol is done
+            if (stimDone && auxDone && digDone)
+            {
+                OpenLoopOutFinishedEventHandler temp = OpenLoopOutIsFinished;
+                if (temp != null)
+                    temp(this, e);
+            }
+        }
+
+        internal void SetStimDone(object sender, EventArgs e)
+        {
+            stimDone = true;
+        }
+
+        internal void SetDigDone(object sender, EventArgs e)
+        {
+            digDone = true;
+        }
+
+        internal void SetAuxDone(object sender, EventArgs e)
+        {
+            auxDone = true;
+        }
+
+
+    }
+}

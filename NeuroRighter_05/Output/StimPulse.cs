@@ -22,9 +22,8 @@ using System.Text;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 
-namespace NeuroRighter
+namespace NeuroRighter.Output
 {
-
     /// <author>John Rolston (rolston2@gmail.com)</author>
     class StimPulse
     {

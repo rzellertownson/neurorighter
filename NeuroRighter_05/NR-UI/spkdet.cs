@@ -40,7 +40,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
-using NeuroRighter.SpkDet;
+using NeuroRighter.SpikeDetection;
 
 namespace NeuroRighter
 {
@@ -49,53 +49,21 @@ namespace NeuroRighter
     ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
-        private void comboBox_spikeDetAlg_SelectedIndexChanged(object sender, EventArgs e) { setSpikeDetector(); }
-
-        private void button_ForceDetectTrain_Click(object sender, EventArgs e) { setSpikeDetector(); }
-
-        private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)
+        private void button_OpenSpkDetSettings_Click(object sender, EventArgs e)
         {
-            setSpikeDetector();
+            spikeDet.Show();
         }
 
-        private void setSpikeDetector()
+        private void button_TrainSpkDet_Click(object sender, EventArgs e)
         {
-            detectionDeadTime = (int)Math.Round(Convert.ToDouble(textBox_spikeSamplingRate.Text)*
-                (double)numericUpDown_DeadTime.Value/1.0e6);
-            switch (comboBox_spikeDetAlg.SelectedIndex)
-            {
-                case 0:  //RMS Fixed
-                    spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value),detectionDeadTime, DEVICE_REFRESH);
-                    break;
-                case 1:  //RMS Adaptive
-                    spikeDetector = new AdaptiveRMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, DEVICE_REFRESH);
-                    break;
-                case 2:  //Limada
-                    spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime,
-                        Convert.ToInt32(textBox_spikeSamplingRate.Text));
-                    break;
-                default:
-                    break;
-            }
+            spikeDet.SetSpikeDetector();
         }
 
-        private void thresholdMultiplier_ValueChanged(object sender, EventArgs e)
+        internal void spikeDet_SettingsHaveChanged(object sender, EventArgs e)
         {
-            spikeDetector.thresholdMultiplier = (rawType)Convert.ToDouble(thresholdMultiplier.Value);
-        }
-
-        //Compute the RMS of an array.  Use this rather than a stock method, since it has no error checking and is faster.  Error checking is for pansies! 
-        //[above comment is from J.R... -J.N.]
-        internal static double rootMeanSquared(double[] data)
-        {
-            double rms = 0;
-            for (int i = 0; i < data.Length; ++i)
-                rms += data[i] * data[i];
-            rms /= data.Length;
-            return Math.Sqrt(rms);
+            spikeDet.SetSpikeDetector();
+            numPre = spikeDet.numPre;
+            numPost = spikeDet.numPost;
         }
     }
 }

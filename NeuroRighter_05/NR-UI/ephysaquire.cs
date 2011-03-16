@@ -123,17 +123,12 @@ namespace NeuroRighter
                                     //Get appropriate data and write to file
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)
                                     {
-                                        //stimIndices.Add(new StimTick(i - STIM_BUFFER_LENGTH, numStimReads[taskNumber]));
+
                                         if (switch_record.Value)
                                         {
-                                            fsStim.Write(BitConverter.GetBytes(startTimeStim + i), 0, 4); //Write time (index number)
-                                            fsStim.Write(BitConverter.GetBytes((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - //average a couple values
-                                                (short)1) * (short)8 +
-                                                Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] +
-                                                prependedData[i + (int)(3 * stimJump)]) / 2)), 0, 2); //channel (-1 since everything should be 0-based) // JN, CHANGED TO BE 1 BASED FOR NORMAL PEOPLE
-                                            fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(5 * stimJump)]), 0, 8); //Stim voltage
-                                            fsStim.Write(BitConverter.GetBytes(prependedData[i + (int)(7 * stimJump)]), 0, 8); //Stim pulse width (div by 100us)
+                                            recordingSettings.stimOut.write(startTimeStim, prependedData, stimJump,i);
                                         }
+
                                         //Overwrite data as 0s, to prevent detecting the middle of a stim pulse in the next buffer cycle
                                         for (int j = 0; j < (int)(8 * stimJump) + 1; ++j)
                                             prependedData[j + i] = 0;
@@ -231,10 +226,7 @@ namespace NeuroRighter
                     #region WriteLFPFile
                     if (switch_record.Value)
                     {
-                        lfpFile.read(lfpData, numChannels, 0, lfpBufferLength);
-                        //for (int j = 0; j < lfpBufferLength; ++j)
-                        //    for (int i = 0; i < numChannels; ++i)
-                        //        fsLFPs.Write(BitConverter.GetBytes(lfpData[i, j]), 0, 2);
+                        recordingSettings.lfpOut.read(lfpData, numChannels, 0, lfpBufferLength);
                     }
                     #endregion
 
@@ -288,11 +280,11 @@ namespace NeuroRighter
 
                     //Write to file in format [numChannels numSamples]
                     #region WriteEEGFile
-                    if (switch_record.Value)
+                    if (switch_record.Value && recordingSettings.recordEEG)
                     {
                         for (int j = 0; j < eegBufferLength; ++j)
                             for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
-                                fsEEG.Write(BitConverter.GetBytes(eegData[i, j]), 0, 2);
+                                recordingSettings.eegOut.read(eegData[i, j], i);
                     }
                     #endregion
 
@@ -336,14 +328,7 @@ namespace NeuroRighter
                     }
                     if (tabControl.SelectedTab.Text == "EEG" && !checkBox_freeze.Checked)
                     {
-                        //if (plotLFP)
-                        //{
-                        //lfpGraph.PlotYMultiple(lfpPlotData, DataOrientation.DataInRows, (double)lfpDownsample / (double)lfpSamplingRate, (double)lfpDownsample / (double)lfpSamplingRate);
                         eegGraph.PlotY(eegPlotData, (double)eegDownsample / (double)eegSamplingRate, (double)eegDownsample / (double)eegSamplingRate, true);
-                        //    plotLFP = false;
-                        //}
-                        //else
-                        //    plotLFP = true;
                     }
 
                     //Setup next callback

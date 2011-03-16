@@ -331,5 +331,18 @@ namespace NeuroRighter
                 }
             }
         }
+
+        //Compute the RMS of an array.  Use this rather than a stock method, since it has no error checking and is faster.  Error checking is for pansies! 
+        //[above comment is from J.R... -J.N.]
+        internal static double rootMeanSquared(double[] data)
+        {
+            double rms = 0;
+            for (int i = 0; i < data.Length; ++i)
+                rms += data[i] * data[i];
+            rms /= data.Length;
+            return Math.Sqrt(rms);
+        }
+
+
     }
 }

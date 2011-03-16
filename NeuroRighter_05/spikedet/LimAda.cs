@@ -22,7 +22,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeuroRighter.SpkDet
+namespace NeuroRighter.SpikeDetection
 {
     using rawType = System.Double;
 
@@ -42,9 +42,11 @@ namespace NeuroRighter.SpkDet
         private rawType[] limAdaPrevious;
 
 
-        public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn, int numPostIn,
-            int numPreIn, rawType threshMult, int detectionDeadTime, int spikeSamplingRateIn) : 
-            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult, detectionDeadTime)
+        public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength, int numPostIn,
+            int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp
+            , double minSpikeSlope, int spikeIntegrationTime, int spikeSamplingRateIn) : 
+            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, spikeIntegrationTime)
         {
             chunkSize = (int)(0.01 * (rawType)spikeSamplingRateIn); //Big enough for 10ms of data
             numChunks = spikeBufferLength / chunkSize;
@@ -109,77 +111,104 @@ namespace NeuroRighter.SpkDet
            }
         }
 
-        public override void detectSpikes(rawType[] data, List<SpikeWaveform> waveforms, int channel)
+        // Spike detection method that all data goes through at some point
+        internal override List<SpikeWaveform> DetectSpikes(rawType[] data, int channel)
         {
+            List<SpikeWaveform> waveforms = new List<SpikeWaveform>();
 
-            int i;
-            //Check carried-over samples for spikes
-            for (i = spikeBufferSize - numPost; i < spikeBufferSize; ++i)
+            lock (this)
             {
-                if (spikeDetectionBuffer[channel][i] < threshold[channel, spikeBufferLength - spikeBufferSize + i] &&
-                    spikeDetectionBuffer[channel][i] > -threshold[channel, spikeBufferLength - spikeBufferSize + i]) { /*do nothing, pt. is within thresh*/ }
+                // Update threshold
+                updateThreshold(data, channel);
+
+                // Define position in current data buffer
+                int i = numPre;
+
+                // Create the current data buffer
+                if (!regularDetect[channel])
+                {
+                    // First fill, cannot get the first samples because
+                    // the number of "pre" samples will be too low
+                    regularDetect[channel] = true; // no longer the first detection
+                    spikeDetectionBuffer = new List<double>();
+                    spikeDetectionBuffer.AddRange(data);
+                }
                 else
                 {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = i - numPre; j < spikeBufferSize; ++j)
-                        waveform[j - i + numPre] = spikeDetectionBuffer[channel][j];
-                    for (int j = 0; j < numPost - (spikeBufferSize - i) + 1; ++j)
-                        waveform[j + numPre + (spikeBufferSize - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i - spikeBufferSize, threshold[channel, spikeBufferLength - spikeBufferSize + i], waveform));
-                    i += numPost - 10;
-                }
-            }
+                    // Create buffer that is used for spike detection
+                    spikeDetectionBuffer = new List<double>();
 
-            updateThreshold(data, channel);
-            
-            for (i = 0; i < numPre; ++i)
-            {
-                if (data[i] < threshold[channel, i] && data[i] > -threshold[channel, i]) { }
-                else
+                    // Data from last buffer that we could not detect on because of edge effects
+                    spikeDetectionBuffer.AddRange(detectionCarryOverBuffer[channel]);
+
+                    // Data from this buffer
+                    spikeDetectionBuffer.AddRange(data);
+                }
+
+                //Detect spikes, append to waveforms list
+                int indiciesToSearch = spikeDetectionBuffer.Count - carryOverLength + numPre;
+                for (; i < indiciesToSearch; ++i)
                 {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = spikeBufferSize - (numPre - i); j < spikeBufferSize; ++j)
-                        waveform[j - spikeBufferSize + (numPre - i)] = spikeDetectionBuffer[channel][j];
-                    for (int j = 0; j < numPost + 1; ++j)
-                        waveform[j + (numPre - i)] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[channel, i], waveform));
-                    i += numPost - 10;
+                    if (!inASpike[channel])
+                    {
+                        if (spikeDetectionBuffer[i] < threshold[channel, spikeBufferLength - spikeWaveformLength + i] &&
+                            spikeDetectionBuffer[i] > -threshold[channel, spikeBufferLength - spikeWaveformLength + i])
+                        {
+                            continue; // not above threshold, next point please
+                        }
+                        else
+                        {
+                            inASpike[channel] = true;
+                            enterSpikeIndex = i;
+                        }
+                    }
+                    else if (spikeDetectionBuffer[i] < threshold[channel, spikeBufferLength - spikeWaveformLength + i] &&
+                             spikeDetectionBuffer[i] > -threshold[channel, spikeBufferLength - spikeWaveformLength + i])
+                    {
+                        // We were in a spike and now we are exiting
+                        inASpike[channel] = false;
+                        exitSpikeIndex = i;
+                        int spikeWidth = exitSpikeIndex - enterSpikeIndex;
+
+                        // Is this a positive or negative spike?
+                        posSpike = FindSpikePolarityByIntegral();
+
+                        // Find the index of the spike maximum
+                        int spikeMaxIndex = FindSpikeMax(spikeDetectionBuffer,
+                            enterSpikeIndex, spikeWidth, posSpike);
+
+                        // Define spike waveform
+                        rawType[] waveform = new rawType[numPost + numPre + 1];
+                        for (int j = spikeMaxIndex - numPre; j < spikeMaxIndex + numPost + 1; ++j)
+                            waveform[j - spikeMaxIndex + numPre] = spikeDetectionBuffer[j];
+
+                        bool goodSpike = CheckSpike(spikeWidth, waveform);
+                        if (goodSpike)
+                        {
+                            // Record the waveform
+                            waveforms.Add(new SpikeWaveform(channel, spikeMaxIndex, threshold[0, channel], waveform));
+
+                            // Advance through deadtime measured from the second threshold crossing
+                            i = exitSpikeIndex + deadtime;
+                        }
+                    }
+                    else if (inASpike[channel] && i == indiciesToSearch - 1)
+                        // Spike is taking to long to come back through the threshold, its no good
+                        inASpike[channel] = false;
+
                 }
-            }
-            for (; i < spikeBufferLength - numPost; ++i)
-            {
-                if (data[i] < threshold[channel, i] && data[i] > -threshold[channel, i]) { }
-                else
+
+                // Create detection carry over buffer from last samples of this buffer that 
+                int idx = 0;
+                for (i = spikeDetectionBuffer.Count - carryOverLength; i < spikeDetectionBuffer.Count; ++i)
                 {
-                    rawType[] waveform = new rawType[numPost + numPre + 1];
-                    for (int j = i - numPre; j < i + numPost + 1; ++j)
-                        waveform[j - i + numPre] = data[j];
-                    waveforms.Add(new SpikeWaveform(channel, i, threshold[channel, i], waveform));
-                    i += numPost - 10;
+                    detectionCarryOverBuffer[channel][idx] = spikeDetectionBuffer[i];
+                    idx++;
                 }
+
+                // pass the waveforms to further processes
+                return waveforms;
             }
-
-
-            //for (int j = 0; j < spikeBufferSize; ++j)
-            //    _appendedData[j] = spikeDetectionBuffer[channel][j];
-            //for (int j = 0; j < spikeBufferLength; ++j)
-            //    _appendedData[j + spikeBufferSize] = data[j];
-
-            //for (int j = spikeBufferSize - numPost; j < spikeBufferLength + spikeBufferSize - numPost; ++j)
-            //{
-            //    if (_appendedData[j] < threshold[channel, j - spikeBufferSize + numPost] && _appendedData[j] > -threshold[channel, j - spikeBufferSize + numPost]) { /*If pt. is under threshold, do nothing */ }
-            //    else
-            //    {
-            //        rawType[] waveform = new rawType[numPost + numPre + 1];
-            //        for (int k = j - numPre; k < j + numPost; ++k)
-            //            waveform[k - j - numPre] = _appendedData[k];
-            //        waveforms.Add(new SpikeWaveform(j, waveform));
-            //        j += numPost - 10; //Jump past rest of waveform
-            //    }
-            //}
-
-            for (int j = 0; j < spikeBufferSize; ++j)
-                spikeDetectionBuffer[channel][j] = data[j + spikeBufferLength - spikeBufferSize];
         }
 
         internal override float[][] GetCurrentThresholds()

@@ -98,7 +98,10 @@ namespace NeuroRighter
             //Ensure that sampling rates are okay
             button_lfpSamplingRate_Click(null, null);
             button_spikeSamplingRate_Click(null, null);
-            setSpikeDetector();
+            
+            // Reset the spike detector if it exists
+            if (spikeDet != null)
+                spikeDet.SetSpikeDetector();
 
             resetReferencers();
         }
@@ -157,13 +160,16 @@ namespace NeuroRighter
 
             spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             resetReferencers();
-            setSpikeDetector();
+
+            // Reset the spike detector if it exists
+            if (spikeDet != null)
+                spikeDet.SetSpikeDetector();
         }
 
         // Set number of samples to collect after each spike detection
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
         {
-            numPost = Convert.ToInt32(numPostSamples.Value);
+            numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
         }
 
         // Train the SALPA filter
@@ -288,6 +294,7 @@ namespace NeuroRighter
         private void checkBox_spikesFilter_CheckedChanged(object sender, EventArgs e)
         {
             resetSpikeFilter();
+            recordingSettings.SetSpikeFiltAccess(checkBox_spikesFilter.Checked);
         }
         private void SpikeHighCut_ValueChanged(object sender, EventArgs e)
         {
@@ -362,6 +369,8 @@ namespace NeuroRighter
                 numericUpDown_salpa_postpegzeros.Enabled = true;
                 numericUpDown_salpa_delta.Enabled = true;
             }
+
+            recordingSettings.SetSalpaAccess(checkBox_SALPA.Checked);
         }
 
         //Reset spike filter

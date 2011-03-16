@@ -72,14 +72,14 @@ namespace NeuroRighter
                 else
                     comboBox_stimulatorDevice.SelectedIndex = 0;
             }
-            comboBox_stimInfoDevice.Items.AddRange(DaqSystem.Local.Devices);
-            if (comboBox_stimInfoDevice.Items.Count > 0)
+            comboBox_stimInfoDev.Items.AddRange(DaqSystem.Local.Devices);
+            if (comboBox_stimInfoDev.Items.Count > 0)
             {
-                int idx = comboBox_stimInfoDevice.Items.IndexOf(Properties.Settings.Default.StimInfoDevice);
+                int idx = comboBox_stimInfoDev.Items.IndexOf(Properties.Settings.Default.StimInfoDevice);
                 if (idx >= 0)
-                    comboBox_stimInfoDevice.SelectedIndex = idx;
+                    comboBox_stimInfoDev.SelectedIndex = idx;
                 else
-                    comboBox_stimInfoDevice.SelectedIndex = 0;
+                    comboBox_stimInfoDev.SelectedIndex = 0;
             }
             comboBox_cineplexDevice.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_cineplexDevice.Items.Count > 0)
@@ -167,7 +167,7 @@ namespace NeuroRighter
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
-            checkBox_recordStimulationInfo.Checked = Properties.Settings.Default.RecordStimTimes;
+            checkBox_RecStimTimes.Checked = Properties.Settings.Default.RecordStimTimes;
             checkBox_sepLFPBoard1.Checked = Properties.Settings.Default.SeparateLFPBoard;
             comboBox_LFPDevice1.Enabled = Properties.Settings.Default.SeparateLFPBoard;
             checkBox_useProgRef.Checked = Properties.Settings.Default.UseProgRef;
@@ -214,7 +214,7 @@ namespace NeuroRighter
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
             Properties.Settings.Default.UseCineplex = checkBox_useCineplex.Checked;
             Properties.Settings.Default.UseStimulator = checkBox_useStimulator.Checked;
-            Properties.Settings.Default.RecordStimTimes = checkBox_recordStimulationInfo.Checked;
+            Properties.Settings.Default.RecordStimTimes = checkBox_RecStimTimes.Checked;
             Properties.Settings.Default.SeparateLFPBoard = checkBox_sepLFPBoard1.Checked;
             Properties.Settings.Default.UseProgRef = checkBox_useProgRef.Checked;
             Properties.Settings.Default.UseEEG = checkBox_useEEG.Checked;
@@ -230,8 +230,8 @@ namespace NeuroRighter
                 Properties.Settings.Default.CineplexDevice = Convert.ToString(comboBox_cineplexDevice.SelectedItem);
             if (checkBox_useStimulator.Checked)
                 Properties.Settings.Default.StimulatorDevice = Convert.ToString(comboBox_stimulatorDevice.SelectedItem);
-            if (checkBox_recordStimulationInfo.Checked)
-                Properties.Settings.Default.StimInfoDevice = Convert.ToString(comboBox_stimInfoDevice.SelectedItem);
+            if (checkBox_RecStimTimes.Checked)
+                Properties.Settings.Default.StimInfoDevice = Convert.ToString(comboBox_stimInfoDev.SelectedItem);
             if (checkBox_useProgRef.Checked)
                 Properties.Settings.Default.SerialPortDevice = Convert.ToString(comboBox_progRefSerialPort.SelectedItem);
             if (checkBox_useEEG.Checked)
@@ -323,9 +323,9 @@ namespace NeuroRighter
         private void checkBox_useStimulator_CheckedChanged_1(object sender, EventArgs e)
         {
             comboBox_stimulatorDevice.Enabled = checkBox_useStimulator.Checked;
-            if (!checkBox_useStimulator.Checked) checkBox_recordStimulationInfo.Checked = false;
-            checkBox_recordStimulationInfo.Enabled = checkBox_useStimulator.Checked;
-            comboBox_stimInfoDevice.Enabled = checkBox_useStimulator.Checked;
+            if (!checkBox_useStimulator.Checked) checkBox_RecStimTimes.Checked = false;
+            checkBox_RecStimTimes.Enabled = checkBox_useStimulator.Checked;
+            comboBox_stimInfoDev.Enabled = checkBox_useStimulator.Checked;
             radioButton_16Mux.Enabled = checkBox_useStimulator.Checked;
             radioButton_32bit.Enabled = checkBox_useStimulator.Checked;
             radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
@@ -351,6 +351,7 @@ namespace NeuroRighter
         {
             comboBox_SigOutDev.Enabled = checkBox_UseAODO.Checked;
         }
+
 
 
     }

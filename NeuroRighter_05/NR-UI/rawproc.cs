@@ -43,7 +43,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
-using NeuroRighter.SpkDet;
+using NeuroRighter.SpikeDetection;
 
 
 namespace NeuroRighter
@@ -75,20 +75,26 @@ namespace NeuroRighter
 
             #region Write RAW data
             //Write data to file
-            if (switch_record.Value && checkBox_SaveRawSpikes.Checked)
+            if (switch_record.Value && recordingSettings.recordRaw && spikeTask != null)
             {
                 rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
                 rawType tempVal;
-                for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                    for (int j = 0; j < spikeBufferLength; ++j)
-                    {
-                        //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                        tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                        if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                        else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                        else { tempVal = Int16.MinValue; }
-                        rawFile.read((short)tempVal, i);
-                    }
+
+                lock (this)
+                {
+
+                    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                        for (int j = 0; j < spikeBufferLength; ++j)
+                        {
+                            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                            else { tempVal = Int16.MinValue; }
+
+                            recordingSettings.rawOut.read((short)tempVal, i);
+                        }
+                }
             }
 
             #endregion
@@ -129,7 +135,7 @@ namespace NeuroRighter
                 if (IISDetected != null) IISDetected(this, finalLFPData, numSpikeReads[taskNumber]);
 
                 #region WriteLFPFile
-                if (switch_record.Value) //Convert to 16-bit ints, then write to file
+                if (switch_record.Value && recordingSettings.recordLFP && spikeTask != null) //Convert to 16-bit ints, then write to file
                 {
                     rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
                     rawType tempLFPVal;
@@ -141,7 +147,8 @@ namespace NeuroRighter
                             if (tempLFPVal <= Int16.MaxValue && tempLFPVal >= Int16.MinValue) { /*do nothing, most common case*/ }
                             else if (tempLFPVal > Int16.MaxValue) { tempLFPVal = Int16.MaxValue; }
                             else { tempLFPVal = Int16.MinValue; }
-                            lfpFile.read((short)tempLFPVal, i);
+
+                            recordingSettings.lfpOut.read((short)tempLFPVal, i);
                         }
                 }
                 #endregion
@@ -173,14 +180,83 @@ namespace NeuroRighter
             {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
             }
+
+            if (switch_record.Value && recordingSettings.recordSALPA && spikeTask != null)
+            {
+                lock (this)
+                {
+                    int startIdx;
+
+                    if (firstRawWrite) // account for SALPA delay
+                    {
+                        if (!recordingSettings.recordSpikeFilt)
+                            firstRawWrite = false;
+                        startIdx = 2 * SALPA_WIDTH;
+                    }
+                    else
+                    {
+                        startIdx = 0;
+                    }
+
+                    rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                    rawType tempVal;
+                    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                        for (int j = startIdx; j < spikeBufferLength; ++j)
+                        {
+                            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                            else { tempVal = Int16.MinValue; }
+
+                            recordingSettings.salpaOut.read((short)tempVal, i);
+                        }
+                }
+            }
+
             #endregion SALPA Filtering
 
             #region SpikeFiltering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
             {
-                for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
-                    spikeFilter[i].filterData(filtSpikeData[i]);
+
+                    for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
+                        spikeFilter[i].filterData(filtSpikeData[i]);
+                    lock (this)
+                    {
+
+                    if (switch_record.Value && recordingSettings.recordSpikeFilt && spikeTask != null)
+                    {
+
+                        int startIdx;
+                        if (firstRawWrite && checkBox_SALPA.Checked) // account for SALPA delay
+                        {
+                            firstRawWrite = false;
+                            startIdx = 2 * SALPA_WIDTH;
+                        }
+                        else
+                        {
+                            startIdx = 0;
+                        }
+
+                        rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
+                        rawType tempVal;
+                        for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                            for (int j = startIdx; j < spikeBufferLength; ++j)
+                            {
+                                //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
+                                tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
+                                if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
+                                else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
+                                else { tempVal = Int16.MinValue; }
+
+                                recordingSettings.spkFiltOut.read((short)tempVal, i);
+                            }
+                    }
+                }
+
+
             }
             #endregion
 
@@ -217,100 +293,7 @@ namespace NeuroRighter
 
             List<SpikeWaveform> newWaveforms = new List<SpikeWaveform>(100);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                spikeDetector.detectSpikes(filtSpikeData[i], newWaveforms, i);
-
-
-            #region SpikeValidation
-            double Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
-            int numSamplesPeak = (int)Math.Ceiling(0.0005 * Fs); //Search the first half millisecond after thresh crossing      
-            int numSamplesToSearch = (numPre + numPost + 1);
-
-            if (checkBox_spikeValidation.Checked)
-            {
-                bool skipSecondValidation;
-
-                lock (this)
-                {
-                    for (int w = 0; w < newWaveforms.Count; w++) //For each waveform
-                    {
-                        if (w < 0)
-                            break;
-
-                        //Ensure that first and last few samples aren't blanked (this happens with artifact suppressions sometimes)
-                        if ((newWaveforms[w].waveform[0] <= newWaveforms[w].waveform[1] + VOLTAGE_EPSILON && newWaveforms[w].waveform[0] >= newWaveforms[w].waveform[1] - VOLTAGE_EPSILON &&
-                            newWaveforms[w].waveform[1] <= newWaveforms[w].waveform[2] + VOLTAGE_EPSILON && newWaveforms[w].waveform[1] >= newWaveforms[w].waveform[2] - VOLTAGE_EPSILON) ||
-                            (newWaveforms[w].waveform[numPost + numPre] <= newWaveforms[w].waveform[numPost + numPre - 1] + VOLTAGE_EPSILON &&
-                            newWaveforms[w].waveform[numPost + numPre] >= newWaveforms[w].waveform[numPost + numPre - 1] - VOLTAGE_EPSILON &&
-                            newWaveforms[w].waveform[numPost + numPre - 1] <= newWaveforms[w].waveform[numPost + numPre - 2] + VOLTAGE_EPSILON &&
-                            newWaveforms[w].waveform[numPost + numPre - 1] >= newWaveforms[w].waveform[numPost + numPre - 2] - VOLTAGE_EPSILON))
-                        {
-                            newWaveforms.RemoveAt(w);
-                            --w;
-                            continue;
-                        }
-
-                        //Find peak
-                        double maxVal = 0.0;
-                        for (int k = numPre; k < numPre + numSamplesPeak; ++k)
-                        {
-                            if (Math.Abs(newWaveforms[w].waveform[k]) > maxVal)
-                                maxVal = Math.Abs(newWaveforms[w].waveform[k]);
-                        }
-                        double artThresh;
-                        //Search pts. after the detected peak for other very significant peaks, disqualifying if there are larger peaks
-                        try
-                        {
-                            artThresh = Convert.ToDouble(textBox_AbsArtThresh.Text);
-                        }
-                        catch
-                        {
-                            artThresh = 1000;
-                        }
-
-                        if (maxVal > 1e-6 * artThresh)
-                        {
-                            newWaveforms.RemoveAt(w);
-                            --w;
-                            continue;
-                        }
-                        else
-                        {
-                            skipSecondValidation = false;
-
-                            for (int k = numSamplesPeak + numPre; k < numSamplesToSearch; ++k)
-                            {
-
-                                if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
-                                {
-                                    newWaveforms.RemoveAt(w);
-                                    --w;
-                                    skipSecondValidation = true;
-                                    break;
-                                }
-
-                            }
-
-                            if (!skipSecondValidation)
-                            {
-                                for (int k = 0; k < numPre; ++k)
-                                {
-
-                                    if (Math.Abs(newWaveforms[w].waveform[k]) > 0.9 * maxVal)
-                                    {
-                                        newWaveforms.RemoveAt(w);
-                                        --w;
-                                        break;
-                                    }
-
-                                }
-                            }
-                        }
-
-
-                    }
-                }
-            }
-            #endregion
+                newWaveforms.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
 
             //Extract waveforms
             if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
@@ -321,10 +304,10 @@ namespace NeuroRighter
                     rawType[] waveformData = newWaveforms[j].waveform;
                     if (switch_record.Value)
                     {
-                        lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
+                        lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
                         {
-                            fsSpks.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);// JN +1 in channel field switches to 1-based channel numbering
+                            recordingSettings.spkOut.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData);
                         }
                     }
                     #endregion
@@ -338,10 +321,10 @@ namespace NeuroRighter
                     rawType[] waveformData = newWaveforms[j].waveform;
                     if (switch_record.Value)
                     {
-                        lock (fsSpks) //Lock so another NI card doesn't try writing at the same time
+                        lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
                         {
-                            fsSpks.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData); // JN +1 in channel field switches to 1-based channel numbering
+                            recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                newWaveforms[j].threshold, waveformData); 
                         }
                     }
                     #endregion

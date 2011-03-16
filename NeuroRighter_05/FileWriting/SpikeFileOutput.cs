@@ -26,7 +26,7 @@ using NationalInstruments;
 using NationalInstruments.DAQmx;
 using System.ComponentModel;
 
-namespace NeuroRighter
+namespace NeuroRighter.FileWriting
 {
 
     /// <author>John Rolston (rolston2@gmail.com)</author>
@@ -38,7 +38,8 @@ namespace NeuroRighter
 
         private const int VERSION = 2;
 
-        internal SpikeFileOutput(string filenameBase, int numChannels, int samplingRate, int numSamplesPerWaveform, Task recordingTask, string extension)
+        internal SpikeFileOutput(string filenameBase, int numChannels, int samplingRate,
+            int numSamplesPerWaveform, Task recordingTask, string extension)
         {
             this.numChannels = numChannels;
             this.numSamplesPerWaveform = numSamplesPerWaveform;
@@ -109,7 +110,7 @@ namespace NeuroRighter
                 outStream.Write(BitConverter.GetBytes(waveform[s]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
         }
 
-        internal void Close()
+        internal void flush()
         {
             outStream.Close();
         }

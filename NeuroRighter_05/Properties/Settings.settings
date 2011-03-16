@@ -42,7 +42,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MUXChannels" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">16</Value>
+      <Value Profile="(Default)">32</Value>
     </Setting>
     <Setting Name="StimPortBandwidth" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">8</Value>
@@ -57,7 +57,7 @@
       <Value Profile="(Default)">invivo</Value>
     </Setting>
     <Setting Name="DefaultNumChannels" Type="System.String" Scope="User">
-      <Value Profile="(Default)">16</Value>
+      <Value Profile="(Default)">64</Value>
     </Setting>
     <Setting Name="UseLFPs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

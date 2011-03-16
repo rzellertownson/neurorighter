@@ -171,7 +171,7 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int MUXChannels {
             get {
                 return ((int)(this["MUXChannels"]));
@@ -231,7 +231,7 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        [global::System.Configuration.DefaultSettingValueAttribute("64")]
         public string DefaultNumChannels {
             get {
                 return ((string)(this["DefaultNumChannels"]));

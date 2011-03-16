@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace NeuroRighter.SpkDet
+namespace NeuroRighter.SpikeDetection
 {
     using rawType = System.Double;
 
@@ -37,9 +37,11 @@ namespace NeuroRighter.SpkDet
         private double[] ChanThresh;
         private double[] ThreshSorted;
 
-        public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spike_buffer_sizeIn,
-            int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime, double deviceRefresh) :
-            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spike_buffer_sizeIn, numPostIn, numPreIn, threshMult, detectionDeadTime) 
+        public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength,
+            int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth
+            , double maxSpikeAmp, double minSpikeSlope, int spikeIntegrationTime, double deviceRefresh) :
+            base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, spikeIntegrationTime) 
         {
             numUpdatesForTrain = (int)Math.Round(10/deviceRefresh); // ten seconds worth of data used in training
             threshold = new rawType[1, numChannels];

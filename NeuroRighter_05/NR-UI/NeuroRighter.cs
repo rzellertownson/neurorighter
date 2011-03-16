@@ -44,8 +44,8 @@ using csmatio.types;
 using csmatio.io;
 using NeuroRighter.Aquisition;
 using rawType = System.Double;
-using NeuroRighter.SpkDet;
-
+using NeuroRighter.SpikeDetection;
+using NeuroRighter.FileWriting;
 
 namespace NeuroRighter
 {
@@ -66,21 +66,24 @@ namespace NeuroRighter
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
 
-            //Check for RTSI cables
-
-
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
-            this.comboBox_spikeDetAlg.SelectedIndex = 0; //Default spike det. algorithm is fixed RMS
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
-            //this.spikeBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 8); //Take quarter second samples
             spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             this.currentRef = new int[2];
-            this.numPost = Convert.ToInt32(numPostSamples.Value);
-            this.numPre = Convert.ToInt32(numPreSamples.Value);
+
+            // Create a new spike detection form so we can access its parameters
+            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, DEVICE_REFRESH, spikeSamplingRate);
+            spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
+            spikeDet.SetSpikeDetector();
+            this.numPre = spikeDet.numPre;
+            this.numPost = spikeDet.numPost;
 
             //Setup default filename
             this.filenameOutput = "test0001";
+            recordingSettings = new RecordingSetup();
+            recordingSettings.SettingsHaveChanged += new RecordingSetup.resetRecordingSettingsHandler(recordingSettings_SettingsHaveChanged);
+            recordingSettings.SetSpikeFiltAccess(checkBox_spikesFilter.Checked);
 
             this.comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
             if (Properties.Settings.Default.SeparateLFPBoard)
@@ -104,10 +107,6 @@ namespace NeuroRighter
                 }
                 updateSettings();
             }
-
-
-            //Set the spike detector
-            setSpikeDetector();
 
             //Create plots
             try
@@ -168,7 +167,7 @@ namespace NeuroRighter
             //Ensure that, if recording is setup, that it has been done properly
             //Retrain Spike detector if required
             if (checkBox_RetrainOnRestart.Checked)
-                setSpikeDetector();
+                spikeDet.SetSpikeDetector();
 
             if (switch_record.Value)
             {
@@ -179,8 +178,8 @@ namespace NeuroRighter
                     MessageBox.Show("An output file must be selected before recording."); //display an error message
                     return;
                 }
-
-                // If the user is just doing a single recording
+                
+                // If the user is just doing repeated recordings
                 if (checkbox_repeatRecord.Checked)
                 {
                     DateTime nowDate = DateTime.Now;//Get current time (local to computer);
@@ -188,13 +187,7 @@ namespace NeuroRighter
                     filenameBase = originalNameBase + datePrefix;
                 }
 
-                filenameSpks = filenameBase + ".spk";
-                if (Properties.Settings.Default.UseStimulator)
-                    filenameStim = filenameBase + ".stim";
-                if (Properties.Settings.Default.UseEEG)
-                    filenameEEG = filenameBase + ".eeg";
-
-                if (File.Exists(filenameSpks))
+                if (File.Exists(filenameBase + "*"))
                 {
                     DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
                         "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
@@ -204,6 +197,9 @@ namespace NeuroRighter
                     else if (dr == DialogResult.Cancel)
                         return;
                 }
+
+                recordingSettings.SetFID (filenameBase);
+                recordingSettings.SetNumElectrodes(numChannels);
                 NRAcquisitionSetup();
                 NRStartRecording();
 
@@ -227,12 +223,12 @@ namespace NeuroRighter
                     // Modify the UI, so user doesn't try running multiple instances of tasks
                     this.Cursor = Cursors.WaitCursor;
                     comboBox_numChannels.Enabled = false;
-                    numPreSamples.Enabled = false;
-                    numPostSamples.Enabled = false;
+                    spikeDet.numPreSamples.Enabled = false;
+                    spikeDet.numPostSamples.Enabled = false;
                     settingsToolStripMenuItem.Enabled = false;
                     comboBox_SpikeGain.Enabled = false;
                     button_Train.Enabled = false;
-                    checkBox_SaveRawSpikes.Enabled = false;
+                    button_SetRecordingStreams.Enabled = false;
                     switch_record.Enabled = false;
                     processingSettingsToolStripMenuItem.Enabled = false;
                     button_spikeSamplingRate.PerformClick(); // updata samp freq
@@ -260,9 +256,8 @@ namespace NeuroRighter
                     if (checkBox_video.Checked) //NB: This can't be checked unless video is enabled (no need to check properties)
                         triggerTask = new Task("triggerTask");
 
-                    // 
+                    // Set MUA sample rate
                     int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
-
 
                     //Add LFP channels, if configured
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
@@ -558,92 +553,8 @@ namespace NeuroRighter
                             Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
                     }
                     #endregion
-
-                    #region Setup_FileWriting
-                    if (switch_record.Value)
-                    {
-                        DateTime dt = DateTime.Now; //Get current time (local to computer)
-                        try
-                        {
-                            //fsSpks = new FileStream(filenameSpks, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
-                            fsSpks = new SpikeFileOutput(filenameBase, numChannels, spikeSamplingRate, Convert.ToInt32(numPreSamples.Value + numPostSamples.Value) + 1,
-                                spikeTask[0], ".spk");
-                            if (Properties.Settings.Default.UseStimulator)
-                                fsStim = new FileStream(filenameStim, FileMode.Create, FileAccess.Write, FileShare.None, 128 * 1024, false);
-                            if (checkBox_SaveRawSpikes.Checked) //If raw spike traces are to be saved
-                            {
-                                if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                    rawFile = new FileOutputRemapped(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
-                                else
-                                    rawFile = new FileOutput(filenameBase, numChannels, (int)spikeTask[0].Timing.SampleClockRate, 1, spikeTask[0], ".raw", Properties.Settings.Default.PreAmpGain);
-                            }
-
-                            //File for clipped waveforms and spike times
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
-                            //fsSpks.Write(BitConverter.GetBytes(spikeSamplingRate), 0, 4); //Int: Sampling rate
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(Convert.ToInt16(numPreSamples.Value) + Convert.ToInt16(numPostSamples.Value) + 1)), 0, 2); //Int: Samples per waveform
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / spikeTask[0].AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Hour)), 0, 2); //Int: Hour
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
-                            //fsSpks.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
-
-                            if (Properties.Settings.Default.UseLFPs)
-                            {
-                                if (Properties.Settings.Default.SeparateLFPBoard)
-                                    lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 0, lfpTask, ".lfp", Properties.Settings.Default.PreAmpGain);
-                                else //Using spikes A/D card to capture LFP data, too.
-                                {
-                                    if (numChannels == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                        lfpFile = new FileOutputRemapped(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
-                                    else
-                                        lfpFile = new FileOutput(filenameBase, numChannels, lfpSamplingRate, 1, spikeTask[0], ".lfp", Properties.Settings.Default.PreAmpGain);
-                                }
-                            }
-
-                            if (Properties.Settings.Default.UseStimulator)
-                            {
-                                fsStim.Write(BitConverter.GetBytes(spikeSamplingRate), 0, 4); //Int: Sampling rate
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Hour)), 0, 2); //Int: Hour
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
-                                fsStim.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
-                            }
-
-                            if (Properties.Settings.Default.UseEEG)
-                            {
-                                //File for raw EEG traces
-                                fsEEG = new FileStream(filenameEEG, FileMode.Create, FileAccess.Write, FileShare.None, 256 * 1024, false);
-                                //Write header info: #chs, sampling rate, gain, date/time
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(eegTask.AIChannels.Count)), 0, 2); //Int: Num channels
-                                fsEEG.Write(BitConverter.GetBytes(eegSamplingRate), 0, 4); //Int: Sampling rate
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / eegTask.AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
-                                fsEEG.Write(BitConverter.GetBytes(scalingCoeffsEEG[0]), 0, 8); //Double: Scaling coefficients
-                                fsEEG.Write(BitConverter.GetBytes(scalingCoeffsEEG[1]), 0, 8);
-                                fsEEG.Write(BitConverter.GetBytes(scalingCoeffsEEG[2]), 0, 8);
-                                fsEEG.Write(BitConverter.GetBytes(scalingCoeffsEEG[3]), 0, 8);
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Hour)), 0, 2); //Int: Hour
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
-                                fsEEG.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
-                            }
-                        }
-                        catch (System.IO.IOException ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                            reset();
-                        }
-                    }
-                    #endregion
+                    
+                    SetupFileWriting();
 
                     #region Setup_Filters
                     //Setup filters, based on user's input
@@ -705,8 +616,8 @@ namespace NeuroRighter
                     _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
                     //newWaveforms = new List<SpikeWaveform>(10);
 
-                    numPre = Convert.ToInt32(numPreSamples.Value);
-                    numPost = Convert.ToInt32(numPostSamples.Value);
+                    numPre = Convert.ToInt32(spikeDet.numPreSamples.Value);
+                    numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
 
                     stimIndices = new List<StimTick>(5);
                     #endregion
@@ -848,6 +759,42 @@ namespace NeuroRighter
             }
         }
 
+        // Instantiate the data stream writers within the recordingSettings object
+        private void SetupFileWriting()
+        {
+            if (switch_record.Value)
+            {
+                DateTime dt = DateTime.Now; //Get current time (local to computer)
+                try
+                {
+                    // Tell NR that that its about to encounter the first write
+                    firstRawWrite = true;
+
+                    // 1. spk stream
+                    recordingSettings.Setup("spk",spikeTask[0],numPre,numPost);
+
+                    // 2. raw streams
+                    recordingSettings.Setup("raw",spikeTask[0]);
+                    recordingSettings.Setup("salpa", spikeTask[0]);
+                    recordingSettings.Setup("spkflt", spikeTask[0]);
+                    if (Properties.Settings.Default.SeparateLFPBoard)
+                        recordingSettings.Setup("lfp",lfpTask,lfpSamplingRate);
+                    else
+                        recordingSettings.Setup("lfp", spikeTask[0], lfpSamplingRate);
+                    recordingSettings.Setup("eeg", eegTask, eegSamplingRate);
+
+                    // 3. other
+                    recordingSettings.Setup("stim", spikeTask[0]);
+                    //TODO: Add aux streams
+                }
+                catch (System.IO.IOException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    reset();
+                }
+            }
+        }
+
         // Stop data aquisition and clean up
         private void buttonStop_Click(object sender, EventArgs e)
         {
@@ -856,6 +803,6 @@ namespace NeuroRighter
             updateRecSettings();
         }
 
-
+       
     }
 }

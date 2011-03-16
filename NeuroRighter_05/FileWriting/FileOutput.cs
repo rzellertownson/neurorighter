@@ -61,10 +61,14 @@ namespace NeuroRighter
             _bgWorker.RunWorkerAsync();
         }
 
+        internal FileOutput(string filenameBase, int samplingRate, string extension) { }
+
         protected virtual Stream createStream(String filename, Int32 bufferSize)
         {
             return new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, false);
         }
+
+        protected virtual void writeHeader(int samplingRate){ }
 
         protected virtual void writeHeader(int numChannels, int samplingRate, int fileType, Task recordingTask, double preampgain)
         {
@@ -124,9 +128,6 @@ namespace NeuroRighter
                             for (int i = 0; i < length; ++i)
                             {
                                 pbuffer[baseOfDimBuffer + _currentLocationRead[c]++] = pdata[baseOfDimData + i];
-                                //if (_currentLocationRead[c] != _currentLocationWrite[c]) { /* do nothing */}
-                                //else
-                                //    System.Windows.Forms.MessageBox.Show("Buffer Overrun");
                             }
                         }
                         else
@@ -153,48 +154,10 @@ namespace NeuroRighter
                                 pbuffer[baseOfDimBuffer + _currentLocationRead[c]++] = pdata[baseOfDimData + i];
                             }
 
-
-                            //for (int i = 0; i < length; ++i)
-                            //{
-                            //    pbuffer[baseOfDimBuffer + _currentLocationRead[c]] = pdata[baseOfDimData + i];
-                            //    if (++_currentLocationRead[c] < BUFFER_LENGTH) { /* do nothing */ }
-                            //    else { _currentLocationRead[c] = 0; }
-                            //    if (_currentLocationRead[c] != _currentLocationWrite[c]) { /* do nothing */}
-                            //    else
-                            //        System.Windows.Forms.MessageBox.Show("Buffer Overrun");
-                            //}
                         }
                     }
                 }
             }
-
-            //for (int c = 0; c < numChannelsData; ++c)
-            //{
-            //    //Check to see if we'll loop back to front of buffer here, rather than wasting an if statement in the loop
-            //    if (_currentLocationRead[startChannelData + c] + length < BUFFER_LENGTH)
-            //    {
-            //        //We can copy blithely, without worry of looping back around
-            //        for (int i = 0; i < length; ++i)
-            //        {
-            //            _buffer[startChannelData + c][_currentLocationRead[startChannelData + c]++] = data[c, i];
-            //            if (_currentLocationRead[c] != _currentLocationWrite[c]) { /* do nothing */}
-            //            else
-            //                System.Windows.Forms.MessageBox.Show("Buffer Overrun");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < length; ++i)
-            //        {
-            //            _buffer[startChannelData + c][_currentLocationRead[startChannelData + c]] = data[c, i];
-            //            if (++_currentLocationRead[startChannelData + c] < BUFFER_LENGTH) { /* do nothing */ }
-            //            else { _currentLocationRead[startChannelData + c] = 0; }
-            //            if (_currentLocationRead[c] != _currentLocationWrite[c]) { /* do nothing */}
-            //            else
-            //                System.Windows.Forms.MessageBox.Show("Buffer Overrun");
-            //        }
-            //    }
-            //}
         }
 
         internal virtual void read(short data, int channel)
@@ -256,22 +219,9 @@ namespace NeuroRighter
                     }
                 }
             }
-            //unsafe
-            //{
-            //    fixed (short* pbuffer = &_buffer[0, 0])
-            //    {
-            //        for (int i = 0; i < distances[shortestChannel]; ++i)
-            //        {
-            //            for (int c = 0; c < numChannels; ++c)
-            //            {
-            //                outStream.Write(BitConverter.GetBytes(pbuffer[c * BUFFER_LENGTH + _currentLocationWrite[c]]), 0, 2);
-            //                if (++_currentLocationWrite[c] < BUFFER_LENGTH) { /* do nothing */ }
-            //                else { _currentLocationWrite[c] = 0; }
-            //            }
-            //        }
-            //    }
-            //}
         }
+
+        internal virtual void write(int startTimeStim, double[] prependedData, double stimJump, int idx) { }
 
         protected virtual void _bgWorker_doWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -299,6 +249,9 @@ namespace NeuroRighter
             outStream.Close();
         }
 
-        internal virtual void flush() { _bgWorker.CancelAsync(); }
+        internal virtual void flush() 
+        { 
+            _bgWorker.CancelAsync(); 
+        }
     }
 }

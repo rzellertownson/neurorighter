@@ -66,9 +66,9 @@ namespace NeuroRighter
             this.comboBox_stimulatorDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_input = new System.Windows.Forms.TabPage();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboBox_stimInfoDev = new System.Windows.Forms.ComboBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox_RecStimTimes = new System.Windows.Forms.CheckBox();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.textBox_PreAmpGain = new System.Windows.Forms.TextBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
@@ -520,9 +520,9 @@ namespace NeuroRighter
             // 
             // groupBox10
             // 
-            this.groupBox10.Controls.Add(this.comboBox2);
+            this.groupBox10.Controls.Add(this.comboBox_stimInfoDev);
             this.groupBox10.Controls.Add(this.label15);
-            this.groupBox10.Controls.Add(this.checkBox2);
+            this.groupBox10.Controls.Add(this.checkBox_RecStimTimes);
             this.groupBox10.Location = new System.Drawing.Point(6, 415);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(287, 76);
@@ -530,14 +530,14 @@ namespace NeuroRighter
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Stimulation Timing";
             // 
-            // comboBox2
+            // comboBox_stimInfoDev
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(180, 42);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(91, 21);
-            this.comboBox2.TabIndex = 18;
-            this.comboBox2.Text = "Dev1";
+            this.comboBox_stimInfoDev.FormattingEnabled = true;
+            this.comboBox_stimInfoDev.Location = new System.Drawing.Point(180, 42);
+            this.comboBox_stimInfoDev.Name = "comboBox_stimInfoDev";
+            this.comboBox_stimInfoDev.Size = new System.Drawing.Size(91, 21);
+            this.comboBox_stimInfoDev.TabIndex = 18;
+            this.comboBox_stimInfoDev.Text = "Dev1";
             // 
             // label15
             // 
@@ -548,15 +548,15 @@ namespace NeuroRighter
             this.label15.TabIndex = 19;
             this.label15.Text = "NI-DAQ Device:";
             // 
-            // checkBox2
+            // checkBox_RecStimTimes
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(6, 19);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(167, 17);
-            this.checkBox2.TabIndex = 15;
-            this.checkBox2.Text = "Record stimulation information";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox_RecStimTimes.AutoSize = true;
+            this.checkBox_RecStimTimes.Location = new System.Drawing.Point(6, 19);
+            this.checkBox_RecStimTimes.Name = "checkBox_RecStimTimes";
+            this.checkBox_RecStimTimes.Size = new System.Drawing.Size(167, 17);
+            this.checkBox_RecStimTimes.TabIndex = 15;
+            this.checkBox_RecStimTimes.Text = "Record stimulation information";
+            this.checkBox_RecStimTimes.UseVisualStyleBackColor = true;
             // 
             // groupBox15
             // 
@@ -985,9 +985,9 @@ namespace NeuroRighter
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox comboBox_IVControlDevice;
         private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboBox_stimInfoDev;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBox_RecStimTimes;
         private System.Windows.Forms.ComboBox comboBox_stimInfoDevice;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox checkBox_recordStimulationInfo;

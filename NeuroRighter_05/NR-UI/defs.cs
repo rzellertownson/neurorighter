@@ -35,7 +35,8 @@ using NationalInstruments.Analysis.Dsp.Filters;
 using csmatio.types;
 using NeuroRighter.Aquisition;
 using NeuroRighter.Output;
-using NeuroRighter.SpkDet;
+using NeuroRighter.SpikeDetection;
+using NeuroRighter.FileWriting;
 
 namespace NeuroRighter
 {
@@ -77,10 +78,7 @@ namespace NeuroRighter
         private string filenameEEG;
         private string filenameSpks;  //Spike times and waveforms
         private string filenameStim; //Stim times
-        //private FileStream fsSpks;
-        private SpikeFileOutput fsSpks;
-        private FileStream fsStim;
-        private FileStream fsEEG;
+
         private double[,] eegPlotData;
         private int spikeBufferLength;  //How much data is acquired per read
         private int lfpBufferLength;
@@ -106,7 +104,7 @@ namespace NeuroRighter
         private List<double[]> scalingCoeffsSpikes; //Scaling coefficients for NI-DAQs
         private double[] scalingCoeffsLFPs;
         private double[] scalingCoeffsEEG;
-        private List<StimulusData> _stimulations;
+        internal List<StimulusData> _stimulations;
         internal List<StimulusData> stimulations
         {
             get { return _stimulations; }
@@ -142,7 +140,6 @@ namespace NeuroRighter
         private Filters.MUAFilter muaFilter;
         private double[][] muaData;
         private int SALPA_WIDTH;
-        private int detectionDeadTime;
 
         //Plots
         private GridGraph spikeGraph;
@@ -150,14 +147,17 @@ namespace NeuroRighter
         private RowGraph lfpGraph;
         private RowGraph muaGraph;
         private short recordingLEDState = 0;
-
-        private FileOutput rawFile;
-        private FileOutput lfpFile;
-        private SpikeDetector spikeDetector;
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety
         private delegate void crossThreadFormUpdateDelegate(int item); //Used for making cross thread calls from stimbuffer, file2stim, etc to NR
 
-        // For AO/DO from file stuff
+        // Spike detection
+        private SpikeDetSettings spikeDet;
+
+        // File Writing
+        private bool firstRawWrite;
+        RecordingSetup recordingSettings;
+
+        // Open-loop AO/DO 
         private OpenLoopOut openLoopSynchronizedOutput;
         #endregion
 

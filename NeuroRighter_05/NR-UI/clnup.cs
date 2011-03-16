@@ -107,12 +107,12 @@ namespace NeuroRighter
             buttonStart.Enabled = true;
             comboBox_numChannels.Enabled = true;
             comboBox_SpikeGain.Enabled = true;
-            numPreSamples.Enabled = true;
-            numPostSamples.Enabled = true;
+            spikeDet.numPreSamples.Enabled = true;
+            spikeDet.numPostSamples.Enabled = true;
             settingsToolStripMenuItem.Enabled = true;
             comboBox_SpikeGain.Enabled = true;
             button_Train.Enabled = true;
-            checkBox_SaveRawSpikes.Enabled = true;
+            button_SetRecordingStreams.Enabled = true;
             switch_record.Enabled = true;
             processingSettingsToolStripMenuItem.Enabled = true;
             textBox_spikeSamplingRate.Enabled = true;
@@ -127,11 +127,12 @@ namespace NeuroRighter
                 textBox_eegSamplingRate.Enabled = true;
             }
             if (Properties.Settings.Default.SeparateLFPBoard) comboBox_LFPGain.Enabled = true;
-            if (rawFile != null) { rawFile.flush(); rawFile = null; }
-            if (lfpFile != null) { lfpFile.flush(); lfpFile = null; }
-            if (fsSpks != null) fsSpks.Close();
-            if (fsStim != null) fsStim.Close();
-            if (fsEEG != null) fsEEG.Close();
+            recordingSettings.Flush();
+            //if (rawFile != null) { rawFile.flush(); rawFile = null; }
+            //if (lfpFile != null) { lfpFile.flush(); lfpFile = null; }
+            //if (fsSpks != null) fsSpks.Close();
+            //if (fsStim != null) fsStim.Close();
+            //if (fsEEG != null) fsEEG.Close();
             if (triggerWriter != null) triggerWriter = null;
             channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
 
@@ -176,6 +177,11 @@ namespace NeuroRighter
         // Look at the recording hardware settings and create NI Tasks that reflect the user's choices
         private void updateRecSettings()
         {
+
+            // update the recordingSettings object
+            recordingSettings.Refresh();
+            
+            // Refresh all the NI Tasks
             try
             {
                 if (spikeTask != null)

@@ -54,8 +54,16 @@ namespace NeuroRighter
     {
         private void button_impedanceTest_Click(object sender, EventArgs e)
         {
-            stimDigitalTask.Dispose();
-            stimPulseTask.Dispose();
+            if (stimDigitalTask != null)
+            {
+                stimDigitalTask.Dispose();
+                stimDigitalTask = null;
+            }
+            if (stimPulseTask != null)
+            {
+                stimPulseTask.Dispose();
+                stimPulseTask = null;
+            }
 
             double startFreq = Convert.ToDouble(numericUpDown_impStartFreq.Value);
             double stopFreq = Convert.ToDouble(numericUpDown_impStopFreq.Value);

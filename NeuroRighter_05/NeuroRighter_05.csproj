@@ -101,6 +101,13 @@
   <ItemGroup>
     <Compile Include="Aquisition\SpikeTaskSetup.cs" />
     <Compile Include="dbg\ExecptDBG.cs" />
+    <Compile Include="FileWriting\RecordingSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileWriting\RecordingSetup.Designer.cs">
+      <DependentUpon>RecordingSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileWriting\StimFileOutput.cs" />
     <Compile Include="NR-UI\diagnostics.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,6 +118,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="NR-UI\aqset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\recordsetup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="NR-UI\rectime.cs">
@@ -231,10 +241,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Note-UI\RecordingNote.cs">
+    <Compile Include="obj\Note-UI\RecordingNote.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Note-UI\RecordingNote.Designer.cs">
+    <Compile Include="obj\Note-UI\RecordingNote.Designer.cs">
       <DependentUpon>RecordingNote.cs</DependentUpon>
     </Compile>
     <Compile Include="SALPA\inv.cs" />
@@ -248,11 +258,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SpkDet\AdaptiveRMSThreshold.cs" />
-    <Compile Include="SpkDet\LimAda.cs" />
-    <Compile Include="SpkDet\RMSThresholdFixed.cs" />
-    <Compile Include="SpkDet\SpikeDetector.cs" />
-    <Compile Include="SpkDet\SpikeWaveform.cs" />
     <Compile Include="Output\DigitalData.cs" />
     <Compile Include="Output\DigtialBuffer.cs" />
     <Compile Include="Output\File2Dig.cs" />
@@ -262,8 +267,23 @@
     <Compile Include="Output\StimPulse.cs" />
     <Compile Include="Output\StimTrain.cs" />
     <Compile Include="Output\StimulusData.cs" />
+    <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
+    <Compile Include="SpikeDetection\LimAda.cs" />
+    <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
+    <Compile Include="SpikeDetection\SpikeDetector.cs" />
+    <Compile Include="SpikeDetection\SpikeDetSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpikeDetection\SpikeDetSettings.Designer.cs">
+      <DependentUpon>SpikeDetSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SpikeDetection\SpikeWaveform.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FileWriting\RecordingSetup.resx">
+      <DependentUpon>RecordingSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Settings-UI\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -290,8 +310,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Note-UI\RecordingNote.resx">
+    <EmbeddedResource Include="obj\Note-UI\RecordingNote.resx">
       <DependentUpon>RecordingNote.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpikeDetection\SpikeDetSettings.resx">
+      <DependentUpon>SpikeDetSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

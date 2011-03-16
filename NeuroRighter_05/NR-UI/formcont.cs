@@ -159,6 +159,10 @@ namespace NeuroRighter
             if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
             if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
+            if (openLoopSynchronizedOutput != null)
+            {
+                openLoopSynchronizedOutput.KillAllAODOTasks();
+            }
 
             //Save gain settings
             Properties.Settings.Default.Gain = comboBox_SpikeGain.SelectedIndex;

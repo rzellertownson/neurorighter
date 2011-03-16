@@ -56,7 +56,7 @@ namespace NeuroRighter
             if (spikeGraph.Visible && !checkBox_freeze.Checked)
             {
                 float[][] data = pd.read();
-                float[][] currentThresh = spikeDetector.GetCurrentThresholds();
+                float[][] currentThresh = spikeDet.spikeDetector.GetCurrentThresholds();
                 float[][] threshdata1 = pd.readthresh(currentThresh[0]);
                 float[][] threshdata2 = pd.readthresh(currentThresh[1]);
 

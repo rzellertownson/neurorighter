@@ -68,7 +68,7 @@ namespace NeuroRighter
             label_noise.ForeColor = Color.Red;
         }
 
-        // Dela with changes to the number of selected input channels
+        // Deal with changes to the number of selected input channels
         private void comboBox_numChannels_SelectedIndexChanged(object sender, EventArgs e)
         {
             numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
@@ -255,8 +255,8 @@ namespace NeuroRighter
         private void button_EnableFilterChanges_Click(object sender, EventArgs e)
         {
             MessageBox.Show("The Potter Lab standard settings for spike detection are: \n" +
-                "\tLow-Cut = 100 Hz\n" +
-                "\tHigh-Cut = 7000 Hz\n" +
+                "\tLow-Cut = 200 Hz\n" +
+                "\tHigh-Cut = 5000 Hz\n" +
                 "\tFilter = 2nd order Butterworth\n" +
                 "Be careful with these settings because they will affect spike\n" +
                 "detection and detected spike shape.");

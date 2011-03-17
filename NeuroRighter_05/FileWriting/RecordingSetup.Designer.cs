@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.checkBox_RecordRaw = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -61,7 +62,9 @@
             this.checkBox_RecordAuxAnalog = new System.Windows.Forms.CheckBox();
             this.checkBox_RecordAuxDig = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.checkBox_RecordSpikeData = new System.Windows.Forms.CheckBox();
+            this.checkBox_RecordSpikes = new System.Windows.Forms.CheckBox();
+            this.button_Cancel = new System.Windows.Forms.Button();
+            this.persistWindowComponent_ForRecSet = new Mowog.PersistWindowComponent(this.components);
             this.SuspendLayout();
             // 
             // checkBox_RecordRaw
@@ -156,11 +159,11 @@
             // 
             // button_MakeRawSelections
             // 
-            this.button_MakeRawSelections.Location = new System.Drawing.Point(93, 345);
+            this.button_MakeRawSelections.Location = new System.Drawing.Point(115, 345);
             this.button_MakeRawSelections.Name = "button_MakeRawSelections";
-            this.button_MakeRawSelections.Size = new System.Drawing.Size(98, 23);
+            this.button_MakeRawSelections.Size = new System.Drawing.Size(79, 23);
             this.button_MakeRawSelections.TabIndex = 83;
-            this.button_MakeRawSelections.Text = "Enter Selections";
+            this.button_MakeRawSelections.Text = "Enter";
             this.button_MakeRawSelections.UseVisualStyleBackColor = true;
             this.button_MakeRawSelections.Click += new System.EventHandler(this.button_MakeRawSelections_Click);
             // 
@@ -376,18 +379,33 @@
             this.label20.TabIndex = 109;
             this.label20.Text = "Spike data";
             // 
-            // checkBox_RecordSpikeData
+            // checkBox_RecordSpikes
             // 
-            this.checkBox_RecordSpikeData.AutoSize = true;
-            this.checkBox_RecordSpikeData.Checked = true;
-            this.checkBox_RecordSpikeData.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_RecordSpikeData.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.checkBox_RecordSpikeData.Location = new System.Drawing.Point(175, 48);
-            this.checkBox_RecordSpikeData.Name = "checkBox_RecordSpikeData";
-            this.checkBox_RecordSpikeData.Size = new System.Drawing.Size(15, 14);
-            this.checkBox_RecordSpikeData.TabIndex = 108;
-            this.checkBox_RecordSpikeData.UseVisualStyleBackColor = true;
-            this.checkBox_RecordSpikeData.CheckedChanged += new System.EventHandler(this.checkBox_RecordSpikeData_CheckedChanged);
+            this.checkBox_RecordSpikes.AutoSize = true;
+            this.checkBox_RecordSpikes.Checked = true;
+            this.checkBox_RecordSpikes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_RecordSpikes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.checkBox_RecordSpikes.Location = new System.Drawing.Point(175, 48);
+            this.checkBox_RecordSpikes.Name = "checkBox_RecordSpikes";
+            this.checkBox_RecordSpikes.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_RecordSpikes.TabIndex = 108;
+            this.checkBox_RecordSpikes.UseVisualStyleBackColor = true;
+            this.checkBox_RecordSpikes.CheckedChanged += new System.EventHandler(this.checkBox_RecordSpikes_CheckedChanged);
+            // 
+            // button_Cancel
+            // 
+            this.button_Cancel.Location = new System.Drawing.Point(26, 345);
+            this.button_Cancel.Name = "button_Cancel";
+            this.button_Cancel.Size = new System.Drawing.Size(79, 23);
+            this.button_Cancel.TabIndex = 110;
+            this.button_Cancel.Text = "Cancel";
+            this.button_Cancel.UseVisualStyleBackColor = true;
+            this.button_Cancel.Click += new System.EventHandler(this.button_Cancel_Click);
+            // 
+            // persistWindowComponent_ForRecSet
+            // 
+            this.persistWindowComponent_ForRecSet.Form = this;
+            this.persistWindowComponent_ForRecSet.XMLFilePath = "WindowState.xml";
             // 
             // RecordingSetup
             // 
@@ -395,8 +413,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(218, 380);
             this.ControlBox = false;
+            this.Controls.Add(this.button_Cancel);
             this.Controls.Add(this.label20);
-            this.Controls.Add(this.checkBox_RecordSpikeData);
+            this.Controls.Add(this.checkBox_RecordSpikes);
             this.Controls.Add(this.checkBox_RecordAuxAnalog);
             this.Controls.Add(this.checkBox_RecordAuxDig);
             this.Controls.Add(this.label18);
@@ -472,6 +491,8 @@
         private System.Windows.Forms.CheckBox checkBox_RecordAuxAnalog;
         private System.Windows.Forms.CheckBox checkBox_RecordAuxDig;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.CheckBox checkBox_RecordSpikeData;
+        private System.Windows.Forms.CheckBox checkBox_RecordSpikes;
+        private System.Windows.Forms.Button button_Cancel;
+        private Mowog.PersistWindowComponent persistWindowComponent_ForRecSet;
     }
 }

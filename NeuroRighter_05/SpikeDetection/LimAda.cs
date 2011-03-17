@@ -40,13 +40,15 @@ namespace NeuroRighter.SpikeDetection
         private rawType tempThreshold;
         private rawType finalThreshold;
         private rawType[] limAdaPrevious;
+        private double[,] thresholdCarryOverBuffer;
+        private bool[] firstPass;
 
 
         public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength, int numPostIn,
             int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp
             , double minSpikeSlope, int spikeIntegrationTime, int spikeSamplingRateIn) : 
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
-            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, spikeIntegrationTime)
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope)
         {
             chunkSize = (int)(0.01 * (rawType)spikeSamplingRateIn); //Big enough for 10ms of data
             numChunks = spikeBufferLength / chunkSize;
@@ -58,6 +60,9 @@ namespace NeuroRighter.SpikeDetection
             limAdaPrevious = new rawType[numChannels];
             for (int i = 0; i < numChannels; ++i)
                 limAdaPrevious[i] = 0.0001;
+
+            thresholdCarryOverBuffer = new double[numChannels,carryOverLength];
+            firstPass = new bool[numChannels];
         }
 
         protected override void updateThreshold(rawType[] data, int channel)
@@ -110,7 +115,6 @@ namespace NeuroRighter.SpikeDetection
                 limAdaPrevious[channel] = tempThreshold;
            }
         }
-
         // Spike detection method that all data goes through at some point
         internal override List<SpikeWaveform> DetectSpikes(rawType[] data, int channel)
         {
@@ -122,7 +126,7 @@ namespace NeuroRighter.SpikeDetection
                 updateThreshold(data, channel);
 
                 // Define position in current data buffer
-                int i = numPre;
+                int i = numPre + initialSamplesToSkip[channel];
 
                 // Create the current data buffer
                 if (!regularDetect[channel])
@@ -130,8 +134,10 @@ namespace NeuroRighter.SpikeDetection
                     // First fill, cannot get the first samples because
                     // the number of "pre" samples will be too low
                     regularDetect[channel] = true; // no longer the first detection
+                    firstPass[channel] = true;
                     spikeDetectionBuffer = new List<double>();
                     spikeDetectionBuffer.AddRange(data);
+                    recIndexOffset = 0;
                 }
                 else
                 {
@@ -143,39 +149,104 @@ namespace NeuroRighter.SpikeDetection
 
                     // Data from this buffer
                     spikeDetectionBuffer.AddRange(data);
+
+                    // Need to account for the fact that we our new spike detection buffer will have
+                    // a starting index that does not start with new data
+                    recIndexOffset = carryOverLength;
+
+                    // We are done with the first pass
+                    firstPass[channel] = false;
                 }
 
                 //Detect spikes, append to waveforms list
-                int indiciesToSearch = spikeDetectionBuffer.Count - carryOverLength + numPre;
-                for (; i < indiciesToSearch; ++i)
+                int indiciesToSearchForCross = spikeDetectionBuffer.Count - carryOverLength + numPre;
+                int indiciesToSearchForReturn = spikeDetectionBuffer.Count - carryOverLength + numPre + maxSpikeWidth;
+
+
+                for (; i < indiciesToSearchForReturn; ++i)
                 {
-                    if (!inASpike[channel])
+                    // For limada, the current threshold is a function of i
+                    if (i < carryOverLength && !firstPass[channel])
                     {
-                        if (spikeDetectionBuffer[i] < threshold[channel, spikeBufferLength - spikeWaveformLength + i] &&
-                            spikeDetectionBuffer[i] > -threshold[channel, spikeBufferLength - spikeWaveformLength + i])
+                        currentThreshold = thresholdCarryOverBuffer[channel, i];
+                    }
+                    else if (firstPass[channel])
+                    {
+                        currentThreshold = threshold[channel, i];
+                    }
+                    else
+                    {
+                        currentThreshold = threshold[channel, i- carryOverLength];
+                    }
+
+                    if (!inASpike[channel] && i < indiciesToSearchForCross)
+                    {
+                        if (spikeDetectionBuffer[i] < currentThreshold &&
+                            spikeDetectionBuffer[i] > -currentThreshold)
                         {
                             continue; // not above threshold, next point please
                         }
                         else
                         {
+                            // We are entering a spike
                             inASpike[channel] = true;
                             enterSpikeIndex = i;
                         }
                     }
-                    else if (spikeDetectionBuffer[i] < threshold[channel, spikeBufferLength - spikeWaveformLength + i] &&
-                             spikeDetectionBuffer[i] > -threshold[channel, spikeBufferLength - spikeWaveformLength + i])
+                    else if (inASpike[channel] &&
+                             spikeDetectionBuffer[i] < currentThreshold &&
+                             spikeDetectionBuffer[i] > -currentThreshold)
                     {
+                        //dbg
+                        if (i == numPre)
+                        {
+                            Console.WriteLine("badness");
+                        }
+
                         // We were in a spike and now we are exiting
                         inASpike[channel] = false;
                         exitSpikeIndex = i;
-                        int spikeWidth = exitSpikeIndex - enterSpikeIndex;
 
-                        // Is this a positive or negative spike?
-                        posSpike = FindSpikePolarityByIntegral();
+                        // Positive or negative crossing
+                        posCross = FindSpikePolarityBySlopeOfCrossing();
+
+
+                        // Search dead-time for a second crossing on the opposite
+                        // threshold of the on that was just crossed. If this has
+                        // occured, integrate the area of the voltage over each
+                        // crossing. The maximal area wins and determins the location
+                        // and polarity of the spike.
+                        if (deadTime > 0)
+                        {
+                            secondaryCross = SearchForSecondCrossing(posCross);
+
+                            // If there is a second crossing, compare the integrals of the 
+                            if (secondaryCross)
+                            {
+                                // find the enter anx exit points for the second porition
+                                // of the spike
+                                secondarySpikeIdx = GetSecondaryEnterExitPoints();
+
+                                // compare integrals of the first and second portions of th
+                                // spike
+                                primarySpikeIntegral = GetSpikeIntegral(posCross, enterSpikeIndex, exitSpikeIndex);
+                                secondarySpikeIntegral = GetSpikeIntegral(posCross, secondarySpikeIdx[0], secondarySpikeIdx[1]);
+
+                                // If the secondary spike is the real one, then redefined the exit/enter points based
+                                // on it
+                                if (secondarySpikeIntegral > primarySpikeIntegral)
+                                {
+                                    posCross = !posCross; // Must be the opposite polarity
+                                    enterSpikeIndex = secondarySpikeIdx[0];
+                                    exitSpikeIndex = secondarySpikeIdx[1];
+                                }
+                            }
+                        }
+
+                        spikeWidth = exitSpikeIndex - enterSpikeIndex;
 
                         // Find the index of the spike maximum
-                        int spikeMaxIndex = FindSpikeMax(spikeDetectionBuffer,
-                            enterSpikeIndex, spikeWidth, posSpike);
+                        int spikeMaxIndex = FindSpikeMax();
 
                         // Define spike waveform
                         rawType[] waveform = new rawType[numPost + numPre + 1];
@@ -186,22 +257,37 @@ namespace NeuroRighter.SpikeDetection
                         if (goodSpike)
                         {
                             // Record the waveform
-                            waveforms.Add(new SpikeWaveform(channel, spikeMaxIndex, threshold[0, channel], waveform));
+                            waveforms.Add(new SpikeWaveform(channel,
+                                spikeMaxIndex - recIndexOffset, threshold[0, channel], waveform));
 
-                            // Advance through deadtime measured from the second threshold crossing
-                            i = exitSpikeIndex + deadtime;
+                            // Carry-over dead time if we are at the end of the buffer
+                            if (i >= indiciesToSearchForCross)
+                                initialSamplesToSkip[channel] = (exitSpikeIndex - indiciesToSearchForCross) + deadTime;
+                            else
+                                initialSamplesToSkip[channel] = 0;
+
+                            // Advance through deadTime measured from the second threshold crossing
+                            i = exitSpikeIndex + deadTime;
                         }
                     }
-                    else if (inASpike[channel] && i == indiciesToSearch - 1)
+                    else if (inASpike[channel] && i == indiciesToSearchForReturn - 1)
+                    {
                         // Spike is taking to long to come back through the threshold, its no good
                         inASpike[channel] = false;
+                        break;
+                    }
+                    else if (!inASpike[channel] && i >= indiciesToSearchForCross)
+                    {
+                        break;
+                    }
 
                 }
 
-                // Create detection carry over buffer from last samples of this buffer that 
+                // Create carry-over buffer from last samples of this buffer
                 int idx = 0;
                 for (i = spikeDetectionBuffer.Count - carryOverLength; i < spikeDetectionBuffer.Count; ++i)
                 {
+                    thresholdCarryOverBuffer[channel,idx] = threshold[channel,i-carryOverLength];
                     detectionCarryOverBuffer[channel][idx] = spikeDetectionBuffer[i];
                     idx++;
                 }

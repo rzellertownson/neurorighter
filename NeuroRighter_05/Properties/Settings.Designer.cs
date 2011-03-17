@@ -528,5 +528,137 @@ namespace NeuroRighter.Properties {
                 this["SigOutDev"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool recordSpikes {
+            get {
+                return ((bool)(this["recordSpikes"]));
+            }
+            set {
+                this["recordSpikes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordRaw {
+            get {
+                return ((bool)(this["recordRaw"]));
+            }
+            set {
+                this["recordRaw"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordSpikeFilt {
+            get {
+                return ((bool)(this["recordSpikeFilt"]));
+            }
+            set {
+                this["recordSpikeFilt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordSalpa {
+            get {
+                return ((bool)(this["recordSalpa"]));
+            }
+            set {
+                this["recordSalpa"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordLFP {
+            get {
+                return ((bool)(this["recordLFP"]));
+            }
+            set {
+                this["recordLFP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordEEG {
+            get {
+                return ((bool)(this["recordEEG"]));
+            }
+            set {
+                this["recordEEG"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordMUA {
+            get {
+                return ((bool)(this["recordMUA"]));
+            }
+            set {
+                this["recordMUA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordStim {
+            get {
+                return ((bool)(this["recordStim"]));
+            }
+            set {
+                this["recordStim"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordAuxAnalog {
+            get {
+                return ((bool)(this["recordAuxAnalog"]));
+            }
+            set {
+                this["recordAuxAnalog"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordAuxDigital {
+            get {
+                return ((bool)(this["recordAuxDigital"]));
+            }
+            set {
+                this["recordAuxDigital"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point recSetFormLoc {
+            get {
+                return ((global::System.Drawing.Point)(this["recSetFormLoc"]));
+            }
+            set {
+                this["recSetFormLoc"] = value;
+            }
+        }
     }
 }

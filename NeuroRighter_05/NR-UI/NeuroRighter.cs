@@ -79,11 +79,12 @@ namespace NeuroRighter
             this.numPre = spikeDet.numPre;
             this.numPost = spikeDet.numPost;
 
-            //Setup default filename
+            //Setup default filename and create recordingSettings object
             this.filenameOutput = "test0001";
             recordingSettings = new RecordingSetup();
             recordingSettings.SettingsHaveChanged += new RecordingSetup.resetRecordingSettingsHandler(recordingSettings_SettingsHaveChanged);
             recordingSettings.SetSpikeFiltAccess(checkBox_spikesFilter.Checked);
+            recordingSettings.RecallDefaultSettings();
 
             this.comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
             if (Properties.Settings.Default.SeparateLFPBoard)
@@ -798,11 +799,12 @@ namespace NeuroRighter
         // Stop data aquisition and clean up
         private void buttonStop_Click(object sender, EventArgs e)
         {
+            Thread.Sleep(100); // Let file writing etc. finish
             if (taskRunning) 
                 reset();
             updateRecSettings();
         }
 
-       
+  
     }
 }

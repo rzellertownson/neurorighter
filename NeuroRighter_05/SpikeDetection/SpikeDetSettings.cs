@@ -40,6 +40,15 @@ namespace NeuroRighter.SpikeDetection
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
             this.numPre = (int)numPreSamples.Value;
             this.numPost = (int)numPostSamples.Value;
+
+            // Set the pre/post sample coversion label
+            label_PreSampConv.Text =
+                Convert.ToDouble(sampleRate) * (double)numPre / 1000.0 + " msec";
+            label_PostSampConv.Text =
+                Convert.ToDouble(sampleRate) * (double)numPost / 1000.0 + " msec";
+
+            // Set min of numPost = numPre
+            numPostSamples.Minimum = numPreSamples.Value;
         }
 
         internal void SetSpikeDetector()
@@ -57,6 +66,7 @@ namespace NeuroRighter.SpikeDetection
             label_deadTimeSamp.Text = detectionDeadTime + " sample(s)";
             label_MinWidthSamp.Text = minSpikeWidth + " sample(s)";
             label_MaxWidthSamp.Text = maxSpikeWidth + " sample(s)";
+
             
             // Half a millisecond to determine spike polarity
             int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate)/1000);
@@ -96,12 +106,28 @@ namespace NeuroRighter.SpikeDetection
 
         private void numPreSamples_ValueChanged(object sender, EventArgs e)
         {
+            // Set min of numPost = numPre
+            numPostSamples.Minimum = numPreSamples.Value;
+
             SettingsHaveChanged(this, e);
+            numPre = (int)numPreSamples.Value;
+            numPost = (int)numPostSamples.Value;
+
+            // Update label
+            label_PreSampConv.Text = 
+                Convert.ToDouble(sampleRate) * (double)numPreSamples.Value / 1000.0 + " msec";
         }
 
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
         {
+            numPre = (int)numPreSamples.Value;
+            numPost = (int)numPostSamples.Value;
+
             SettingsHaveChanged(this, e);
+
+            // Update label
+            label_PostSampConv.Text =
+                Convert.ToDouble(sampleRate) * (double)numPostSamples.Value / 1000.0 + " msec";
         }
 
         private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)
@@ -133,6 +159,7 @@ namespace NeuroRighter.SpikeDetection
         {
             this.Hide();
         }
+
 
 
 

@@ -50,11 +50,11 @@ namespace NeuroRighter.FileWriting
         public RecordingSetup()
         {
             InitializeComponent();
-
+            
+            // Are streams available?
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
             checkBox_RecordEEG.Enabled = Properties.Settings.Default.UseEEG;
             checkBox_RecordStim.Enabled = Properties.Settings.Default.RecordStimTimes;
-
             checkBox_RecordMUA.Enabled = false; // TODO: CREATE SUPPORT FOR MUA
             checkBox_RecordAuxAnalog.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
             checkBox_RecordAuxDig.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
@@ -235,12 +235,35 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordSALPA.Enabled = recSalpaEnable;
         }
 
-
         internal void SetSpikeFiltAccess(bool recSpikeEnable)
         {
             if (!recSpikeEnable)
                 checkBox_RecordSpikeFilt.Checked = false;
             checkBox_RecordSpikeFilt.Enabled = recSpikeEnable;
+        }
+
+        internal void RecallDefaultSettings()
+        {
+
+            // Recall Form location
+            this.Location = Properties.Settings.Default.recSetFormLoc;
+
+            // Load defaults
+            checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
+            checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
+            checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
+            checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
+            checkBox_RecordEEG.Checked = Properties.Settings.Default.recordEEG;
+            checkBox_RecordMUA.Checked = Properties.Settings.Default.recordMUA;
+            checkBox_RecordStim.Checked = Properties.Settings.Default.recordStim;
+            checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
+            checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
+
+        }
+
+        internal void MoveToDefaultLocation()
+        {
+            this.Location = Properties.Settings.Default.recSetFormLoc;
         }
       
         private void checkBox_RecordRaw_CheckedChanged(object sender, EventArgs e)
@@ -292,7 +315,7 @@ namespace NeuroRighter.FileWriting
             SettingsHaveChanged(this, e);
         }
 
-        private void checkBox_RecaordAuxAnalog_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_RecordAuxAnalog_CheckedChanged(object sender, EventArgs e)
         {
             // Set recording parameters
             ResetStreams2Record();
@@ -306,7 +329,7 @@ namespace NeuroRighter.FileWriting
             SettingsHaveChanged(this, e);
         }
 
-        private void checkBox_RecordSpikeData_CheckedChanged(object sender, EventArgs e)
+        private void checkBox_RecordSpikes_CheckedChanged(object sender, EventArgs e)
         {
             // Set recording parameters
             ResetStreams2Record();
@@ -316,7 +339,7 @@ namespace NeuroRighter.FileWriting
         private void ResetStreams2Record()
         {
             // Set recording parameters
-            recordSpike = checkBox_RecordSpikeData.Checked;
+            recordSpike = checkBox_RecordSpikes.Checked;
             recordRaw = checkBox_RecordRaw.Checked;
             recordSALPA = checkBox_RecordSALPA.Checked;
             recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
@@ -330,9 +353,44 @@ namespace NeuroRighter.FileWriting
 
         private void button_MakeRawSelections_Click(object sender, EventArgs e)
         {
+            Properties.Settings.Default.recordSpikes = checkBox_RecordSpikes.Checked;
+            Properties.Settings.Default.recordSalpa = checkBox_RecordSALPA.Checked;
+            Properties.Settings.Default.recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
+            Properties.Settings.Default.recordLFP = checkBox_RecordLFP.Checked;
+            Properties.Settings.Default.recordEEG = checkBox_RecordEEG.Checked;
+            Properties.Settings.Default.recordMUA = checkBox_RecordMUA.Checked;
+            Properties.Settings.Default.recordStim = checkBox_RecordStim.Checked;
+            Properties.Settings.Default.recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
+            Properties.Settings.Default.recordAuxDigital = checkBox_RecordAuxDig.Checked;
+            Properties.Settings.Default.Save();
+
+            // Save form location
+            Properties.Settings.Default.recSetFormLoc = this.Location;
+
             this.Hide();
         }
 
+        private void button_Cancel_Click(object sender, EventArgs e)
+        {
+            // Load defaults
+            checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
+            checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
+            checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
+            checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
+            checkBox_RecordEEG.Checked = Properties.Settings.Default.recordEEG;
+            checkBox_RecordMUA.Checked = Properties.Settings.Default.recordMUA;
+            checkBox_RecordStim.Checked = Properties.Settings.Default.recordStim;
+            checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
+            checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
+
+            // Save form location
+            Properties.Settings.Default.recSetFormLoc = this.Location;
+            
+            this.Hide();
+
+        }
+
+        
 
     }
 }

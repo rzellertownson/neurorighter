@@ -15,6 +15,7 @@ namespace NeuroRighter
         private void button_SetRecordingStreams_Click(object sender, EventArgs e)
         {
             recordingSettings.Refresh();
+            recordingSettings.MoveToDefaultLocation();
             recordingSettings.ShowDialog();
         }
 

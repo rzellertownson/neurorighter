@@ -150,6 +150,7 @@ namespace NeuroRighter
 
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
         {
+
             // Reset recording tasks
             if (taskRunning) { reset(); }
 
@@ -163,6 +164,10 @@ namespace NeuroRighter
             {
                 openLoopSynchronizedOutput.KillAllAODOTasks();
             }
+
+            // Close the recording and spike detection forms
+            spikeDet.Close();
+            recordingSettings.Close();
 
             //Save gain settings
             Properties.Settings.Default.Gain = comboBox_SpikeGain.SelectedIndex;

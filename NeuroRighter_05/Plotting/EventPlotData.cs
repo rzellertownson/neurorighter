@@ -32,7 +32,7 @@ namespace NeuroRighter
     internal class EventPlotData
     {
         private List<PlotSpikeWaveform> waveforms;
-        private Int32 waveformLength; //Num samples
+        internal Int32 waveformLength; //Num samples
         private float boxHeight;
         private float gain;
         private Int32 numRows;
@@ -46,7 +46,7 @@ namespace NeuroRighter
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
 
-        internal EventPlotData(Int32 numChannels, Int32 waveformLength, Single boxHeight, Int32 numRows, 
+        internal EventPlotData(Int32 numChannels, Int32 waveformLength, Single boxHeight, Int32 numRows,
             Int32 numCols, Int32 maxWaveforms, String channelMapping)
         {
             this.waveformLength = waveformLength;
@@ -100,8 +100,8 @@ namespace NeuroRighter
 
         internal void start() { bgWorker.RunWorkerAsync(); }
         internal void stop() { bgWorker.CancelAsync(); }
-        
-//Would benefit from not doing graphic alignment in 'write', but rather 'read'
+
+        //Would benefit from not doing graphic alignment in 'write', but rather 'read'
         internal void write(List<SpikeWaveform> newWaveforms)
         {
             //Only read first maxWaveforms for each channel
@@ -149,7 +149,7 @@ namespace NeuroRighter
         {
             lock (waveforms)
             {
-                waveforms.Clear(); 
+                waveforms.Clear();
                 for (int i = 0; i < numWfmsStored.Length; ++i) numWfmsStored[i] = 0;
             }
         }

@@ -37,6 +37,9 @@ using NeuroRighter.Aquisition;
 using NeuroRighter.Output;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace NeuroRighter
 {
@@ -142,6 +145,7 @@ namespace NeuroRighter
         private int SALPA_WIDTH;
 
         //Plots
+        private List<Microsoft.Xna.Framework.Graphics.Color> NRBrainbow;
         private GridGraph spikeGraph;
         private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;

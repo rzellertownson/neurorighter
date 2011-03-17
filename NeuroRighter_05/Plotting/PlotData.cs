@@ -43,9 +43,9 @@ namespace NeuroRighter
         protected Double refreshTime; //In Seconds
         protected float boxHeight; //Height (amplitude) of each graph box
         protected Int32 numRows;  //For display data
-        protected Int32 numCols;
+        internal Int32 numCols;
         protected String channelMapping;
-        protected int numSamplesPerPlot;
+        internal int numSamplesPerPlot;
         protected float halfBoxHeight;
 
         internal delegate void dataAcquiredHandler(object sender);
@@ -144,7 +144,7 @@ namespace NeuroRighter
                             temp = data[channel][(k + readHead) % bufferLength] * gain; //NB: Should check for wrapping once in advance, rather than modding every time
                             if (temp > boxHeight * 0.5F)
                                 temp = boxHeight * 0.5F;
-                            else if (temp < -boxHeight *0.5F)
+                            else if (temp < -boxHeight * 0.5F)
                                 temp = -boxHeight * 0.5F;
                             //Translate data down and into output buffer
                             outputData[i][numSamplesPerPlot * j + k] = temp - i * boxHeight;
@@ -196,7 +196,7 @@ namespace NeuroRighter
 
         internal virtual float[][] readthresh(float[] currentThresholds)
         {
-            
+
             float temp;
             if (numChannels == 16 || numChannels == 64)
             {
@@ -255,7 +255,7 @@ namespace NeuroRighter
                         else if (temp < -boxHeight * 0.5F)
                             temp = -boxHeight * 0.5F;
                         //Translate data down and into output buffer
-                       outputThreshData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5F * boxHeight;
+                        outputThreshData[5][numSamplesPerPlot * (i + 2) + k] = temp - 5F * boxHeight;
                     }
                 }
             }
@@ -267,7 +267,7 @@ namespace NeuroRighter
                 outThreshDat[i] = new float[outputThreshData[i].Length];
                 Array.Copy(outputThreshData[i], outThreshDat[i], outputThreshData[i].Length);
             }
-            return outThreshDat ;
+            return outThreshDat;
         }
 
         internal void skipRead()
@@ -276,7 +276,6 @@ namespace NeuroRighter
             readHead = readHead % bufferLength;
             for (int i = 0; i < numChannels; ++i) numWrites[i] -= numSamplesPerPlot;
         }
-
 
         internal void setGain(float gain) { this.gain = gain; }
         internal float getGain() { return gain; }

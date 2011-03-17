@@ -46,6 +46,7 @@ using NeuroRighter.Aquisition;
 using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
+using ExtensionMethods;
 
 namespace NeuroRighter
 {
@@ -112,6 +113,9 @@ namespace NeuroRighter
             //Create plots
             try
             {
+                //Create plot colormap
+                NRBrainbow = numChannels.GenerateBrainbow();
+
                 double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
 
                 spikeGraph = new GridGraph();
@@ -179,7 +183,7 @@ namespace NeuroRighter
                     MessageBox.Show("An output file must be selected before recording."); //display an error message
                     return;
                 }
-                
+
                 // If the user is just doing repeated recordings
                 if (checkbox_repeatRecord.Checked)
                 {
@@ -199,7 +203,7 @@ namespace NeuroRighter
                         return;
                 }
 
-                recordingSettings.SetFID (filenameBase);
+                recordingSettings.SetFID(filenameBase);
                 recordingSettings.SetNumElectrodes(numChannels);
                 NRAcquisitionSetup();
                 NRStartRecording();
@@ -343,7 +347,7 @@ namespace NeuroRighter
                         //Pipe ai dev0's sample clock to slave devices
                         spikeTask[i].Timing.ConfigureSampleClock("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/SampleClock", spikeSamplingRate,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
-                        
+
                         //Trigger off of ai dev0's trigger
                         spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
                             "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
@@ -554,7 +558,7 @@ namespace NeuroRighter
                             Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
                     }
                     #endregion
-                    
+
                     SetupFileWriting();
 
                     #region Setup_Filters
@@ -772,14 +776,14 @@ namespace NeuroRighter
                     firstRawWrite = true;
 
                     // 1. spk stream
-                    recordingSettings.Setup("spk",spikeTask[0],numPre,numPost);
+                    recordingSettings.Setup("spk", spikeTask[0], numPre, numPost);
 
                     // 2. raw streams
-                    recordingSettings.Setup("raw",spikeTask[0]);
+                    recordingSettings.Setup("raw", spikeTask[0]);
                     recordingSettings.Setup("salpa", spikeTask[0]);
                     recordingSettings.Setup("spkflt", spikeTask[0]);
                     if (Properties.Settings.Default.SeparateLFPBoard)
-                        recordingSettings.Setup("lfp",lfpTask,lfpSamplingRate);
+                        recordingSettings.Setup("lfp", lfpTask, lfpSamplingRate);
                     else
                         recordingSettings.Setup("lfp", spikeTask[0], lfpSamplingRate);
                     recordingSettings.Setup("eeg", eegTask, eegSamplingRate);
@@ -800,11 +804,11 @@ namespace NeuroRighter
         private void buttonStop_Click(object sender, EventArgs e)
         {
             Thread.Sleep(100); // Let file writing etc. finish
-            if (taskRunning) 
+            if (taskRunning)
                 reset();
             updateRecSettings();
         }
 
-  
+
     }
 }

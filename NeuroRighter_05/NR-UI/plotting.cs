@@ -61,7 +61,9 @@ namespace NeuroRighter
                 float[][] threshdata2 = pd.readthresh(currentThresh[1]);
 
                 for (int i = 0; i < data.Length; ++i)
-                    spikeGraph.plotYWithThresh(data[i], threshdata1[i], threshdata2[i], 0, 1, Microsoft.Xna.Framework.Graphics.Color.Lime, Microsoft.Xna.Framework.Graphics.Color.SlateGray, i);
+                    spikeGraph.plotYWithThresh(data[i], threshdata1[i], threshdata2[i],
+                        0, 1, NRBrainbow, pd.numSamplesPerPlot,
+                        Microsoft.Xna.Framework.Graphics.Color.SlateGray, i);
                 spikeGraph.Invalidate();
             }
 
@@ -73,10 +75,10 @@ namespace NeuroRighter
                 //Toggle recording light
                 if (recordingLEDState++ == 1)
                 {
-                    if (led_recording.OnColor == Color.Red)
+                    if (led_recording.OnColor == Color.DarkGreen)
                         led_recording.OnColor = Color.Lime;
                     else
-                        led_recording.OnColor = Color.Red;
+                        led_recording.OnColor = Color.DarkGreen;
                 }
                 recordingLEDState %= 2;
             }
@@ -96,7 +98,7 @@ namespace NeuroRighter
                     int channel = wfms[i].channel;
                     if (Properties.Settings.Default.ChannelMapping == "invitro")
                         channel = (MEAChannelMappings.ch2rc[channel, 0] - 1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
-                    spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, Microsoft.Xna.Framework.Graphics.Color.Lime,
+                    spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
                         numSpkWfms[channel]++ + channel * maxWaveforms);
                     numSpkWfms[channel] %= maxWaveforms;
                 }
@@ -120,7 +122,7 @@ namespace NeuroRighter
                 for (int i = 0; i < data.Length; ++i)
                     //lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
                     //    (double)pd.downsample / (double)lfpSamplingRate);
-                    lfpGraph.plotY(data[i], 0F, 1F, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                    lfpGraph.plotY(data[i], 0F, 1F, NRBrainbow, i);
                 lfpGraph.Invalidate();
             }
             else { pd.skipRead(); }
@@ -136,7 +138,7 @@ namespace NeuroRighter
                 for (int i = 0; i < data.Length; ++i)
                     //lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
                     //    (double)pd.downsample / (double)lfpSamplingRate);
-                    muaGraph.plotY(data[i], 0F, 1F, Microsoft.Xna.Framework.Graphics.Color.Lime, i);
+                    muaGraph.plotY(data[i], 0F, 1F, NRBrainbow, i);
                 muaGraph.Invalidate();
             }
             else { pd.skipRead(); }

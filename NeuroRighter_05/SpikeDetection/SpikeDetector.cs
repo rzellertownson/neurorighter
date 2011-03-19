@@ -67,15 +67,12 @@ namespace NeuroRighter.SpikeDetection
         protected int minSpikeWidth;
         protected double maxSpikeAmp;
         protected double minSpikeSlope;
-        //protected int spikeIntegrationTime; // one millisecond's worth of samples at the current sampling rate
-        //protected int spikeDiffTime; // To validate spike slope
-
-        // Data for write
         protected bool[] regularDetect;
         protected List<double> spikeDetectionBuffer; // buffer for single channe's worth of spike data
         protected bool posCross; // polarity of inital threshold crossing
-        protected bool secondaryCross; // Is there another crossing within the dead-time after the first?
         protected int recIndexOffset;
+        protected int[] deadWidth;
+        protected bool inBounds;
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, 
             int spikeWaveformLength, int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime,
@@ -95,7 +92,12 @@ namespace NeuroRighter.SpikeDetection
             this.minSpikeWidth = minSpikeWidth;
             this.maxSpikeAmp = maxSpikeAmp;
             this.minSpikeSlope = minSpikeSlope;
-            this.carryOverLength = spikeWaveformLength + 2*maxSpikeWidth;
+
+            if (deadTime != 0)
+                this.carryOverLength = numPre + 2*maxSpikeWidth + deadTime + numPost;
+            else
+                this.carryOverLength = numPre + maxSpikeWidth + numPost;
+
             this.initialSamplesToSkip = new int[numChannels];
 
             detectionCarryOverBuffer = new rawType[numChannels][];
@@ -185,11 +187,13 @@ namespace NeuroRighter.SpikeDetection
                         if (spikeDetectionBuffer[i] < currentThreshold &&
                             spikeDetectionBuffer[i] > -currentThreshold)
                         {
+                            inBounds = true;
                             continue; // not above threshold, next point please
                         }
-                        else
+                        else if(inBounds)
                         {
                             // We are entering a spike
+                            inBounds = false;
                             inASpike[channel] = true;
                             enterSpikeIndex = i;
                         }
@@ -198,11 +202,6 @@ namespace NeuroRighter.SpikeDetection
                              spikeDetectionBuffer[i] < currentThreshold &&
                              spikeDetectionBuffer[i] > -currentThreshold)
                     {
-                        //dbg
-                        if (i == numPre)
-                        {
-                            Console.WriteLine("badness");
-                        }
 
                         // We were in a spike and now we are exiting
                         inASpike[channel] = false;
@@ -211,55 +210,73 @@ namespace NeuroRighter.SpikeDetection
                         // Positive or negative crossing
                         posCross = FindSpikePolarityBySlopeOfCrossing();
 
-
-                        // Search dead-time for a second crossing on the opposite
-                        // threshold of the on that was just crossed. If this has
-                        // occured, integrate the area of the voltage over each
-                        // crossing. The maximal area wins and determins the location
-                        // and polarity of the spike.
-                        if (deadTime > 0)
-                        {
-                            secondaryCross = SearchForSecondCrossing(posCross);
-
-                            // If there is a second crossing, compare the integrals of the 
-                            if (secondaryCross)
-                            {
-                                // find the enter anx exit points for the second porition
-                                // of the spike
-                                secondarySpikeIdx = GetSecondaryEnterExitPoints();
-
-                                // compare integrals of the first and second portions of th
-                                // spike
-                                primarySpikeIntegral = GetSpikeIntegral(posCross, enterSpikeIndex, exitSpikeIndex);
-                                secondarySpikeIntegral = GetSpikeIntegral(posCross, secondarySpikeIdx[0], secondarySpikeIdx[1]);
-
-                                // If the secondary spike is the real one, then redefined the exit/enter points based
-                                // on it
-                                if (secondarySpikeIntegral > primarySpikeIntegral)
-                                {
-                                    posCross = !posCross; // Must be the opposite polarity
-                                    enterSpikeIndex = secondarySpikeIdx[0];
-                                    exitSpikeIndex = secondarySpikeIdx[1];
-                                }
-                            }
-                        }
-
+                        // Calculate Spike width
                         spikeWidth = exitSpikeIndex - enterSpikeIndex;
        
-                        // Find the index of the spike maximum
-                        int spikeMaxIndex = FindSpikeMax();
+                        // Find the index + value of the spike maximum
+                        int spikeMaxIndex = FindMaxDeflection(posCross, enterSpikeIndex, spikeWidth);
+                        double spikeMax = spikeDetectionBuffer[spikeMaxIndex];
 
                         // Define spike waveform
-                        rawType[] waveform = new rawType[numPost + numPre + 1];
-                        for (int j = spikeMaxIndex - numPre; j < spikeMaxIndex + numPost + 1; ++j)
-                            waveform[j - spikeMaxIndex + numPre] = spikeDetectionBuffer[j];
+                        rawType[] waveform = CreateWaveform(spikeMaxIndex);
 
+                        // Check if the spike is any good
                         bool goodSpike = CheckSpike(spikeWidth, waveform);
-                        if (goodSpike)
+                        
+
+                        if (!goodSpike)
                         {
+                            // If the spike is no good
+                            continue;
+                        }
+                        else
+                        {
+                            // Infection point within dead time?
+                            bool inflectionWithinDead = true;
+
+                            // Check the dead time for higher amplitdude waveform
+                            int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
+
+                            // Is this actually an infection point?
+                            int deadMaxIndex1 = deadMaxIndex + 1;
+
+                            // If its not the infection point
+                            if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
+                                // Forget it, we will catch this spike after the dead time
+                                inflectionWithinDead = false;
+
+                            // Get the maximal value in the dead time
+                            double deadMax = spikeDetectionBuffer[deadMaxIndex]; 
+
+                            // Is it larger than the peak of the detected spike?
+                            bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
+
+                            if (lookAtDeadWave)
+                            {
+                                // If the deadMax is actually larger than the original 
+                                // detection's max point
+                                rawType[] deadWaveform = CreateWaveform(deadMaxIndex);
+
+                                // get the spike width around this max point
+                                deadWidth = FindWidthFromMaxInd(deadMaxIndex);
+
+                                if (deadWidth != null)
+                                {
+                                    bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
+
+                                    if (goodDeadSpike && inflectionWithinDead)
+                                    {
+                                        waveform = deadWaveform;
+                                        spikeMaxIndex = deadMaxIndex;
+                                        spikeMax = deadMax;
+                                        exitSpikeIndex = deadWidth[1];
+                                    }
+                                }
+                            }
+
                             // Record the waveform
                             waveforms.Add(new SpikeWaveform(channel, 
-                                spikeMaxIndex - recIndexOffset, threshold[0, channel], waveform));
+                                spikeMaxIndex - recIndexOffset, currentThreshold, waveform));
 
                             // Carry-over dead time if we are at the end of the buffer
                             if (i >= indiciesToSearchForCross)
@@ -267,8 +284,15 @@ namespace NeuroRighter.SpikeDetection
                             else
                                 initialSamplesToSkip[channel] = 0;
 
-                            // Advance through deadTime measured from the second threshold crossing
-                            i = exitSpikeIndex + deadTime;
+                            // Advance through deadTime measured from the spike exit index
+                            if (!inflectionWithinDead && deadWidth !=null)
+                            {
+                                i = exitSpikeIndex + deadWidth[0]-1;
+                            }
+                            else
+                            {
+                                i = exitSpikeIndex + deadTime;
+                            }
                         }
                     }
                     else if (inASpike[channel] && i == indiciesToSearchForReturn - 1)
@@ -341,23 +365,51 @@ namespace NeuroRighter.SpikeDetection
             return true;
         }
 
-        protected int FindSpikeMax()
+        protected int FindMaxDeflection(int startInd, int widthToSearch)
         {
-            List<double> spkSnip = spikeDetectionBuffer.GetRange(enterSpikeIndex, spikeWidth);
+            List<double> spkSnip = spikeDetectionBuffer.GetRange(startInd, widthToSearch);
+
+            // Find absolute maximum
+            for (int i = 0; i < spkSnip.Count; ++i)
+                spkSnip[i] = Math.Abs(spkSnip[i]);
+            return spkSnip.MaxIndex() + startInd;
+
+        }
+
+        protected int FindMaxDeflection(bool positiveCross, int startInd, int widthToSearch)
+        {
+            List<double> spkSnip = spikeDetectionBuffer.GetRange(startInd, widthToSearch);
+
+            // Switch between max or min
             if (posCross)
-                return spkSnip.MaxIndex() + enterSpikeIndex;
+            {
+                return spkSnip.MaxIndex() + startInd;
+            }
             else
-                return spkSnip.MinIndex() + enterSpikeIndex;
+            {
+                return spkSnip.MinIndex() + startInd;
+            }
 
         }
 
-        protected double GetSpikeIntegral(bool posCross, int enterIdx, int exitIdx)
-        {
-            // Estimate the area of a spike (defined as the area from the
-            // threshold crossing)
-            double tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Sum();
-            return Math.Abs(tempInt) - (exitIdx - enterIdx) * currentThreshold;
-        }
+        //protected double GetSpikeIntegral(bool posCross, int enterIdx, int exitIdx)
+        //{
+        //    // Estimate the area of a spike (defined as the area from the
+        //    // threshold crossing)
+        //    double tempInt;
+        //    List<double> temp = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx);
+        //    if (posCross)
+        //    {
+        //        tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Max();
+        //    }
+        //    else
+        //    {
+        //        tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Min();
+        //    }
+        //    //List<double> temp = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx);
+        //    //double tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Sum();
+        //    return Math.Abs(tempInt); //- (exitIdx - enterIdx) * currentThreshold;
+        //}
 
         protected double GetSpikeSlope(double[] absWave)
         {
@@ -443,6 +495,48 @@ namespace NeuroRighter.SpikeDetection
             return enterExit;
         }
 
+        protected rawType[] CreateWaveform(int maxIdx)
+        {
+            rawType[] waveform = new rawType[numPost + numPre + 1];
+            for (int j = maxIdx - numPre; j < maxIdx + numPost + 1; ++j)
+                waveform[j - maxIdx + numPre] = spikeDetectionBuffer[j];
+            return waveform;
+        }
 
+        protected int[] FindWidthFromMaxInd(int maxIdx)
+        {
+            int[] enterExitWidth = new int[3];
+
+            for (int i = 1; i < maxSpikeWidth; ++i)
+            {
+                if (spikeDetectionBuffer[maxIdx - i] < currentThreshold &&
+                    spikeDetectionBuffer[maxIdx - i] > -currentThreshold)
+                {
+                    enterExitWidth[0] = maxIdx - i;
+                    break;
+                }
+                else if (i == maxSpikeWidth - 1)
+                {
+                    return null;
+                }
+            }
+
+            for (int i = 1; i < maxSpikeWidth; ++i)
+            {
+                if (spikeDetectionBuffer[maxIdx + i] < currentThreshold &&
+                    spikeDetectionBuffer[maxIdx + i] > -currentThreshold)
+                {
+                    enterExitWidth[1] = maxIdx + i;
+                    enterExitWidth[2] = enterExitWidth[1] - enterExitWidth[0];
+                    return enterExitWidth;
+                }
+                else if (i == maxSpikeWidth - 1)
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
     }
 }

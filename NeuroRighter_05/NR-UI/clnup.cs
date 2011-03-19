@@ -119,6 +119,7 @@ namespace NeuroRighter
             textBox_lfpSamplingRate.Enabled = true;
             textBox_MUASamplingRate.Enabled = true;
             button_startStimFromFile.Enabled = true;
+            numericUpDown_NumSnipsDisplayed.Enabled = true;
 
             if (Properties.Settings.Default.UseEEG)
             {

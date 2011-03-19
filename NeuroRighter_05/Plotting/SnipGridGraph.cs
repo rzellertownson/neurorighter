@@ -56,32 +56,20 @@ namespace NeuroRighter
         private double timeRange; //in seconds
         private Vector2 voltageTimeLabelCoords;
 
-        private const int NUM_WAVEFORMS_PER_PLOT = 20;
+        private int  waveformsPerPlot;
 
-        internal void setup(int numRows, int numColumns, int numSamplesPerPlot, bool isSpikeWaveformPlot, double timeRange, double voltageRange)
+        internal void setup(int numRows, int numColumns, int waveformsPerPlot,
+            int numSamplesPerPlot, bool isSpikeWaveformPlot, double timeRange, double voltageRange)
         {
             this.numRows = numRows; this.numCols = numColumns; this._isSpikeWaveformPlot = isSpikeWaveformPlot;
             this.numSamplesPerPlot = numSamplesPerPlot;
-            if (!isSpikeWaveformPlot)
-            {
-                lines = new List<VertexPositionColor[]>(numRows); // Room for data 
-                threshlines1 = new List<VertexPositionColor[]>(numRows); // Room for upper threshold
-                threshlines2 = new List<VertexPositionColor[]>(numRows); // Room for lower threshold
-                for (int i = 0; i < numRows; ++i)
-                {
-                    lines.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
-                    threshlines1.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
-                    threshlines2.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
-                }
-                idx = new int[numSamplesPerPlot * numCols];
-            }
-            else
-            {
-                lines = new List<VertexPositionColor[]>(numCols * numRows * NUM_WAVEFORMS_PER_PLOT);
-                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
-                    lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-                idx = new int[numSamplesPerPlot];
-            }
+            this.waveformsPerPlot = waveformsPerPlot;
+
+            lines = new List<VertexPositionColor[]>(numCols * numRows *  waveformsPerPlot);
+            for (int i = 0; i < numCols * numRows *  waveformsPerPlot; ++i)
+                lines.Add(new VertexPositionColor[numSamplesPerPlot]);
+            idx = new int[numSamplesPerPlot];
+
 
             gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
 
@@ -90,28 +78,14 @@ namespace NeuroRighter
 
             this.timeRange = timeRange;
             this.voltageRange = voltageRange;
+
         }
 
         internal void clear()
         {
-            if (!_isSpikeWaveformPlot)
-            {
                 lines.Clear();
-                threshlines1.Clear();
-                threshlines2.Clear();
-                for (int i = 0; i < numRows; ++i)
-                {
-                    lines.Add(new VertexPositionColor[numSamplesPerPlot * numCols]);
-                    threshlines1.Add(new VertexPositionColor[numSamplesPerPlot * numCols]);
-                    threshlines2.Add(new VertexPositionColor[numSamplesPerPlot * numCols]);
-                }
-            }
-            else
-            {
-                lines.Clear();
-                for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
+                for (int i = 0; i < numCols * numRows *  waveformsPerPlot; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-            }
         }
 
         protected override void Initialize()
@@ -263,6 +237,7 @@ namespace NeuroRighter
         }
 
         private object voltageTimeLabelLock = new object();
+
         private void updateVoltageTime()
         {
             if (font != null) //Prevents this from being called if object isn't initalized

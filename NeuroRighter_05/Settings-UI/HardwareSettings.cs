@@ -238,12 +238,14 @@ namespace NeuroRighter
                 Properties.Settings.Default.EEGDevice = Convert.ToString(comboBox_EEG.SelectedItem);
             if (radioButton_8Mux.Checked)
                 Properties.Settings.Default.MUXChannels = 8;
-            if (checkBox_UseAODO.Checked)
-                Properties.Settings.Default.SigOutDev = Convert.ToString(comboBox_SigOutDev.SelectedItem);
             else
                 Properties.Settings.Default.MUXChannels = 16;
-            if (radioButton_8bit.Checked) { Properties.Settings.Default.StimPortBandwidth = 8; }
-            else { Properties.Settings.Default.StimPortBandwidth = 32; }
+            if (radioButton_8bit.Checked) 
+            { Properties.Settings.Default.StimPortBandwidth = 8; }
+            else 
+            { Properties.Settings.Default.StimPortBandwidth = 32; }
+            if (checkBox_UseAODO.Checked)
+                Properties.Settings.Default.SigOutDev = Convert.ToString(comboBox_SigOutDev.SelectedItem);
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
             Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
             Properties.Settings.Default.StimIvsVDevice = Convert.ToString(comboBox_IVControlDevice.SelectedItem);

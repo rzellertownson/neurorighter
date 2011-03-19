@@ -244,6 +244,7 @@ namespace NeuroRighter
                     button_startStimFromFile.Enabled = false;
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
+                    numericUpDown_NumSnipsDisplayed.Enabled = false;
 
                     // Find out how many devs and channels/dev we are going to need
                     int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
@@ -431,6 +432,9 @@ namespace NeuroRighter
                     /**************************************************
                     /*   Setup plotting
                     /**************************************************/
+
+                    numSnipsDisplayed = (int)numericUpDown_NumSnipsDisplayed.Value;
+
                     if (Properties.Settings.Default.UseEEG)
                     {
                         eegGraph.ClearData();
@@ -541,7 +545,7 @@ namespace NeuroRighter
                     }
 
                     waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
-                        numRows, numCols, MAX_SPK_WFMS, Properties.Settings.Default.ChannelMapping);
+                        numRows, numCols, numSnipsDisplayed, Properties.Settings.Default.ChannelMapping);
                     waveformPlotData.setGain(Properties.Settings.Default.SpkWfmDisplayGain);
                     spkWfmGraph.setDisplayGain(Properties.Settings.Default.SpkWfmDisplayGain);
                     waveformPlotData.dataAcquired += new EventPlotData.dataAcquiredHandler(waveformPlotData_dataAcquired);
@@ -803,12 +807,10 @@ namespace NeuroRighter
         // Stop data aquisition and clean up
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            Thread.Sleep(100); // Let file writing etc. finish
+            Thread.Sleep(200); // Let file writing etc. finish
             if (taskRunning)
                 reset();
             updateRecSettings();
         }
-
-
     }
 }

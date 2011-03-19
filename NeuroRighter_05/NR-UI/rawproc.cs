@@ -428,7 +428,7 @@ namespace NeuroRighter
                 }
                 catch (DaqException exception)
                 {
-                    MessageBox.Show(exception.Message); //Display Errors
+                //    MessageBox.Show(exception.Message); //Display Errors
                     reset();
                 }
             }

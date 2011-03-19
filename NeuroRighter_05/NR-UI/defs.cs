@@ -153,6 +153,7 @@ namespace NeuroRighter
         private short recordingLEDState = 0;
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety
         private delegate void crossThreadFormUpdateDelegate(int item); //Used for making cross thread calls from stimbuffer, file2stim, etc to NR
+        private int numSnipsDisplayed;
 
         // Spike detection
         private SpikeDetSettings spikeDet;
@@ -173,9 +174,8 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.01; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.02; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
-        private const int MAX_SPK_WFMS = 10; //Max. num. of plotted spike waveforms, before clearing and starting over
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
         private const int STIM_BUFFER_LENGTH = 20;  //#pts. to keep in stim time reading buffer

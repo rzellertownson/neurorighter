@@ -443,10 +443,12 @@ namespace NeuroRighter
             // radioButton_16Mux
             // 
             this.radioButton_16Mux.AutoSize = true;
+            this.radioButton_16Mux.Checked = true;
             this.radioButton_16Mux.Location = new System.Drawing.Point(85, 19);
             this.radioButton_16Mux.Name = "radioButton_16Mux";
             this.radioButton_16Mux.Size = new System.Drawing.Size(79, 17);
             this.radioButton_16Mux.TabIndex = 12;
+            this.radioButton_16Mux.TabStop = true;
             this.radioButton_16Mux.Text = "16 Channel";
             this.radioButton_16Mux.UseVisualStyleBackColor = true;
             this.radioButton_16Mux.CheckedChanged += new System.EventHandler(this.radioButton_16Mux_CheckedChanged);
@@ -454,12 +456,10 @@ namespace NeuroRighter
             // radioButton_8Mux
             // 
             this.radioButton_8Mux.AutoSize = true;
-            this.radioButton_8Mux.Checked = true;
             this.radioButton_8Mux.Location = new System.Drawing.Point(6, 19);
             this.radioButton_8Mux.Name = "radioButton_8Mux";
             this.radioButton_8Mux.Size = new System.Drawing.Size(73, 17);
             this.radioButton_8Mux.TabIndex = 11;
-            this.radioButton_8Mux.TabStop = true;
             this.radioButton_8Mux.Text = "8 Channel";
             this.radioButton_8Mux.UseVisualStyleBackColor = true;
             this.radioButton_8Mux.CheckedChanged += new System.EventHandler(this.radioButton_8Mux_CheckedChanged);

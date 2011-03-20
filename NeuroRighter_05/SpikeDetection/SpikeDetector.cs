@@ -251,14 +251,14 @@ namespace NeuroRighter.SpikeDetection
                             // Is it larger than the peak of the detected spike?
                             bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
 
+                            // get the spike width around this max point
+                            deadWidth = FindWidthFromMaxInd(deadMaxIndex);
+
                             if (lookAtDeadWave)
                             {
                                 // If the deadMax is actually larger than the original 
                                 // detection's max point
                                 rawType[] deadWaveform = CreateWaveform(deadMaxIndex);
-
-                                // get the spike width around this max point
-                                deadWidth = FindWidthFromMaxInd(deadMaxIndex);
 
                                 if (deadWidth != null)
                                 {
@@ -287,7 +287,7 @@ namespace NeuroRighter.SpikeDetection
                             // Advance through deadTime measured from the spike exit index
                             if (!inflectionWithinDead && deadWidth !=null)
                             {
-                                i = exitSpikeIndex + deadWidth[0]-1;
+                                i = deadWidth[0]-1;
                             }
                             else
                             {
@@ -436,64 +436,64 @@ namespace NeuroRighter.SpikeDetection
             return spikeDetectionBuffer[enterSpikeIndex] > 0;
         }
 
-        protected bool SearchForSecondCrossing(bool positiveCross)
-        {
-            if (positiveCross)
-            {
-                // Search for a negative crossing that occurs within the deadTime
-                return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Min() < -currentThreshold;
-            }
-            else
-            {
-                // Search for a postive crossing that occurs within the deadTime
-                return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Max() > currentThreshold;
+        //protected bool SearchForSecondCrossing(bool positiveCross)
+        //{
+        //    if (positiveCross)
+        //    {
+        //        // Search for a negative crossing that occurs within the deadTime
+        //        return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Min() < -currentThreshold;
+        //    }
+        //    else
+        //    {
+        //        // Search for a postive crossing that occurs within the deadTime
+        //        return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Max() > currentThreshold;
 
-            }
-        }
+        //    }
+        //}
 
-        protected int[] GetSecondaryEnterExitPoints()
-        {
-            bool inASpike = false;
-            int[] enterExit = new int[2];
-            for (int i = 0; i < deadTime + maxSpikeWidth; i++)
-            {
-                if (!inASpike)
-                {
-                    if (spikeDetectionBuffer[exitSpikeIndex + i] < currentThreshold &&
-                        spikeDetectionBuffer[exitSpikeIndex + i] > -currentThreshold)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        enterExit[0] = exitSpikeIndex + i;
-                        inASpike = true;
-                    }
-                }
-                else
-                {
-                    if (spikeDetectionBuffer[exitSpikeIndex + i] > currentThreshold &&
-                        spikeDetectionBuffer[exitSpikeIndex + i] < -currentThreshold)
-                    {
-                        if (i == deadTime + maxSpikeWidth - 1)
-                        {
-                            // secondary spike is too wide, return original indicies
-                            enterExit[0] = enterSpikeIndex;
-                            enterExit[1] = exitSpikeIndex;
-                            break;
-                        }
-                        continue;
-                    }
-                    else
-                    {
-                        enterExit[1] = exitSpikeIndex + i;
-                        break;
-                    }
-                }
-            }
+        //protected int[] GetSecondaryEnterExitPoints()
+        //{
+        //    bool inASpike = false;
+        //    int[] enterExit = new int[2];
+        //    for (int i = 0; i < deadTime + maxSpikeWidth; i++)
+        //    {
+        //        if (!inASpike)
+        //        {
+        //            if (spikeDetectionBuffer[exitSpikeIndex + i] < currentThreshold &&
+        //                spikeDetectionBuffer[exitSpikeIndex + i] > -currentThreshold)
+        //            {
+        //                continue;
+        //            }
+        //            else
+        //            {
+        //                enterExit[0] = exitSpikeIndex + i;
+        //                inASpike = true;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (spikeDetectionBuffer[exitSpikeIndex + i] > currentThreshold &&
+        //                spikeDetectionBuffer[exitSpikeIndex + i] < -currentThreshold)
+        //            {
+        //                if (i == deadTime + maxSpikeWidth - 1)
+        //                {
+        //                    // secondary spike is too wide, return original indicies
+        //                    enterExit[0] = enterSpikeIndex;
+        //                    enterExit[1] = exitSpikeIndex;
+        //                    break;
+        //                }
+        //                continue;
+        //            }
+        //            else
+        //            {
+        //                enterExit[1] = exitSpikeIndex + i;
+        //                break;
+        //            }
+        //        }
+        //    }
 
-            return enterExit;
-        }
+        //    return enterExit;
+        //}
 
         protected rawType[] CreateWaveform(int maxIdx)
         {

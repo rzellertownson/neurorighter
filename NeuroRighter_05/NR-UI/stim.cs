@@ -630,31 +630,46 @@ namespace NeuroRighter
 
         internal void ResetUIAfterOpenLoopOut(bool comingFromFail)
         {
-            if (openLoopSynchronizedOutput != null)
-                openLoopSynchronizedOutput.KillAllAODOTasks();
-
-            //ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
-            //    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
-            //    STIM_SAMPLING_FREQ);
-
-            //int[] analogChannelsToZero = { 0, 1, 2, 3 };
-            //zeroOpenLoopOutput.ZeroAOChanOnDev(
-            //    Properties.Settings.Default.SigOutDev, analogChannelsToZero);
-            //zeroOpenLoopOutput.ZeroAOChanOnDev(
-            //    Properties.Settings.Default.StimulatorDevice, analogChannelsToZero);
-            //zeroOpenLoopOutput.ZeroPortOnDev(
-            //    Properties.Settings.Default.SigOutDev, 0);
-            //zeroOpenLoopOutput.ZeroPortOnDev(
-            //    Properties.Settings.Default.StimulatorDevice, 0);
-
-            if (comingFromFail)
+            try
             {
-                button_startStimFromFile.Enabled = true;
-                reset();
+                if (openLoopSynchronizedOutput != null)
+                    openLoopSynchronizedOutput.KillAllAODOTasks();
+
+                ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
+                    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
+                    STIM_SAMPLING_FREQ);
+
+                int[] analogChannelsToZero = { 0, 1, 2, 3 };
+                zeroOpenLoopOutput.ZeroAOChanOnDev(
+                    Properties.Settings.Default.SigOutDev, analogChannelsToZero);
+                zeroOpenLoopOutput.ZeroAOChanOnDev(
+                    Properties.Settings.Default.StimulatorDevice, analogChannelsToZero);
+                zeroOpenLoopOutput.ZeroPortOnDev(
+                    Properties.Settings.Default.SigOutDev, 0);
+                zeroOpenLoopOutput.ZeroPortOnDev(
+                    Properties.Settings.Default.StimulatorDevice, 0);
+
+                if (comingFromFail)
+                {
+                    button_startStimFromFile.Enabled = true;
+                    reset();
+                }
+
+                    // Invoke an anonymous method on the thread of the form.
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        this.buttonStop.Enabled = true;
+                        this.button_stopStimFromFile.Enabled = false;
+                    });
             }
-            button_stopStimFromFile.Enabled = false;
-            buttonStop.Enabled = true;
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
+
+
+
 
         internal void button_stopStimFromFile_Click(object sender, EventArgs e)
         {            

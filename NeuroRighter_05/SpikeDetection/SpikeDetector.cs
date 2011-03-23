@@ -237,8 +237,18 @@ namespace NeuroRighter.SpikeDetection
                             // Check the dead time for higher amplitdude waveform
                             int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
 
+                            // Check that the maximal value in the deadtime is not the 
+                            // exitSpikeIndex
+                            if (deadMaxIndex == exitSpikeIndex)
+                            {
+                                inflectionWithinDead = false;
+                                deadWidth = null;
+                                goto ProcessSpike;
+                            }
+
                             // Is this actually an infection point?
                             int deadMaxIndex1 = deadMaxIndex + 1;
+                            int deadMaxIndex2 = deadMaxIndex - 1;
 
                             // If its not the infection point
                             if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
@@ -274,6 +284,7 @@ namespace NeuroRighter.SpikeDetection
                                 }
                             }
 
+                        ProcessSpike:
                             // Record the waveform
                             waveforms.Add(new SpikeWaveform(channel, 
                                 spikeMaxIndex - recIndexOffset, currentThreshold, waveform));
@@ -392,25 +403,6 @@ namespace NeuroRighter.SpikeDetection
 
         }
 
-        //protected double GetSpikeIntegral(bool posCross, int enterIdx, int exitIdx)
-        //{
-        //    // Estimate the area of a spike (defined as the area from the
-        //    // threshold crossing)
-        //    double tempInt;
-        //    List<double> temp = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx);
-        //    if (posCross)
-        //    {
-        //        tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Max();
-        //    }
-        //    else
-        //    {
-        //        tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Min();
-        //    }
-        //    //List<double> temp = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx);
-        //    //double tempInt = spikeDetectionBuffer.GetRange(enterIdx, exitIdx - enterIdx).Sum();
-        //    return Math.Abs(tempInt); //- (exitIdx - enterIdx) * currentThreshold;
-        //}
-
         protected double GetSpikeSlope(double[] absWave)
         {
             double spikeSlopeEstimate = new double();
@@ -436,65 +428,6 @@ namespace NeuroRighter.SpikeDetection
             return spikeDetectionBuffer[enterSpikeIndex] > 0;
         }
 
-        //protected bool SearchForSecondCrossing(bool positiveCross)
-        //{
-        //    if (positiveCross)
-        //    {
-        //        // Search for a negative crossing that occurs within the deadTime
-        //        return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Min() < -currentThreshold;
-        //    }
-        //    else
-        //    {
-        //        // Search for a postive crossing that occurs within the deadTime
-        //        return spikeDetectionBuffer.GetRange(exitSpikeIndex, deadTime).Max() > currentThreshold;
-
-        //    }
-        //}
-
-        //protected int[] GetSecondaryEnterExitPoints()
-        //{
-        //    bool inASpike = false;
-        //    int[] enterExit = new int[2];
-        //    for (int i = 0; i < deadTime + maxSpikeWidth; i++)
-        //    {
-        //        if (!inASpike)
-        //        {
-        //            if (spikeDetectionBuffer[exitSpikeIndex + i] < currentThreshold &&
-        //                spikeDetectionBuffer[exitSpikeIndex + i] > -currentThreshold)
-        //            {
-        //                continue;
-        //            }
-        //            else
-        //            {
-        //                enterExit[0] = exitSpikeIndex + i;
-        //                inASpike = true;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (spikeDetectionBuffer[exitSpikeIndex + i] > currentThreshold &&
-        //                spikeDetectionBuffer[exitSpikeIndex + i] < -currentThreshold)
-        //            {
-        //                if (i == deadTime + maxSpikeWidth - 1)
-        //                {
-        //                    // secondary spike is too wide, return original indicies
-        //                    enterExit[0] = enterSpikeIndex;
-        //                    enterExit[1] = exitSpikeIndex;
-        //                    break;
-        //                }
-        //                continue;
-        //            }
-        //            else
-        //            {
-        //                enterExit[1] = exitSpikeIndex + i;
-        //                break;
-        //            }
-        //        }
-        //    }
-
-        //    return enterExit;
-        //}
-
         protected rawType[] CreateWaveform(int maxIdx)
         {
             rawType[] waveform = new rawType[numPost + numPre + 1];
@@ -506,8 +439,13 @@ namespace NeuroRighter.SpikeDetection
         protected int[] FindWidthFromMaxInd(int maxIdx)
         {
             int[] enterExitWidth = new int[3];
+            int toSearch;
+            if (maxSpikeWidth > maxIdx)
+                toSearch = maxIdx;
+            else
+                toSearch = maxSpikeWidth;
 
-            for (int i = 1; i < maxSpikeWidth; ++i)
+            for (int i = 1; i < toSearch; ++i)
             {
                 if (spikeDetectionBuffer[maxIdx - i] < currentThreshold &&
                     spikeDetectionBuffer[maxIdx - i] > -currentThreshold)

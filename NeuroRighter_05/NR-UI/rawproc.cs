@@ -187,10 +187,10 @@ namespace NeuroRighter
                 {
                     int startIdx;
 
-                    if (firstRawWrite) // account for SALPA delay
+                    if (firstRawWrite[taskNumber]) // account for SALPA delay
                     {
                         if (!recordingSettings.recordSpikeFilt)
-                            firstRawWrite = false;
+                            firstRawWrite[taskNumber] = false;
                         startIdx = 2 * SALPA_WIDTH;
                     }
                     else
@@ -230,9 +230,9 @@ namespace NeuroRighter
                     {
 
                         int startIdx;
-                        if (firstRawWrite && checkBox_SALPA.Checked) // account for SALPA delay
+                        if (firstRawWrite[taskNumber] && checkBox_SALPA.Checked) // account for SALPA delay
                         {
-                            firstRawWrite = false;
+                            firstRawWrite[taskNumber] = false;
                             startIdx = 2 * SALPA_WIDTH;
                         }
                         else

@@ -159,7 +159,7 @@ namespace NeuroRighter
         private SpikeDetSettings spikeDet;
 
         // File Writing
-        private bool firstRawWrite;
+        private bool[] firstRawWrite;
         RecordingSetup recordingSettings;
 
         // Open-loop AO/DO 

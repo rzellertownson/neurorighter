@@ -777,7 +777,11 @@ namespace NeuroRighter
                 try
                 {
                     // Tell NR that that its about to encounter the first write
-                    firstRawWrite = true;
+                    firstRawWrite = new bool[spikeTask.Count];
+                    for (int i = 0; i < firstRawWrite.Length; ++i)
+                    {
+                        firstRawWrite[i] = true;
+                    }
 
                     // 1. spk stream
                     recordingSettings.Setup("spk", spikeTask[0], numPre, numPost);

@@ -184,28 +184,27 @@ namespace NeuroRighter.SpikeDetection
                         if (spikeDetectionBuffer[i] < currentThreshold &&
                             spikeDetectionBuffer[i] > -currentThreshold)
                         {
-                            inBounds = true;
                             continue; // not above threshold, next point please
                         }
-                        else if (inBounds)
+                        else
                         {
                             // We are entering a spike
-                            inBounds = false;
                             inASpike[channel] = true;
                             enterSpikeIndex = i;
+
+                            // Positive or negative crossing
+                            posCross = FindSpikePolarityBySlopeOfCrossing();
                         }
                     }
                     else if (inASpike[channel] &&
-                             spikeDetectionBuffer[i] < currentThreshold &&
-                             spikeDetectionBuffer[i] > -currentThreshold)
+                            ((posCross && spikeDetectionBuffer[i] < currentThreshold) ||
+                             (!posCross && spikeDetectionBuffer[i] > -currentThreshold))
+                            )
                     {
 
                         // We were in a spike and now we are exiting
                         inASpike[channel] = false;
                         exitSpikeIndex = i;
-
-                        // Positive or negative crossing
-                        posCross = FindSpikePolarityBySlopeOfCrossing();
 
                         // Calculate Spike width
                         spikeWidth = exitSpikeIndex - enterSpikeIndex;
@@ -230,66 +229,86 @@ namespace NeuroRighter.SpikeDetection
                         {
                             // Infection point within dead time?
                             bool inflectionWithinDead = true;
+                            deadWidth = null;
 
-                            // Check the dead time for higher amplitdude waveform
-                            int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
-
-                            // Is this actually an infection point?
-                            int deadMaxIndex1 = deadMaxIndex + 1;
-
-                            // If its not the infection point
-                            if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
-                                // Forget it, we will catch this spike after the dead time
-                                inflectionWithinDead = false;
-
-                            // Get the maximal value in the dead time
-                            double deadMax = spikeDetectionBuffer[deadMaxIndex];
-
-                            // Is it larger than the peak of the detected spike?
-                            bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
-
-                            // get the spike width around this max point
-                            deadWidth = FindWidthFromMaxInd(deadMaxIndex);
-
-                            if (lookAtDeadWave)
+                            if (deadTime > 0)
                             {
-                                // If the deadMax is actually larger than the original 
-                                // detection's max point
-                                rawType[] deadWaveform = CreateWaveform(deadMaxIndex);
+                                // Check the dead time for higher amplitdude waveform
+                                int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
 
-                                if (deadWidth != null)
+                                // Check that the maximal value in the deadtime is not the 
+                                // exitSpikeIndex
+                                if (deadMaxIndex == exitSpikeIndex)
                                 {
-                                    bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
+                                    inflectionWithinDead = false;
+                                    deadWidth = null;
+                                    goto ProcessSpike;
+                                }
 
-                                    if (goodDeadSpike && inflectionWithinDead)
+                                // Is this actually an infection point?
+                                int deadMaxIndex1 = deadMaxIndex + 1;
+                                int deadMaxIndex2 = deadMaxIndex - 1;
+
+                                // If its not the infection point
+                                if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
+                                    // Forget it, we will catch this spike after the dead time
+                                    inflectionWithinDead = false;
+
+                                // Get the maximal value in the dead time
+                                double deadMax = spikeDetectionBuffer[deadMaxIndex];
+
+                                // Is it larger than the peak of the detected spike?
+                                bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
+
+                                // get the spike width around this max point
+                                deadWidth = FindWidthFromMaxInd(deadMaxIndex);
+
+                                if (lookAtDeadWave && inflectionWithinDead)
+                                {
+                                    // If the deadMax is actually larger than the original 
+                                    // detection's max point
+                                    rawType[] deadWaveform = CreateWaveform(deadMaxIndex);
+
+                                    if (deadWidth != null)
                                     {
-                                        waveform = deadWaveform;
-                                        spikeMaxIndex = deadMaxIndex;
-                                        spikeMax = deadMax;
-                                        exitSpikeIndex = deadWidth[1];
+                                        bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
+
+                                        if (goodDeadSpike && inflectionWithinDead)
+                                        {
+                                            waveform = deadWaveform;
+                                            spikeMaxIndex = deadMaxIndex;
+                                            spikeMax = deadMax;
+                                            exitSpikeIndex = deadWidth[1];
+                                        }
                                     }
                                 }
                             }
 
+                        ProcessSpike:
                             // Record the waveform
                             waveforms.Add(new SpikeWaveform(channel,
                                 spikeMaxIndex - recIndexOffset, currentThreshold, waveform));
 
+                            // Calculate dead-time
+                            int dt;
+                            if (!inflectionWithinDead && deadWidth != null)
+                                dt = deadWidth[0] - 1;
+                            else
+                                dt = deadTime;
+
                             // Carry-over dead time if we are at the end of the buffer
                             if (i >= indiciesToSearchForCross)
-                                initialSamplesToSkip[channel] = (exitSpikeIndex - indiciesToSearchForCross) + deadTime;
+                                initialSamplesToSkip[channel] = dt + exitSpikeIndex - indiciesToSearchForCross;
                             else
                                 initialSamplesToSkip[channel] = 0;
 
                             // Advance through deadTime measured from the spike exit index
                             if (!inflectionWithinDead && deadWidth != null)
-                            {
                                 i = deadWidth[0] - 1;
-                            }
+
                             else
-                            {
                                 i = exitSpikeIndex + deadTime;
-                            }
+
                         }
                     }
                     else if (inASpike[channel] && i == indiciesToSearchForReturn - 1)

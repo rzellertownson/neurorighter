@@ -553,9 +553,9 @@ namespace NeuroRighter
             this.checkBox_RecStimTimes.AutoSize = true;
             this.checkBox_RecStimTimes.Location = new System.Drawing.Point(6, 19);
             this.checkBox_RecStimTimes.Name = "checkBox_RecStimTimes";
-            this.checkBox_RecStimTimes.Size = new System.Drawing.Size(167, 17);
+            this.checkBox_RecStimTimes.Size = new System.Drawing.Size(229, 17);
             this.checkBox_RecStimTimes.TabIndex = 15;
-            this.checkBox_RecStimTimes.Text = "Record stimulation information";
+            this.checkBox_RecStimTimes.Text = "Enable pulsatile stimulation-timing recording";
             this.checkBox_RecStimTimes.UseVisualStyleBackColor = true;
             // 
             // groupBox15

@@ -174,46 +174,9 @@ namespace NeuroRighter
             if (checkBox_RetrainOnRestart.Checked)
                 spikeDet.SetSpikeDetector();
 
-            if (switch_record.Value)
-            {
-                if (filenameBase == null) //user hasn't specified a file
-                    button_BrowseOutputFile_Click(null, null); //call file selection routine
-                if (filenameBase == null) //this happens if the user pressed cancel for the dialog
-                {
-                    MessageBox.Show("An output file must be selected before recording."); //display an error message
-                    return;
-                }
-
-                // If the user is just doing repeated recordings
-                if (checkbox_repeatRecord.Checked)
-                {
-                    DateTime nowDate = DateTime.Now;//Get current time (local to computer);
-                    string datePrefix = nowDate.ToString("'-'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss");
-                    filenameBase = originalNameBase + datePrefix;
-                }
-
-                if (File.Exists(filenameBase + "*"))
-                {
-                    DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
-                        "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-
-                    if (dr == DialogResult.No)
-                        button_BrowseOutputFile_Click(null, null); //call file selection routine
-                    else if (dr == DialogResult.Cancel)
-                        return;
-                }
-
-                recordingSettings.SetFID(filenameBase);
-                recordingSettings.SetNumElectrodes(numChannels);
-                NRAcquisitionSetup();
-                NRStartRecording();
-
-            }
-            else
-            {
-                NRAcquisitionSetup();
-                NRStartRecording();
-            }
+            // Call the recording setup/start functions
+            NRAcquisitionSetup();
+            NRStartRecording();
 
         }
 
@@ -245,6 +208,42 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.SeparateLFPBoard)
                         comboBox_LFPGain.Enabled = false;
                     numericUpDown_NumSnipsDisplayed.Enabled = false;
+
+                    if (switch_record.Value)
+                    {
+                        // Create file name
+                        if (filenameBase == null) //user hasn't specified a file
+                            button_BrowseOutputFile_Click(null, null); //call file selection routine
+                        if (filenameBase == null) //this happens if the user pressed cancel for the dialog
+                        {
+                            MessageBox.Show("An output file must be selected before recording."); //display an error message
+                            return;
+                        }
+
+                        // If the user is just doing repeated recordings
+                        if (checkbox_repeatRecord.Checked)
+                        {
+                            DateTime nowDate = DateTime.Now;//Get current time (local to computer);
+                            string datePrefix = nowDate.ToString("'-'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss");
+                            filenameBase = originalNameBase + datePrefix;
+                        }
+
+                        if (File.Exists(filenameBase + "*"))
+                        {
+                            DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
+                                "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+                            if (dr == DialogResult.No)
+                                button_BrowseOutputFile_Click(null, null); //call file selection routine
+                            else if (dr == DialogResult.Cancel)
+                                return;
+                        }
+
+                        // Set file base name + number of channels
+                        recordingSettings.SetFID(filenameBase);
+                        recordingSettings.SetNumElectrodes(numChannels);
+                    }
+
 
                     // Find out how many devs and channels/dev we are going to need
                     int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);

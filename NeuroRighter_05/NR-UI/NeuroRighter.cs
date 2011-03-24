@@ -798,6 +798,7 @@ namespace NeuroRighter
 
                     // 3. other
                     recordingSettings.Setup("stim", spikeTask[0]);
+
                     //TODO: Add aux streams
                 }
                 catch (System.IO.IOException ex)

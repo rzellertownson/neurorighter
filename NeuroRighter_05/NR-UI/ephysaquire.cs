@@ -124,7 +124,7 @@ namespace NeuroRighter
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)
                                     {
 
-                                        if (switch_record.Value)
+                                        if (switch_record.Value && recordingSettings.recordStim)
                                         {
                                             recordingSettings.stimOut.write(startTimeStim, prependedData, stimJump,i);
                                         }
@@ -224,7 +224,7 @@ namespace NeuroRighter
 
                     //Write to file in format [numChannels numSamples]
                     #region WriteLFPFile
-                    if (switch_record.Value)
+                    if (switch_record.Value && recordingSettings.recordLFP)
                     {
                         recordingSettings.lfpOut.read(lfpData, numChannels, 0, lfpBufferLength);
                     }

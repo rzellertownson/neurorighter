@@ -321,17 +321,18 @@ namespace NeuroRighter
                     }
                     else
                     {
+                        string masterclock = "/" + Properties.Settings.Default.AnalogInDevice[0].ToString() + "/10MhzRefClock";//"OnboardClock";//
                         if (!Properties.Settings.Default.UseStimulator)
                         {
                             //Deal with non M-series devices (these can't use "ReferenceClockSource"
                             Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
 
                             if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
-                                spikeTask[0].Timing.ReferenceClockSource = "OnboardClock"; //This will be the master clock
+                                spikeTask[0].Timing.ReferenceClockSource = masterclock; //This will be the master clock
                         }
                         else
                         {
-                            spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";//stimPulseTask.Timing.ReferenceClockSource;
+                            spikeTask[0].Timing.ReferenceClockSource = masterclock;//stimPulseTask.Timing.ReferenceClockSource;
                             spikeTask[0].Timing.ReferenceClockRate = 10000000.0; //stimPulseTask.Timing.ReferenceClockRate;
                         }
                         for (int i = 1; i < spikeTask.Count; ++i) //Set other analog in tasks to master clock

@@ -97,7 +97,6 @@ namespace NeuroRighter
 
                             if (getStimData)
                             {
-                                //double[] stimData = stimTimeReader.ReadMultiSample(spikeBufferLength);
                                 double[,] stimData = stimTimeReader.ReadMultiSample(spikeBufferLength);
                                 //NB: Should make this read memory optimized...
 
@@ -109,6 +108,7 @@ namespace NeuroRighter
                                     prependedData[i + STIM_BUFFER_LENGTH] = stimData[0, i];
 
                                 int startTimeStim = numStimReads[taskNumber] * spikeBufferLength - STIM_BUFFER_LENGTH; //Used to mark stim time for file
+                                
                                 //Encoding is [v1 v2 v3], each lasting 200us
                                 //'v1' and 'v2' encode channel number, 'v3' is the stim voltage
                                 //'v1' says "which group of eight" was stimulated, 'v2' says

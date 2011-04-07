@@ -164,6 +164,48 @@ namespace NeuroRighter
                     comboBox_SigOutDev.SelectedIndex = 0;
             }
 
+            comboBox_AuxAnalogInputDevice.Items.AddRange
+                (DaqSystem.Local.Devices);
+            if (comboBox_AuxAnalogInputDevice.Items.Count > 0)
+            {
+                int idx = comboBox_AuxAnalogInputDevice.Items.IndexOf(Properties.Settings.Default.auxAnalogInDev);
+                if (idx >= 0)
+                    comboBox_AuxAnalogInputDevice.SelectedIndex = idx;
+                else
+                    comboBox_AuxAnalogInputDevice.SelectedIndex = 0;
+            }
+
+            listBox_AuxAnalogInChan.Items.AddRange
+                (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI,PhysicalChannelAccess.External));
+            for (int i = listBox_AuxAnalogInChan.Items.Count-1; i >= 0 ; --i)
+            {
+                string tempChan = listBox_AuxAnalogInChan.Items[i].ToString();
+                string[] whatDev = tempChan.Split('/');
+                if (!((string)whatDev[0] == comboBox_AuxAnalogInputDevice.SelectedItem.ToString()))
+                    listBox_AuxAnalogInChan.Items.RemoveAt(i);
+            }
+
+            if (Properties.Settings.Default.auxAnalogInChan != null)
+            {
+                for (int i = 0; i < Properties.Settings.Default.auxAnalogInChan.Count; ++i)
+                {
+                    int idx = comboBox_AuxAnalogInputDevice.Items.IndexOf(Properties.Settings.Default.auxAnalogInChan[i]);
+                    listBox_AuxAnalogInChan.SetSelected(idx, true);
+                }
+            }
+
+
+            comboBox_AuxDigInputPort.Items.AddRange
+                (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DIPort, PhysicalChannelAccess.External));
+            if (comboBox_AuxDigInputPort.Items.Count > 0)
+            {
+                int idx = comboBox_AuxDigInputPort.Items.IndexOf(Properties.Settings.Default.auxAnalogInDev);
+                if (idx >= 0)
+                    comboBox_AuxDigInputPort.SelectedIndex = idx;
+                else
+                    comboBox_AuxDigInputPort.SelectedIndex = 0;
+            }
+
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -180,6 +222,11 @@ namespace NeuroRighter
             checkBox_useSecondBoard.Checked = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             checkBox_sepLFPBoard2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
             comboBox_LFPDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);
+            checkBox_UseAuxAnalogInput.Checked = Properties.Settings.Default.recordAuxAnalog;
+            comboBox_AuxAnalogInputDevice.Enabled = Properties.Settings.Default.recordAuxAnalog;
+            listBox_AuxAnalogInChan.Enabled = Properties.Settings.Default.recordAuxAnalog;
+            checkBox_UseAuxDigitalInput.Checked = Properties.Settings.Default.recordAuxDigital;
+            comboBox_AuxDigInputPort.Enabled = Properties.Settings.Default.recordAuxDigital;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -207,11 +254,11 @@ namespace NeuroRighter
 
         private void button_accept_Click(object sender, EventArgs e)
         {
+            // Recording selections
             Properties.Settings.Default.AnalogInDevice.Clear();
+            Properties.Settings.Default.auxAnalogInChan.Clear();
             Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
             Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice1.SelectedItem));
-            if (checkBox_useSecondBoard.Checked)
-                Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
             Properties.Settings.Default.UseCineplex = checkBox_useCineplex.Checked;
             Properties.Settings.Default.UseStimulator = checkBox_useStimulator.Checked;
             Properties.Settings.Default.RecordStimTimes = checkBox_RecStimTimes.Checked;
@@ -220,12 +267,16 @@ namespace NeuroRighter
             Properties.Settings.Default.UseEEG = checkBox_useEEG.Checked;
             Properties.Settings.Default.UseSingleChannelPlayback = checkBox_useChannelPlayback.Checked;
             Properties.Settings.Default.UseSigOut = checkBox_UseAODO.Checked;
+            Properties.Settings.Default.recordAuxDigital = checkBox_UseAuxAnalogInput.Checked;
+            Properties.Settings.Default.recordAuxAnalog = checkBox_UseAuxDigitalInput.Checked;
+
+            // Set up devices
+            if (checkBox_useSecondBoard.Checked)
+                Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
             if (checkBox_useChannelPlayback.Checked)
                 Properties.Settings.Default.SingleChannelPlaybackDevice = Convert.ToString(comboBox_singleChannelPlaybackDevice.SelectedItem);
             if (checkBox_sepLFPBoard1.Checked)
-                Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);
-            //if (checkBox_sepLFPBoard2.Checked)
-                
+                Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);   
             if (checkBox_useCineplex.Checked)
                 Properties.Settings.Default.CineplexDevice = Convert.ToString(comboBox_cineplexDevice.SelectedItem);
             if (checkBox_useStimulator.Checked)
@@ -241,11 +292,21 @@ namespace NeuroRighter
             else
                 Properties.Settings.Default.MUXChannels = 16;
             if (radioButton_8bit.Checked) 
-            { Properties.Settings.Default.StimPortBandwidth = 8; }
+                Properties.Settings.Default.StimPortBandwidth = 8;
             else 
-            { Properties.Settings.Default.StimPortBandwidth = 32; }
+                Properties.Settings.Default.StimPortBandwidth = 32;
             if (checkBox_UseAODO.Checked)
                 Properties.Settings.Default.SigOutDev = Convert.ToString(comboBox_SigOutDev.SelectedItem);
+            if (checkBox_UseAuxAnalogInput.Checked)
+            {
+                Properties.Settings.Default.auxAnalogInDev = Convert.ToString(comboBox_AuxAnalogInputDevice);
+                for (int i = 0; i < listBox_AuxAnalogInChan.SelectedItems.Count; ++i)
+                    Properties.Settings.Default.auxAnalogInChan.Add(listBox_AuxAnalogInChan.SelectedItems[i].ToString());
+            }
+            if (checkBox_UseAuxDigitalInput.Checked)
+                Properties.Settings.Default.auxDigitalInPort = Convert.ToString(comboBox_AuxDigInputPort.SelectedItem);
+
+
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
             Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
             Properties.Settings.Default.StimIvsVDevice = Convert.ToString(comboBox_IVControlDevice.SelectedItem);
@@ -354,7 +415,29 @@ namespace NeuroRighter
             comboBox_SigOutDev.Enabled = checkBox_UseAODO.Checked;
         }
 
+        private void comboBox_AuxAnalogInputDevice_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            listBox_AuxAnalogInChan.Items.AddRange
+                (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI, PhysicalChannelAccess.External));
+            for (int i = listBox_AuxAnalogInChan.Items.Count - 1; i >= 0; --i)
+            {
+                string tempChan = listBox_AuxAnalogInChan.Items[i].ToString();
+                string[] whatDev = tempChan.Split('/');
+                if (!((string)whatDev[0] == comboBox_AuxAnalogInputDevice.SelectedItem.ToString()))
+                    listBox_AuxAnalogInChan.Items.RemoveAt(i);
+            }
+        }
 
+        private void checkBox_UseAuxAnalogInput_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_AuxAnalogInputDevice.Enabled = checkBox_UseAuxAnalogInput.Checked;
+            listBox_AuxAnalogInChan.Enabled = checkBox_UseAuxAnalogInput.Checked;
+        }
+
+        private void checkBox_UseAuxDigitalInput_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_AuxDigInputPort.Enabled = checkBox_UseAuxDigitalInput.Checked;
+        }
 
     }
 }

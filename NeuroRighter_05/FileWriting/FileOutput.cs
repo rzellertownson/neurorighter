@@ -222,6 +222,7 @@ namespace NeuroRighter
         }
 
         internal virtual void write(int startTimeStim, double[] prependedData, double stimJump, int idx) { }
+        internal virtual void write(int digChangeTime, int digChangeState, double[] prependedData, double stimJump, int idx) { }
 
         protected virtual void _bgWorker_doWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {

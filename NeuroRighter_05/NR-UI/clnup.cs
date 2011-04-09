@@ -102,6 +102,8 @@ namespace NeuroRighter
             if (BNCOutput != null) { BNCOutput.Dispose(); BNCOutput = null; }
             if (stimTimeTask != null) stimTimeTask.Dispose();
             if (triggerTask != null) triggerTask.Dispose();
+            if (auxAnInTask != null) auxAnInTask.Dispose();
+            if (auxDigInTask != null) auxDigInTask.Dispose();
 
             buttonStop.Enabled = false;
             buttonStart.Enabled = true;
@@ -127,13 +129,12 @@ namespace NeuroRighter
                 comboBox_eegGain.Enabled = true;
                 textBox_eegSamplingRate.Enabled = true;
             }
-            if (Properties.Settings.Default.SeparateLFPBoard) comboBox_LFPGain.Enabled = true;
+            if (Properties.Settings.Default.SeparateLFPBoard) 
+                comboBox_LFPGain.Enabled = true;
+            
+            // Clean up data streams
             recordingSettings.Flush();
-            //if (rawFile != null) { rawFile.flush(); rawFile = null; }
-            //if (lfpFile != null) { lfpFile.flush(); lfpFile = null; }
-            //if (fsSpks != null) fsSpks.Close();
-            //if (fsStim != null) fsStim.Close();
-            //if (fsEEG != null) fsEEG.Close();
+
             if (triggerWriter != null) triggerWriter = null;
             channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
 

@@ -251,9 +251,8 @@ namespace NeuroRighter
 
                     // Create spike aquisition task list
                     spikeTask = new List<Task>(numDevices);
-                    SpikeTaskSetup spikeAqSet = new SpikeTaskSetup(numDevices, numChannelsPerDev);
-                    spikeTask = spikeAqSet.GetAITaskCollection();
-
+                    NRAIChannelCollection spikeAqSet = new NRAIChannelCollection(numDevices, numChannelsPerDev);
+                    spikeAqSet.SetupSpikeCollection(ref spikeTask);
 
                     // Check audio and video properties
                     if (Properties.Settings.Default.UseSingleChannelPlayback)
@@ -427,6 +426,39 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.UseEEG)
                         scalingCoeffsEEG = eegTask.AIChannels[0].DeviceScalingCoefficients;
 
+                    // Setup auxiliary recording tasks
+                    if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    {
+                        auxAnInTask = new Task("AuxiliaryAnalogInput");
+                        NRAIChannelCollection auxChanSet = new NRAIChannelCollection(Properties.Settings.Default.auxAnalogInChan);
+                        auxChanSet.SetupAuxCollection(ref auxAnInTask);
+
+                        auxAnInTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                        auxAnInTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+
+                        //Pipe ai dev0's sample clock to slave devices
+                        auxAnInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
+                            SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+
+                        //Trigger off of ai dev0's trigger
+                        auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+
+                        Console.WriteLine("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger");
+
+                        auxAnInTask.Control(TaskAction.Verify);
+                    }
+                    if (Properties.Settings.Default.useAuxDigitalInput)
+                    {
+                        auxDigInTask = new Task("AuxiliaryDigitalInput");
+                        auxDigInTask.DIChannels.CreateChannel(Properties.Settings.Default.auxDigitalInPort,
+                            "Auxiliary Digitial In", ChannelLineGrouping.OneChannelForAllLines);
+
+                        auxDigInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
+                            SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                        auxDigInTask.Timing.SampleClockSource = spikeTask[0].Timing.SampleClockTerminal;
+                    }
+
+
 
                     #region Setup_Plotting
                     /**************************************************
@@ -563,7 +595,7 @@ namespace NeuroRighter
                     }
                     #endregion
 
-                    SetupFileWriting();
+                    
 
                     #region Setup_Filters
                     //Setup filters, based on user's input
@@ -581,6 +613,7 @@ namespace NeuroRighter
                     numSpikeReads = new int[spikeTask.Count];
 
                     filtSpikeData = new rawType[numChannels][];
+
                     if (Properties.Settings.Default.UseLFPs)
                     {
                         filtLFPData = new rawType[numChannels][];
@@ -593,12 +626,14 @@ namespace NeuroRighter
                                 filtLFPData[i] = new rawType[spikeBufferLength];
                         }
                     }
+
                     if (Properties.Settings.Default.ProcessMUA)
                     {
                         muaData = new double[numChannels][];
                         for (int c = 0; c < numChannels; ++c)
                             muaData[c] = new double[spikeBufferLength / MUA_DOWNSAMPLE_FACTOR];
                     }
+
                     if (Properties.Settings.Default.UseEEG)
                     {
                         filtEEGData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)][];
@@ -607,28 +642,38 @@ namespace NeuroRighter
                             filtEEGData[i] = new double[eegBufferLength];
                         }
                     }
+
                     for (int i = 0; i < filtSpikeData.GetLength(0); ++i)
                     {
                         filtSpikeData[i] = new rawType[spikeBufferLength];
-                        //if (Properties.Settings.Default.SeparateLFPBoard)
-                        //    filtLFPData[i] = new rawType[lfpBufferLength];
-                        //else
-                        //    filtLFPData[i] = new rawType[spikeBufferLength];
                         if (Properties.Settings.Default.UseLFPs)
                             finalLFPData[i] = new rawType[lfpBufferLength];
                     }
+
                     if (Properties.Settings.Default.UseStimulator)
                     {
                         stimDataBuffer = new double[STIM_BUFFER_LENGTH];
                         stimJump = (double)spikeSamplingRate * 0.0001; //num. indices in 100 us of data
                     }
-                    _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
-                    //newWaveforms = new List<SpikeWaveform>(10);
 
+                    // Storage from spike waveforms
+                    _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
                     numPre = Convert.ToInt32(spikeDet.numPreSamples.Value);
                     numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
 
                     stimIndices = new List<StimTick>(5);
+
+                    //// Storage for aux input plotting and filtering
+                    //if (Properties.Settings.Default.recordAuxAnalog)
+                    //{
+                    //    for (int i = 0; i < auxAnInTask.AIChannels.Count; ++i)
+                    //        auxAnData[i] = new rawType[spikeBufferLength];
+                    //}
+                    //if (Properties.Settings.Default.recordAuxDigital)
+                    //{
+                    //        auxDigData = new uint[spikeBufferLength];
+                    //}
+
                     #endregion
 
                     #region Verify Tasks
@@ -642,8 +687,13 @@ namespace NeuroRighter
                         triggerTask.Control(TaskAction.Verify);
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Control(TaskAction.Verify);
+                    if (Properties.Settings.Default.recordAuxAnalog && Properties.Settings.Default.useAuxAnalogInput)
+                        auxAnInTask.Control(TaskAction.Verify);
+                    if (Properties.Settings.Default.useAuxDigitalInput)
+                        auxDigInTask.Control(TaskAction.Verify);
                     #endregion
 
+                    SetupFileWriting();
 
                     //Set callbacks for data acq.
                     taskRunning = true;
@@ -679,6 +729,20 @@ namespace NeuroRighter
                         eegReader = new AnalogUnscaledReader(eegTask.Stream);
                         eegReader.SynchronizeCallbacks = true;
                         eegCallback = new AsyncCallback(AnalogInCallback_EEG);
+                    }
+
+                    if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    {
+                        auxAnReader = new AnalogUnscaledReader(auxAnInTask.Stream);
+                        auxAnReader.SynchronizeCallbacks = true;
+                        auxAnCallback = new AsyncCallback(AnalogInCallback_AuxAn);
+                    }
+
+                    if (Properties.Settings.Default.useAuxDigitalInput)
+                    {
+                        auxDigReader = new DigitalSingleChannelReader(auxDigInTask.Stream);
+                        auxDigReader.SynchronizeCallbacks = true;
+                        auxDigCallback = new AsyncCallback(AnalogInCallback_AuxDig);
                     }
 
                     //Setup background workers for data processing
@@ -721,50 +785,67 @@ namespace NeuroRighter
         // Start all the tasks having to do with recording
         private void NRStartRecording()
         {
-            // Take care of buttons
-            buttonStop.Enabled = true;
-            buttonStart.Enabled = false;
-
-            // integers tracking the number of reads performed
-            trackingReads = new int[2];
-            trackingProc = new int[2];
-
-            //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
-            if (checkBox_video.Checked)
+            try
             {
-                byte[] b_array = new byte[3] { 255, 255, 255 };
-                DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
-                wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                triggerWriter.BeginWriteWaveform(true, wfm, null, null);
+                // Take care of buttons
+                buttonStop.Enabled = true;
+                buttonStart.Enabled = false;
+
+                // integers tracking the number of reads performed
+                trackingReads = new int[2];
+                trackingProc = new int[2];
+
+                //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
+                if (checkBox_video.Checked)
+                {
+                    byte[] b_array = new byte[3] { 255, 255, 255 };
+                    DigitalWaveform wfm = new DigitalWaveform(3, 8, DigitalState.ForceDown);
+                    wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
+                    triggerWriter.BeginWriteWaveform(true, wfm, null, null);
+                }
+
+
+                if (Properties.Settings.Default.useAuxDigitalInput )
+                    auxDigInTask.Start();
+                if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
+                    stimTimeTask.Start();
+                if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    auxAnInTask.Start();
+                if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
+                    lfpTask.Start();
+                if (Properties.Settings.Default.UseEEG)
+                    eegTask.Start();
+                for (int i = spikeTask.Count - 1; i >= 0; --i)
+                    spikeTask[i].Start(); //Start first task last, since it has master clock
+
+                // Start data collection
+                if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
+                if (Properties.Settings.Default.useAuxDigitalInput)
+                    auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
+                if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
+                    lfpReader.BeginReadInt16(lfpBufferLength, lfpCallback, lfpReader);
+                if (Properties.Settings.Default.UseEEG)
+                    eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
+                for (int i = 0; i < spikeReader.Count; ++i)
+                    spikeReader[i].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, i,
+                        spikeData[i]);
+
+                //Set start time
+                experimentStartTime = DateTime.Now;
+                double sec2add = 60 * Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
+                timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add);
+                timer_timeElapsed.Enabled = true;
+
+                if (checkBox_video.Checked)
+                {
+                    triggerTask.WaitUntilDone();
+                    triggerTask.Dispose();
+                }
             }
-            if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
-                stimTimeTask.Start();
-            if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
-                lfpTask.Start();
-            if (Properties.Settings.Default.UseEEG)
-                eegTask.Start();
-            for (int i = spikeTask.Count - 1; i >= 0; --i)
-                spikeTask[i].Start(); //Start first task last, since it has master clock
-
-            // Start data collection
-            if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
-                lfpReader.BeginReadInt16(lfpBufferLength, lfpCallback, lfpReader);
-            if (Properties.Settings.Default.UseEEG)
-                eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
-            for (int i = 0; i < spikeReader.Count; ++i)
-                spikeReader[i].BeginMemoryOptimizedReadWaveform(spikeBufferLength, spikeCallback, i,
-                    spikeData[i]);
-
-            //Set start time
-            experimentStartTime = DateTime.Now;
-            double sec2add = 60 * Convert.ToDouble(numericUpDown_timedRecordingDuration.Value) + Convert.ToDouble(numericUpDown_timedRecordingDurationSeconds.Value);
-            timedRecordingStopTime = DateTime.Now.AddSeconds(sec2add);
-            timer_timeElapsed.Enabled = true;
-
-            if (checkBox_video.Checked)
+            catch (Exception e)
             {
-                triggerTask.WaitUntilDone();
-                triggerTask.Dispose();
+                MessageBox.Show(e.Message);
             }
         }
 
@@ -798,8 +879,9 @@ namespace NeuroRighter
 
                     // 3. other
                     recordingSettings.Setup("stim", spikeTask[0]);
-
-                    //TODO: Add aux streams
+                    if (auxAnInTask != null)
+                        recordingSettings.Setup("aux", auxAnInTask);
+                    recordingSettings.Setup("dig", spikeTask[0]);
                 }
                 catch (System.IO.IOException ex)
                 {
@@ -817,5 +899,7 @@ namespace NeuroRighter
                 reset();
             updateRecSettings();
         }
+
+        
     }
 }

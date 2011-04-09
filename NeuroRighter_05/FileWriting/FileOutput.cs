@@ -88,7 +88,7 @@ namespace NeuroRighter
                     outStream.Write(BitConverter.GetBytes((1 / preampgain) * scalingCoeffs[3]), 0, 8);
                     break;
                 case 1: //Derived
-                    outStream.Write(BitConverter.GetBytes(0.0), 0, 8); //Double: Scaling coefficients
+                    outStream.Write(BitConverter.GetBytes(0.0), 0, 8);
                     outStream.Write(BitConverter.GetBytes((1 / preampgain) * recordingTask.AIChannels.All.RangeHigh / 32768.0), 0, 8);
                     outStream.Write(BitConverter.GetBytes(0.0), 0, 8);
                     outStream.Write(BitConverter.GetBytes(0.0), 0, 8);
@@ -222,7 +222,8 @@ namespace NeuroRighter
         }
 
         internal virtual void write(int startTimeStim, double[] prependedData, double stimJump, int idx) { }
-        internal virtual void write(int digChangeTime, int digChangeState, double[] prependedData, double stimJump, int idx) { }
+
+        internal virtual void write(int digChangeTime, uint digChangeState, int numReads, int buffSize) { }
 
         protected virtual void _bgWorker_doWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {

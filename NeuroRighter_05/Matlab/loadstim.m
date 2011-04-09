@@ -1,4 +1,4 @@
-function stm = loadstim_mat(fid)
+function stm = loadstim(fid)
 %LOADSTIM reads *.stim files created by the NeuroRighter software.
 %    y = LOADSTIM(filename) takes as input the filename of a NeuroRighter
 %    stim file and returns a struct containing:
@@ -16,7 +16,8 @@ function stm = loadstim_mat(fid)
 
 if nargin < 1
     error('You must provide a file path')
-elseif(strcmp(fid(end-4:end),'stim'))
+end
+if(~strcmp(fid(end-4:end),'stim'))
     warning(['This file does not have a .stim extension. '... 
              'trying to extract data anayway...'])
 end

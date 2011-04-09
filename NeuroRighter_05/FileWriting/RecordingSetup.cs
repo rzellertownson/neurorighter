@@ -38,8 +38,8 @@ namespace NeuroRighter.FileWriting
         internal FileOutput lfpOut;
         internal FileOutput eegOut;
         internal StimFileOutput stimOut;
-        //internal FileOutput auxAnalogOut;
-        //internal DigFileOutput auxDigitalOut;
+        internal FileOutput auxAnalogOut;
+        internal DigFileOutput auxDigitalOut;
 
         //
 
@@ -50,14 +50,7 @@ namespace NeuroRighter.FileWriting
         public RecordingSetup()
         {
             InitializeComponent();
-            
-            // Are streams available?
-            checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
-            checkBox_RecordEEG.Enabled = Properties.Settings.Default.UseEEG;
-            checkBox_RecordStim.Enabled = Properties.Settings.Default.RecordStimTimes;
-            checkBox_RecordMUA.Enabled = false; // TODO: CREATE SUPPORT FOR MUA
-            checkBox_RecordAuxAnalog.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
-            checkBox_RecordAuxDig.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
+            Refresh();
 
             // Set recording parameters
             ResetStreams2Record();
@@ -66,12 +59,21 @@ namespace NeuroRighter.FileWriting
         internal void Refresh()
         {
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
+            if (!checkBox_RecordLFP.Enabled)
+                checkBox_RecordLFP.Checked = false;
             checkBox_RecordEEG.Enabled = Properties.Settings.Default.UseEEG;
+            if (!checkBox_RecordEEG.Enabled)
+                checkBox_RecordEEG.Checked = false;
             checkBox_RecordStim.Enabled = Properties.Settings.Default.RecordStimTimes;
-
+            if (!checkBox_RecordStim.Enabled)
+                checkBox_RecordStim.Checked = false;
             checkBox_RecordMUA.Enabled = false; // TODO: CREATE SUPPORT FOR MUA
-            checkBox_RecordAuxAnalog.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
-            checkBox_RecordAuxDig.Enabled = false; // TODO: CREATE SUPPORT FOR AUX INPUT
+            checkBox_RecordAuxAnalog.Enabled = Properties.Settings.Default.useAuxAnalogInput;
+            if (!checkBox_RecordAuxAnalog.Enabled)
+                checkBox_RecordAuxAnalog.Checked = false;
+            checkBox_RecordAuxDig.Enabled = Properties.Settings.Default.useAuxDigitalInput;
+            if (!checkBox_RecordAuxDig.Enabled)
+                checkBox_RecordAuxDig.Checked = false;
 
             // Set recording parameters
             ResetStreams2Record();
@@ -210,6 +212,26 @@ namespace NeuroRighter.FileWriting
                             "." + dataType);
                     }
                     break;
+
+                case "aux":
+                    // Check if we need to create this stream
+                    if (recordAuxAnalog)
+                    {
+                        auxAnalogOut = new FileOutput(fid, dataTask.AIChannels.Count,
+                            (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                            "." + dataType, 1);
+                    }
+                    break;
+
+                case "dig":
+                    // Check if we need to create this stream
+                    if (recordAuxDig)
+                    {
+                        auxDigitalOut = new DigFileOutput(fid, (int)dataTask.Timing.SampleClockRate,
+                            "." + dataType);
+                    }
+                    break;
+
                 default:
                     Console.WriteLine("Unknown data type specified during RecordingSetup.Setup()");
                     break;
@@ -225,6 +247,8 @@ namespace NeuroRighter.FileWriting
             if (spkFiltOut != null) { spkFiltOut.flush(); spkFiltOut = null;} 
             if (lfpOut != null) { lfpOut.flush(); lfpOut = null;};
             if (stimOut != null) {stimOut.flush(); stimOut = null;}
+            if (auxAnalogOut != null) { auxAnalogOut.flush(); auxAnalogOut = null; };
+            if (auxDigitalOut != null) { auxDigitalOut.flush(); auxDigitalOut = null; }
 
         }
 

@@ -103,10 +103,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aquisition\SpikeTaskSetup.cs" />
+    <Compile Include="Aquisition\AIChannelCollection.cs" />
     <Compile Include="dbg\ExecptDBG.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
-    <Compile Include="FileWriting\DigFileWriter.cs" />
+    <Compile Include="FileWriting\DigFileOutput.cs" />
     <Compile Include="FileWriting\RecordingSetup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -326,6 +326,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ExtentionMethods\Mowog.PersistWindowState.dll" />
     <Content Include="Matlab\makestimfile.m" />
     <Content Include="Miscellaneous\Buttons\ZoomIn.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOut.png" />

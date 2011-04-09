@@ -149,5 +149,6 @@ namespace ExtensionMethods
 
             return NRColorMap;
         }
+
     }
 }

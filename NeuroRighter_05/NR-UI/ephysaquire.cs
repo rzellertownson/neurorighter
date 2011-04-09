@@ -40,6 +40,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using ExtensionMethods;
 
 namespace NeuroRighter
 {
@@ -342,7 +343,6 @@ namespace NeuroRighter
                 reset();
             }
         }
-
         private void setupEEGOffset()
         {
             eegOffset = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)];
@@ -352,6 +352,79 @@ namespace NeuroRighter
                 eegOffset[i] = 2 * i * rangeHigh;
         }
         #endregion
+
+        // Aux Data Aquisition
+        #region Aux Data Aquisition
+
+        private void AnalogInCallback_AuxAn(IAsyncResult ar)
+        {
+            try
+            {
+                if (taskRunning)
+                {
+                    //Read the available data from the channels
+                    auxAnData = auxAnReader.EndReadInt16(ar);
+
+                    //Write to file in format [numChannels numSamples]
+                    #region Write aux file
+                    if (switch_record.Value && recordingSettings.recordAuxAnalog)
+                    {
+                        recordingSettings.auxAnalogOut.read(auxAnData, auxAnInTask.AIChannels.Count, 0, spikeBufferLength);
+                    }
+                    #endregion
+                }
+            }
+            catch (DaqException exception)
+            {
+                //Display Errors
+                MessageBox.Show(exception.Message);
+                reset();
+            }
+        }
+
+        private void AnalogInCallback_AuxDig(IAsyncResult ar)
+        {
+            try
+            {
+                if (taskRunning)
+                {
+                    //Read the available data from the channels
+                    auxDigData = auxDigReader.EndReadMultiSamplePortUInt32(ar);
+
+                    //Find changes in digital state
+                    for (int i = 0; i < spikeBufferLength; ++i)
+                    {
+                        if (auxDigData[i] != lastDigState)
+                        {
+                            lastDigState = auxDigData[i];
+                            Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is now " + lastDigState);
+                            if (switch_record.Value && recordingSettings.recordAuxDig)
+                            {
+                                recordingSettings.auxDigitalOut.write(i, lastDigState, trackingReads[0], spikeBufferLength);
+                            }
+
+                            // Update led array
+                            bool[]  boolLEDState = new bool[32];
+                            var ledState = new BitArray(new int[] { (int)auxDigData[i] });
+                            for (int j = 0; j < 32; j++)
+                                boolLEDState[j] = ledState[j];
+                            ledArray_DigitalState.SetValues(boolLEDState,0,32);
+                        }
+                    }
+
+                    // Start next read
+                    auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
+                }
+            }
+            catch (DaqException exception)
+            {
+                //Display Errors
+                MessageBox.Show(exception.Message);
+                reset();
+            }
+        }
+        #endregion
+
 
     }
 }

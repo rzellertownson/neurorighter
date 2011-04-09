@@ -53,16 +53,18 @@ namespace NeuroRighter
         private Task eegTask;
         private Task videoTask;  //To synch up Cineplex system
         private Task triggerTask; //To trigger everything simultaneously, using AO
-        private Task digitalOutputTask; //Allows user to generate arbitrary digital output signals if a digital device is specified
+        //private Task digitalOutputTask; //Allows user to generate arbitrary digital output signals if a digital device is specified
         private Task stimDigitalTask;
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
         private Task stimIvsVTask; //Determines whether stim is current or voltage controlled
-        private Task buffLoadTask; //Used to decide when buffer reload is needed in stimbuffer class
-        private Task auxOutputTask;
+        //private Task buffLoadTask; //Used to decide when buffer reload is needed in stimbuffer class
+        //private Task auxOutputTask;
         private Task spikeOutTask;
+        private Task auxAnInTask; // For recording AI channels
+        private Task auxDigInTask;
         private List<AnalogMultiChannelReader> spikeReader;
-        private List<AnalogWaveform<double>[]> spikeData;
+        
         private AnalogUnscaledReader lfpReader;
         private AnalogUnscaledReader eegReader;
         private DigitalSingleChannelWriter triggerWriter;
@@ -70,18 +72,24 @@ namespace NeuroRighter
         private AnalogMultiChannelWriter stimPulseWriter;
         private AnalogMultiChannelReader stimTimeReader;
         private DigitalSingleChannelWriter stimIvsVWriter;
+        private AnalogUnscaledReader auxAnReader;
+        private DigitalSingleChannelReader auxDigReader;
         private AsyncCallback spikeCallback;
         private AsyncCallback lfpCallback;
         private AsyncCallback eegCallback;
+        private AsyncCallback auxAnCallback;
+        private AsyncCallback auxDigCallback;
         private bool taskRunning;  //Shows whether data are being acquired or not
-        private bool shouldContinue;  //Allows repeated data aq.
+        //private bool shouldContinue;  //Allows repeated data aq.
         private string filenameOutput;
         private string filenameBase;
         private string originalNameBase;
-        private string filenameEEG;
-        private string filenameSpks;  //Spike times and waveforms
-        private string filenameStim; //Stim times
+        //private string filenameEEG;
+        //private string filenameSpks;  //Spike times and waveforms
+        //private string filenameStim; //Stim times
 
+        // Buffers
+        private List<AnalogWaveform<double>[]> spikeData;
         private double[,] eegPlotData;
         private int spikeBufferLength;  //How much data is acquired per read
         private int lfpBufferLength;
@@ -98,6 +106,22 @@ namespace NeuroRighter
         private rawType[][] filtEEGData;
         private rawType[][] finalLFPData; //Stores filtered and downsampled LFP
         private double[] stimDataBuffer; //Stores some of the old samples for the next read (to avoid reading only half an encoding during a buffer read)
+        private short[,] auxAnData;
+        private uint lastDigState = 0; // stores the digtial state after a port change occurs
+        private uint[] auxDigData;
+        private DigitalWaveform auxDigitalWaveform;
+        internal List<StimulusData> _stimulations;
+        internal List<StimulusData> stimulations
+            {
+                get { return _stimulations; }
+            }
+        private List<SpikeWaveform> _waveforms;  //Locations of threshold crossings
+        internal List<SpikeWaveform> waveforms
+        {
+            get { return _waveforms; }
+        }
+
+        // Recording Parameters
         private int spikeSamplingRate;
         private int lfpSamplingRate;
         private int eegSamplingRate;
@@ -107,16 +131,6 @@ namespace NeuroRighter
         private List<double[]> scalingCoeffsSpikes; //Scaling coefficients for NI-DAQs
         private double[] scalingCoeffsLFPs;
         private double[] scalingCoeffsEEG;
-        internal List<StimulusData> _stimulations;
-        internal List<StimulusData> stimulations
-        {
-            get { return _stimulations; }
-        }
-        private List<SpikeWaveform> _waveforms;  //Locations of threshold crossings
-        internal List<SpikeWaveform> waveforms
-        {
-            get { return _waveforms; }
-        }
         private int numPre;     //Num samples before threshold crossing to save
         private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA

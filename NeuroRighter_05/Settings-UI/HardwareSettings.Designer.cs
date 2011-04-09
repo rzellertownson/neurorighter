@@ -28,6 +28,7 @@ namespace NeuroRighter
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button_accept = new System.Windows.Forms.Button();
             this.button_cancel = new System.Windows.Forms.Button();
             this.tabPage_misc = new System.Windows.Forms.TabPage();
@@ -96,6 +97,8 @@ namespace NeuroRighter
             this.label18 = new System.Windows.Forms.Label();
             this.checkBox_UseAuxDigitalInput = new System.Windows.Forms.CheckBox();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.listBox_AuxAnalogInChan = new System.Windows.Forms.ListBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.comboBox_AuxAnalogInputDevice = new System.Windows.Forms.ComboBox();
             this.label16 = new System.Windows.Forms.Label();
             this.checkBox_UseAuxAnalogInput = new System.Windows.Forms.CheckBox();
@@ -109,8 +112,7 @@ namespace NeuroRighter
             this.checkBox_useChannelPlayback = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox_singleChannelPlaybackDevice = new System.Windows.Forms.ComboBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.listBox_AuxAnalogInChan = new System.Windows.Forms.ListBox();
+            this.persistWindowComponent1 = new Mowog.PersistWindowComponent(this.components);
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -856,6 +858,24 @@ namespace NeuroRighter
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Auxiliary Analog Input";
             // 
+            // listBox_AuxAnalogInChan
+            // 
+            this.listBox_AuxAnalogInChan.FormattingEnabled = true;
+            this.listBox_AuxAnalogInChan.Location = new System.Drawing.Point(180, 71);
+            this.listBox_AuxAnalogInChan.Name = "listBox_AuxAnalogInChan";
+            this.listBox_AuxAnalogInChan.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+            this.listBox_AuxAnalogInChan.Size = new System.Drawing.Size(91, 69);
+            this.listBox_AuxAnalogInChan.TabIndex = 22;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 71);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(54, 13);
+            this.label19.TabIndex = 21;
+            this.label19.Text = "Channels:";
+            // 
             // comboBox_AuxAnalogInputDevice
             // 
             this.comboBox_AuxAnalogInputDevice.FormattingEnabled = true;
@@ -982,22 +1002,10 @@ namespace NeuroRighter
             this.comboBox_singleChannelPlaybackDevice.TabIndex = 7;
             this.comboBox_singleChannelPlaybackDevice.Text = "Dev1";
             // 
-            // label19
+            // persistWindowComponent1
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 71);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(54, 13);
-            this.label19.TabIndex = 21;
-            this.label19.Text = "Channels:";
-            // 
-            // listBox_AuxAnalogInChan
-            // 
-            this.listBox_AuxAnalogInChan.FormattingEnabled = true;
-            this.listBox_AuxAnalogInChan.Location = new System.Drawing.Point(180, 71);
-            this.listBox_AuxAnalogInChan.Name = "listBox_AuxAnalogInChan";
-            this.listBox_AuxAnalogInChan.Size = new System.Drawing.Size(91, 69);
-            this.listBox_AuxAnalogInChan.TabIndex = 22;
+            this.persistWindowComponent1.Form = this;
+            this.persistWindowComponent1.XMLFilePath = "WindowState.xml";
             // 
             // HardwareSettings
             // 
@@ -1144,5 +1152,6 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_UseAuxDigitalInput;
         private System.Windows.Forms.ListBox listBox_AuxAnalogInChan;
         private System.Windows.Forms.Label label19;
+        private Mowog.PersistWindowComponent persistWindowComponent1;
     }
 }

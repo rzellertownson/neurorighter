@@ -44,7 +44,8 @@ using ExtensionMethods;
 
 namespace NeuroRighter
 {
-    ///<summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG).</summary>
+    ///<summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG) 
+    ///and calls the methods that write these data to file.</summary>
     ///<author>Jon Newman</author>
     sealed internal partial class NeuroRighter
     {
@@ -358,71 +359,85 @@ namespace NeuroRighter
 
         private void AnalogInCallback_AuxAn(IAsyncResult ar)
         {
-            try
+            lock (this)
             {
-                if (taskRunning)
+                try
                 {
-                    //Read the available data from the channels
-                    auxAnData = auxAnReader.EndReadInt16(ar);
-
-                    //Write to file in format [numChannels numSamples]
-                    #region Write aux file
-                    if (switch_record.Value && recordingSettings.recordAuxAnalog)
+                    if (taskRunning)
                     {
-                        recordingSettings.auxAnalogOut.read(auxAnData, auxAnInTask.AIChannels.Count, 0, spikeBufferLength);
+                        //Read the available data from the channels
+                        auxAnData = auxAnReader.EndReadInt16(ar);
+
+                        //Write to file in format [numChannels numSamples]
+                        #region Write aux file
+                        if (switch_record.Value && recordingSettings.recordAuxAnalog)
+                        {
+                            //auxDataScaler.ShiftUnscaledInt16ToZero(ref auxAnData);
+                            recordingSettings.auxAnalogOut.read(auxAnData, auxAnInTask.AIChannels.Count, 0, spikeBufferLength);
+                        }
+                        #endregion
+
+
+                        // Start next read
+                        auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
                     }
-                    #endregion
                 }
-            }
-            catch (DaqException exception)
-            {
-                //Display Errors
-                MessageBox.Show(exception.Message);
-                reset();
+                catch (DaqException exception)
+                {
+                    //Display Errors
+                    MessageBox.Show(exception.Message);
+                    reset();
+                }
             }
         }
 
         private void AnalogInCallback_AuxDig(IAsyncResult ar)
         {
-            try
+            lock (this)
             {
-                if (taskRunning)
+                try
                 {
-                    //Read the available data from the channels
-                    auxDigData = auxDigReader.EndReadMultiSamplePortUInt32(ar);
-
-                    //Find changes in digital state
-                    for (int i = 0; i < spikeBufferLength; ++i)
+                    if (taskRunning)
                     {
-                        if (auxDigData[i] != lastDigState)
+                        //Read the available data from the channels
+                        auxDigData = auxDigReader.EndReadMultiSamplePortUInt32(ar);
+                        trackingDigReads++;
+
+                        //Find changes in digital state
+                        for (int i = 0; i < spikeBufferLength; ++i)
                         {
-                            lastDigState = auxDigData[i];
-                            Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is now " + lastDigState);
-                            if (switch_record.Value && recordingSettings.recordAuxDig)
+                            if (auxDigData[i] != lastDigState)
                             {
-                                recordingSettings.auxDigitalOut.write(i, lastDigState, trackingReads[0], spikeBufferLength);
+                                int dt = DateTime.Now.Millisecond;
+                                lastDigState = auxDigData[i];
+                                Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is " + lastDigState + " at " + dt.ToString());
+                                if (switch_record.Value && recordingSettings.recordAuxDig)
+                                {
+                                    recordingSettings.auxDigitalOut.write(i, lastDigState, trackingDigReads, spikeBufferLength);
+                                }
+
+                                //// Update led array
+                                //bool[] boolLEDState = new bool[32];
+                                //var ledState = new BitArray(new int[] { (int)auxDigData[i] });
+                                //for (int j = 0; j < 32; j++)
+                                //    boolLEDState[j] = ledState[j];
+                                //ledArray_DigitalState.SetValues(boolLEDState, 0, 32);
                             }
-
-                            // Update led array
-                            bool[]  boolLEDState = new bool[32];
-                            var ledState = new BitArray(new int[] { (int)auxDigData[i] });
-                            for (int j = 0; j < 32; j++)
-                                boolLEDState[j] = ledState[j];
-                            ledArray_DigitalState.SetValues(boolLEDState,0,32);
                         }
-                    }
 
-                    // Start next read
-                    auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
+                        // Start next read
+                        auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
+                    }
+                }
+                catch (DaqException exception)
+                {
+                    //Display Errors
+                    MessageBox.Show(exception.Message);
+                    reset();
                 }
             }
-            catch (DaqException exception)
-            {
-                //Display Errors
-                MessageBox.Show(exception.Message);
-                reset();
-            }
         }
+
         #endregion
 
 

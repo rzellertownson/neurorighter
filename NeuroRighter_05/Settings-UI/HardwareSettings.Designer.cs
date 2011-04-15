@@ -838,9 +838,9 @@ namespace NeuroRighter
             this.checkBox_UseAuxDigitalInput.AutoSize = true;
             this.checkBox_UseAuxDigitalInput.Location = new System.Drawing.Point(6, 19);
             this.checkBox_UseAuxDigitalInput.Name = "checkBox_UseAuxDigitalInput";
-            this.checkBox_UseAuxDigitalInput.Size = new System.Drawing.Size(143, 17);
+            this.checkBox_UseAuxDigitalInput.Size = new System.Drawing.Size(138, 17);
             this.checkBox_UseAuxDigitalInput.TabIndex = 15;
-            this.checkBox_UseAuxDigitalInput.Text = "Enable aux. analog input";
+            this.checkBox_UseAuxDigitalInput.Text = "Enable aux. digital input";
             this.checkBox_UseAuxDigitalInput.UseVisualStyleBackColor = true;
             this.checkBox_UseAuxDigitalInput.CheckedChanged += new System.EventHandler(this.checkBox_UseAuxDigitalInput_CheckedChanged);
             // 

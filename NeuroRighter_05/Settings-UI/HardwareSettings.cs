@@ -218,6 +218,7 @@ namespace NeuroRighter
             comboBox_progRefSerialPort.Enabled = Properties.Settings.Default.UseProgRef;
             checkBox_useEEG.Checked = Properties.Settings.Default.UseEEG;
             comboBox_EEG.Enabled = Properties.Settings.Default.UseEEG;
+            checkBox_UseAODO.Checked = Properties.Settings.Default.UseSigOut;
             checkBox_useChannelPlayback.Checked = Properties.Settings.Default.UseSingleChannelPlayback;
             comboBox_singleChannelPlaybackDevice.Enabled = (Properties.Settings.Default.UseSingleChannelPlayback ? true : false);
             comboBox_analogInputDevice2.Enabled = (Properties.Settings.Default.NumAnalogInDevices == 2 ? true : false);

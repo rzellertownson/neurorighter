@@ -59,10 +59,12 @@ namespace NeuroRighter
             updateRecSettings();
 
             //Grab display gains for later use
-            Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
+            if (spikePlotData.getGain() != null)
+                Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
             if (Properties.Settings.Default.UseLFPs)
                 Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
-            Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
+            if (waveformPlotData.getGain() != null)
+                Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
 
             taskRunning = false;
             if (triggerWriter != null)
@@ -142,6 +144,11 @@ namespace NeuroRighter
             if (!button_startStimFromFile.Enabled) { button_startStimFromFile.Enabled = true; }
 
             timer_timeElapsed.Enabled = false;
+        }
+
+        private void ResetFromError()
+        {
+
         }
 
         // Called when stimulation is stopped

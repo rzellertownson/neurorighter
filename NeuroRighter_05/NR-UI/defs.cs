@@ -173,6 +173,11 @@ namespace NeuroRighter
         private SpikeDetSettings spikeDet;
 
         // File Writing
+        private int[] trackingReads;
+        private int[] trackingProc;
+        private int trackingDigReads;
+        private RawScale neuralDataScaler;
+        private RawScale auxDataScaler;
         private bool[] firstRawWrite;
         RecordingSetup recordingSettings;
 

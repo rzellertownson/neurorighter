@@ -218,7 +218,7 @@ namespace NeuroRighter.FileWriting
                     if (recordAuxAnalog)
                     {
                         auxAnalogOut = new FileOutput(fid, dataTask.AIChannels.Count,
-                            (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                            (int)dataTask.Timing.SampleClockRate, 0, dataTask,
                             "." + dataType, 1);
                     }
                     break;

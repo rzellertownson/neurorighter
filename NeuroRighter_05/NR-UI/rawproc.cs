@@ -49,14 +49,14 @@ using NeuroRighter.SpikeDetection;
 namespace NeuroRighter
 
 {
-
-    ///<summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams.</summary>
+    ///<summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams
+    ///and, if appropriate, sending those raw streams to file.</summary>
     ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
 
-        int[] trackingReads;
-        int[] trackingProc;
+
+
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
 
@@ -77,23 +77,24 @@ namespace NeuroRighter
             //Write data to file
             if (switch_record.Value && recordingSettings.recordRaw && spikeTask != null)
             {
-                rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                rawType tempVal;
-
+                
                 lock (this)
                 {
 
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    {
+                        // Temporary storage for converte data
+                        Int16[] tempBuff;
+                        
+                        // Convert raw data to 16-bit int
+                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+
+                        // Send data to file writer
                         for (int j = 0; j < spikeBufferLength; ++j)
                         {
-                            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                            else { tempVal = Int16.MinValue; }
-
-                            recordingSettings.rawOut.read((short)tempVal, i);
+                            recordingSettings.rawOut.read(tempBuff[j], i);
                         }
+                    }
                 }
             }
 
@@ -116,6 +117,7 @@ namespace NeuroRighter
                 if (checkBox_LFPsFilter.Checked)
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                         lfpFilter[i].filterData(filtLFPData[i]);
+
                 //Downsample for LFPs
                 double dsFactor = (double)spikeSamplingRate / (double)lfpSamplingRate;
                 if (dsFactor % 1 == 0) //If it's an integer
@@ -137,19 +139,21 @@ namespace NeuroRighter
                 #region WriteLFPFile
                 if (switch_record.Value && recordingSettings.recordLFP && spikeTask != null) //Convert to 16-bit ints, then write to file
                 {
-                    rawType oneOverResolution = Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                    rawType tempLFPVal;
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    {
+                        // Temporary storage for converte data
+                        Int16[] tempLFPBuff;
+
+                        // Convert raw data to 16-bit int
+                        tempLFPBuff = neuralDataScaler.ConvertSoftRawToInt16(ref finalLFPData[i]);
+
+                        // Send data to file writer
                         for (int j = 0; j < lfpBufferLength; ++j)
                         {
-                            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                            tempLFPVal = Math.Round(finalLFPData[i][j] * oneOverResolution);
-                            if (tempLFPVal <= Int16.MaxValue && tempLFPVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                            else if (tempLFPVal > Int16.MaxValue) { tempLFPVal = Int16.MaxValue; }
-                            else { tempLFPVal = Int16.MinValue; }
-
-                            recordingSettings.lfpOut.read((short)tempLFPVal, i);
+                            recordingSettings.lfpOut.read((short)tempLFPBuff[j], i);
                         }
+                    }
+    
                 }
                 #endregion
 
@@ -198,19 +202,20 @@ namespace NeuroRighter
                         startIdx = 0;
                     }
 
-                    rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                    rawType tempVal;
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    {
+                        // Temporary storage for converte data
+                        Int16[] tempBuff;
+
+                        // Convert raw data to 16-bit int
+                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+
+                        // Send data to file writer
                         for (int j = startIdx; j < spikeBufferLength; ++j)
                         {
-                            //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                            tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                            if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                            else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                            else { tempVal = Int16.MinValue; }
-
-                            recordingSettings.salpaOut.read((short)tempVal, i);
+                            recordingSettings.salpaOut.read((short)tempBuff[j], i);
                         }
+                    }
                 }
             }
 
@@ -240,19 +245,20 @@ namespace NeuroRighter
                             startIdx = 0;
                         }
 
-                        rawType oneOverResolution = Properties.Settings.Default.PreAmpGain * Int16.MaxValue / spikeTask[0].AIChannels.All.RangeHigh; //Resolution of 16-bit signal; multiplication is much faster than division
-                        rawType tempVal;
                         for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                        {
+                            // Temporary storage for converte data
+                            Int16[] tempBuff;
+
+                            // Convert raw data to 16-bit int
+                            tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+
+                            // Send data to file writer
                             for (int j = startIdx; j < spikeBufferLength; ++j)
                             {
-                                //This next section deals with the fact that NI's range is soft--i.e., values can exceed the max and min values of the range (but trying to convert these to shorts would crash the program)
-                                tempVal = Math.Round(filtSpikeData[i][j] * oneOverResolution);
-                                if (tempVal <= Int16.MaxValue && tempVal >= Int16.MinValue) { /*do nothing, most common case*/ }
-                                else if (tempVal > Int16.MaxValue) { tempVal = Int16.MaxValue; }
-                                else { tempVal = Int16.MinValue; }
-
-                                recordingSettings.spkFiltOut.read((short)tempVal, i);
+                                recordingSettings.spkFiltOut.read((short)tempBuff[j], i);
                             }
+                        }
                     }
                 }
 

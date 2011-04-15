@@ -107,6 +107,7 @@
     <Compile Include="dbg\ExecptDBG.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
     <Compile Include="FileWriting\DigFileOutput.cs" />
+    <Compile Include="FileWriting\RawScale.cs" />
     <Compile Include="FileWriting\RecordingSetup.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -80,6 +80,10 @@ namespace NeuroRighter
             this.numPre = spikeDet.numPre;
             this.numPost = spikeDet.numPost;
 
+            // Create a raw-scaler so that we can store the doubles produced by the NI tasks as 16-bit integers
+            neuralDataScaler = new RawScale();
+            auxDataScaler = new RawScale();
+            
             //Setup default filename and create recordingSettings object
             this.filenameOutput = "test0001";
             recordingSettings = new RecordingSetup();
@@ -427,8 +431,9 @@ namespace NeuroRighter
                         scalingCoeffsEEG = eegTask.AIChannels[0].DeviceScalingCoefficients;
 
                     // Setup auxiliary recording tasks
-                    if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    if (Properties.Settings.Default.useAuxAnalogInput)
                     {
+
                         auxAnInTask = new Task("AuxiliaryAnalogInput");
                         NRAIChannelCollection auxChanSet = new NRAIChannelCollection(Properties.Settings.Default.auxAnalogInChan);
                         auxChanSet.SetupAuxCollection(ref auxAnInTask);
@@ -441,11 +446,21 @@ namespace NeuroRighter
                             SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
 
                         //Trigger off of ai dev0's trigger
-                        auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
-
-                        Console.WriteLine("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger");
-
-                        auxAnInTask.Control(TaskAction.Verify);
+                        // THIS DOES NOT WORK
+                        // NEED TO TURN AUX AN INPUT INTO SAME TASK AS STIM TIMING.
+                        if (Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.StimInfoDevice
+                            && Properties.Settings.Default.RecordStimTimes
+                            || Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.AnalogInDevice[0]
+                            || Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.AnalogInDevice[1])
+                        {
+                            MessageBox.Show("NeuroRighter does not currently support the recording of raw auxiliary signals on a device being used for other" +
+                                                " forms of analog input (e.g. stimulaiton timing or neural data). If you do not need to record stimulation timing," +
+                                                " then deselect that recording from the recording streams menu and send your auxiliary signals to AI lines on the device being used to record stimulation timing.");
+                        }
+                        else
+                        {
+                            auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+                        }
                     }
                     if (Properties.Settings.Default.useAuxDigitalInput)
                     {
@@ -731,7 +746,7 @@ namespace NeuroRighter
                         eegCallback = new AsyncCallback(AnalogInCallback_EEG);
                     }
 
-                    if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                    if (Properties.Settings.Default.useAuxAnalogInput)
                     {
                         auxAnReader = new AnalogUnscaledReader(auxAnInTask.Stream);
                         auxAnReader.SynchronizeCallbacks = true;
@@ -809,7 +824,7 @@ namespace NeuroRighter
                     auxDigInTask.Start();
                 if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                     stimTimeTask.Start();
-                if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                if (Properties.Settings.Default.useAuxAnalogInput)
                     auxAnInTask.Start();
                 if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                     lfpTask.Start();
@@ -819,7 +834,7 @@ namespace NeuroRighter
                     spikeTask[i].Start(); //Start first task last, since it has master clock
 
                 // Start data collection
-                if (Properties.Settings.Default.useAuxAnalogInput && Properties.Settings.Default.recordAuxAnalog)
+                if (Properties.Settings.Default.useAuxAnalogInput)
                     auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
                 if (Properties.Settings.Default.useAuxDigitalInput)
                     auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
@@ -852,6 +867,13 @@ namespace NeuroRighter
         // Instantiate the data stream writers within the recordingSettings object
         private void SetupFileWriting()
         {
+            // Formate the raw data scalers, needed regardless of whether user is recording or not
+            neuralDataScaler.Set16BitResolution( 
+                spikeTask[0].AIChannels.All.RangeHigh / (Int16.MaxValue * Properties.Settings.Default.PreAmpGain));
+
+            if (Properties.Settings.Default.useAuxAnalogInput)
+                auxDataScaler.Set16BitResolution(auxAnInTask.AIChannels.All.RangeHigh / Int16.MaxValue);
+
             if (switch_record.Value)
             {
                 DateTime dt = DateTime.Now; //Get current time (local to computer)

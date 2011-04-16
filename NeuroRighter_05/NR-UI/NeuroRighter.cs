@@ -702,7 +702,7 @@ namespace NeuroRighter
                         triggerTask.Control(TaskAction.Verify);
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Control(TaskAction.Verify);
-                    if (Properties.Settings.Default.recordAuxAnalog && Properties.Settings.Default.useAuxAnalogInput)
+                    if (Properties.Settings.Default.useAuxAnalogInput)
                         auxAnInTask.Control(TaskAction.Verify);
                     if (Properties.Settings.Default.useAuxDigitalInput)
                         auxDigInTask.Control(TaskAction.Verify);
@@ -809,6 +809,7 @@ namespace NeuroRighter
                 // integers tracking the number of reads performed
                 trackingReads = new int[2];
                 trackingProc = new int[2];
+                trackingDigReads = new int();
 
                 //Start tasks (start LFP first, since it's triggered off spikeTask) and timer (for file writing)
                 if (checkBox_video.Checked)

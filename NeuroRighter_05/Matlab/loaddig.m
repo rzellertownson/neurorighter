@@ -16,7 +16,7 @@ function dig = loaddig(fid)
 if nargin < 1
     error('You must provide a file path')
 end
-if(~strcmp(fid(end-3:end),'dig'))
+if(~strcmp(fid(end-2:end),'dig'))
     warning(['This file does not have a .dig extension. '... 
              'trying to extract data anayway...'])
 end

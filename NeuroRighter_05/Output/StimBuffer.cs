@@ -12,13 +12,13 @@ using System.Diagnostics;
 namespace NeuroRighter.Output
 {   
     // called when the 2+requested number of buffer loads have occured
-    public delegate void StimulationCompleteHandler(object sender, EventArgs e);
+    internal delegate void StimulationCompleteHandler(object sender, EventArgs e);
     // called when the Queue falls below a user defined threshold
-    public delegate void QueueLessThanThresholdHandler(object sender, EventArgs e);
+    internal delegate void QueueLessThanThresholdHandler(object sender, EventArgs e);
     // called when the stimBuffer finishes a DAQ load
-    public delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
+    internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-    public class StimBuffer
+    internal class StimBuffer
     {
 
         //events
@@ -31,13 +31,13 @@ namespace NeuroRighter.Output
         Thread thrd;
 
         // Public Properties
-        public ulong bufferIndex = 0;
-        public double[,] AnalogBuffer;
-        public UInt32[] DigitalBuffer;
-        public bool StillWritting = false;
-        public ulong numBuffLoadsCompleted = 0;
-        public uint numBuffLoadsRequired = 0;
-        public bool running = false;
+        internal ulong bufferIndex = 0;
+        internal double[,] AnalogBuffer;
+        internal UInt32[] DigitalBuffer;
+        internal bool StillWritting = false;
+        internal ulong numBuffLoadsCompleted = 0;
+        internal uint numBuffLoadsRequired = 0;
+        internal bool running = false;
 
         // Private Properties
         private uint WaveLength;
@@ -55,7 +55,7 @@ namespace NeuroRighter.Output
         private string[] s = DaqSystem.Local. GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
         private List<StimulusData> outerbuffer;
         private StimulusData currentStim;
-        bool analogdone, digitaldone;
+        private bool digitaldone, analogdone;
 
         //DO line that will have the blanking signal for different hardware configurations
         private const int BLANKING_BIT_32bitPort = 31;
@@ -391,12 +391,12 @@ namespace NeuroRighter.Output
             lock (this)
             {
                 
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
+                //tickTime = DateTime.Now;
+                //tickDiff = tickTime.Subtract(startTime);
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
                 
-                Stopwatch ws = new Stopwatch();
-                ws.Start();
+                //Stopwatch ws = new Stopwatch();
+                //ws.Start();
                 //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
                 //clear buffers and reset index
                 AnalogBuffer = new double[NumAOChannels, BUFFSIZE]; // buffer for analog channels
@@ -451,8 +451,8 @@ namespace NeuroRighter.Output
 
                 OnBufferLoad(EventArgs.Empty);
 
-                ws.Stop();
-                Console.WriteLine("Buffer load took " + ws.Elapsed);
+                //ws.Stop();
+                //Console.WriteLine("Buffer load took " + ws.Elapsed);
             }
         }
 
@@ -584,7 +584,7 @@ namespace NeuroRighter.Output
         {
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ*finalStimTime / (double)BUFFSIZE));
+            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ*finalStimTime / (double)BUFFSIZE));
         }
 
         // Methods to calculate digital and alalog points to send to daq based on required channel and timing
@@ -759,7 +759,6 @@ namespace NeuroRighter.Output
 
         private void OnBufferLoad(EventArgs e)
         {
-            Console.WriteLine("Updating the progress bar");
             if (DAQLoadCompleted != null)
                 DAQLoadCompleted(this, e);
         }

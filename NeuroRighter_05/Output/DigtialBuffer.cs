@@ -125,9 +125,9 @@ namespace NeuroRighter.Output
         {
             if (running)
             {
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Digital half-load event.");
+                //tickTime = DateTime.Now;
+                //tickDiff = tickTime.Subtract(startTime);
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Digital half-load event.");
                 WriteToBuffer();
             }
             else
@@ -142,7 +142,7 @@ namespace NeuroRighter.Output
             thrd.Priority = ThreadPriority.Highest;
             digitaldone = false;
             PopulateBufferAppending();
-            Console.WriteLine("Write to Digital Buffer Started");
+            //Console.WriteLine("Write to Digital Buffer Started");
             digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
             digitaldone = true;
 
@@ -159,12 +159,12 @@ namespace NeuroRighter.Output
             lock (this)
             {
 
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
+                //tickTime = DateTime.Now;
+                //tickDiff = tickTime.Subtract(startTime);
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
 
-                Stopwatch ws = new Stopwatch();
-                ws.Start();
+                //Stopwatch ws = new Stopwatch();
+                //ws.Start();
 
                 //clear buffers and reset index
                 DigitalBufferLoad = new UInt32[BUFFSIZE]; // buffer for digital port
@@ -209,15 +209,15 @@ namespace NeuroRighter.Output
                 // Alert system that buffer load was completed
                 onBufferLoad(EventArgs.Empty);
 
-                ws.Stop();
-                Console.WriteLine("Buffer load took " + ws.Elapsed);
+                //ws.Stop();
+                //Console.WriteLine("Buffer load took " + ws.Elapsed);
             }
         }
 
         internal void append(List<DigitalData> digitallist)
         {
             
-           Console.WriteLine("Appending next " + digitallist.Count + " digital events to buffer");
+           //Console.WriteLine("Appending next " + digitallist.Count + " digital events to buffer");
 
             lock (this)
             {
@@ -294,7 +294,7 @@ namespace NeuroRighter.Output
         {
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
+            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
         }
 
         internal double time()    
@@ -320,7 +320,6 @@ namespace NeuroRighter.Output
 
         private void onBufferLoad(EventArgs e)
         {
-            Console.WriteLine("Updating the progress bar");
             if (DigitalDAQLoadCompleted != null)
                 DigitalDAQLoadCompleted(this, e);
         }

@@ -177,7 +177,7 @@ namespace NeuroRighter.Output
 
             if (auxFileExists)
             {
-                while (j <= numEventToRead - 1)
+                while (j < numEventToRead)
                 {
                     line = olAuxFile.ReadLine();
                     if (line == null)

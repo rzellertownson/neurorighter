@@ -119,9 +119,9 @@ namespace NeuroRighter.Output
         {
             if (running)
             {
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Aux half-load event.");
+                //tickTime = DateTime.Now;
+                //tickDiff = tickTime.Subtract(startTime);
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Aux half-load event.");
                 WriteToBuffer();
             }
             else
@@ -136,7 +136,7 @@ namespace NeuroRighter.Output
             thrd.Priority = ThreadPriority.Highest;
             auxDone = false;
             PopulateBufferAppending();
-            Console.WriteLine("Write to Aux Buffer Started");
+            //Console.WriteLine("Write to Aux Buffer Started");
             auxOutputWriter.WriteMultiSample(false, auxBufferLoad);
             auxDone = true;
 
@@ -152,12 +152,12 @@ namespace NeuroRighter.Output
             lock (this)
             {
 
-                tickTime = DateTime.Now;
-                tickDiff = tickTime.Subtract(startTime);
-                Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
+                //tickTime = DateTime.Now;
+                //tickDiff = tickTime.Subtract(startTime);
+                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
 
-                Stopwatch ws = new Stopwatch();
-                ws.Start();
+                //Stopwatch ws = new Stopwatch();
+                //ws.Start();
 
                 //clear buffers and reset index
                 auxBufferLoad = new double[4,BUFFSIZE]; // buffer for aux AO
@@ -202,15 +202,15 @@ namespace NeuroRighter.Output
                 // Alert system that buffer load was completed
                 OnBufferLoad(EventArgs.Empty);
 
-                ws.Stop();
-                Console.WriteLine("Buffer load took " + ws.Elapsed);
+                //ws.Stop();
+                //Console.WriteLine("Buffer load took " + ws.Elapsed);
             }
         }
 
         internal void Append(List<AuxData> auxList)
         {
             
-           Console.WriteLine("Appending next " + auxList.Count + " aux events to buffer");
+           //Console.WriteLine("Appending next " + auxList.Count + " aux events to buffer");
 
             lock (this)
             {
@@ -291,7 +291,7 @@ namespace NeuroRighter.Output
         {
             //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
             //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 3 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
+            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
         }
 
         internal double GetTime()    
@@ -317,7 +317,6 @@ namespace NeuroRighter.Output
 
         private void OnBufferLoad(EventArgs e)
         {
-            Console.WriteLine("Updating the progress bar");
             if (AuxDAQLoadCompleted != null)
                 AuxDAQLoadCompleted(this, e);
         }

@@ -408,9 +408,9 @@ namespace NeuroRighter
                         {
                             if (auxDigData[i] != lastDigState)
                             {
-                                int dt = DateTime.Now.Millisecond;
+                                //int dt = DateTime.Now.Millisecond;
                                 lastDigState = auxDigData[i];
-                                Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is " + lastDigState + " at " + dt.ToString());
+                                //Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is " + lastDigState + " at " + dt.ToString());
                                 if (switch_record.Value && recordingSettings.recordAuxDig)
                                 {
                                     recordingSettings.auxDigitalOut.write(i, lastDigState, trackingDigReads, spikeBufferLength);

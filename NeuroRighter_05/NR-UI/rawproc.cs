@@ -329,8 +329,11 @@ namespace NeuroRighter
                     {
                         lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
                         {
-                            recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData); 
+                            if (Properties.Settings.Default.recordSpikes)
+                            {
+                                recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
+                                    newWaveforms[j].threshold, waveformData);
+                            }
                         }
                     }
                     #endregion

@@ -38,7 +38,7 @@ namespace NeuroRighter.FileWriting
 
         internal override void write(int digChangeTime, uint digChangeState, int numReads, int buffSize)
         {
-            outStream.Write(BitConverter.GetBytes(digChangeTime + (numReads * buffSize)), 0, 4); //Write port-change time (index number)
+            outStream.Write(BitConverter.GetBytes(digChangeTime + ((numReads-1) * buffSize)), 0, 4); //Write port-change time (index number)
             outStream.Write(BitConverter.GetBytes(digChangeState),0,4); // Port state at change
         }
 

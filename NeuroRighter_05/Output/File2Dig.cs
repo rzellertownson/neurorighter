@@ -84,7 +84,7 @@ namespace NeuroRighter.Output
             digbuff.CalculateLoadsRequired(finalEventTime); // inform the stimbuffer how many DAQ loads it needs to take care of
             
             //Compute the amount of bufferloads needed to take care of this stimulation experiment
-            numBuffLoadsRequired = 3 + (ulong)Math.Ceiling(finalEventTime*STIM_SAMPLING_FREQ / (double)digbuff.GetBufferSize());
+            numBuffLoadsRequired = digbuff.numBuffLoadsRequired;
 
             // Half the size of the largest stimulus data array that your computer will have to put in memory
             int numFullLoads = (int)Math.Floor((double)numDigEvent / (double)numEventPerLoad);
@@ -124,7 +124,7 @@ namespace NeuroRighter.Output
 
         internal void AppendDigBufferAtThresh(object sender, EventArgs e)
         {
-            if (numDigEvent - (numLoadsCompleted * numEventPerLoad) > numEventPerLoad)
+            if (numDigEvent - (numLoadsCompleted * numEventPerLoad) >= numEventPerLoad)
             {
                 Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
@@ -162,8 +162,9 @@ namespace NeuroRighter.Output
             int j = 0;
             DigitalDataChunk = new List<DigitalData>();
 
-            while ( j <= numEventToRead - 1)
+            while ( j < numEventToRead)
             {
+                
                 line = oldigFile.ReadLine();
                 if (line == null)
                     break;

@@ -54,9 +54,6 @@ namespace NeuroRighter
     ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
-
-
-
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
 

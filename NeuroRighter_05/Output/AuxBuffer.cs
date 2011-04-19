@@ -255,9 +255,14 @@ namespace NeuroRighter.Output
                     outerbuffer.RemoveAt(0);
 
                     // Next Aux state
-                    nextAux = new AuxData(outerbuffer.ElementAt(0).eventTime,
-                        outerbuffer.ElementAt(0).eventChannel,
-                        outerbuffer.ElementAt(0).eventVoltage);
+                    if (outerbuffer.Count > 0)
+                        nextAux = new AuxData(outerbuffer.ElementAt(0).eventTime,
+                            outerbuffer.ElementAt(0).eventChannel,
+                            outerbuffer.ElementAt(0).eventVoltage);
+                    else
+                        nextAux = new AuxData(currentAux.eventTime+1,
+                            currentAux.eventChannel,
+                            0);
 
                     if (outerbuffer.Count == (queueThreshold - 1))
                         OnThreshold(EventArgs.Empty);

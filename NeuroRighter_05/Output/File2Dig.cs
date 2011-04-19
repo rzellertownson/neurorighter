@@ -51,6 +51,7 @@ namespace NeuroRighter.Output
             this.digitalOutputWriter = digitalOutputWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.numEventPerLoad = numEventPerLoad;
+            this.lastLoad = false;
 
             // Instatiate a DigitalBuffer object
             digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
@@ -90,7 +91,7 @@ namespace NeuroRighter.Output
             int numFullLoads = (int)Math.Floor((double)numDigEvent / (double)numEventPerLoad);
 
             
-            if (2*numEventPerLoad > numDigEvent)
+            if (2*numEventPerLoad >= numDigEvent)
             {
                 // Load the stimuli
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
@@ -124,12 +125,13 @@ namespace NeuroRighter.Output
 
         internal void AppendDigBufferAtThresh(object sender, EventArgs e)
         {
-            if (numDigEvent - (numLoadsCompleted * numEventPerLoad) >= numEventPerLoad)
+            if (numDigEvent - (numLoadsCompleted * numEventPerLoad) > numEventPerLoad)
             {
-                Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
+                
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
                 digbuff.append(DigitalDataChunk); //add N more stimuli
                 numLoadsCompleted++;
+                Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
             }
             else
             {

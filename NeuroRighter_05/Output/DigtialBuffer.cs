@@ -12,19 +12,19 @@ using System.Diagnostics;
 namespace NeuroRighter.Output
 {
     // called when the 2+requested number of buffer loads have occured
-    public delegate void DigitalOutputCompleteHandler(object sender, EventArgs e);
+    internal delegate void DigitalOutputCompleteHandler(object sender, EventArgs e);
     // called when the Queue falls below a user defined threshold
-    public delegate void DigitalQueueLessThanThresholdHandler(object sender, EventArgs e);
+    internal delegate void DigitalQueueLessThanThresholdHandler(object sender, EventArgs e);
     // called when the stimBuffer finishes a DAQ load
-    public delegate void DigitalDAQLoadCompletedHandler(object sender, EventArgs e);
+    internal delegate void DigitalDAQLoadCompletedHandler(object sender, EventArgs e);
 
     internal class DigitalBuffer
     {
         //events
         private int queueThreshold = 0;
-        public event DigitalQueueLessThanThresholdHandler DigitalQueueLessThanThreshold;
-        public event DigitalOutputCompleteHandler DigitalOutputComplete;
-        public event DigitalDAQLoadCompletedHandler DigitalDAQLoadCompleted;
+        internal event DigitalQueueLessThanThresholdHandler DigitalQueueLessThanThreshold;
+        internal event DigitalOutputCompleteHandler DigitalOutputComplete;
+        internal event DigitalDAQLoadCompletedHandler DigitalDAQLoadCompleted;
 
         // This class's thread
         Thread thrd;
@@ -56,8 +56,8 @@ namespace NeuroRighter.Output
         // DEBUGGING
         private Stopwatch sw = new Stopwatch();
         DateTime startTime;
-        DateTime tickTime;
-        TimeSpan tickDiff;
+        //DateTime tickTime;
+        //TimeSpan tickDiff;
 
         //background worker requires the DAQ constructs so that it can encapsulate the asynchronous stimulation task
         DigitalSingleChannelWriter digitalOutputWriter;
@@ -253,14 +253,18 @@ namespace NeuroRighter.Output
         {
             lock (this)
             {
+                // If the next event is in the range of the next buffer load then get it ready
                 if (outerbuffer.ElementAt(0).EventTime < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
                     // Current Digital State
                     currentDig = new DigitalData(outerbuffer.ElementAt(0).EventTime, outerbuffer.ElementAt(0).Byte);
                     outerbuffer.RemoveAt(0);
 
-                    // Next Digital state
-                    nextDig = new DigitalData(outerbuffer.ElementAt(0).EventTime, outerbuffer.ElementAt(0).Byte);
+                    if (outerbuffer.Count > 0)
+                        nextDig = new DigitalData(outerbuffer.ElementAt(0).EventTime, outerbuffer.ElementAt(0).Byte);
+                    else
+                        // Account for last digital change
+                        nextDig = new DigitalData(currentDig.EventTime + 1, currentDig.Byte);
 
                     if (outerbuffer.Count == (queueThreshold - 1))
                         onThreshold(EventArgs.Empty);

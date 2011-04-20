@@ -1,8 +1,8 @@
 function makeauxfile(filename, time, channel, voltage)
-%MAKEDIGFILE turns data vectors into a *.oldig file for use by
+%MAKEAUXFILE turns data vectors into a *.oldig file for use by
 %neurorighter
 %
-%    y = MAKEDIGFILE(filename, time, voltage) takes as input:
+%    y = MAKEAUXFILE(filename, time, channel. voltage) takes as input:
 %         filename    string specifying file name
 %         time        [N 1] vector specifying the time of aux
 %                     event i in N events (in seconds)
@@ -36,7 +36,7 @@ if size(time,1) ~= size(channel,1) || size(time,1) ~= size(voltage,1)
 end
 if min(time) < 0 || max(channel) > 4 || min(channel) < 1 || min(voltage < -10) || max(voltage) > 10
     error([ 'Error:InvalidData',' One or more of values occupying the time, channel and/or voltage ' ... 
-            'vectors is invaled. Type help makeolaux into matlab to see valid ranges']);
+            'vectors is invalid. Type help makeolaux into matlab to see valid ranges']);
 end
 
 % open file and write header
@@ -52,7 +52,7 @@ time = time*100000; % Convert to 100th of millisecond precision
 otime = ceil(log10(max(time)));
 
 % Make c formating strings
-cformat_t = strcat(['%0',num2str(otime)+1,'.0f \n']);
+cformat_t = strcat(['%0',num2str(otime + 1),'.0f \n']);
 cformat_c = '%02.0f \n';
 cformat_v = '%3.5f \n';
 

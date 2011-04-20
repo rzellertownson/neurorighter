@@ -56,7 +56,7 @@ time = time*100000; % Convert to 100th of millisecond precision
 otime = ceil(log10(max(time)));
 
 % Make c formating strings
-cformat_t = ['%0' num2str(otime + 1) '.0f \n'];
+cformat_t = strcat(['%0',num2str(otime + 1),'.0f \n']);
 cformat_c = '%02.0f \n';
 cformat_w = [];
 for j = 1:size(waveform,2)-1

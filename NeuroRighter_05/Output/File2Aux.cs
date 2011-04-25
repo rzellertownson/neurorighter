@@ -140,7 +140,7 @@ namespace NeuroRighter.Output
         {
             if (numAuxEvent - (numLoadsCompleted * numEventPerLoad) > numEventPerLoad)
             {
-                Console.WriteLine("file2aux: loading:" + numEventPerLoad + "more aux events. " + numLoadsCompleted + " have been completed");
+                //Console.WriteLine("file2aux: loading:" + numEventPerLoad + "more aux events. " + numLoadsCompleted + " have been completed");
                 LoadAuxEvent(olauxfile, (int)numEventPerLoad);
                 auxBuff.Append(auxDataChunk); //add N more stimuli
                 numLoadsCompleted++;
@@ -150,7 +150,7 @@ namespace NeuroRighter.Output
                 if (!lastLoad)
                 {
                     // load the last few auxevents
-                    Console.WriteLine("file2aux: last load");
+                    //Console.WriteLine("file2aux: last load");
                     LoadAuxEvent(olauxfile, (int)(numAuxEvent - numLoadsCompleted * numEventPerLoad));
                     auxBuff.Append(auxDataChunk); //add N more stimuli
                     lastLoad = true;

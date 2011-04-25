@@ -79,7 +79,9 @@ namespace NeuroRighter
                 triggerWriter.WriteWaveform(true, wfm);
                 triggerTask.WaitUntilDone();
             }
-            if (spikeTask != null)
+
+            // Kill the background workers
+            lock (this)
             {
                 if (bwSpikes != null)
                 {
@@ -92,15 +94,11 @@ namespace NeuroRighter
                     bwSpikes.Clear();
                     bwSpikes = null;
                 }
-                for (int i = 0; i < spikeTask.Count; ++i)
-                    spikeTask[i].Dispose();
-                spikeTask.Clear();
-                spikeTask = null;
             }
+
             if (waveformPlotData != null) waveformPlotData.stop();
             if (Properties.Settings.Default.SeparateLFPBoard && lfpTask != null) lfpTask.Dispose();
             if (Properties.Settings.Default.UseEEG && eegTask != null) eegTask.Dispose();
-            //if (spikeOutTask != null) spikeOutTask.Dispose();
             if (BNCOutput != null) { BNCOutput.Dispose(); BNCOutput = null; }
             if (stimTimeTask != null) stimTimeTask.Dispose();
             if (triggerTask != null) triggerTask.Dispose();
@@ -131,9 +129,9 @@ namespace NeuroRighter
                 comboBox_eegGain.Enabled = true;
                 textBox_eegSamplingRate.Enabled = true;
             }
-            if (Properties.Settings.Default.SeparateLFPBoard) 
+            if (Properties.Settings.Default.SeparateLFPBoard)
                 comboBox_LFPGain.Enabled = true;
-            
+
             // Clean up data streams
             recordingSettings.Flush();
 
@@ -189,7 +187,7 @@ namespace NeuroRighter
 
             // update the recordingSettings object
             recordingSettings.Refresh();
-            
+
             // Refresh all the NI Tasks
             try
             {
@@ -546,7 +544,7 @@ namespace NeuroRighter
             }
         }
 
-       
+
 
 
     }

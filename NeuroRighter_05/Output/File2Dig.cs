@@ -131,7 +131,7 @@ namespace NeuroRighter.Output
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
                 digbuff.append(DigitalDataChunk); //add N more stimuli
                 numLoadsCompleted++;
-                Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
+                //Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
             }
             else
             {

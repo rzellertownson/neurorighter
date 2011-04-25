@@ -416,12 +416,12 @@ namespace NeuroRighter
                                     recordingSettings.auxDigitalOut.write(i, lastDigState, trackingDigReads, spikeBufferLength);
                                 }
 
-                                //// Update led array
-                                //bool[] boolLEDState = new bool[32];
-                                //var ledState = new BitArray(new int[] { (int)auxDigData[i] });
-                                //for (int j = 0; j < 32; j++)
-                                //    boolLEDState[j] = ledState[j];
-                                //ledArray_DigitalState.SetValues(boolLEDState, 0, 32);
+                                // Update led array
+                                bool[] boolLEDState = new bool[32];
+                                var ledState = new BitArray(new int[] { (int)auxDigData[i] });
+                                for (int j = 0; j < 32; j++)
+                                    boolLEDState[j] = ledState[j];
+                                ledArray_DigitalState.SetValues(boolLEDState, 0, 32);
                             }
                         }
 

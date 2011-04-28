@@ -85,14 +85,27 @@ namespace NeuroRighter
             {
                 if (bwSpikes != null)
                 {
-                    for (int i = 0; i < bwSpikes.Count; ++i)
-                        while (bwSpikes[i].IsBusy) { Application.DoEvents(); }//block while bw finishes
+                    try
+                    {
+                        for (int i = 0; i < bwSpikes.Count; ++i)
+                            //block while bw finishes
+                            if (bwSpikes[i] != null)
+                            {
+                                while (bwSpikes[i].IsBusy)
+                                {
+                                    Application.DoEvents();
+                                }
+                            }
 
-                    //All the bw workers are done, so we'll kill them
-                    for (int i = 0; i < bwSpikes.Count; ++i)
-                        bwSpikes[i].Dispose();
-                    bwSpikes.Clear();
-                    bwSpikes = null;
+                    }
+                    catch
+                    {
+                        //All the bw workers are done, so we'll kill them
+                        for (int i = 0; i < bwSpikes.Count; ++i)
+                            bwSpikes[i].Dispose();
+                        bwSpikes.Clear();
+                        bwSpikes = null;
+                    }
                 }
             }
 
@@ -142,11 +155,6 @@ namespace NeuroRighter
             if (!button_startStimFromFile.Enabled) { button_startStimFromFile.Enabled = true; }
 
             timer_timeElapsed.Enabled = false;
-        }
-
-        private void ResetFromError()
-        {
-
         }
 
         // Called when stimulation is stopped
@@ -243,7 +251,8 @@ namespace NeuroRighter
                     tabPage_MUA = new TabPage("MUA");
                     tabControl.TabPages.Insert((Properties.Settings.Default.UseLFPs ? 3 : 2), tabPage_MUA);
                 }
-                else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA)) tabControl.TabPages.Remove(tabPage_MUA);
+                else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA)) 
+                    tabControl.TabPages.Remove(tabPage_MUA);
             }
             catch (DaqException exception)
             {
@@ -292,12 +301,12 @@ namespace NeuroRighter
                         }
                         else
                         {
-                            stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
-                            //stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
+                            stimPulseTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                            stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
                         }
-                        stimDigitalTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
+                        stimDigitalTask.Timing.ConfigureSampleClock("100KHzTimebase", STIM_SAMPLING_FREQ,
                            SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
-                        stimPulseTask.Timing.ConfigureSampleClock("100kHzTimebase", STIM_SAMPLING_FREQ,
+                        stimPulseTask.Timing.ConfigureSampleClock("100KHzTimebase", STIM_SAMPLING_FREQ,
                             SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
                         stimDigitalTask.SynchronizeCallbacks = false;
                         stimPulseTask.SynchronizeCallbacks = false;
@@ -438,7 +447,6 @@ namespace NeuroRighter
                         stimPulseTask.AOChannels.CreateVoltageChannel(Properties.Settings.Default.StimulatorDevice + "/ao1", "", -10.0, 10.0, AOVoltageUnits.Volts);
                     }
 
-
                     if (Properties.Settings.Default.UseCineplex)
                     {
                         stimPulseTask.Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
@@ -477,8 +485,7 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.UseStimulator)
                     {
                         stimIvsVTask = new Task("stimIvsV");
-                        //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
-                        //    ChannelLineGrouping.OneChannelForAllLines);
+ 
                         stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                             ChannelLineGrouping.OneChannelForAllLines);
                         stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);

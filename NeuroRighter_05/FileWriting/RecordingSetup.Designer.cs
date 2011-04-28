@@ -34,7 +34,6 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.checkBox_RecordSpikeFilt = new System.Windows.Forms.CheckBox();
-            this.checkBox_RecordSALPA = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -65,6 +64,7 @@
             this.checkBox_RecordSpikes = new System.Windows.Forms.CheckBox();
             this.button_Cancel = new System.Windows.Forms.Button();
             this.persistWindowComponent_ForRecSet = new Mowog.PersistWindowComponent(this.components);
+            this.checkBox_RecordSALPA = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkBox_RecordRaw
@@ -117,18 +117,6 @@
             this.checkBox_RecordSpikeFilt.TabIndex = 77;
             this.checkBox_RecordSpikeFilt.UseVisualStyleBackColor = true;
             this.checkBox_RecordSpikeFilt.CheckedChanged += new System.EventHandler(this.checkBox_RecordSpikeFilt_CheckedChanged);
-            // 
-            // checkBox_RecordSALPA
-            // 
-            this.checkBox_RecordSALPA.AutoSize = true;
-            this.checkBox_RecordSALPA.Enabled = false;
-            this.checkBox_RecordSALPA.ForeColor = System.Drawing.Color.Lime;
-            this.checkBox_RecordSALPA.Location = new System.Drawing.Point(175, 104);
-            this.checkBox_RecordSALPA.Name = "checkBox_RecordSALPA";
-            this.checkBox_RecordSALPA.Size = new System.Drawing.Size(15, 14);
-            this.checkBox_RecordSALPA.TabIndex = 78;
-            this.checkBox_RecordSALPA.UseVisualStyleBackColor = true;
-            this.checkBox_RecordSALPA.CheckedChanged += new System.EventHandler(this.checkBox_RecordSALPA_CheckedChanged);
             // 
             // label1
             // 
@@ -407,12 +395,24 @@
             this.persistWindowComponent_ForRecSet.Form = this;
             this.persistWindowComponent_ForRecSet.XMLFilePath = "WindowState.xml";
             // 
+            // checkBox_RecordSALPA
+            // 
+            this.checkBox_RecordSALPA.AutoSize = true;
+            this.checkBox_RecordSALPA.Enabled = false;
+            this.checkBox_RecordSALPA.ForeColor = System.Drawing.Color.Yellow;
+            this.checkBox_RecordSALPA.Location = new System.Drawing.Point(175, 104);
+            this.checkBox_RecordSALPA.Name = "checkBox_RecordSALPA";
+            this.checkBox_RecordSALPA.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_RecordSALPA.TabIndex = 111;
+            this.checkBox_RecordSALPA.UseVisualStyleBackColor = true;
+            // 
             // RecordingSetup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(218, 380);
             this.ControlBox = false;
+            this.Controls.Add(this.checkBox_RecordSALPA);
             this.Controls.Add(this.button_Cancel);
             this.Controls.Add(this.label20);
             this.Controls.Add(this.checkBox_RecordSpikes);
@@ -442,7 +442,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.checkBox_RecordSALPA);
             this.Controls.Add(this.checkBox_RecordSpikeFilt);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label15);
@@ -463,7 +462,6 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox checkBox_RecordSpikeFilt;
-        private System.Windows.Forms.CheckBox checkBox_RecordSALPA;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
@@ -494,5 +492,6 @@
         private System.Windows.Forms.CheckBox checkBox_RecordSpikes;
         private System.Windows.Forms.Button button_Cancel;
         private Mowog.PersistWindowComponent persistWindowComponent_ForRecSet;
+        private System.Windows.Forms.CheckBox checkBox_RecordSALPA;
     }
 }

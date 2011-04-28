@@ -282,7 +282,7 @@ namespace NeuroRighter
 
         #region Manual Open Loop Stimulation
 
-        public struct stim_params
+        internal struct stim_params
         {
             public int width1;
             public int width2;
@@ -352,6 +352,7 @@ namespace NeuroRighter
             stimDigitalTask.Control(TaskAction.Verify);
 
             stim_params sp = (stim_params)e.Argument;
+
             //Create randomized list of channels
             int numStimChannels = sp.stimChannelList.GetLength(0);
             ArrayList chListSorted = new ArrayList(numStimChannels);
@@ -365,6 +366,7 @@ namespace NeuroRighter
                 chListRand[i] = (int)chListSorted[j];
                 chListSorted.RemoveAt(j);
             }
+
             StimPulse spulse = new StimPulse(sp.width1, sp.width2, sp.v1, sp.v2, chListRand, sp.rate, sp.offsetVoltage, sp.interphaseLength, sp.prephaseLength, sp.postphaseLength);
             stimPulseWriter.WriteMultiSample(true, spulse.analogPulse);
             if (Properties.Settings.Default.StimPortBandwidth == 32)
@@ -393,6 +395,8 @@ namespace NeuroRighter
                 stimDigitalWriter.WriteMultiSamplePort(true, new byte[] { 0, 0, 0 });
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
+
+            updateStimSettings();
 
             button_stim.Enabled = true;
             button_stimExpt.Enabled = true;
@@ -724,6 +728,8 @@ namespace NeuroRighter
             }
             else
             {
+
+                updateStimSettings();
 
                 //Take care of buttons
                 button_stim.Enabled = false;

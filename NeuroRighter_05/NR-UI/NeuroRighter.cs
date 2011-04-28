@@ -111,8 +111,11 @@ namespace NeuroRighter
                     default:
                         comboBox_eegNumChannels.SelectedIndex = 1; break;
                 }
-                updateSettings();
+                
             }
+
+            // Update recording and stimulation settings
+            updateSettings();
 
             //Create plots
             try
@@ -190,6 +193,7 @@ namespace NeuroRighter
             lock (this)
             {
                 updateRecSettings();
+
                 if (!taskRunning)
                 {
                     try
@@ -337,6 +341,7 @@ namespace NeuroRighter
                             }
                             else
                             {
+                               
                                 spikeTask[0].Timing.ReferenceClockSource = masterclock;//stimPulseTask.Timing.ReferenceClockSource;
                                 spikeTask[0].Timing.ReferenceClockRate = 10000000.0; //stimPulseTask.Timing.ReferenceClockRate;
                             }
@@ -406,21 +411,33 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                         {
-                            numStimReads = new List<int>(numDevices);
-                            for (int i = 0; i < spikeTask.Count; ++i)
-                                numStimReads.Add(0);
-                            stimTimeTask = new Task("stimTimeTask");
-                            stimTimeTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.StimInfoDevice + "/ai16", "",
-                                AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
-                            stimTimeTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.StimInfoDevice + "/ai0", "", AITerminalConfiguration.Nrse,
-                                -10.0, 10.0, AIVoltageUnits.Volts); //For triggers
+                            try
+                            {
+                                numStimReads = new List<int>(numDevices);
+                                for (int i = 0; i < spikeTask.Count; ++i)
+                                    numStimReads.Add(0);
+                                stimTimeTask = new Task("stimTimeTask");
+                                stimTimeTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.StimInfoDevice + "/ai16", "",
+                                    AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
+                                stimTimeTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.StimInfoDevice + "/ai0", "", AITerminalConfiguration.Nrse,
+                                    -10.0, 10.0, AIVoltageUnits.Volts); //For triggers
 
-                            stimTimeTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                            stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-                            stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
-                            stimTimeTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
-                                "/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+                                // Pipe the spikeTasks sample clock to PFI14 on the stim board
+                                DaqSystem.Local.ConnectTerminals(spikeTask[0].Timing.ReferenceClockSource,
+                                    "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0");
+
+                                stimTimeTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+                                stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
+                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                stimTimeTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
+                                    "/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+                                stimTimeTask.Control(TaskAction.Verify);
+                            }
+                            catch (Exception e)
+                            {
+                                MessageBox.Show(e.Message);
+                            }
                         }
 
                         //Setup scaling coefficients (to convert digital values to voltages)
@@ -456,7 +473,7 @@ namespace NeuroRighter
                                 || Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.AnalogInDevice[1])
                             {
                                 MessageBox.Show("NeuroRighter does not currently support the recording of raw auxiliary signals on a device being used for other" +
-                                                    " forms of analog input (e.g. stimulaiton timing or neural data). If you do not need to record stimulation timing," +
+                                                    " forms of analog input (e.g. stimulation timing or neural data). If you do not need to record stimulation timing," +
                                                     " then deselect that recording from the recording streams menu and send your auxiliary signals to AI lines on the device being used to record stimulation timing.");
                             }
                             else
@@ -475,12 +492,7 @@ namespace NeuroRighter
                             auxDigInTask.Timing.SampleClockSource = spikeTask[0].Timing.SampleClockTerminal;
                         }
 
-
-
                         #region Setup_Plotting
-                        /**************************************************
-                    /*   Setup plotting
-                    /**************************************************/
 
                         numSnipsDisplayed = (int)numericUpDown_NumSnipsDisplayed.Value;
 
@@ -611,8 +623,6 @@ namespace NeuroRighter
                                 Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
                         }
                         #endregion
-
-
 
                         #region Setup_Filters
                         //Setup filters, based on user's input

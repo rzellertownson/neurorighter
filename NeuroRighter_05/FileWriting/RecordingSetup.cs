@@ -52,12 +52,16 @@ namespace NeuroRighter.FileWriting
             InitializeComponent();
             Refresh();
 
+            // Set SALPA access to false since the user has not trained yet
+            SetSalpaAccess(false);
+
             // Set recording parameters
             ResetStreams2Record();
         }
 
         internal void Refresh()
         {
+            // Set up access to streams
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
             if (!checkBox_RecordLFP.Enabled)
                 checkBox_RecordLFP.Checked = false;
@@ -273,15 +277,24 @@ namespace NeuroRighter.FileWriting
             this.Location = Properties.Settings.Default.recSetFormLoc;
 
             // Load defaults
-            checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
-            checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
-            checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
-            checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
-            checkBox_RecordEEG.Checked = Properties.Settings.Default.recordEEG;
-            checkBox_RecordMUA.Checked = Properties.Settings.Default.recordMUA;
-            checkBox_RecordStim.Checked = Properties.Settings.Default.recordStim;
-            checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
-            checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
+            if (checkBox_RecordSpikes.Enabled)
+                checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
+            if (checkBox_RecordSALPA.Enabled)
+                checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
+            if (checkBox_RecordSpikeFilt.Enabled)
+                checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
+            if (checkBox_RecordLFP.Enabled)
+                checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
+            if (checkBox_RecordEEG.Enabled)
+                checkBox_RecordEEG.Checked = Properties.Settings.Default.recordEEG;
+            if (checkBox_RecordMUA.Enabled)
+                checkBox_RecordMUA.Checked = Properties.Settings.Default.recordMUA;
+            if (checkBox_RecordStim.Enabled)
+                checkBox_RecordStim.Checked = Properties.Settings.Default.recordStim;
+            if (checkBox_RecordAuxAnalog.Enabled)
+                checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
+            if (checkBox_RecordAuxDig.Enabled)
+                checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
         }
 

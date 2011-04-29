@@ -34,6 +34,7 @@ using rawType = System.Double;
 using NationalInstruments.Analysis.Dsp.Filters;
 using csmatio.types;
 using NeuroRighter.Aquisition;
+using NeuroRighter.Filters;
 using NeuroRighter.Output;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
@@ -134,7 +135,7 @@ namespace NeuroRighter
         private int numPre;     //Num samples before threshold crossing to save
         private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA
-        private SALPA2 SALPAFilter;
+        private SALPA3 SALPAFilter;
         private int numChannels;
         private int numChannelsPerDev;
         private int[] currentRef;

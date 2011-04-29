@@ -301,8 +301,17 @@ namespace NeuroRighter
                         }
                         else
                         {
+                            string tmp1 = Properties.Settings.Default.StimulatorDevice.ToString();
+                            string tmp2 = Properties.Settings.Default.AnalogInDevice[0].ToString();
+                            if (tmp1.Equals(tmp2))
+                            {
+                                stimPulseTask.Timing.ReferenceClockSource = "OnboardClock";
+                            }
+                            else
+                            {
                             stimPulseTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
                             stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
+                            }
                         }
                         stimDigitalTask.Timing.ConfigureSampleClock("100KHzTimebase", STIM_SAMPLING_FREQ,
                            SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);

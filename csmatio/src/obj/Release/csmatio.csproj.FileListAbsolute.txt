@@ -48,3 +48,8 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\bi
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\bin\Release\zlib.net.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\obj\Release\csmatio.dll

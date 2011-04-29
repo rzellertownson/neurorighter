@@ -120,7 +120,8 @@ namespace NeuroRighter
                                 for (int i = 0; i < spikeBufferLength; ++i)
                                 {
                                     //Check for stimIndices (this uses a different buffer, so it's synced to each buffer read
-                                    if (stimData[0, i] > 0.9) stimIndices.Add(new StimTick(i, numStimReads[taskNumber]));
+                                    if (stimData[0, i] > 0.9) 
+                                        stimIndices.Add(new StimTick(i, numStimReads[taskNumber]));
 
                                     //Get appropriate data and write to file
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)

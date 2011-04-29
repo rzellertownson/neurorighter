@@ -344,30 +344,37 @@ namespace NeuroRighter
         {
             resetSALPA();
         }
-        private void numericUpDown_salpa_postpegzeros_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_salpa_forcepeg_ValueChanged(object sender, EventArgs e)
         {
             resetSALPA();
         }
-        private void numericUpDown_salpa_delta_ValueChanged(object sender, EventArgs e)
+        private void numericUpDown_salpa_ahead_ValueChanged(object sender, EventArgs e)
         {
             resetSALPA();
         }
+        private void numericUpDown_salpa_asym_ValueChanged(object sender, EventArgs e)
+        {
+            resetSALPA();
+        }
+
         private void checkBox_SALPA_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_SALPA.Checked)
             {
                 numericUpDown_salpa_halfwidth.Enabled = false;
                 numericUpDown_salpa_postpeg.Enabled = false;
-                numericUpDown_salpa_postpegzeros.Enabled = false;
-                numericUpDown_salpa_delta.Enabled = false;
+                numericUpDown_salpa_forcepeg.Enabled = false;
+                numericUpDown_salpa_ahead.Enabled = false;
+                numericUpDown_salpa_asym.Enabled = false;
                 resetSALPA();
             }
             else
             {
                 numericUpDown_salpa_halfwidth.Enabled = true;
                 numericUpDown_salpa_postpeg.Enabled = true;
-                numericUpDown_salpa_postpegzeros.Enabled = true;
-                numericUpDown_salpa_delta.Enabled = true;
+                numericUpDown_salpa_forcepeg.Enabled = true;
+                numericUpDown_salpa_ahead.Enabled = true;
+                numericUpDown_salpa_asym.Enabled = true;
             }
 
             recordingSettings.SetSalpaAccess(checkBox_SALPA.Checked);
@@ -398,10 +405,11 @@ namespace NeuroRighter
         private void resetSALPA()
         {
             // Set SALPA parameters
-            double prepegSeconds = 0.0002;
-            double postpegSeconds = Convert.ToDouble(numericUpDown_salpa_postpeg.Value);
-            double postpegZeroSeconds = Convert.ToDouble(numericUpDown_salpa_postpegzeros.Value); //0.0002 = 5 samples @ 25 kHz
-            double delta = Convert.ToDouble(numericUpDown_salpa_delta.Value);
+
+            int asym_sams = Convert.ToInt32(numericUpDown_salpa_asym.Value);
+            int blank_sams = Convert.ToInt32(numericUpDown_salpa_postpeg.Value);
+            int ahead_sams = Convert.ToInt32(numericUpDown_salpa_ahead.Value); //0.0002 = 5 samples @ 25 kHz
+            int forcepeg_sams= Convert.ToInt32(numericUpDown_salpa_forcepeg.Value);
             SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
             if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
@@ -410,12 +418,15 @@ namespace NeuroRighter
                 SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
             }
 
-            int prepeg = (int)Math.Round(prepegSeconds * spikeSamplingRate);
-            int postpeg = (int)Math.Round(postpegSeconds * spikeSamplingRate);
-            int postpegzero = (int)Math.Round(postpegZeroSeconds * spikeSamplingRate);
-
-            SALPAFilter = new SALPA2(SALPA_WIDTH, prepeg, postpeg, postpegzero, (rawType)(-10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) + 0.01),
-                (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, delta, spikeBufferLength);
+            
+            //public SALPA3(int length_sams,int asym_sams,int blank_sams,int ahead_sams, int forcepeg_sams, rawType railLow, rawType railHigh, int numElectrodes, int bufferLength, rawType[] thresh)
+            if (thrSALPA == null)
+                MessageBox.Show("train salpa before editing parameters");
+            else
+            SALPAFilter = new global::NeuroRighter.Filters.SALPA3(SALPA_WIDTH, asym_sams,blank_sams,ahead_sams,forcepeg_sams,(rawType)(-4 * Math.Pow(10, -3)),
+                (rawType)(4 * Math.Pow(10, -3)), numChannels, spikeBufferLength, thrSALPA);
+            //SALPAFilter = new SALPA3(SALPA_WIDTH, prepeg, postpeg, postpegzero, (rawType)(-10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) + 0.01),
+            //    (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, delta, spikeBufferLength);
         }
 
         //Reset LFP filter

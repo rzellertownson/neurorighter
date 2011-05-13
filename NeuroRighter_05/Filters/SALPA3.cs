@@ -60,8 +60,8 @@ namespace NeuroRighter.Filters
             this.railLow = railLow;
             this.numSamples = bufferLength;
 
-            this.PRE = 2 * length_sams + 1;
-            this.POST = 2 * length_sams;
+            this.PRE = 2 * length_sams ;
+            this.POST = 2 * length_sams + 1 + ahead_sams;
             fitters = new LocalFit[numElectrodes];
             for (int i = 0; i < numElectrodes; i++)
             {
@@ -111,7 +111,10 @@ namespace NeuroRighter.Filters
             
         }
 
-
+         public int offset()
+         {
+             return POST;
+         }
 
         
 

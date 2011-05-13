@@ -194,7 +194,7 @@ namespace NeuroRighter
                     {
                         if (!recordingSettings.recordSpikeFilt)
                             firstRawWrite[taskNumber] = false;
-                        startIdx = 2 * SALPA_WIDTH;
+                        startIdx = SALPAFilter.offset();
                     }
                     else
                     {
@@ -237,7 +237,7 @@ namespace NeuroRighter
                         if (firstRawWrite[taskNumber] && checkBox_SALPA.Checked) // account for SALPA delay
                         {
                             firstRawWrite[taskNumber] = false;
-                            startIdx = 2 * SALPA_WIDTH;
+                            startIdx = SALPAFilter.offset();
                         }
                         else
                         {
@@ -294,7 +294,7 @@ namespace NeuroRighter
 
             int startTime = (numSpikeReads[taskNumber] - 1) * spikeBufferLength; //Used to mark spike time for *.spk file
             if (checkBox_SALPA.Checked)
-                startTime -= 2 * SALPA_WIDTH; //To account for delay of SALPA filter
+                startTime -= SALPAFilter.offset(); //To account for delay of SALPA filter
 
             List<SpikeWaveform> newWaveforms = new List<SpikeWaveform>(100);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)

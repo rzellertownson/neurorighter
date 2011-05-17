@@ -179,5 +179,23 @@
     <Setting Name="useAuxDigitalInput" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="RawSampleFrequency" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">25000</Value>
+    </Setting>
+    <Setting Name="LFPSampleFrequency" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
+    <Setting Name="MUASampleFrequency" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
+    <Setting Name="DAQRefreshPeriodSec" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.02</Value>
+    </Setting>
+    <Setting Name="datSrvBufferSizeSec" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="DAQPollingPeriodSec" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.01</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -2,7 +2,7 @@ function makeauxfile(filename, time, channel, voltage)
 %MAKEAUXFILE turns data vectors into a *.oldig file for use by
 %neurorighter
 %
-%    y = MAKEAUXFILE(filename, time, channel. voltage) takes as input:
+%    y = MAKEAUXFILE(filename, time, channel, voltage) takes as input:
 %         filename    string specifying file name
 %         time        [N 1] vector specifying the time of aux
 %                     event i in N events (in seconds)

@@ -44,6 +44,7 @@ using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
+using NeuroRighter.DataTypes;
 
 
 namespace NeuroRighter
@@ -60,6 +61,7 @@ namespace NeuroRighter
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
             trackingProc[taskNumber]++;
+
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
@@ -70,8 +72,12 @@ namespace NeuroRighter
                 for (int j = 0; j < spikeBufferLength; ++j)
                     filtSpikeData[i][j] = ampdec * filtSpikeData[i][j];
 
+            // Send filtSpikeData to datSrv
+            datSrv.rawElectrodeSrv.WriteToBuffer(filtSpikeData);
+
             #region Write RAW data
             //Write data to file
+
             if (switch_record.Value && recordingSettings.recordRaw && spikeTask != null)
             {
                 
@@ -133,6 +139,9 @@ namespace NeuroRighter
                 //Do IISZapper stuff
                 if (IISDetected != null) IISDetected(this, finalLFPData, numSpikeReads[taskNumber]);
 
+                // Send to datSrv
+                datSrv.lfpSrv.WriteToBuffer(finalLFPData);
+
                 #region WriteLFPFile
                 if (switch_record.Value && recordingSettings.recordLFP && spikeTask != null) //Convert to 16-bit ints, then write to file
                 {
@@ -176,12 +185,18 @@ namespace NeuroRighter
             if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
             {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, stimIndices, 0);
-                //SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, 0);
+               
+                // Send filtSpikeData to datSrv
+                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData);
+
             }
             else if (checkBox_SALPA.Checked)
             {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, stimIndices, numStimReads[taskNumber] - 1);
-                //SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, thrSALPA, stimIndices, numStimReads[taskNumber] - 1);
+
+                // Send filtSpikeData to datSrv
+                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData);
+
             }
 
             if (switch_record.Value && recordingSettings.recordSALPA && spikeTask != null)
@@ -225,41 +240,46 @@ namespace NeuroRighter
             if (checkBox_spikesFilter.Checked)
             {
 
-                    for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
-                        spikeFilter[i].filterData(filtSpikeData[i]);
-                    lock (this)
+                // Filter data
+                for (int i = numChannelsPerDev * taskNumber; i < numChannelsPerDev * (taskNumber + 1); ++i)
+                    spikeFilter[i].filterData(filtSpikeData[i]);
+
+                // Send filtSpikeData to datSrv
+                datSrv.filteredElectrodeSrv.WriteToBuffer(filtSpikeData);
+
+                lock (this)
+                {
+
+                if (switch_record.Value && recordingSettings.recordSpikeFilt && spikeTask != null)
+                {
+
+                    int startIdx;
+                    if (firstRawWrite[taskNumber] && checkBox_SALPA.Checked) // account for SALPA delay
                     {
-
-                    if (switch_record.Value && recordingSettings.recordSpikeFilt && spikeTask != null)
+                        firstRawWrite[taskNumber] = false;
+                        startIdx = SALPAFilter.offset();
+                    }
+                    else
                     {
+                        startIdx = 0;
+                    }
 
-                        int startIdx;
-                        if (firstRawWrite[taskNumber] && checkBox_SALPA.Checked) // account for SALPA delay
+                    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                    {
+                        // Temporary storage for converte data
+                        Int16[] tempBuff;
+
+                        // Convert raw data to 16-bit int
+                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+
+                        // Send data to file writer
+                        for (int j = startIdx; j < spikeBufferLength; ++j)
                         {
-                            firstRawWrite[taskNumber] = false;
-                            startIdx = SALPAFilter.offset();
-                        }
-                        else
-                        {
-                            startIdx = 0;
-                        }
-
-                        for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                        {
-                            // Temporary storage for converte data
-                            Int16[] tempBuff;
-
-                            // Convert raw data to 16-bit int
-                            tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
-
-                            // Send data to file writer
-                            for (int j = startIdx; j < spikeBufferLength; ++j)
-                            {
-                                recordingSettings.spkFiltOut.read((short)tempBuff[j], i);
-                            }
+                            recordingSettings.spkFiltOut.read((short)tempBuff[j], i);
                         }
                     }
                 }
+            }
 
 
             }
@@ -296,23 +316,26 @@ namespace NeuroRighter
             if (checkBox_SALPA.Checked)
                 startTime -= SALPAFilter.offset(); //To account for delay of SALPA filter
 
-            List<SpikeWaveform> newWaveforms = new List<SpikeWaveform>(100);
+            EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                newWaveforms.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
+                newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
+
+            // Send waveform data to datSrv
+            datSrv.spikeSrv.WriteToBufferRelative(newWaveforms);
 
             //Extract waveforms
             if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
             {
-                for (int j = 0; j < newWaveforms.Count; ++j) //For each threshold crossing
+                for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
                     #region WriteSpikeWfmsToFile
-                    rawType[] waveformData = newWaveforms[j].waveform;
+                    rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
                     if (switch_record.Value)
                     {
                         lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
                         {
-                            recordingSettings.spkOut.WriteSpikeToFile((short)(newWaveforms[j].channel + CHAN_INDEX_START), startTime + newWaveforms[j].index,
-                                newWaveforms[j].threshold, waveformData);
+                            recordingSettings.spkOut.WriteSpikeToFile((short)(newWaveforms.eventBuffer[j].channel + CHAN_INDEX_START), startTime + (int)newWaveforms.eventBuffer[j].sampleIndex,
+                                newWaveforms.eventBuffer[j].threshold, waveformData);
                         }
                     }
                     #endregion
@@ -320,18 +343,18 @@ namespace NeuroRighter
             }
             else //in vitro mappings
             {
-                for (int j = 0; j < newWaveforms.Count; ++j) //For each threshold crossing
+                for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
                     #region WriteSpikeWfmsToFile
-                    rawType[] waveformData = newWaveforms[j].waveform;
+                    rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
                     if (switch_record.Value)
                     {
                         lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
                         {
                             if (Properties.Settings.Default.recordSpikes)
                             {
-                                recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms[j].channel) + CHAN_INDEX_START), startTime + newWaveforms[j].index,
-                                    newWaveforms[j].threshold, waveformData);
+                                recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms.eventBuffer[j].channel) + CHAN_INDEX_START), startTime + (int)newWaveforms.eventBuffer[j].sampleIndex,
+                                    newWaveforms.eventBuffer[j].threshold, waveformData);
                             }
                         }
                     }
@@ -340,7 +363,7 @@ namespace NeuroRighter
             }
 
             //Post to PlotData
-            waveformPlotData.write(newWaveforms);
+            waveformPlotData.write(newWaveforms.eventBuffer);
 
             #region WriteSpikeWfmsToListeningProcesses
             //Alert any listening processes that we have new spikes.  It's up to them to clear wavefroms periodically.
@@ -350,11 +373,11 @@ namespace NeuroRighter
                 lock (this)
                 {
                     //Check to see if spikes are within trigger
-                    for (int i = 0; i < newWaveforms.Count; ++i)
+                    for (int i = 0; i < newWaveforms.eventBuffer.Count; ++i)
                     {
-                        if (newWaveforms[i].index + startTime >= triggerStartTime && newWaveforms[i].index + startTime <= triggerStopTime)
+                        if ((int)newWaveforms.eventBuffer[i].sampleIndex + startTime >= triggerStartTime && (int)newWaveforms.eventBuffer[i].sampleIndex + startTime <= triggerStopTime)
                         {
-                            _waveforms.Add(newWaveforms[i]);
+                            _waveforms.Add(newWaveforms.eventBuffer[i]);
 #if (DEBUG1)
                             logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
 #endif
@@ -366,7 +389,7 @@ namespace NeuroRighter
             #endregion
 
             //Clear new ones, since we're done with them.
-            newWaveforms.Clear();
+            newWaveforms.eventBuffer.Clear();
             #endregion
 
             #region BNC_Output
@@ -436,7 +459,6 @@ namespace NeuroRighter
                 }
                 catch (DaqException exception)
                 {
-                //    MessageBox.Show(exception.Message); //Display Errors
                     reset();
                 }
             }

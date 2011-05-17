@@ -41,6 +41,8 @@ using NeuroRighter.FileWriting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using NeuroRighter.DatSrv;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter
 {
@@ -48,6 +50,11 @@ namespace NeuroRighter
     ///<author>Jon Newman</author>
     sealed internal partial class NeuroRighter
     {
+        # region Internal Variables
+        internal NRDataSrv datSrv;
+
+        #endregion
+
         #region Private_Variables
         private List<Task> spikeTask;  //NI Tasks for reading data
         private Task lfpTask;
@@ -116,8 +123,8 @@ namespace NeuroRighter
             {
                 get { return _stimulations; }
             }
-        private List<SpikeWaveform> _waveforms;  //Locations of threshold crossings
-        internal List<SpikeWaveform> waveforms
+        private List<SpikeEvent> _waveforms;  //Locations of threshold crossings
+        internal List<SpikeEvent> waveforms
         {
             get { return _waveforms; }
         }
@@ -184,6 +191,7 @@ namespace NeuroRighter
 
         // Open-loop AO/DO 
         private OpenLoopOut openLoopSynchronizedOutput;
+
         #endregion
 
         #region DebugVariables
@@ -194,7 +202,7 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.02; //Time in seconds between reads of NI-DAQs
+        internal const double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 
@@ -203,6 +211,7 @@ namespace NeuroRighter
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
         private const short CHAN_INDEX_START = 1;
+         
         #endregion
     }
 }

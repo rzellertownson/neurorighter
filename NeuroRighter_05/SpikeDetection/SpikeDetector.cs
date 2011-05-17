@@ -23,10 +23,10 @@ using System.Text;
 using System.Linq;
 using System.Threading;
 using ExtensionMethods;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.SpikeDetection
 {
-    using rawType = System.Double;
     /// <summary>
     /// Base clase for spike detection. All spike detectors should inherit this
     /// virtual class. 
@@ -42,15 +42,15 @@ namespace NeuroRighter.SpikeDetection
         protected int numPost;
         protected int numPre;
         protected double currentThreshold;
-        protected rawType[][] detectionCarryOverBuffer;
+        protected double[][] detectionCarryOverBuffer;
         protected int carryOverLength;
-        protected rawType[,] threshold;
-        protected rawType _thresholdMultiplier;
+        protected double[,] threshold;
+        protected double _thresholdMultiplier;
         protected float[][] returnThresh;
         protected int deadTime; //Num samples overlap between possible spike detections
         protected int[] initialSamplesToSkip;
         protected bool[] inASpike; // true when the waveform is over or under the current detection threshold for a given channel
-        internal rawType thresholdMultiplier
+        internal double thresholdMultiplier
         {
             get { return _thresholdMultiplier; }
             set { _thresholdMultiplier = value; }
@@ -75,7 +75,7 @@ namespace NeuroRighter.SpikeDetection
         protected bool inBounds;
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, 
-            int spikeWaveformLength, int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime,
+            int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,
             int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp, double minSpikeSlope)
         {
             this.spikeBufferLength = spikeBufferLengthIn;
@@ -100,19 +100,19 @@ namespace NeuroRighter.SpikeDetection
 
             this.initialSamplesToSkip = new int[numChannels];
 
-            detectionCarryOverBuffer = new rawType[numChannels][];
+            detectionCarryOverBuffer = new double[numChannels][];
             for (int i = 0; i < numChannels; ++i)
             {
-                this.detectionCarryOverBuffer[i] = new rawType[carryOverLength];
+                this.detectionCarryOverBuffer[i] = new double[carryOverLength];
             }
 
         }
 
         // The threshold update methods are the only things that change for
         // different spike detectors
-        protected virtual void updateThreshold(rawType[] data, int channel) { }
+        protected virtual void updateThreshold(double[] data, int channel) { }
 
-        protected virtual void updateThreshold(rawType[] data, int channel, int idx) { }
+        protected virtual void updateThreshold(double[] data, int channel, int idx) { }
 
         internal virtual float[][] GetCurrentThresholds()
         {
@@ -135,9 +135,9 @@ namespace NeuroRighter.SpikeDetection
         }
 
         // Spike detection method that all data goes through at some point
-        internal virtual List<SpikeWaveform> DetectSpikes(rawType[] data, int channel)
+        internal virtual List<SpikeEvent> DetectSpikes(double[] data, int channel)
         {
-            List<SpikeWaveform> waveforms = new List<SpikeWaveform>();
+            List<SpikeEvent> waveforms = new List<SpikeEvent>();
 
             lock (this)
             {
@@ -220,7 +220,7 @@ namespace NeuroRighter.SpikeDetection
                         double spikeMax = spikeDetectionBuffer[spikeMaxIndex];
 
                         // Define spike waveform
-                        rawType[] waveform = CreateWaveform(spikeMaxIndex);
+                        double[] waveform = CreateWaveform(spikeMaxIndex);
 
                         // Check if the spike is any good
                         bool goodSpike = CheckSpike(spikeWidth, waveform);
@@ -273,7 +273,7 @@ namespace NeuroRighter.SpikeDetection
                                 {
                                     // If the deadMax is actually larger than the original 
                                     // detection's max point
-                                    rawType[] deadWaveform = CreateWaveform(deadMaxIndex);
+                                    double[] deadWaveform = CreateWaveform(deadMaxIndex);
 
                                     if (deadWidth != null)
                                     {
@@ -292,8 +292,8 @@ namespace NeuroRighter.SpikeDetection
                         
                         ProcessSpike:
                             // Record the waveform
-                            waveforms.Add(new SpikeWaveform(channel, 
-                                spikeMaxIndex - recIndexOffset, currentThreshold, waveform));
+                            waveforms.Add(new SpikeEvent(channel, 
+                                (ulong)(spikeMaxIndex - recIndexOffset), currentThreshold, waveform));
 
                             // Calculate dead-time
                             int dt;
@@ -344,7 +344,7 @@ namespace NeuroRighter.SpikeDetection
         }
 
         // Check spike based on spike detection settings
-        protected bool CheckSpike(int spikeWidth, rawType[] waveform)
+        protected bool CheckSpike(int spikeWidth, double[] waveform)
         {
             // Check spike width
             bool spikeWidthGood = maxSpikeWidth >= spikeWidth && minSpikeWidth <= spikeWidth;
@@ -352,7 +352,7 @@ namespace NeuroRighter.SpikeDetection
                 return spikeWidthGood;
 
             // Check spike amplitude
-            rawType[] absWave = new rawType[waveform.Length];
+            double[] absWave = new double[waveform.Length];
             for (int i = 0; i < waveform.Length; ++i)
                 absWave[i] = Math.Abs(waveform[i]);
  
@@ -439,9 +439,9 @@ namespace NeuroRighter.SpikeDetection
             return spikeDetectionBuffer[enterSpikeIndex] > 0;
         }
 
-        protected rawType[] CreateWaveform(int maxIdx)
+        protected double[] CreateWaveform(int maxIdx)
         {
-            rawType[] waveform = new rawType[numPost + numPre + 1];
+            double[] waveform = new double[numPost + numPre + 1];
             for (int j = maxIdx - numPre; j < maxIdx + numPost + 1; ++j)
                 waveform[j - maxIdx + numPre] = spikeDetectionBuffer[j];
             return waveform;

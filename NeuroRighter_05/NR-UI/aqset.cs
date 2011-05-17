@@ -64,7 +64,7 @@ namespace NeuroRighter
         private void comboBox_SpikeGain_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkBox_SALPA.Checked = checkBox_SALPA.Enabled = false;
-            label_noise.Text = "Noise levels have not been trained.";
+            label_noise.Text = "Noise levels not trained.";
             label_noise.ForeColor = Color.Red;
         }
 
@@ -180,7 +180,7 @@ namespace NeuroRighter
 
             this.Cursor = Cursors.WaitCursor;
 
-            label_noise.Text = "Noise levels have not been trained.";
+            label_noise.Text = "Noise levels not trained.";
             label_noise.ForeColor = Color.Red;
             label_noise.Update();
             buttonStart.Enabled = false;  //So users can't try to get data from the same card
@@ -243,7 +243,6 @@ namespace NeuroRighter
 
             this.Cursor = Cursors.Default;
         }
-
         // Set up Artifilt
         private void checkBox_artiFilt_CheckedChanged(object sender, EventArgs e)
         {

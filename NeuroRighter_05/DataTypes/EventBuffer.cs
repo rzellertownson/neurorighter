@@ -15,30 +15,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeuroRighter.SpikeDetection
+namespace NeuroRighter.DataTypes
 {
-    using RawType = System.Double;
-
-    /// <author>John Rolston (rolston2@gmail.com)</author>
-    internal sealed class SpikeWaveform
+    /// <summary>
+    /// This class is the standard NR buffer class for digital event type data. 
+    /// Properties are the timeSample which specifies the time, in samples, that
+    /// the digital event occured and portState, which is the integer
+    /// state of the digital port at the time of the event.
+    /// </summary>
+    class EventBuffer<T> where T : NREvent
     {
-        public Int16 channel;
-        public Int32 index;
-        public double threshold;
-        public RawType[] waveform;
+        internal double sampleFrequencyHz;
+        internal List<T> eventBuffer = new List<T>();
 
-        public SpikeWaveform(int channel, int index, double threshold, RawType[] waveform)
+        internal EventBuffer(double sampleFrequencyHz)
         {
-            this.channel = (short)channel;
-            this.index = index;
-            this.threshold = threshold;
-            this.waveform = waveform;
+            this.sampleFrequencyHz = sampleFrequencyHz;
         }
     }
+
 }
+

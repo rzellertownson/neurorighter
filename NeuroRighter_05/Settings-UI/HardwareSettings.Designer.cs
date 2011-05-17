@@ -91,6 +91,11 @@ namespace NeuroRighter
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_analogInputDevice1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPag_Gen = new System.Windows.Forms.TabPage();
+            this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.textBox_DAQPollingPeriodSec = new System.Windows.Forms.TextBox();
+            this.groupBox23 = new System.Windows.Forms.GroupBox();
+            this.label21 = new System.Windows.Forms.Label();
             this.tabPage_AuxInput = new System.Windows.Forms.TabPage();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
             this.comboBox_AuxDigInputPort = new System.Windows.Forms.ComboBox();
@@ -113,6 +118,14 @@ namespace NeuroRighter
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox_singleChannelPlaybackDevice = new System.Windows.Forms.ComboBox();
             this.persistWindowComponent1 = new Mowog.PersistWindowComponent(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.groupBox22 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.textBox_datSrvBufferSizeSec = new System.Windows.Forms.TextBox();
+            this.groupBox24 = new System.Windows.Forms.GroupBox();
+            this.checkBox_processMUA = new System.Windows.Forms.CheckBox();
+            this.checkBox_processLFPs = new System.Windows.Forms.CheckBox();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -132,10 +145,13 @@ namespace NeuroRighter
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPag_Gen.SuspendLayout();
+            this.groupBox21.SuspendLayout();
             this.tabPage_AuxInput.SuspendLayout();
             this.groupBox20.SuspendLayout();
             this.groupBox19.SuspendLayout();
             this.groupBox10.SuspendLayout();
+            this.groupBox24.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_accept
@@ -167,7 +183,7 @@ namespace NeuroRighter
             this.tabPage_misc.Name = "tabPage_misc";
             this.tabPage_misc.Size = new System.Drawing.Size(300, 499);
             this.tabPage_misc.TabIndex = 2;
-            this.tabPage_misc.Text = "Miscellaneous";
+            this.tabPage_misc.Text = "Misc.";
             this.tabPage_misc.UseVisualStyleBackColor = true;
             // 
             // groupBox11
@@ -521,6 +537,7 @@ namespace NeuroRighter
             // 
             // tabPage_input
             // 
+            this.tabPage_input.Controls.Add(this.groupBox24);
             this.tabPage_input.Controls.Add(this.groupBox15);
             this.tabPage_input.Controls.Add(this.groupBox7);
             this.tabPage_input.Controls.Add(this.groupBox6);
@@ -781,6 +798,7 @@ namespace NeuroRighter
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPag_Gen);
             this.tabControl1.Controls.Add(this.tabPage_input);
             this.tabControl1.Controls.Add(this.tabPage_AuxInput);
             this.tabControl1.Controls.Add(this.tabPage_stim);
@@ -790,6 +808,57 @@ namespace NeuroRighter
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(308, 525);
             this.tabControl1.TabIndex = 16;
+            // 
+            // tabPag_Gen
+            // 
+            this.tabPag_Gen.Controls.Add(this.groupBox21);
+            this.tabPag_Gen.Location = new System.Drawing.Point(4, 22);
+            this.tabPag_Gen.Name = "tabPag_Gen";
+            this.tabPag_Gen.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPag_Gen.Size = new System.Drawing.Size(300, 499);
+            this.tabPag_Gen.TabIndex = 4;
+            this.tabPag_Gen.Text = "Gen";
+            this.tabPag_Gen.UseVisualStyleBackColor = true;
+            // 
+            // groupBox21
+            // 
+            this.groupBox21.Controls.Add(this.label22);
+            this.groupBox21.Controls.Add(this.textBox_datSrvBufferSizeSec);
+            this.groupBox21.Controls.Add(this.textBox_DAQPollingPeriodSec);
+            this.groupBox21.Controls.Add(this.groupBox23);
+            this.groupBox21.Controls.Add(this.label21);
+            this.groupBox21.Location = new System.Drawing.Point(6, 6);
+            this.groupBox21.Name = "groupBox21";
+            this.groupBox21.Size = new System.Drawing.Size(286, 92);
+            this.groupBox21.TabIndex = 17;
+            this.groupBox21.TabStop = false;
+            this.groupBox21.Text = "DAC Polling/Buffering";
+            // 
+            // textBox_DAQPollingPeriodSec
+            // 
+            this.textBox_DAQPollingPeriodSec.Location = new System.Drawing.Point(172, 21);
+            this.textBox_DAQPollingPeriodSec.Name = "textBox_DAQPollingPeriodSec";
+            this.textBox_DAQPollingPeriodSec.Size = new System.Drawing.Size(100, 20);
+            this.textBox_DAQPollingPeriodSec.TabIndex = 16;
+            this.textBox_DAQPollingPeriodSec.Text = "0.01";
+            // 
+            // groupBox23
+            // 
+            this.groupBox23.Location = new System.Drawing.Point(2, -63);
+            this.groupBox23.Name = "groupBox23";
+            this.groupBox23.Size = new System.Drawing.Size(286, 59);
+            this.groupBox23.TabIndex = 15;
+            this.groupBox23.TabStop = false;
+            this.groupBox23.Text = "Analog Input #1";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 24);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(122, 13);
+            this.label21.TabIndex = 1;
+            this.label21.Text = "DAC Polling Period (sec)";
             // 
             // tabPage_AuxInput
             // 
@@ -1007,6 +1076,81 @@ namespace NeuroRighter
             this.persistWindowComponent1.Form = this;
             this.persistWindowComponent1.XMLFilePath = "WindowState.xml";
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(172, 21);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 16;
+            this.textBox1.Text = "1";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // groupBox22
+            // 
+            this.groupBox22.Location = new System.Drawing.Point(2, -63);
+            this.groupBox22.Name = "groupBox22";
+            this.groupBox22.Size = new System.Drawing.Size(286, 59);
+            this.groupBox22.TabIndex = 15;
+            this.groupBox22.TabStop = false;
+            this.groupBox22.Text = "Analog Input #1";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(6, 24);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(158, 13);
+            this.label20.TabIndex = 1;
+            this.label20.Text = "Amplifier Gain for Extracell. Rec.";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(6, 65);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(132, 13);
+            this.label22.TabIndex = 18;
+            this.label22.Text = "On Board Buffer Size (sec)";
+            // 
+            // textBox_datSrvBufferSizeSec
+            // 
+            this.textBox_datSrvBufferSizeSec.Location = new System.Drawing.Point(172, 62);
+            this.textBox_datSrvBufferSizeSec.Name = "textBox_datSrvBufferSizeSec";
+            this.textBox_datSrvBufferSizeSec.Size = new System.Drawing.Size(100, 20);
+            this.textBox_datSrvBufferSizeSec.TabIndex = 17;
+            this.textBox_datSrvBufferSizeSec.Text = "10";
+            // 
+            // groupBox24
+            // 
+            this.groupBox24.Controls.Add(this.checkBox_processMUA);
+            this.groupBox24.Controls.Add(this.checkBox_processLFPs);
+            this.groupBox24.Location = new System.Drawing.Point(6, 415);
+            this.groupBox24.Name = "groupBox24";
+            this.groupBox24.Size = new System.Drawing.Size(286, 68);
+            this.groupBox24.TabIndex = 17;
+            this.groupBox24.TabStop = false;
+            this.groupBox24.Text = "LFP/MUA";
+            // 
+            // checkBox_processMUA
+            // 
+            this.checkBox_processMUA.AutoSize = true;
+            this.checkBox_processMUA.Location = new System.Drawing.Point(7, 44);
+            this.checkBox_processMUA.Name = "checkBox_processMUA";
+            this.checkBox_processMUA.Size = new System.Drawing.Size(91, 17);
+            this.checkBox_processMUA.TabIndex = 5;
+            this.checkBox_processMUA.Text = "Process MUA";
+            this.checkBox_processMUA.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_processLFPs
+            // 
+            this.checkBox_processLFPs.AutoSize = true;
+            this.checkBox_processLFPs.Location = new System.Drawing.Point(7, 19);
+            this.checkBox_processLFPs.Name = "checkBox_processLFPs";
+            this.checkBox_processLFPs.Size = new System.Drawing.Size(94, 17);
+            this.checkBox_processLFPs.TabIndex = 4;
+            this.checkBox_processLFPs.Text = "Process LFPs ";
+            this.checkBox_processLFPs.UseVisualStyleBackColor = true;
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1056,6 +1200,9 @@ namespace NeuroRighter
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPag_Gen.ResumeLayout(false);
+            this.groupBox21.ResumeLayout(false);
+            this.groupBox21.PerformLayout();
             this.tabPage_AuxInput.ResumeLayout(false);
             this.groupBox20.ResumeLayout(false);
             this.groupBox20.PerformLayout();
@@ -1063,6 +1210,8 @@ namespace NeuroRighter
             this.groupBox19.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            this.groupBox24.ResumeLayout(false);
+            this.groupBox24.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1153,5 +1302,18 @@ namespace NeuroRighter
         private System.Windows.Forms.ListBox listBox_AuxAnalogInChan;
         private System.Windows.Forms.Label label19;
         private Mowog.PersistWindowComponent persistWindowComponent1;
+        private System.Windows.Forms.TabPage tabPag_Gen;
+        private System.Windows.Forms.GroupBox groupBox21;
+        private System.Windows.Forms.TextBox textBox_DAQPollingPeriodSec;
+        private System.Windows.Forms.GroupBox groupBox23;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.GroupBox groupBox22;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.GroupBox groupBox24;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.TextBox textBox_datSrvBufferSizeSec;
+        private System.Windows.Forms.CheckBox checkBox_processMUA;
+        private System.Windows.Forms.CheckBox checkBox_processLFPs;
     }
 }

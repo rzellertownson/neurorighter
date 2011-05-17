@@ -129,7 +129,7 @@ namespace NeuroRighter
             button_Train.Enabled = true;
             button_SetRecordingStreams.Enabled = true;
             switch_record.Enabled = true;
-            processingSettingsToolStripMenuItem.Enabled = true;
+            //processingSettingsToolStripMenuItem.Enabled = true;
             textBox_spikeSamplingRate.Enabled = true;
             textBox_lfpSamplingRate.Enabled = true;
             textBox_MUASamplingRate.Enabled = true;
@@ -253,6 +253,11 @@ namespace NeuroRighter
                 }
                 else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA)) 
                     tabControl.TabPages.Remove(tabPage_MUA);
+
+                // Save sampling rates
+                Properties.Settings.Default.RawSampleFrequency = Convert.ToDouble(textBox_spikeSamplingRate.Text);
+                Properties.Settings.Default.LFPSampleFrequency = Convert.ToDouble(textBox_lfpSamplingRate.Text);
+                Properties.Settings.Default.MUASampleFrequency = Convert.ToDouble(textBox_MUASamplingRate.Text);
             }
             catch (DaqException exception)
             {
@@ -559,8 +564,6 @@ namespace NeuroRighter
                 }
             }
         }
-
-
 
 
     }

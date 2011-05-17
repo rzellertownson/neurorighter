@@ -64,12 +64,12 @@ namespace NeuroRighter
             ds.ShowDialog();
         }
 
-        private void processingSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ProcessingSettings ps = new ProcessingSettings();
-            ps.ShowDialog();
-            updateSettings();
-        }
+        //private void processingSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    ProcessingSettings ps = new ProcessingSettings();
+        //    ps.ShowDialog();
+        //    updateSettings();
+        //}
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {

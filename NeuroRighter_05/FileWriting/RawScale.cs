@@ -13,7 +13,9 @@ namespace NeuroRighter.FileWriting
     internal class RawScale
     {
         private double oneOverResolution;
+        private double scaleResolution;
         private Int16[] convertedData;
+        private double[][] convertedDataDouble;
 
         public RawScale()
         {
@@ -66,10 +68,31 @@ namespace NeuroRighter.FileWriting
             }
         }
 
+        internal double[][] ConvertInt16ToSoftRaw(ref short[,] analogData)
+        {
+            lock (this)
+            {
+                convertedDataDouble = new double[analogData.GetLength(0)][];
+                for (int j = 0; j < analogData.GetLength(0); ++j)
+                {
+                    convertedDataDouble[j] = new double[analogData.GetLength(1)];
+
+                    for (int i = 0; i < analogData.GetLength(1); ++i)
+                    {
+                        convertedDataDouble[j][i] = (double)(analogData[j,i] * scaleResolution);
+                    }
+                }
+
+                return convertedDataDouble;
+            }
+
+        }
+
         internal void Set16BitResolution(double resolution)
         {
             // Set the double value corresonding to one 16-bit increment of your analog input
             oneOverResolution = 1 / resolution;
+            scaleResolution = resolution;
         }
 
     }

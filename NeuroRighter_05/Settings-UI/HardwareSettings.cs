@@ -208,6 +208,8 @@ namespace NeuroRighter
                     comboBox_AuxDigInputPort.SelectedIndex = 0;
             }
 
+            textBox_DAQPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.DAQPollingPeriodSec);
+            textBox_datSrvBufferSizeSec.Text = Convert.ToString(Properties.Settings.Default.datSrvBufferSizeSec);
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
@@ -217,6 +219,8 @@ namespace NeuroRighter
             checkBox_useProgRef.Checked = Properties.Settings.Default.UseProgRef;
             comboBox_progRefSerialPort.Enabled = Properties.Settings.Default.UseProgRef;
             checkBox_useEEG.Checked = Properties.Settings.Default.UseEEG;
+            checkBox_processLFPs.Checked = Properties.Settings.Default.UseLFPs;
+            checkBox_processMUA.Checked = Properties.Settings.Default.ProcessMUA;
             comboBox_EEG.Enabled = Properties.Settings.Default.UseEEG;
             checkBox_UseAODO.Checked = Properties.Settings.Default.UseSigOut;
             checkBox_useChannelPlayback.Checked = Properties.Settings.Default.UseSingleChannelPlayback;
@@ -258,6 +262,8 @@ namespace NeuroRighter
         private void button_accept_Click(object sender, EventArgs e)
         {
             // Recording selections
+            Properties.Settings.Default.datSrvBufferSizeSec = Convert.ToDouble(textBox_datSrvBufferSizeSec.Text);
+            Properties.Settings.Default.DAQPollingPeriodSec = Convert.ToDouble(textBox_DAQPollingPeriodSec.Text);
             Properties.Settings.Default.AnalogInDevice.Clear();
             Properties.Settings.Default.auxAnalogInChan.Clear();
             Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
@@ -272,6 +278,9 @@ namespace NeuroRighter
             Properties.Settings.Default.UseSigOut = checkBox_UseAODO.Checked;
             Properties.Settings.Default.useAuxAnalogInput = checkBox_UseAuxAnalogInput.Checked;
             Properties.Settings.Default.useAuxDigitalInput = checkBox_UseAuxDigitalInput.Checked;
+            Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
+            Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
+            
 
             // Set up devices
             if (checkBox_useSecondBoard.Checked)

@@ -74,9 +74,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExtentionMethods\Mowog.PersistWindowState.dll</HintPath>
     </Reference>
-    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.Common, Version=8.9.35.302, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.32, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="System" />
@@ -104,6 +104,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aquisition\AIChannelCollection.cs" />
+    <Compile Include="DataTypes\DigitalEventBuffer.cs" />
+    <Compile Include="DataTypes\DigitalPortEvent.cs" />
+    <Compile Include="DataTypes\ElectricalStimEvent.cs" />
+    <Compile Include="DataTypes\NREvent.cs" />
+    <Compile Include="DataTypes\RawMultiChannelBuffer.cs" />
+    <Compile Include="DataTypes\EventBuffer.cs" />
+    <Compile Include="DatSrv\NRDataSrv.cs" />
+    <Compile Include="DatSrv\DigitalEventSrv.cs" />
+    <Compile Include="DatSrv\RawDataSrv.cs" />
+    <Compile Include="DatSrv\EventDataSrv.cs" />
     <Compile Include="dbg\ExecptDBG.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
     <Compile Include="FileWriting\DigFileOutput.cs" />
@@ -287,7 +297,7 @@
     <Compile Include="SpikeDetection\SpikeDetSettings.Designer.cs">
       <DependentUpon>SpikeDetSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="SpikeDetection\SpikeWaveform.cs" />
+    <Compile Include="DataTypes\SpikeEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FileWriting\RecordingSetup.resx">

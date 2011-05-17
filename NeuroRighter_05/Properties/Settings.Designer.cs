@@ -121,9 +121,6 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +		
-	            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +		
-            "tring>Dev1</string>\r\n</ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection AnalogInDevice {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["AnalogInDevice"]));
@@ -720,6 +717,78 @@ namespace NeuroRighter.Properties {
             }
             set {
                 this["useAuxDigitalInput"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25000")]
+        public double RawSampleFrequency {
+            get {
+                return ((double)(this["RawSampleFrequency"]));
+            }
+            set {
+                this["RawSampleFrequency"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public double LFPSampleFrequency {
+            get {
+                return ((double)(this["LFPSampleFrequency"]));
+            }
+            set {
+                this["LFPSampleFrequency"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public double MUASampleFrequency {
+            get {
+                return ((double)(this["MUASampleFrequency"]));
+            }
+            set {
+                this["MUASampleFrequency"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.02")]
+        public double DAQRefreshPeriodSec {
+            get {
+                return ((double)(this["DAQRefreshPeriodSec"]));
+            }
+            set {
+                this["DAQRefreshPeriodSec"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public double datSrvBufferSizeSec {
+            get {
+                return ((double)(this["datSrvBufferSizeSec"]));
+            }
+            set {
+                this["datSrvBufferSizeSec"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.01")]
+        public double DAQPollingPeriodSec {
+            get {
+                return ((double)(this["DAQPollingPeriodSec"]));
+            }
+            set {
+                this["DAQPollingPeriodSec"] = value;
             }
         }
     }

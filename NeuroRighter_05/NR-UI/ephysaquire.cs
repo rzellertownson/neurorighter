@@ -41,11 +41,15 @@ using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
 using ExtensionMethods;
+using NeuroRighter.DataTypes;
+using System.Media;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter
 {
     ///<summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG) 
-    ///and calls the methods that write these data to file.</summary>
+    ///and calls the methods that write these data to file. This class is also responsible for writting to the datSrv object,
+    ///NR's data server. </summary>
     ///<author>Jon Newman</author>
     sealed internal partial class NeuroRighter
     {
@@ -126,6 +130,19 @@ namespace NeuroRighter
                                     //Get appropriate data and write to file
                                     if (prependedData[i] > 0.8 && prependedData[i + (int)stimJump] > 0.8 && prependedData[i + (int)(2 * stimJump)] > 0.8)
                                     {
+
+                                        // Create ElectricalStimEvent Buffer and add it datSrv
+                                        EventBuffer<ElectricalStimEvent> tempStimBuff = new EventBuffer<ElectricalStimEvent>(Properties.Settings.Default.RawSampleFrequency);
+                                        ElectricalStimEvent tempStimEvent = new ElectricalStimEvent((ulong)(startTimeStim + i),
+                                            (short)((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - 
+                                            (short)1) * (short)8 +
+                                            Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] + prependedData[i + (int)(3 * stimJump)]) / 2)),
+                                            prependedData[i + (int)(5 * stimJump)], //Stim voltage
+                                            prependedData[i + (int)(7 * stimJump)]);
+                                        tempStimBuff.eventBuffer.Add(tempStimEvent);
+
+                                        // send to datSrv
+                                        datSrv.stimSrv.WriteToBuffer(tempStimBuff);
 
                                         if (switch_record.Value && recordingSettings.recordStim)
                                         {
@@ -250,6 +267,9 @@ namespace NeuroRighter
                         for (int i = 0; i < numChannels; ++i)
                             lfpFilter[i].filterData(filtLFPData[i]);
 
+                    //Send to datSrv
+                    datSrv.lfpSrv.WriteToBuffer(filtLFPData);
+
                     //Post to PlotData buffer
                     lfpPlotData.write(filtLFPData, 0, numChannels);
 
@@ -307,6 +327,9 @@ namespace NeuroRighter
                     if (checkBox_eegFilter.Checked)
                         for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
                             filtEEGData[i] = eegFilter[i].FilterData(filtEEGData[i]);
+
+                    // Send to datSrv
+                    datSrv.eegSrv.WriteToBuffer(filtEEGData);
 
                     //Stacked plot (if the LFP tab is selected)
                     int jMax = eegPlotData.GetLength(1) - eegBufferLength / eegDownsample;
@@ -369,6 +392,10 @@ namespace NeuroRighter
                         //Read the available data from the channels
                         auxAnData = auxAnReader.EndReadInt16(ar);
 
+                        // Send to datSrv
+                        double[][] auxAnDataDouble = neuralDataScaler.ConvertInt16ToSoftRaw(ref auxAnData);
+                        datSrv.auxAnalogSrv.WriteToBuffer(auxAnDataDouble);
+
                         //Write to file in format [numChannels numSamples]
                         #region Write aux file
                         if (switch_record.Value && recordingSettings.recordAuxAnalog)
@@ -377,7 +404,6 @@ namespace NeuroRighter
                             recordingSettings.auxAnalogOut.read(auxAnData, auxAnInTask.AIChannels.Count, 0, spikeBufferLength);
                         }
                         #endregion
-
 
                         // Start next read
                         auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
@@ -411,7 +437,15 @@ namespace NeuroRighter
                             {
                                 //int dt = DateTime.Now.Millisecond;
                                 lastDigState = auxDigData[i];
-                                //Console.WriteLine(" Digital Change detected." + Properties.Settings.Default.auxDigitalInPort + " is " + lastDigState + " at " + dt.ToString());
+
+                                // Create Digital data
+                                DigitalPortEvent thisPortEvent = new DigitalPortEvent((ulong)i, lastDigState);
+                                EventBuffer<DigitalPortEvent> thisDigitalEventBuffer = new EventBuffer<DigitalPortEvent>(Properties.Settings.Default.RawSampleFrequency);
+                                thisDigitalEventBuffer.eventBuffer.Add(thisPortEvent);
+                                
+                                // send to datSrv
+                                datSrv.auxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer);
+                                
                                 if (switch_record.Value && recordingSettings.recordAuxDig)
                                 {
                                     recordingSettings.auxDigitalOut.write(i, lastDigState, trackingDigReads, spikeBufferLength);

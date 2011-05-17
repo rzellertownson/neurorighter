@@ -47,6 +47,8 @@ using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
 using ExtensionMethods;
+using NeuroRighter.DatSrv;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter
 {
@@ -63,6 +65,9 @@ namespace NeuroRighter
             //Set version number
             this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.Text += " (BETA)";
+
+            // Set the refresh DAQ refresh period and the datSrv buffer length
+            Properties.Settings.Default.DAQRefreshPeriodSec = DEVICE_REFRESH;
 
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
@@ -208,7 +213,7 @@ namespace NeuroRighter
                         button_Train.Enabled = false;
                         button_SetRecordingStreams.Enabled = false;
                         switch_record.Enabled = false;
-                        processingSettingsToolStripMenuItem.Enabled = false;
+                        //processingSettingsToolStripMenuItem.Enabled = false;
                         button_spikeSamplingRate.PerformClick(); // updata samp freq
                         textBox_spikeSamplingRate.Enabled = false;
                         button_lfpSamplingRate.PerformClick();
@@ -684,7 +689,7 @@ namespace NeuroRighter
                         }
 
                         // Storage from spike waveforms
-                        _waveforms = new List<SpikeWaveform>(10); //Initialize to store threshold crossings
+                        _waveforms = new List<SpikeEvent>(10); //Initialize to store threshold crossings
                         numPre = Convert.ToInt32(spikeDet.numPreSamples.Value);
                         numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
 
@@ -798,6 +803,15 @@ namespace NeuroRighter
                                 Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
                         this.Cursor = Cursors.Default;
+
+                        // Finally, set up the NRDataSrv object. This is an object that publishes a nice large data history
+                        // for use in closed loop control and other things
+                        datSrv = new NRDataSrv(
+                            Properties.Settings.Default.datSrvBufferSizeSec, 
+                            checkBox_SALPA.Checked, 
+                            checkBox_spikesFilter.Checked);
+
+
                     }
                     catch (DaqException exception)
                     {
@@ -942,13 +956,6 @@ namespace NeuroRighter
                 reset();
             updateRecSettings();
         }
-
-       
-
-        
-
-       
-
         
     }
 }

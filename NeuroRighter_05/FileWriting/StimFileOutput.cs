@@ -40,7 +40,7 @@ namespace NeuroRighter.FileWriting
             outStream.Write(BitConverter.GetBytes((Convert.ToInt16((prependedData[idx + 1] + prependedData[idx + (int)stimJump]) / 2) - //average a couple values
                 (short)1) * (short)8 +
                 Convert.ToInt16((prependedData[idx + (int)(2 * stimJump) + 1] +
-                prependedData[idx + (int)(3 * stimJump)]) / 2)), 0, 2); //channel (-1 since everything should be 0-based) // JN, CHANGED TO BE 1 BASED FOR NORMAL PEOPLE
+                prependedData[idx + (int)(3 * stimJump)]) / 2)), 0, 2); // Channel
             outStream.Write(BitConverter.GetBytes(prependedData[idx + (int)(5 * stimJump)]), 0, 8); //Stim voltage
             outStream.Write(BitConverter.GetBytes(prependedData[idx + (int)(7 * stimJump)]), 0, 8); //Stim pulse width (div by 100us)
         }

@@ -23,6 +23,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Threading;
 using NeuroRighter.SpikeDetection;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter
 {
@@ -102,7 +103,7 @@ namespace NeuroRighter
         internal void stop() { bgWorker.CancelAsync(); }
 
         //Would benefit from not doing graphic alignment in 'write', but rather 'read'
-        internal void write(List<SpikeWaveform> newWaveforms)
+        internal void write(List<SpikeEvent> newWaveforms)
         {
             //Only read first maxWaveforms for each channel
             lock (waveforms)

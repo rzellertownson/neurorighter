@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.DataTypes
 {
-    internal sealed class DigitalData
+    internal sealed class DigitalOutEvent:NREvent
     {   
-        internal ulong EventTime; // digital time (in 100ths of ms)
+        //internal ulong EventTime; // digital time (in 100ths of ms)
         internal  UInt32 Byte; // Integer specifying output Byte corresponding to event time
         /// <summary>
         /// Data stucture for holding digital output events
@@ -17,9 +17,9 @@ namespace NeuroRighter.Output
         /// </summary>
         /// <param name="EventTime"></param>
         /// <param name="Byte"></param>
-        public DigitalData(ulong EventTime,UInt32 Byte)
+        public DigitalOutEvent(ulong EventTime,UInt32 Byte)
         {
-            this.EventTime = EventTime;
+            this.sampleIndex = EventTime;
             this.Byte = Byte;
         }
 

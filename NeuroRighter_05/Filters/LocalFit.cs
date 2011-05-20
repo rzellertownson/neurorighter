@@ -125,10 +125,15 @@ namespace NeuroRighter.Filters
                 source[i + PRE + POST] = filtData[channel][i];
             }
             //store unused buffer data for next time
-            for (int i = 0; i < PRE+POST; i++)
+            for (int i = 0; i < PRE + POST; i++)
             {
-                previousData[i] = filtData[channel][i + bufferlength - (PRE + POST)];
+                //if we don't have enough samples in the filtData buffer to fill up previousData, use data already in previousData
+                if (i < (PRE + POST) - bufferlength)
+                    previousData[i] = previousData[i+bufferlength];
+                else
+                    previousData[i] = filtData[channel][i + bufferlength - (PRE + POST)];
             }
+            
             t_stream = PRE;//what sample are we currently on?
             t_limit = bufferlength+PRE;
             dest = new rawType[bufferlength];

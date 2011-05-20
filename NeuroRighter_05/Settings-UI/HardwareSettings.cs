@@ -281,6 +281,7 @@ namespace NeuroRighter
             Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             
+            
 
             // Set up devices
             if (checkBox_useSecondBoard.Checked)

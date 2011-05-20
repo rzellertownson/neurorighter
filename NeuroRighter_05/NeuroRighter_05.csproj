@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aquisition\AIChannelCollection.cs" />
+    <Compile Include="DataTypes\AnalogOutEvent.cs" />
     <Compile Include="DataTypes\DigitalEventBuffer.cs" />
     <Compile Include="DataTypes\DigitalPortEvent.cs" />
     <Compile Include="DataTypes\ElectricalStimEvent.cs" />
@@ -162,12 +163,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Output\AuxBuffer.cs" />
-    <Compile Include="Output\AuxData.cs" />
+    <Compile Include="DataTypes\AuxOutEvent.cs" />
     <Compile Include="Output\AODOPair\AuxOutTask.cs" />
     <Compile Include="Output\File2Aux.cs" />
     <Compile Include="Output\AODOPair\ContStimTask.cs" />
     <Compile Include="Output\AODOPair\MakeAODOPair.cs" />
     <Compile Include="Output\OpenLoopOut.cs" />
+    <Compile Include="Output\NROutBuffer.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
     <Compile Include="Settings-UI\AboutBox.cs">
       <SubType>Form</SubType>
@@ -248,12 +250,6 @@
     <Compile Include="Plotting\SnipGridGraph.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Settings-UI\ProcessingSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Settings-UI\ProcessingSettings.Designer.cs">
-      <DependentUpon>ProcessingSettings.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources1.Designer.cs">
@@ -278,15 +274,15 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Output\DigitalData.cs" />
-    <Compile Include="Output\DigtialBuffer.cs" />
+    <Compile Include="DataTypes\DigitalOutEvent.cs" />
+    <Compile Include="Output\DigitalBuffer.cs" />
     <Compile Include="Output\File2Dig.cs" />
     <Compile Include="Output\File2Stim.cs" />
     <Compile Include="Output\IISZapper.cs" />
     <Compile Include="Output\StimBuffer.cs" />
     <Compile Include="Output\StimPulse.cs" />
     <Compile Include="Output\StimTrain.cs" />
-    <Compile Include="Output\StimulusData.cs" />
+    <Compile Include="DataTypes\StimulusOutEvent.cs" />
     <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
     <Compile Include="SpikeDetection\LimAda.cs" />
     <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
@@ -298,6 +294,7 @@
       <DependentUpon>SpikeDetSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\SpikeEvent.cs" />
+    <Compile Include="StimSrv\NRStimSrv.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FileWriting\RecordingSetup.resx">
@@ -319,10 +316,6 @@
     <EmbeddedResource Include="licenses.licx" />
     <EmbeddedResource Include="NR-UI\NeuroRighter.resx">
       <DependentUpon>NeuroRighter.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Settings-UI\ProcessingSettings.resx">
-      <DependentUpon>ProcessingSettings.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

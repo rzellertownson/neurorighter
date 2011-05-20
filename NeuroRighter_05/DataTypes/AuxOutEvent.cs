@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.DataTypes
 {
-    internal sealed class AuxData
+    internal sealed class AuxOutEvent:NREvent
     {
-        internal ulong eventTime; // auxiliary event time (in 100ths of ms)
+        //internal ulong eventTime; // auxiliary event time (in 100ths of ms)
         internal ushort eventChannel; // the analog channel that the event corresponds to (1-4)
         internal double eventVoltage; // 1X4 analog state corresponding to event time
 
-        public AuxData(ulong time, ushort channel, double voltage)
+        public AuxOutEvent(ulong time, ushort channel, double voltage)
         {
-            this.eventTime = time;
+            this.sampleIndex = time;
             this.eventChannel = channel;
             this.eventVoltage = voltage;
         }

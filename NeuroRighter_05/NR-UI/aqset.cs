@@ -134,6 +134,7 @@ namespace NeuroRighter
         {
             try
             {
+                DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
                 int numChannelsPerDevice = (numChannels > 32 ? 32 : numChannels);
                 int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
 
@@ -411,11 +412,11 @@ namespace NeuroRighter
             int forcepeg_sams= Convert.ToInt32(numericUpDown_salpa_forcepeg.Value);
             SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
-            if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
-            {
-                double max_halfwidth = Convert.ToDouble((spikeBufferLength - 1) / 4);
-                SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
-            }
+            //if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
+            //{
+            //    double max_halfwidth = Convert.ToDouble((spikeBufferLength - 1) / 4);
+            //    SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
+            //}
 
             
             //public SALPA3(int length_sams,int asym_sams,int blank_sams,int ahead_sams, int forcepeg_sams, rawType railLow, rawType railHigh, int numElectrodes, int bufferLength, rawType[] thresh)

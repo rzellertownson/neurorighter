@@ -7,6 +7,7 @@ using NationalInstruments.DAQmx;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.Output
 {
@@ -22,8 +23,8 @@ namespace NeuroRighter.Output
         private ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         private bool lastLoad;
 
-        internal List<DigitalData> DigitalDataChunk;
-        private DigitalData DigitalDatum;
+        internal List<DigitalOutEvent> DigitalDataChunk;
+        private DigitalOutEvent DigitalDatum;
         private UInt32 Byte;
         private UInt64 EventTime;
         private DigitalBuffer digbuff;
@@ -98,7 +99,7 @@ namespace NeuroRighter.Output
 
                 // Append the first stimuli to the stim buffer
                 Console.WriteLine("All in one digital load");
-                digbuff.append(DigitalDataChunk); // Append all the stimuli
+                digbuff.Append(DigitalDataChunk); // Append all the stimuli
                 numLoadsCompleted = numDigEvent;
                 lastLoad = true;
                 digbuff.setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
@@ -110,7 +111,7 @@ namespace NeuroRighter.Output
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
-                digbuff.append(DigitalDataChunk);//append first N stimuli
+                digbuff.Append(DigitalDataChunk);//append first N stimuli
                 numLoadsCompleted++;
                 digbuff.setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
 
@@ -129,7 +130,7 @@ namespace NeuroRighter.Output
             {
                 
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
-                digbuff.append(DigitalDataChunk); //add N more stimuli
+                digbuff.Append(DigitalDataChunk); //add N more stimuli
                 numLoadsCompleted++;
                 //Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
             }
@@ -140,7 +141,7 @@ namespace NeuroRighter.Output
                     // load the last few stimuli
                     Console.WriteLine("file2dig: last load");
                     LoadDigEvent(oldigfile, (int)(numDigEvent - numLoadsCompleted * numEventPerLoad));
-                    digbuff.append(DigitalDataChunk); //add N more stimuli
+                    digbuff.Append(DigitalDataChunk); //add N more stimuli
                     lastLoad = true;
                 }
             }
@@ -162,7 +163,7 @@ namespace NeuroRighter.Output
         internal void LoadDigEvent(StreamReader oldigFile, int numEventToRead)
         {
             int j = 0;
-            DigitalDataChunk = new List<DigitalData>();
+            DigitalDataChunk = new List<DigitalOutEvent>();
 
             while ( j < numEventToRead)
             {
@@ -179,7 +180,7 @@ namespace NeuroRighter.Output
                 Byte = Convert.ToUInt32(line);
 
                 //Append digital data
-                DigitalDatum = new DigitalData(EventTime, Byte);
+                DigitalDatum = new DigitalOutEvent(EventTime, Byte);
                 DigitalDataChunk.Add(DigitalDatum);
 
                 j++;

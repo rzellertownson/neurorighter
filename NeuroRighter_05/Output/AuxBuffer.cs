@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.Output
 {
@@ -19,7 +20,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void AuxDAQLoadCompletedHandler(object sender, EventArgs e);
 
-    internal class AuxBuffer
+    internal class AuxBuffer : NROutBuffer<AuxOutEvent>
     {
         //events
         private int queueThreshold = 0;
@@ -46,9 +47,9 @@ namespace NeuroRighter.Output
         private uint STIM_SAMPLING_FREQ;
         private uint numSampWrittenForCurrent = 0;
         private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
-        private List<AuxData> outerbuffer;
-        private AuxData currentAux;
-        private AuxData nextAux;
+        private List<AuxOutEvent> outerbuffer;
+        private AuxOutEvent currentAux;
+        private AuxOutEvent nextAux;
         bool auxDone;
 
         //Stuff that gets defined with input arguments to constructor
@@ -74,7 +75,7 @@ namespace NeuroRighter.Output
             this.totalAuxEvents = totalAuxEvents;
             this.queueThreshold = queueThreshold;
 
-            outerbuffer = new List<AuxData>();
+            outerbuffer = new List<AuxOutEvent>();
         }
 
         internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask)
@@ -192,7 +193,7 @@ namespace NeuroRighter.Output
 
                 //Finished the buffer
                 numBuffLoadsCompleted++;
-
+                currentSample = numBuffLoadsCompleted * BUFFSIZE;
                 // Check if protocol is completed
                 if (numBuffLoadsCompleted >= numBuffLoadsRequired)
                 {
@@ -207,7 +208,7 @@ namespace NeuroRighter.Output
             }
         }
 
-        internal void Append(List<AuxData> auxList)
+        override internal void Append(List<AuxOutEvent> auxList)
         {
             
            //Console.WriteLine("Appending next " + auxList.Count + " aux events to buffer");
@@ -224,7 +225,7 @@ namespace NeuroRighter.Output
             //how many samples should we write?
             if (numEventsWritten < totalAuxEvents)
             {
-                samples2Finish = nextAux.eventTime-currentAux.eventTime - numSampWrittenForCurrent;
+                samples2Finish = nextAux.sampleIndex - currentAux.sampleIndex - numSampWrittenForCurrent;
             }
             else // last aux event sets aux state to 0
             {
@@ -246,21 +247,21 @@ namespace NeuroRighter.Output
         {
             lock (this)
             {
-                if (outerbuffer.ElementAt(0).eventTime < (numBuffLoadsCompleted + 1) * BUFFSIZE)
+                if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
                     // Current Aux State
-                    currentAux = new AuxData(outerbuffer.ElementAt(0).eventTime,
+                    currentAux = new AuxOutEvent(outerbuffer.ElementAt(0).sampleIndex,
                         outerbuffer.ElementAt(0).eventChannel,
                         outerbuffer.ElementAt(0).eventVoltage);
                     outerbuffer.RemoveAt(0);
 
                     // Next Aux state
                     if (outerbuffer.Count > 0)
-                        nextAux = new AuxData(outerbuffer.ElementAt(0).eventTime,
+                        nextAux = new AuxOutEvent(outerbuffer.ElementAt(0).sampleIndex,
                             outerbuffer.ElementAt(0).eventChannel,
                             outerbuffer.ElementAt(0).eventVoltage);
                     else
-                        nextAux = new AuxData(currentAux.eventTime+1,
+                        nextAux = new AuxOutEvent(currentAux.sampleIndex + 1,
                             currentAux.eventChannel,
                             0);
 
@@ -268,10 +269,10 @@ namespace NeuroRighter.Output
                         OnThreshold(EventArgs.Empty);
 
                     numSampWrittenForCurrent = 0;
-                    bufferIndex = currentAux.eventTime - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
-                    if (currentAux.eventTime < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    bufferIndex = currentAux.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
+                    if (currentAux.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                     {
-                        throw new Exception("trying to write an expired aux output: event at sample no. " + currentAux.eventTime + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentAux.eventChannel);
+                        throw new Exception("trying to write an expired aux output: event at sample no. " + currentAux.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentAux.eventChannel);
                     }
 
                     return true;

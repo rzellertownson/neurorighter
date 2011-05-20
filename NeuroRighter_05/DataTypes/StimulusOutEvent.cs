@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace NeuroRighter
+namespace NeuroRighter.DataTypes
 {
-    public sealed class StimulusData
+    internal sealed class StimulusOutEvent:NREvent
     {
 
         //DO line that will have the blanking signal for different hardware configurations
@@ -15,18 +15,18 @@ namespace NeuroRighter
         private const int PORT_OFFSET_32bitPort = 7;
         private const int PORT_OFFSET_8bitPort = 0;
 
-        public Int16 channel; //1 based
-        public ulong time; // write time (in 100ths of ms)
-        public double[] waveform; //Stim voltage
+        internal Int16 channel; //1 based
+        //public ulong time; // write time (in 100ths of ms)
+        internal double[] waveform; //Stim voltage
  
         public double[] AnalogEncode;
         public UInt32[] DigitalEncode;
 
 
-        public StimulusData(int channel, ulong time, double[] waveform)
+        public StimulusOutEvent(int channel, ulong time, double[] waveform)
         {
             this.channel = (short)channel;
-            this.time = time;
+            this.sampleIndex= time;
             this.waveform = new double[waveform.Length];
           //  MessageBox.Show("creatingstim");
             for (int i = 0; i < waveform.Length; i++)

@@ -148,6 +148,25 @@ namespace NeuroRighter
                 led_recording.Value = false;
         }
 
+        private void checkBox_RepeatOpenLoopProtocol_CheckedChanged(object sender, EventArgs e)
+        {
+            // Take away/giveback control of main repeat record checkbox
+            if (checkBox_RepeatOpenLoopProtocol.Checked)
+            {
+                checkbox_repeatRecord.Checked = true;
+                checkBox_enableTimedRecording.Checked = false;
+                checkBox_enableTimedRecording.Enabled = false;
+            }
+            else
+            {
+                checkBox_enableTimedRecording.Enabled = true;
+                checkbox_repeatRecord.Checked = false;
+            }
+            // Set the repeatOpenLoopProtocol bool and numOpenLoopRepeats int
+            repeatOpenLoopProtocol = checkBox_RepeatOpenLoopProtocol.Checked;
+            numOpenLoopRepeats = (double)numericUpDown_NumberOfOpenLoopRepeats.Value;
+        }
+
         private void NeuroControl_FormClosing(object sender, FormClosingEventArgs e)
         {
 

@@ -118,8 +118,8 @@ namespace NeuroRighter
         private uint lastDigState = 0; // stores the digtial state after a port change occurs
         private uint[] auxDigData;
         private DigitalWaveform auxDigitalWaveform;
-        internal List<StimulusData> _stimulations;
-        internal List<StimulusData> stimulations
+        internal List<StimulusOutEvent> _stimulations;
+        internal List<StimulusOutEvent> stimulations
             {
                 get { return _stimulations; }
             }
@@ -191,6 +191,9 @@ namespace NeuroRighter
 
         // Open-loop AO/DO 
         private OpenLoopOut openLoopSynchronizedOutput;
+        private bool repeatOpenLoopProtocol;
+        private double numOpenLoopRepeats;
+        private double numOpenLoopsPerformed = 0;
 
         #endregion
 
@@ -202,7 +205,7 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal const double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
+        internal double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 

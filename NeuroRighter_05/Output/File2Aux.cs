@@ -7,6 +7,7 @@ using NationalInstruments.DAQmx;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.Output
 {
@@ -21,8 +22,8 @@ namespace NeuroRighter.Output
         internal ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         internal bool lastLoad;
 
-        internal List<AuxData> auxDataChunk;
-        internal AuxData auxDatum;
+        internal List<AuxOutEvent> auxDataChunk;
+        internal AuxOutEvent auxDatum;
         private double eventVoltage;
         private int eventChannel;
         private ulong eventTime;
@@ -173,7 +174,7 @@ namespace NeuroRighter.Output
         internal void LoadAuxEvent(StreamReader olAuxFile, int numEventToRead)
         {
             int j = 0;
-            auxDataChunk = new List<AuxData>();
+            auxDataChunk = new List<AuxOutEvent>();
 
             if (auxFileExists)
             {
@@ -195,7 +196,7 @@ namespace NeuroRighter.Output
                     eventVoltage = Convert.ToDouble(line);
 
                     //Append digital data
-                    auxDatum = new AuxData(eventTime, (ushort)eventChannel, eventVoltage);
+                    auxDatum = new AuxOutEvent(eventTime, (ushort)eventChannel, eventVoltage);
                     auxDataChunk.Add(auxDatum);
 
                     j++;

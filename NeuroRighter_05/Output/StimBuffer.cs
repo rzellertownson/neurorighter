@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.Output
 {   
@@ -18,7 +19,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-    internal class StimBuffer
+    internal class StimBuffer : NROutBuffer<StimulusOutEvent>
     {
 
         //events
@@ -53,8 +54,8 @@ namespace NeuroRighter.Output
         private UInt32 DigitalPoint;
         private ulong StimulusIndex;
         private string[] s = DaqSystem.Local. GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
-        private List<StimulusData> outerbuffer;
-        private StimulusData currentStim;
+        private List<StimulusOutEvent> outerbuffer;
+        private StimulusOutEvent currentStim;
         private bool digitaldone, analogdone;
 
         //DO line that will have the blanking signal for different hardware configurations
@@ -119,7 +120,7 @@ namespace NeuroRighter.Output
             }
 
             // Make an outer buffer to Append stimuli to before loading into DAQ's memory
-            outerbuffer = new List<StimulusData>();
+            outerbuffer = new List<StimulusOutEvent>();
             }
 
         internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
@@ -442,7 +443,7 @@ namespace NeuroRighter.Output
 
                 //congratulations!  we finished the buffer!
                 numBuffLoadsCompleted++;
-
+                currentSample = numBuffLoadsCompleted * BUFFSIZE;
                 // Check if protocol is completed
                 if (numBuffLoadsCompleted >= numBuffLoadsRequired)
                 {
@@ -464,7 +465,7 @@ namespace NeuroRighter.Output
             //okay, passed the tests, start appending
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            StimulusData stim;
+            StimulusOutEvent stim;
             Console.WriteLine("Append started...");
             lock (this)
             {
@@ -479,14 +480,14 @@ namespace NeuroRighter.Output
                     // MessageBox.Show("finished a wave");
                     // double[] w = {1.0,1.0};
                     // stim = new StimulusData(1,1.0,w);
-                    stim = new StimulusData(ChannelVector[i], TimeVector[i], wave);
+                    stim = new StimulusOutEvent(ChannelVector[i], TimeVector[i], wave);
 
                     //  MessageBox.Show("created a stim");
                    
                     //  MessageBox.Show("calc'd the index");
 
                     outerbuffer.Add(stim);
-                    Console.Write(stim.time + ",");
+                    Console.Write(stim.sampleIndex + ",");
                     // MessageBox.Show("added it");
                 }
             }
@@ -496,7 +497,7 @@ namespace NeuroRighter.Output
 
         }
 
-        internal void Append(List<StimulusData> stimlist)
+        override internal void Append(List<StimulusOutEvent> stimlist)
         {
             lock (this)
             {
@@ -528,10 +529,10 @@ namespace NeuroRighter.Output
         {
             lock (this)
             {
-                if (outerbuffer.ElementAt(0).time < (numBuffLoadsCompleted + 1) * BUFFSIZE)
+                if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                 {
 
-                    currentStim = new StimulusData(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).time, outerbuffer.ElementAt(0).waveform);
+                    currentStim = new StimulusOutEvent(outerbuffer.ElementAt(0).channel, outerbuffer.ElementAt(0).sampleIndex, outerbuffer.ElementAt(0).waveform);
                     outerbuffer.RemoveAt(0);
                   //  Console.Write("starting stim at " + currentStim.time);
                     
@@ -540,11 +541,11 @@ namespace NeuroRighter.Output
                         OnThreshold(EventArgs.Empty);
 
                     NumSampWrittenForCurrentStim = 0;
-                    bufferIndex = currentStim.time - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                    if (currentStim.time < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                    bufferIndex = currentStim.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
+                    if (currentStim.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                     {
                         //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.time + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                        throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
                     }
 
                     return true;

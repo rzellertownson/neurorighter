@@ -45,7 +45,7 @@ namespace NeuroRighter.DataTypes
     /// value and an optional a list of auxiliary doubles that can be inserted by the user.
     /// <author> Jon Newman </author>
     /// </summary>
-    
+
     internal sealed class ElectricalStimEvent : NREvent
     {
 
@@ -54,7 +54,9 @@ namespace NeuroRighter.DataTypes
         internal double amplitude;
         internal double width;
         internal List<double> auxInfo = null;
+        internal double[] waveform;
 
+       
         internal ElectricalStimEvent(ulong sampleIndex, short channel, double amplitude, double width)
         {
             this.sampleIndex = sampleIndex;
@@ -62,5 +64,7 @@ namespace NeuroRighter.DataTypes
             this.amplitude = amplitude;
             this.width = width;
         }
+
+       
     }
 }

@@ -71,7 +71,7 @@ namespace NeuroRighter
 
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
-
+            DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
@@ -258,7 +258,8 @@ namespace NeuroRighter
                             recordingSettings.SetFID(filenameBase);
                             recordingSettings.SetNumElectrodes(numChannels);
                         }
-
+                        //set device refresh rate
+                        DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
 
                         // Find out how many devs and channels/dev we are going to need
                         int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
@@ -694,6 +695,12 @@ namespace NeuroRighter
                         numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
 
                         stimIndices = new List<StimTick>(5);
+                        //if devices refresh rate is reset, need to reset SALPA
+                        if (checkBox_SALPA.Checked)
+                            resetSALPA();
+                        if (spikeDet != null)
+                            spikeDet.SetSpikeDetector();
+
 
                         //// Storage for aux input plotting and filtering
                         //if (Properties.Settings.Default.recordAuxAnalog)
@@ -806,6 +813,9 @@ namespace NeuroRighter
 
                         // Finally, set up the NRDataSrv object. This is an object that publishes a nice large data history
                         // for use in closed loop control and other things
+                        if (datSrv != null)
+                            datSrv = null;
+
                         datSrv = new NRDataSrv(
                             Properties.Settings.Default.datSrvBufferSizeSec, 
                             checkBox_SALPA.Checked, 
@@ -956,6 +966,6 @@ namespace NeuroRighter
                 reset();
             updateRecSettings();
         }
-        
+
     }
 }

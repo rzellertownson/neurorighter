@@ -30,6 +30,10 @@ namespace NeuroRighter.DataTypes
         /// <author>Jon Newman </author>
         /// </summary>
         internal ulong sampleIndex;
+        //internal double samplingFrequency;//a sample index can be very confusing 
+        //if we don't know what sampling rate it corresponds to- especially if we 
+        //are looking a similar events (recorded vs applied stimuli) with different
+        //sampling frequencies
 
         public NREvent() {}
 

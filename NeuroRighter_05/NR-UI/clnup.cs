@@ -59,12 +59,14 @@ namespace NeuroRighter
             updateRecSettings();
 
             //Grab display gains for later use
-            if (spikePlotData.getGain() != null)
-                Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
+            if (spikePlotData != null)
+                if (spikePlotData.getGain() != null)
+                    Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
             if (Properties.Settings.Default.UseLFPs)
                 Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
-            if (waveformPlotData.getGain() != null)
-                Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
+            if (waveformPlotData != null)
+                if (waveformPlotData.getGain() != null)
+                    Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
 
             taskRunning = false;
             if (triggerWriter != null)

@@ -579,18 +579,27 @@ namespace NeuroRighter
 
         private void button_startStimFromFile_Click(object sender, EventArgs e)
         {
+            // Update all the recording/stim settings
+            updateSettings();
+
+            numOpenLoopsPerformed = 0;
+            numOpenLoopRepeats = (double)numericUpDown_NumberOfOpenLoopRepeats.Value;
+            StartOpenLoopCallback();
+
+        }
+
+        private void StartOpenLoopCallback()
+        {
             bool openLoopSyncFail;
 
-            updateSettings();
+            // Set up recording so we can access the task info from spikeTask[0] to sync
+            // clock and start
+            NRAcquisitionSetup();
 
             // Get OL filenames
             string stimFile = textBox_protocolFileLocations.Text;
             string digFile = textBox_digitalProtocolFileLocation.Text;
             string auxFile = textBox_AuxFile.Text;
-
-            // Set up recording so we can access the task info from spikeTask[0] to sync
-            // clock and start
-            NRAcquisitionSetup();
 
             // create a syncronized OL Output object
             if (checkBox_useManStimWaveform.Checked)
@@ -629,7 +638,57 @@ namespace NeuroRighter
         internal void FinishOutputFromFile(object sender, EventArgs e)
         {
             ResetUIAfterOpenLoopOut(false);
-            MessageBox.Show("The open loop protocol finished peacefully. Press Stop to end the recording");
+
+            if (repeatOpenLoopProtocol)
+            {
+                // Take care of the continuous repeat case
+                if (numOpenLoopRepeats == 0)
+                {
+                    numOpenLoopRepeats = double.PositiveInfinity;
+                }
+
+                // increment numOpenLoopsPerformed
+                numOpenLoopsPerformed += 1;
+
+                // Stop the recording
+                // Invoke an anonymous method on the thread of the form.
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.buttonStop.Enabled = true;
+                    this.button_stopStimFromFile.Enabled = false;
+                    this.buttonStop.PerformClick();
+                });
+
+                // Decided whether to repeat
+                if (numOpenLoopsPerformed < numOpenLoopRepeats)
+                {
+                    openLoopSynchronizedOutput.OpenLoopOutIsFinished -= FinishOutputFromFile;
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        StartOpenLoopCallback();
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("The repeated open loop protocol has finished.");
+                    // Invoke an anonymous method on the thread of the form.
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        this.buttonStop.Enabled = true;
+                        this.button_stopStimFromFile.Enabled = false;
+                    });
+                }
+            }
+            else
+            {
+                MessageBox.Show("The open loop protocol finished peacefully. Press Stop to end the recording");
+                // Invoke an anonymous method on the thread of the form.
+                this.Invoke((MethodInvoker)delegate
+                {
+                    this.buttonStop.Enabled = true;
+                    this.button_stopStimFromFile.Enabled = false;
+                });
+            }
         }
 
         internal void ResetUIAfterOpenLoopOut(bool comingFromFail)
@@ -639,32 +698,25 @@ namespace NeuroRighter
                 if (openLoopSynchronizedOutput != null)
                     openLoopSynchronizedOutput.KillAllAODOTasks();
 
-                ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
-                    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
-                    STIM_SAMPLING_FREQ);
+                //ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
+                //    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
+                //    STIM_SAMPLING_FREQ);
 
-                int[] analogChannelsToZero = { 0, 1, 2, 3 };
-                zeroOpenLoopOutput.ZeroAOChanOnDev(
-                    Properties.Settings.Default.SigOutDev, analogChannelsToZero);
-                zeroOpenLoopOutput.ZeroAOChanOnDev(
-                    Properties.Settings.Default.StimulatorDevice, analogChannelsToZero);
-                zeroOpenLoopOutput.ZeroPortOnDev(
-                    Properties.Settings.Default.SigOutDev, 0);
-                zeroOpenLoopOutput.ZeroPortOnDev(
-                    Properties.Settings.Default.StimulatorDevice, 0);
+                //int[] analogChannelsToZero = { 0, 1, 2, 3 };
+                //zeroOpenLoopOutput.ZeroAOChanOnDev(
+                //    Properties.Settings.Default.SigOutDev, analogChannelsToZero);
+                //zeroOpenLoopOutput.ZeroAOChanOnDev(
+                //    Properties.Settings.Default.StimulatorDevice, analogChannelsToZero);
+                //zeroOpenLoopOutput.ZeroPortOnDev(
+                //    Properties.Settings.Default.SigOutDev, 0);
+                //zeroOpenLoopOutput.ZeroPortOnDev(
+                //    Properties.Settings.Default.StimulatorDevice, 0);
 
                 if (comingFromFail)
                 {
                     button_startStimFromFile.Enabled = true;
                     reset();
                 }
-
-                    // Invoke an anonymous method on the thread of the form.
-                    this.Invoke((MethodInvoker)delegate
-                    {
-                        this.buttonStop.Enabled = true;
-                        this.button_stopStimFromFile.Enabled = false;
-                    });
             }
             catch(Exception e)
             {
@@ -672,17 +724,17 @@ namespace NeuroRighter
             }
         }
 
-
-
-
         internal void button_stopStimFromFile_Click(object sender, EventArgs e)
         {            
             lock (this)
             {
-                
-                ResetUIAfterOpenLoopOut(false);
-                buttonStop.PerformClick();
-                Console.WriteLine("Stim, Aux and Digital Outputs were killed mid-process");
+                this.Invoke((MethodInvoker)delegate
+                {
+                    ResetUIAfterOpenLoopOut(false);
+                    this.buttonStop.Enabled = true;
+                    buttonStop.PerformClick();
+                    Console.WriteLine("Stim, Aux and Digital Outputs were killed mid-process");
+                });
             }
         }
 

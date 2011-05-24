@@ -157,6 +157,7 @@ namespace NeuroRighter
             if (!button_startStimFromFile.Enabled) { button_startStimFromFile.Enabled = true; }
 
             timer_timeElapsed.Enabled = false;
+            Console.WriteLine("Reset Complete");
         }
 
         // Called when stimulation is stopped
@@ -188,7 +189,7 @@ namespace NeuroRighter
             stimDigitalWriter.WriteSingleSampleMultiLine(true, fData);
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
-
+            Console.WriteLine("resetStim completed");
         }
 
         // Look at the recording hardware settings and create NI Tasks that reflect the user's choices
@@ -260,6 +261,7 @@ namespace NeuroRighter
                 Properties.Settings.Default.RawSampleFrequency = Convert.ToDouble(textBox_spikeSamplingRate.Text);
                 Properties.Settings.Default.LFPSampleFrequency = Convert.ToDouble(textBox_lfpSamplingRate.Text);
                 Properties.Settings.Default.MUASampleFrequency = Convert.ToDouble(textBox_MUASamplingRate.Text);
+                Console.WriteLine("updateRecSettings finished");
             }
             catch (DaqException exception)
             {
@@ -380,6 +382,7 @@ namespace NeuroRighter
                     radioButton_stimVoltageControlled.Enabled = false;
                     button_impedanceTest.Enabled = false;
                 }
+                Console.WriteLine("updateStimSettings completed");
             }
             catch (DaqException exception)
             {
@@ -565,6 +568,7 @@ namespace NeuroRighter
                     button_impedanceTest.Enabled = false;
                 }
             }
+            Console.WriteLine("updateStim");
         }
 
 

@@ -43,6 +43,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using NeuroRighter.DatSrv;
 using NeuroRighter.DataTypes;
+using NeuroRighter.StimSrv;
 
 namespace NeuroRighter
 {
@@ -52,6 +53,7 @@ namespace NeuroRighter
     {
         # region Internal Variables
         internal NRDataSrv datSrv;
+        internal NRStimSrv stimSrv;
 
         #endregion
 

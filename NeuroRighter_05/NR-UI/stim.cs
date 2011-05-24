@@ -740,6 +740,28 @@ namespace NeuroRighter
 
         #endregion
 
+        #region Closed Loop Output
+        private void button_startClosedLoopStim_Click(object sender, EventArgs e)
+        {
+            
+            startClosedLoopStim();
+        }
+        private void startClosedLoopStim()
+        {
+            //gui stuff
+            NRAcquisitionSetup();
+            NROutputSetup();
+            //create closed loop code, throw into it's own thread
+            
+            //start everything
+            //
+        }
+        private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
+        { 
+            
+        }
+        #endregion
+
         #region IISZapper
 
         internal delegate void IISDetectedHandler(object sender, double[][] lfpData, int numReads);

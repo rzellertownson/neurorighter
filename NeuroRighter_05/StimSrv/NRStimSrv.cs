@@ -33,7 +33,7 @@ namespace NeuroRighter.StimSrv
             this.INNERBUFFSIZE = INNERBUFFSIZE;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             int sampblanking = 2;
-            int queueThreshold = -1;
+            int queueThreshold = -1;//no queue thresholds for closed loop
             //create buffers
             AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);

@@ -48,6 +48,7 @@ using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
 using ExtensionMethods;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 using NeuroRighter.DataTypes;
 
 namespace NeuroRighter
@@ -830,8 +831,18 @@ namespace NeuroRighter
                         MessageBox.Show(exception.Message);
                         reset();
                     }
-                }
+                } 
             }
+        }
+
+        // Method to set up the output (dig, aux, stim) side of neurorighter
+        // acquisition setup must have been called previously
+        private void NROutputSetup()
+        {
+            if (stimSrv != null)
+                stimSrv = null;
+            stimSrv = new NRStimSrv((int)Properties.Settings.Default.DAQRefreshPeriodSec*STIM_SAMPLING_FREQ, STIM_SAMPLING_FREQ, spikeTask[0]);
+            stimSrv.Setup();
         }
 
         // Start all the tasks having to do with recording
@@ -966,6 +977,10 @@ namespace NeuroRighter
                 reset();
             updateRecSettings();
         }
+
+        
+
+        
 
     }
 }

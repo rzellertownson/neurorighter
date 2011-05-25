@@ -68,7 +68,7 @@ namespace NeuroRighter.StimSrv
         {
             //configure counter
             if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
-
+            
             buffLoadTask = new Task("stimBufferTask");
 
             // Trigger a buffer load event off every edge of this channel

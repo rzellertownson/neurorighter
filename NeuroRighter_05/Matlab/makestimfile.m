@@ -2,7 +2,7 @@ function makestimfile(filename, time, channel, waveform)
 %MAKESTIMFILE turns data matracies and vectors into a *.olstim file for use by
 %neurorighter
 %
-%    y = MAKESTIMFILE(time, channel, waveform, filename) takes as input:
+%    y = MAKESTIMFILE(filename, time, channel, waveform) takes as input:
 %         channel     [N 1] vector of channels to stimulate on
 %         time        [N 1] vector of stimulation times (in seconds)
 %         waveform    [N M] matrix of stimulation waveforms (in Volts)

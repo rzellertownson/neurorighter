@@ -23,5 +23,10 @@ namespace NeuroRighter.DataTypes
             this.channel = channel;
             this.voltage = voltage;
         }
+
+        internal AnalogOutEvent copy()
+        {
+            return new AnalogOutEvent(this.sampleIndex, this.channel, this.voltage);
+        }
     }
 }

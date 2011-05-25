@@ -45,5 +45,14 @@ namespace NeuroRighter.DataTypes
             this.threshold = threshold;
             this.waveform = waveform;
         }
+        override internal NREvent copy()
+        {
+            double[] wavecpy = new double[waveform.Length];
+            for (int i = 0; i < waveform.Length; i++)
+            {
+                wavecpy[i] = waveform[i];
+            }
+            return new SpikeEvent(this.channel, this.sampleIndex, this.threshold, wavecpy);
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace NeuroRighter.DatSrv
 
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
+        
         private ulong currentSample;
         private int bufferSizeInSamples; // The maximum number of samples between  the
                                          // current sample and the last avaialbe mixed
@@ -41,6 +42,7 @@ namespace NeuroRighter.DatSrv
         internal EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite)
         {
             this.currentSample = 0;
+           
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
@@ -96,16 +98,19 @@ namespace NeuroRighter.DatSrv
                         dataBuffer.eventBuffer.RemoveAt(i);
                     }
                 }
-
+                
                 // Move time stamps to absolute scheme
                 for (int i = 0; i < newData.eventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
-                    newData.eventBuffer[i].sampleIndex = newData.eventBuffer[i].sampleIndex + currentSample;
+                    T tmp = (T)newData.eventBuffer[i].copy();
+                    tmp.sampleIndex = tmp.sampleIndex + currentSample;
+                    dataBuffer.eventBuffer.Add(tmp);
                 }
 
                 // Add new data
-                dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
+               // dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
+
                 currentSample += (ulong)numSamplesPerWrite;
             }
             finally

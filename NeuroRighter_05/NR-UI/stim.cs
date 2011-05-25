@@ -728,7 +728,7 @@ namespace NeuroRighter
         {            
             lock (this)
             {
-                this.Invoke((MethodInvoker)delegate
+                this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
                     ResetUIAfterOpenLoopOut(false);
                     this.buttonStop.Enabled = true;
@@ -745,20 +745,43 @@ namespace NeuroRighter
         {
             
             startClosedLoopStim();
+            
+            //debugging stuff:
+            Console.WriteLine(stimSrv);
         }
         private void startClosedLoopStim()
         {
-            //gui stuff
+            
+
+            //setup
             NRAcquisitionSetup();
             NROutputSetup();
             //create closed loop code, throw into it's own thread
-            
+            NRStartRecording();
             //start everything
-            //
+            Console.WriteLine(stimSrv);
+
+            //gui stuff
+            button_startClosedLoopStim.Enabled = false;
+            button_stopClosedLoopStim.Enabled = true;
         }
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
-        { 
+        {
             
+            lock (this)
+            {
+                this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
+                {
+                    NROutputShutdown();
+                    this.buttonStop.Enabled = true;
+                    buttonStop.PerformClick();
+                    Console.WriteLine("Closed loop stimulation closed mid process");
+                });
+            }
+            for (int i = 1; i < NationalInstruments.DAQmx.DaqSystem.Local.Tasks.Length; i++)
+            {
+                Console.WriteLine(NationalInstruments.DAQmx.DaqSystem.Local.Tasks[i]);
+            }
         }
         #endregion
 

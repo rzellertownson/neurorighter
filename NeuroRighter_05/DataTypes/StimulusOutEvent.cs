@@ -50,6 +50,11 @@ namespace NeuroRighter.DataTypes
            // MessageBox.show("created stim");
         }
 
+        override internal NREvent copy()
+        {
+            return new StimulusOutEvent(this.channel, this.sampleIndex, this.waveform);
+        }
+
         //User should need to only call the constructor, first instance in which this data is being used by code that knows the 
         //stim sampling frequency, perform this operation.  shouldn't be a problem if it is called twice, assuming using the same
         //sampling frequency data.

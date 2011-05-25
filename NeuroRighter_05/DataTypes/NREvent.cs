@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
@@ -36,6 +37,15 @@ namespace NeuroRighter.DataTypes
         //sampling frequencies
 
         public NREvent() {}
+
+        virtual internal NREvent copy()
+        {
+
+            MessageBox.Show("this should have been overriden!");
+            return this;
+        }
+        
+        
 
     }
 }

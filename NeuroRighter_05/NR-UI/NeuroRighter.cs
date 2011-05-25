@@ -348,7 +348,7 @@ namespace NeuroRighter
                             }
                             else
                             {
-                               
+
                                 spikeTask[0].Timing.ReferenceClockSource = masterclock;//stimPulseTask.Timing.ReferenceClockSource;
                                 spikeTask[0].Timing.ReferenceClockRate = 10000000.0; //stimPulseTask.Timing.ReferenceClockRate;
                             }
@@ -433,13 +433,18 @@ namespace NeuroRighter
                                 DaqSystem.Local.ConnectTerminals(spikeTask[0].Timing.ReferenceClockSource,
                                     "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0");
 
-                                stimTimeTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                stimTimeTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                                    
+                                    
+                                    
+                                    //"/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
                                 stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                                 stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
                                     SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                                 stimTimeTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
                                     "/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
                                 stimTimeTask.Control(TaskAction.Verify);
+                                Console.WriteLine("NRAcquisitionSetup complete");
                             }
                             catch (Exception e)
                             {
@@ -818,8 +823,8 @@ namespace NeuroRighter
                             datSrv = null;
 
                         datSrv = new NRDataSrv(
-                            Properties.Settings.Default.datSrvBufferSizeSec, 
-                            checkBox_SALPA.Checked, 
+                            Properties.Settings.Default.datSrvBufferSizeSec,
+                            checkBox_SALPA.Checked,
                             checkBox_spikesFilter.Checked);
 
 
@@ -831,7 +836,11 @@ namespace NeuroRighter
                         MessageBox.Show(exception.Message);
                         reset();
                     }
-                } 
+                }
+                else
+                {
+                    Console.WriteLine("NRAcquisitionSetup was called while a task was running, and therefore setup did not execute.  Perhaps this should have thrown an error");
+                }
             }
         }
 
@@ -841,8 +850,22 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)Properties.Settings.Default.DAQRefreshPeriodSec*STIM_SAMPLING_FREQ, STIM_SAMPLING_FREQ, spikeTask[0]);
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DAQRefreshPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
             stimSrv.Setup();
+            stimSrv.StartAllTasks();
+        }
+
+        private void NROutputShutdown()
+        {
+            if (stimSrv != null)
+            {
+                stimSrv.KillAllAODOTasks();
+                stimSrv = null;
+            }
+            else
+            {
+                Console.WriteLine("NROutputShutdown called but stimSrv does not exist");
+            }
         }
 
         // Start all the tasks having to do with recording

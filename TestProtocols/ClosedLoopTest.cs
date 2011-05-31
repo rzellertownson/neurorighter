@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
+using NeuroRighter.Output;
 
-namespace NeuroRighter.Output
+
+namespace TestProtocols
 {
     class ClosedLoopTest:ClosedLoopExperiment
     {
@@ -16,7 +18,7 @@ namespace NeuroRighter.Output
         int offset =0;
         Random r = new Random();
 
-        internal protected override void Run()
+        protected override void Run()
         {
             double starttime = StimSrv.StimOut.GetTime();
             offset = StimSrv.getBuffSize() * 3;
@@ -31,7 +33,7 @@ namespace NeuroRighter.Output
             }
         }
 
-        internal protected override void BuffLoadEvent(object sender, EventArgs e)
+        protected override void BuffLoadEvent(object sender, EventArgs e)
         {
             if (Running)
             {

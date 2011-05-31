@@ -20,7 +20,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void AuxDAQLoadCompletedHandler(object sender, EventArgs e);
 
-    internal class AuxBuffer : NROutBuffer<AuxOutEvent>
+    public class AuxBuffer : NROutBuffer<AuxOutEvent>
     {
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }

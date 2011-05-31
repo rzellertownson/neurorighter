@@ -24,7 +24,7 @@ using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
-    internal abstract class NREvent
+    public abstract class NREvent
     {
         /// <summary>
         /// Base class for event type data wrapper classes in NR.

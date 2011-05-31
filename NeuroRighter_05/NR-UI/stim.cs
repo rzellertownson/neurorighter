@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
+using System.Reflection;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 using NationalInstruments.UI;
@@ -44,6 +45,7 @@ using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
 using NeuroRighter.Output;
+
 
 
 namespace NeuroRighter
@@ -741,6 +743,48 @@ namespace NeuroRighter
         #endregion
 
         #region Closed Loop Output
+        private Assembly ClosedLoopLibrary;
+        //private List<ClosedLoopExperiment> experimentList;
+        private void button_BrowseCLStimFile_Click(object sender, EventArgs e)
+        {
+            // Set dialog's default properties
+            OpenFileDialog CLFileDialog = new OpenFileDialog();
+            CLFileDialog.DefaultExt = "*.dll";         //default extension is for olstim files
+            CLFileDialog.Filter = "dynamic libraries|*.dll|All Files|*.*";
+
+            // Display Save File Dialog (Windows forms control)
+            DialogResult result = CLFileDialog.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filenameOutput = CLFileDialog.FileName;
+                
+                textBox_ClosedLoopProtocolFile.Text = filenameOutput;
+
+                //grab the plugins
+                ClosedLoopLibrary = Assembly.LoadFile(filenameOutput);//load the dll as an assembly
+                Type[] types = ClosedLoopLibrary.GetTypes();//find the invidual classes in the assembly
+                //experimentList = new List<ClosedLoopExperiment>();
+                comboBox_closedLoopProtocol.Items.Clear();
+                for (int i = 0; i < types.Length; i++)
+                {
+                    
+                    if (types[i].BaseType.Equals(typeof(ClosedLoopExperiment)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
+                    {
+                        ClosedLoopExperiment tmp = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
+                        //experimentList.Add(tmp);//and activated them as such.
+                        Console.WriteLine(tmp.ToString());
+                        comboBox_closedLoopProtocol.Enabled = true;
+                        comboBox_closedLoopProtocol.Items.Add(tmp);
+                    }
+                }
+
+                //add the choices to the GUI
+            }
+        }
+
+
+
         private void button_startClosedLoopStim_Click(object sender, EventArgs e)
         {
             
@@ -751,16 +795,20 @@ namespace NeuroRighter
         }
         private void startClosedLoopStim()
         {
-            
+            if (comboBox_closedLoopProtocol.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a protocol");
+                return;
+            }
+            ClosedLoopExperiment CLE = (ClosedLoopExperiment)comboBox_closedLoopProtocol.SelectedItem;// ClosedLoopTest();//new SilentBarrageClosedLoop();//
 
             //setup
             NRAcquisitionSetup();
             Task BuffLoadTask = NROutputSetup();
             //create closed loop code, throw into it's own thread
-            ClosedLoopExperiment CLE = new ClosedLoopTest();//new SilentBarrageClosedLoop();//
+            
 
-
-            if (checkBox_useManStimWaveform.Checked)
+            if (checkBox_useManStimWaveformCL.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
                 closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, stimWaveform);

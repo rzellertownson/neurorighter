@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
-    internal sealed class StimulusOutEvent:NREvent
+    public sealed class StimulusOutEvent:NREvent
     {
 
         //DO line that will have the blanking signal for different hardware configurations

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NeuroRighter.DataTypes
 {
-    internal sealed class AuxOutEvent:NREvent
+    public sealed class AuxOutEvent:NREvent
     {
         //internal ulong eventTime; // auxiliary event time (in 100ths of ms)
         internal ushort eventChannel; // the analog channel that the event corresponds to (1-4)

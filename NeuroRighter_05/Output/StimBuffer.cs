@@ -19,7 +19,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-    internal class StimBuffer : NROutBuffer<StimulusOutEvent>
+    public class StimBuffer : NROutBuffer<StimulusOutEvent>
     {
 
 

@@ -23,7 +23,7 @@ using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.DatSrv
 {
-    class NRDataSrv
+    public class NRDataSrv
     {
         // Raw data buffers
         internal RawDataSrv rawElectrodeSrv;

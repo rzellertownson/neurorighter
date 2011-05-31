@@ -7,7 +7,7 @@ using NeuroRighter.DatSrv;
 
 namespace NeuroRighter.Output
 {
-    internal abstract class ClosedLoopExperiment
+    public abstract class ClosedLoopExperiment
     {
         protected NRDataSrv DatSrv;
         protected NRStimSrv StimSrv;
@@ -33,9 +33,9 @@ namespace NeuroRighter.Output
             Running = true;
         }
 
-        internal abstract void Run();
+        internal protected abstract void Run();
 
-        internal virtual void BuffLoadEvent(object sender, EventArgs e)
+        internal protected virtual void BuffLoadEvent(object sender, EventArgs e)
         { }
         
 

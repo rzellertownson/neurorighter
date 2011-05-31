@@ -10,13 +10,13 @@ using System.Diagnostics;
 
 namespace NeuroRighter.StimSrv
 {
-    class NRStimSrv
+    public class NRStimSrv
     {
         //stim event buffers- these are what the user interfaces with directly
 
-        internal AuxBuffer AuxOut;
-        internal DigitalBuffer DigitalOut;
-        internal StimBuffer StimOut;
+        public AuxBuffer AuxOut;
+        public DigitalBuffer DigitalOut;
+        public StimBuffer StimOut;
         
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
@@ -96,7 +96,7 @@ namespace NeuroRighter.StimSrv
 
         }
 
-        internal int getBuffSize()
+        public int getBuffSize()
         {
             return INNERBUFFSIZE;
         }

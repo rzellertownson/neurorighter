@@ -19,7 +19,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     //internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-    internal class DigitalBuffer : NROutBuffer<DigitalOutEvent>
+    public class DigitalBuffer : NROutBuffer<DigitalOutEvent>
     {
         internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
-    internal sealed class DigitalOutEvent:NREvent
+    public sealed class DigitalOutEvent:NREvent
     {   
         //internal ulong EventTime; // digital time (in 100ths of ms)
         internal  UInt32 Byte; // Integer specifying output Byte corresponding to event time

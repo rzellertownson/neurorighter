@@ -167,14 +167,11 @@
     <Compile Include="Output\AODOPair\AuxOutTask.cs" />
     <Compile Include="Output\ClosedLoopExperiment.cs" />
     <Compile Include="Output\ClosedLoopOut.cs" />
-    <Compile Include="Output\ClosedLoopTest.cs" />
     <Compile Include="Output\File2Aux.cs" />
     <Compile Include="Output\AODOPair\ContStimTask.cs" />
     <Compile Include="Output\AODOPair\MakeAODOPair.cs" />
     <Compile Include="Output\OpenLoopOut.cs" />
     <Compile Include="Output\NROutBuffer.cs" />
-    <Compile Include="Output\SilentBarrageClosedLoop.cs" />
-    <Compile Include="Output\SilentBarrageExperimentClient.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
     <Compile Include="Settings-UI\AboutBox.cs">
       <SubType>Form</SubType>

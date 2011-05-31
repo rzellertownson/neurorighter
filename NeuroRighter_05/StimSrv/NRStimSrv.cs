@@ -5,6 +5,8 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
 using NationalInstruments.DAQmx;
+using System.Threading;
+using System.Diagnostics;
 
 namespace NeuroRighter.StimSrv
 {
@@ -24,8 +26,8 @@ namespace NeuroRighter.StimSrv
         // Master timing and triggering task
         internal Task masterTask;
 
-        int INNERBUFFSIZE;
-        int STIM_SAMPLING_FREQ;
+        private int INNERBUFFSIZE;
+        private int STIM_SAMPLING_FREQ;
 
         public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask)
         {
@@ -53,9 +55,18 @@ namespace NeuroRighter.StimSrv
             ConfigureAODO(true, masterTask);
                 
             //assign tasks to buffers
+            AuxOut.immortal = true;
+            DigitalOut.immortal = true;
+            StimOut.immortal = true;
+
+            
+            DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
             AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask);
-            DigitalOut.setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
             StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask);
+
+            AuxOut.Start();
+            DigitalOut.Start();
+            StimOut.Start();
         }
 
         internal void StartAllTasks()
@@ -63,7 +74,32 @@ namespace NeuroRighter.StimSrv
             buffLoadTask.Start();
         }
 
+        internal void KillAllAODOTasks()
+        {
+            if (buffLoadTask != null)
+            {
+                buffLoadTask.Dispose();
+                buffLoadTask = null;
+            }
 
+            if (stimTaskMaker != null)
+            {
+                stimTaskMaker.Dispose();
+                stimTaskMaker = null;
+            }
+
+            if (auxTaskMaker != null)
+            {
+                auxTaskMaker.Dispose();
+                auxTaskMaker = null;
+            }
+
+        }
+
+        internal int getBuffSize()
+        {
+            return INNERBUFFSIZE;
+        }
         private void ConfigureCounter()
         {
             //configure counter
@@ -82,6 +118,16 @@ namespace NeuroRighter.StimSrv
             // Syncronize the start to the master recording task
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
+            buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
+            {
+
+               
+                Thread thrd = Thread.CurrentThread;
+
+                thrd.Priority = ThreadPriority.Highest;
+                    //Console.WriteLine("buffload tick");
+            }
+                );
         }
 
         private void ConfigureStim(Task masterTask)
@@ -154,27 +200,7 @@ namespace NeuroRighter.StimSrv
             auxTaskMaker.VerifyTasks();
         }
 
-        internal void KillAllAODOTasks()
-        {
-            if (buffLoadTask != null)
-            {
-                buffLoadTask.Dispose();
-                buffLoadTask = null;
-            }
-
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
-
-            if (auxTaskMaker != null)
-            {
-                auxTaskMaker.Dispose();
-                auxTaskMaker = null;
-            }
-
-        }
+       
 
 
 

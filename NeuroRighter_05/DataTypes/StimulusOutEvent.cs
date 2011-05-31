@@ -46,13 +46,19 @@ namespace NeuroRighter.DataTypes
             this.DigitalEncode[0] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
             this.DigitalEncode[1] = channel2MUX_noEN((double)channel);
             this.DigitalEncode[2] = channel2MUX((double)channel);
-
+            this.sampleDuration = (uint)waveform.Length;
            // MessageBox.show("created stim");
         }
 
-        override internal NREvent copy()
+        public StimulusOutEvent(int channel, ulong time, double[] waveform, uint sampleDuration)
+            :this(channel,time,waveform)
         {
-            return new StimulusOutEvent(this.channel, this.sampleIndex, this.waveform);
+            this.sampleDuration = sampleDuration;
+        }
+
+        override internal NREvent Copy()
+        {
+            return new StimulusOutEvent(this.channel, this.sampleIndex, this.waveform,this.sampleDuration);
         }
 
         //User should need to only call the constructor, first instance in which this data is being used by code that knows the 

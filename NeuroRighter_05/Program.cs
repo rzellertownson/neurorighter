@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
 
 namespace NeuroRighter
 {
@@ -33,6 +34,11 @@ namespace NeuroRighter
         static void Main()
         {
             Type reflectedClass = typeof(NeuroRighter);
+            using (Process p = Process.GetCurrentProcess())
+                p.PriorityClass = ProcessPriorityClass.High;
+            Thread thrd = Thread.CurrentThread;
+
+            thrd.Priority = ThreadPriority.BelowNormal;
             try
             {
                 Application.EnableVisualStyles();

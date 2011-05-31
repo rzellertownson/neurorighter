@@ -17,7 +17,8 @@ function stm = loadstim(fid)
 if nargin < 1
     error('You must provide a file path')
 end
-if(~strcmp(fid(end-4:end),'stim'))
+
+if(~strcmp(fid(end-4:end),'.stim'))
     warning(['This file does not have a .stim extension. '... 
              'trying to extract data anayway...'])
 end

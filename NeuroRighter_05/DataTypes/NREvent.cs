@@ -30,7 +30,13 @@ namespace NeuroRighter.DataTypes
         /// Base class for event type data wrapper classes in NR.
         /// <author>Jon Newman </author>
         /// </summary>
+        /// 
+        
+        //when did it occur
         internal ulong sampleIndex;
+        //how long is it.  0 is the default, used for state change events
+        internal uint sampleDuration=0;
+
         //internal double samplingFrequency;//a sample index can be very confusing 
         //if we don't know what sampling rate it corresponds to- especially if we 
         //are looking a similar events (recorded vs applied stimuli) with different
@@ -38,7 +44,7 @@ namespace NeuroRighter.DataTypes
 
         public NREvent() {}
 
-        virtual internal NREvent copy()
+        virtual internal NREvent Copy()
         {
 
             MessageBox.Show("this should have been overriden!");

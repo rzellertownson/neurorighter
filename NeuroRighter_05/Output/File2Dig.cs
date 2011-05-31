@@ -67,11 +67,11 @@ namespace NeuroRighter.Output
         internal void Setup()
         {
             // Load the stimulus buffer
-            digbuff.DigitalQueueLessThanThreshold += new DigitalQueueLessThanThresholdHandler(AppendDigBufferAtThresh);
+            digbuff.QueueLessThanThreshold += new QueueLessThanThresholdHandler(AppendDigBufferAtThresh);
             // Stop the StimBuffer When its finished
-            digbuff.DigitalOutputComplete +=new DigitalOutputCompleteHandler(DigbuffComplete);
+            digbuff.StimulationComplete +=new StimulationCompleteHandler(DigbuffComplete);
             // Alert that digbuff just completed a DAQ bufferload
-            digbuff.DigitalDAQLoadCompleted += new DigitalDAQLoadCompletedHandler(DigbuffDAQLoadCompleted);
+            digbuff.DAQLoadCompleted += new DAQLoadCompletedHandler(DigbuffDAQLoadCompleted);
             
             //open .olstim file
             oldigfile = new StreamReader(digfile);
@@ -79,7 +79,7 @@ namespace NeuroRighter.Output
 
             line = oldigfile.ReadLine(); // this read has the number of stimuli
             numDigEvent = Convert.ToUInt64(line); // find the number of stimuli specified in the file
-            digbuff.setNumberofEvents(numDigEvent);
+            digbuff.SetNumberofEvents(numDigEvent);
 
             line = oldigfile.ReadLine(); // this read has the final stimulus time
             double finalEventTime = Convert.ToDouble(line); // find the number of stimuli specified in the file
@@ -99,10 +99,10 @@ namespace NeuroRighter.Output
 
                 // Append the first stimuli to the stim buffer
                 Console.WriteLine("All in one digital load");
-                digbuff.Append(DigitalDataChunk); // Append all the stimuli
+                digbuff.writeToBuffer(DigitalDataChunk); // Append all the stimuli
                 numLoadsCompleted = numDigEvent;
                 lastLoad = true;
-                digbuff.setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
+                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
 
             }
             else
@@ -111,9 +111,9 @@ namespace NeuroRighter.Output
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
-                digbuff.Append(DigitalDataChunk);//append first N stimuli
+                digbuff.writeToBuffer(DigitalDataChunk); //append first N stimuli
                 numLoadsCompleted++;
-                digbuff.setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
+                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
 
             }
 
@@ -121,7 +121,7 @@ namespace NeuroRighter.Output
 
         internal void Start()
         {
-            digbuff.start();
+            digbuff.Start();
         }
 
         internal void AppendDigBufferAtThresh(object sender, EventArgs e)
@@ -130,7 +130,7 @@ namespace NeuroRighter.Output
             {
                 
                 LoadDigEvent(oldigfile, (int)numEventPerLoad);
-                digbuff.Append(DigitalDataChunk); //add N more stimuli
+                digbuff.writeToBuffer(DigitalDataChunk);  //add N more stimuli
                 numLoadsCompleted++;
                 //Console.WriteLine("file2dig: normal load numstimperload:" + numEventPerLoad + " numLoadsCompleted:" + numLoadsCompleted);
             }
@@ -141,7 +141,7 @@ namespace NeuroRighter.Output
                     // load the last few stimuli
                     Console.WriteLine("file2dig: last load");
                     LoadDigEvent(oldigfile, (int)(numDigEvent - numLoadsCompleted * numEventPerLoad));
-                    digbuff.Append(DigitalDataChunk); //add N more stimuli
+                    digbuff.writeToBuffer(DigitalDataChunk);  //add N more stimuli
                     lastLoad = true;
                 }
             }

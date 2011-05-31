@@ -13,322 +13,58 @@ using NeuroRighter.DataTypes;
 namespace NeuroRighter.Output
 {
     // called when the 2+requested number of buffer loads have occured
-    internal delegate void DigitalOutputCompleteHandler(object sender, EventArgs e);
+    //internal delegate void StimulationCompleteHandler(object sender, EventArgs e);
     // called when the Queue falls below a user defined threshold
-    internal delegate void DigitalQueueLessThanThresholdHandler(object sender, EventArgs e);
+    //internal delegate void QueueLessThanThresholdHandler(object sender, EventArgs e);
     // called when the stimBuffer finishes a DAQ load
-    internal delegate void DigitalDAQLoadCompletedHandler(object sender, EventArgs e);
+    //internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
     internal class DigitalBuffer : NROutBuffer<DigitalOutEvent>
     {
-        //events
-        private int queueThreshold = 0;
-        internal event DigitalQueueLessThanThresholdHandler DigitalQueueLessThanThreshold;
-        internal event DigitalOutputCompleteHandler DigitalOutputComplete;
-        internal event DigitalDAQLoadCompletedHandler DigitalDAQLoadCompleted;
-
-        // This class's thread
-        Thread thrd;
+        internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
 
         // Intneral Properties
-        internal ulong bufferIndex = 0;
-        internal UInt32[] DigitalBufferLoad;
-        internal bool StillWritting = false;
-        internal ulong numBuffLoadsCompleted = 0;
-        internal uint numBuffLoadsRequired = 0;
-        internal bool running = false;
+       
+       
 
-        // Private Properties
-        bool bufferLoadFinished = true;
-        private ulong NumDigitalEventsWritten = 0;
-        private ulong TotalDigitalEvents;
-        private ulong samples2Finish;
-        private uint STIM_SAMPLING_FREQ;
-        private uint numSampWrittenForCurrent = 0;
-        private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
-        private List<DigitalOutEvent> outerbuffer;
-        private DigitalOutEvent currentDig;
-        private DigitalOutEvent nextDig;
-        private bool digitaldone;
-
-        //Stuff that gets defined with input arguments to constructor
-        private uint BUFFSIZE;
-
-        // DEBUGGING
-        private Stopwatch sw = new Stopwatch();
-        DateTime startTime;
-        //DateTime tickTime;
-        //TimeSpan tickDiff;
-
-        //background worker requires the DAQ constructs so that it can encapsulate the asynchronous stimulation task
-        DigitalSingleChannelWriter digitalOutputWriter;
-        Task digitalOutputTask, buffLoadTask;
-
-
-        //constructor if using stim buffer in append mode- with lists!
-        internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
+        internal void Setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask)
         {
-            this.BUFFSIZE = (uint)INNERBUFFSIZE;
-            this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
-            this.queueThreshold = queueThreshold;
+            //encapsulate the tasks and writer given into arrays
+            DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
+            digitalWriters[0] = digitalOutputWriter;
 
-            outerbuffer = new List<DigitalOutEvent>();
-        }
+            Task[] digitalTasks = new Task[1];
+            digitalTasks[0]=digitalOutputTask;
 
-        internal void setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask)
-        {
-
-            startTime = DateTime.Now;
-            this.digitalOutputTask = digitalOutputTask;
-            this.digitalOutputWriter = digitalOutputWriter;
-            this.buffLoadTask = buffLoadTask;
-
-            //Set buffer regenation mode to off and set parameters
-            digitalOutputTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            digitalOutputTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-
-            // Add reload method to the Counter output event
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(timerTickDigital);
-
-            // Populate the outer-buffer twice
-            PopulateBufferAppending();
-
-            // Start the counter that tells when to reload the daq
-            digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
-
-            PopulateBufferAppending();
-
-            // Start the counter that tells when to reload the daq
-            digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
-
-        }
-
-        internal void start()
-        {
-            running = true;
-            digitalOutputTask.Start();
-        }
-
-        internal void finishDigitalOutput(EventArgs e)
-        {
-            if (DigitalOutputComplete != null)
-            {
-                // Stop the DO task and dispose of it
-                digitalOutputTask.Stop();
-                digitalOutputTask.Dispose();
-
-                // Tell NR that DO has bufferLoadFinished
-                DigitalOutputComplete(this, e);
-            }
-        }
-
-        void timerTickDigital(object sender, EventArgs e)
-        {
-            if (running)
-            {
-                //tickTime = DateTime.Now;
-                //tickDiff = tickTime.Subtract(startTime);
-                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Digital half-load event.");
-                WriteToBuffer();
-            }
-            else
-            {
-                finishDigitalOutput(e);
-            }
-        }
-
-        internal void WriteToBuffer()
-        {
-            thrd = Thread.CurrentThread;
-            thrd.Priority = ThreadPriority.Highest;
-            digitaldone = false;
-            PopulateBufferAppending();
-            //Console.WriteLine("Write to Digital Buffer Started");
-            digitalOutputWriter.WriteMultiSamplePort(false, DigitalBufferLoad);
-            digitaldone = true;
-
-        }
-
-        internal void Stop()
-        {
-            running = false;
-        }
-
-        //lets see if we can simplify things here...
-        internal void PopulateBufferAppending()
-        {
-            lock (this)
-            {
-
-                //tickTime = DateTime.Now;
-                //tickDiff = tickTime.Subtract(startTime);
-                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
-
-                //Stopwatch ws = new Stopwatch();
-                //ws.Start();
-
-                //clear buffers and reset index
-                DigitalBufferLoad = new UInt32[BUFFSIZE]; // buffer for digital port
-                bufferIndex = 0;
-
-                while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
-                {
-                    // If digital read stimulus is unfinished, finish it
-                    if (!bufferLoadFinished)
-                    {
-                        bufferLoadFinished = applyCurrentDigitalState();
-                        if (bufferLoadFinished)
-                        {
-                            NumDigitalEventsWritten++;
-                        }
-                    }
-                    else
-                    {
-                        //is next stimulus within range of this buffload?
-                        bool ready = nextDigitalStateAppending();
-
-                        if (ready)
-                        {
-                            bufferLoadFinished = applyCurrentDigitalState();
-                            if (bufferLoadFinished)
-                            {
-                                NumDigitalEventsWritten++;
-                            }
-                        }
-                    }
-                }
-
-                //Finished the buffer
-                numBuffLoadsCompleted++;
-                currentSample = numBuffLoadsCompleted * BUFFSIZE;
-
-                // Check if protocol is completed
-                if (numBuffLoadsCompleted >= numBuffLoadsRequired)
-                {
-                    running = false; // Start clean-up cascade
-                }
-
-                // Alert system that buffer load was completed
-                onBufferLoad(EventArgs.Empty);
-
-                //ws.Stop();
-                //Console.WriteLine("Buffer load took " + ws.Elapsed);
-            }
-        }
-
-        override internal void Append(List<DigitalOutEvent> digitallist)
-        {
+            base.Setup(new AnalogMultiChannelWriter[0],digitalWriters,new Task[0],digitalTasks,buffLoadTask);
             
-           //Console.WriteLine("Appending next " + digitallist.Count + " digital events to buffer");
 
-            lock (this)
-            {
-                outerbuffer.AddRange(digitallist);
-            }
         }
 
-        //write as much f the current digital state as possible
-        internal bool applyCurrentDigitalState()
+
+
+        protected override void writeEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
-            //how many samples should we write?
-            if (NumDigitalEventsWritten < TotalDigitalEvents)
-            {
-                samples2Finish = nextDig.sampleIndex - currentDig.sampleIndex - numSampWrittenForCurrent;
-            }
-            else // last digital event sets digital state to 0
-            {
-                samples2Finish = BUFFSIZE;
-            }
-
-            //write samples to the buffer
-            for (ulong i = 0; (i < samples2Finish) & (bufferIndex < BUFFSIZE); i++)
-            {
-                WriteSample();
-            }
-
-            return (bufferIndex < BUFFSIZE);
+            anEventValues = null;
+            digEventValues = new List<uint[]>();
+            digEventValues.Add(new uint[1]);
+            digEventValues.ElementAt(0)[0] = stim.Byte;
         }
 
-        //examines the next stimulus, determines if it is within range, and loads it if it is
-        //returns if stimulus is within range or not
-        internal bool nextDigitalStateAppending()
-        {
-            lock (this)
-            {
-                // If the next event is in the range of the next buffer load then get it ready
-                if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
-                {
-                    // Current Digital State
-                    currentDig = new DigitalOutEvent(outerbuffer.ElementAt(0).sampleIndex, outerbuffer.ElementAt(0).Byte);
-                    outerbuffer.RemoveAt(0);
+       
 
-                    if (outerbuffer.Count > 0)
-                        nextDig = new DigitalOutEvent(outerbuffer.ElementAt(0).sampleIndex, outerbuffer.ElementAt(0).Byte);
-                    else
-                        // Account for last digital change
-                        nextDig = new DigitalOutEvent(currentDig.sampleIndex + 1, currentDig.Byte);
+       
 
-                    if (outerbuffer.Count == (queueThreshold - 1))
-                        onThreshold(EventArgs.Empty);
+       
 
-                    numSampWrittenForCurrent = 0;
-                    bufferIndex = currentDig.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
-                    if (currentDig.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
-                    {
-                        throw new Exception("trying to write an expired digital output: event at sample no. " + currentDig.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentDig.Byte);
-                    }
+       
 
-                    return true;
-                }
-                else
-                {
-                    numSampWrittenForCurrent = 0;
-                    bufferIndex = BUFFSIZE;//we are done with this buffer
-                    return false;
-                }
-            }
-        }
-
-        internal void WriteSample()
-        {
-            DigitalBufferLoad[(int)bufferIndex] = currentDig.Byte;
-            numSampWrittenForCurrent++;
-            bufferIndex++;
-        }
-
-        internal void CalculateLoadsRequired(double finalEventTime)
-        {
-            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
-            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
-        }
-
-        internal double time()    
-        {
-            return (double)((digitalOutputTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
-        }
-
-        internal uint GetBufferSize()
-        {
-            return BUFFSIZE;
-        }
         
-        internal void setNumberofEvents(ulong totalNumberOfDigitalEvents)
-        {
-            TotalDigitalEvents = totalNumberOfDigitalEvents;
-        }
+        
+        
 
-        private void onThreshold(EventArgs e)
-        {
-            if (DigitalQueueLessThanThreshold != null)
-                DigitalQueueLessThanThreshold(this, e);
-        }
-
-        private void onBufferLoad(EventArgs e)
-        {
-            if (DigitalDAQLoadCompleted != null)
-                DigitalDAQLoadCompleted(this, e);
-        }
+       
     }
 
 }

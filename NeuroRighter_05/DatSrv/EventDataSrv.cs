@@ -103,7 +103,7 @@ namespace NeuroRighter.DatSrv
                 for (int i = 0; i < newData.eventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
-                    T tmp = (T)newData.eventBuffer[i].copy();
+                    T tmp = (T)newData.eventBuffer[i].Copy();
                     tmp.sampleIndex = tmp.sampleIndex + currentSample;
                     dataBuffer.eventBuffer.Add(tmp);
                 }

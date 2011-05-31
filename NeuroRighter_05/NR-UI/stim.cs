@@ -747,7 +747,7 @@ namespace NeuroRighter
             startClosedLoopStim();
             
             //debugging stuff:
-            Console.WriteLine(stimSrv);
+           // Console.WriteLine(stimSrv);
         }
         private void startClosedLoopStim()
         {
@@ -755,11 +755,26 @@ namespace NeuroRighter
 
             //setup
             NRAcquisitionSetup();
-            NROutputSetup();
+            Task BuffLoadTask = NROutputSetup();
             //create closed loop code, throw into it's own thread
+            ClosedLoopExperiment CLE = new ClosedLoopTest();//new SilentBarrageClosedLoop();//
+
+
+            if (checkBox_useManStimWaveform.Checked)
+            {
+                double[] stimWaveform = ReturnOpenLoopStimPulse();
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, stimWaveform);
+            }
+            else
+            {
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask);
+            }
+
+
             NRStartRecording();
+            closedLoopSynchronizedOutput.Start();
             //start everything
-            Console.WriteLine(stimSrv);
+            //Console.WriteLine(stimSrv);
 
             //gui stuff
             button_startClosedLoopStim.Enabled = false;
@@ -774,14 +789,15 @@ namespace NeuroRighter
                 {
                     NROutputShutdown();
                     this.buttonStop.Enabled = true;
+                    closedLoopSynchronizedOutput.Stop();
                     buttonStop.PerformClick();
                     Console.WriteLine("Closed loop stimulation closed mid process");
                 });
             }
-            for (int i = 1; i < NationalInstruments.DAQmx.DaqSystem.Local.Tasks.Length; i++)
-            {
-                Console.WriteLine(NationalInstruments.DAQmx.DaqSystem.Local.Tasks[i]);
-            }
+            //for (int i = 1; i < NationalInstruments.DAQmx.DaqSystem.Local.Tasks.Length; i++)
+            //{
+            //    Console.WriteLine(NationalInstruments.DAQmx.DaqSystem.Local.Tasks[i]);
+            //}
         }
         #endregion
 

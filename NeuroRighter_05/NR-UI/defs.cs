@@ -197,6 +197,9 @@ namespace NeuroRighter
         private double numOpenLoopRepeats;
         private double numOpenLoopsPerformed = 0;
 
+        // Closed-loop AO/DO
+        private ClosedLoopOut closedLoopSynchronizedOutput;
+
         #endregion
 
         #region DebugVariables

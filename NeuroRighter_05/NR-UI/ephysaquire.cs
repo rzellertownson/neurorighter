@@ -43,7 +43,7 @@ using rawType = System.Double;
 using ExtensionMethods;
 using NeuroRighter.DataTypes;
 using System.Media;
-using NeuroRighter.DataTypes;
+
 
 namespace NeuroRighter
 {

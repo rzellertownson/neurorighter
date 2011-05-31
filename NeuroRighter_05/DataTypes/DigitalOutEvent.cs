@@ -21,6 +21,11 @@ namespace NeuroRighter.DataTypes
         {
             this.sampleIndex = EventTime;
             this.Byte = Byte;
+            this.sampleDuration = 0;
+        }
+        internal override NREvent Copy()
+        {
+            return new DigitalOutEvent(this.sampleIndex, this.Byte);
         }
 
     }

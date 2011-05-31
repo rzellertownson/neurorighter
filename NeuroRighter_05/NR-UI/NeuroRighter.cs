@@ -68,7 +68,7 @@ namespace NeuroRighter
             this.Text += " (BETA)";
 
             // Set the refresh DAQ refresh period and the datSrv buffer length
-            Properties.Settings.Default.DAQRefreshPeriodSec = DEVICE_REFRESH;
+            //Properties.Settings.Default.DAQPollingPeriodSec = DEVICE_REFRESH;
 
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
@@ -846,13 +846,14 @@ namespace NeuroRighter
 
         // Method to set up the output (dig, aux, stim) side of neurorighter
         // acquisition setup must have been called previously
-        private void NROutputSetup()
+        private Task NROutputSetup()
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DAQRefreshPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DAQPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
             stimSrv.Setup();
             stimSrv.StartAllTasks();
+            return stimSrv.buffLoadTask;
         }
 
         private void NROutputShutdown()

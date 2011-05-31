@@ -24,7 +24,7 @@ namespace NeuroRighter.DataTypes
             this.voltage = voltage;
         }
 
-        internal AnalogOutEvent copy()
+        internal override NREvent Copy()
         {
             return new AnalogOutEvent(this.sampleIndex, this.channel, this.voltage);
         }

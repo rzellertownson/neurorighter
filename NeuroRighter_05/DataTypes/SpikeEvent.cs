@@ -45,7 +45,7 @@ namespace NeuroRighter.DataTypes
             this.threshold = threshold;
             this.waveform = waveform;
         }
-        override internal NREvent copy()
+        override internal NREvent Copy()
         {
             double[] wavecpy = new double[waveform.Length];
             for (int i = 0; i < waveform.Length; i++)

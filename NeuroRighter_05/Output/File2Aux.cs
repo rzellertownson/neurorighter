@@ -69,12 +69,13 @@ namespace NeuroRighter.Output
 
         internal void Setup()
         {
+            
             // Load the stimulus buffer
-            auxBuff.AuxQueueLessThanThreshold += new AuxQueueLessThanThresholdHandler(AppendAuxBufferAtThresh);
+            auxBuff.QueueLessThanThreshold += new QueueLessThanThresholdHandler(AppendAuxBufferAtThresh);
             // Stop the StimBuffer When its finished
-            auxBuff.AuxOutputComplete += new AuxOutputCompleteHandler(AuxBuff_Complete);
+            auxBuff.StimulationComplete += new StimulationCompleteHandler(AuxBuff_Complete);
             // Alert that auxBuff just completed a DAQ bufferload
-            auxBuff.AuxDAQLoadCompleted += new AuxDAQLoadCompletedHandler(AuxBuff_DAQLoadCompleted);
+            auxBuff.DAQLoadCompleted += new DAQLoadCompletedHandler(AuxBuff_DAQLoadCompleted);
 
 
             if (auxFileExists)
@@ -113,7 +114,7 @@ namespace NeuroRighter.Output
 
                 // Append the first stimuli to the stim buffer
                 Console.WriteLine("File2Aux : Only a single load is needed because there are less than " + 2 * numEventPerLoad + " aux signals");
-                auxBuff.Append(auxDataChunk); // Append all the stimuli
+                auxBuff.writeToBuffer(auxDataChunk); // Append all the stimuli
                 numLoadsCompleted = numAuxEvent;
                 lastLoad = true;
                 auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask);
@@ -124,7 +125,7 @@ namespace NeuroRighter.Output
                 LoadAuxEvent(olauxfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
-                auxBuff.Append(auxDataChunk);//append first N stimuli
+                auxBuff.writeToBuffer(auxDataChunk);//append first N stimuli
                 numLoadsCompleted++;
                 auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask);
 
@@ -143,7 +144,7 @@ namespace NeuroRighter.Output
             {
                 //Console.WriteLine("file2aux: loading:" + numEventPerLoad + "more aux events. " + numLoadsCompleted + " have been completed");
                 LoadAuxEvent(olauxfile, (int)numEventPerLoad);
-                auxBuff.Append(auxDataChunk); //add N more stimuli
+                auxBuff.writeToBuffer(auxDataChunk); //add N more stimuli
                 numLoadsCompleted++;
             }
             else
@@ -153,7 +154,7 @@ namespace NeuroRighter.Output
                     // load the last few auxevents
                     //Console.WriteLine("file2aux: last load");
                     LoadAuxEvent(olauxfile, (int)(numAuxEvent - numLoadsCompleted * numEventPerLoad));
-                    auxBuff.Append(auxDataChunk); //add N more stimuli
+                    auxBuff.writeToBuffer(auxDataChunk); //add N more stimuli
                     lastLoad = true;
                 }
             }

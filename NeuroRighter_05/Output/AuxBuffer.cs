@@ -22,309 +22,49 @@ namespace NeuroRighter.Output
 
     internal class AuxBuffer : NROutBuffer<AuxOutEvent>
     {
-        //events
-        private int queueThreshold = 0;
-        public event AuxQueueLessThanThresholdHandler AuxQueueLessThanThreshold;
-        public event AuxOutputCompleteHandler AuxOutputComplete;
-        public event AuxDAQLoadCompletedHandler AuxDAQLoadCompleted;
-
-        // This class's thread
-        Thread thrd;
-
-        // Internal Properties
-        internal ulong bufferIndex = 0;
-        internal double[,] auxBufferLoad;
-        internal bool StillWritting = false;
-        internal ulong numBuffLoadsCompleted = 0;
-        internal uint numBuffLoadsRequired = 0;
-        internal bool running = false;
-
-        // Private Properties
-        bool bufferLoadFinished = true;
-        private ulong numEventsWritten = 0;
-        private ulong totalAuxEvents;
-        private ulong samples2Finish;
-        private uint STIM_SAMPLING_FREQ;
-        private uint numSampWrittenForCurrent = 0;
-        private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
-        private List<AuxOutEvent> outerbuffer;
-        private AuxOutEvent currentAux;
-        private AuxOutEvent nextAux;
-        bool auxDone;
-
-        //Stuff that gets defined with input arguments to constructor
-        private uint BUFFSIZE;
-
-        // DEBUGGING
-        private Stopwatch sw = new Stopwatch();
-        DateTime startTime;
-        DateTime tickTime;
-        TimeSpan tickDiff;
-
-        //background worker requires the DAQ constructs so that it can encapsulate the asynchronous aux output task
-        AnalogMultiChannelWriter auxOutputWriter;
-        Task auxOutputTask, buffLoadTask;
-
-        //constructor if using stim buffer in Append mode- with lists!
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
-        {
-            //this.SamplesPerStim = (uint)SamplesPerStim;
-            // this.outerbufferSize = (uint)OUTERBUFFSIZE;
-            this.BUFFSIZE = (uint)INNERBUFFSIZE;
-            this.STIM_SAMPLING_FREQ = (uint)STIM_SAMPLING_FREQ;
-            this.totalAuxEvents = totalAuxEvents;
-            this.queueThreshold = queueThreshold;
-
-            outerbuffer = new List<AuxOutEvent>();
-        }
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
 
         internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask)
         {
+            AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
+            analogWriters[0] = auxOutputWriter;
 
-            startTime = DateTime.Now;
-            this.auxOutputTask = auxOutputTask;
-            this.auxOutputWriter = auxOutputWriter;
-            this.buffLoadTask = buffLoadTask;
+            Task[] analogTasks = new Task[1];
+            analogTasks[0] = auxOutputTask;
 
-            //Set buffer regenation mode to off and set parameters
-            auxOutputTask.Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            auxOutputTask.Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-
-            // Add reload method to the Counter output event
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(FinishAuxOutput);
-
-            // Populate the outer-buffer twice
-            PopulateBufferAppending();
-            auxOutputWriter.WriteMultiSample(false, auxBufferLoad);
-            PopulateBufferAppending();
-            auxOutputWriter.WriteMultiSample(false, auxBufferLoad);
-
-        }
-
-        internal void Start()
-        {
-            running = true;
-            auxOutputTask.Start();
-        }
-
-        internal void FinishAuxOutput(EventArgs e)
-        {
-            if (AuxOutputComplete != null)
-            {
-                // Tell NR that Aux Out has finished
-                AuxOutputComplete(this, e);
-            }
-        }
-
-        internal void FinishAuxOutput(object sender, EventArgs e)
-        {
-            if (running)
-            {
-                //tickTime = DateTime.Now;
-                //tickDiff = tickTime.Subtract(startTime);
-                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": DAQ Aux half-load event.");
-                WriteToBuffer();
-            }
-            else
-            {
-                FinishAuxOutput(e);
-            }
-        }
-
-        internal void WriteToBuffer()
-        {
-            thrd = Thread.CurrentThread;
-            thrd.Priority = ThreadPriority.Highest;
-            auxDone = false;
-            PopulateBufferAppending();
-            //Console.WriteLine("Write to Aux Buffer Started");
-            auxOutputWriter.WriteMultiSample(false, auxBufferLoad);
-            auxDone = true;
-
-        }
-
-        internal void Stop()
-        {
-            running = false;
-        }
-
-        internal void PopulateBufferAppending()
-        {
-            lock (this)
-            {
-
-                //tickTime = DateTime.Now;
-                //tickDiff = tickTime.Subtract(startTime);
-                //Console.WriteLine(Convert.ToString(tickDiff.TotalMilliseconds) + ": populate buffer started...");
-
-                //Stopwatch ws = new Stopwatch();
-                //ws.Start();
-
-                //clear buffers and reset index
-                auxBufferLoad = new double[4,BUFFSIZE]; // buffer for aux AO
-                bufferIndex = 0;
-
-                while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
-                {
-                    // If unfinished, finish it
-                    if (!bufferLoadFinished)
-                    {
-                        bufferLoadFinished = ApplyCurrentAuxState();
-                        if (bufferLoadFinished)
-                        {
-                            numEventsWritten++;
-                        }
-                    }
-                    else
-                    {
-                        //is next stimulus within range of this buffload?
-                        bool ready = NextAuxStateAppending();
-
-                        if (ready)
-                        {
-                            bufferLoadFinished = ApplyCurrentAuxState();
-                            if (bufferLoadFinished)
-                            {
-                                numEventsWritten++;
-                            }
-                        }
-                    }
-                }
-
-                //Finished the buffer
-                numBuffLoadsCompleted++;
-                currentSample = numBuffLoadsCompleted * BUFFSIZE;
-                // Check if protocol is completed
-                if (numBuffLoadsCompleted >= numBuffLoadsRequired)
-                {
-                    running = false; // Start clean-up cascade
-                }
-
-                // Alert system that buffer load was completed
-                OnBufferLoad(EventArgs.Empty);
-
-                //ws.Stop();
-                //Console.WriteLine("Buffer load took " + ws.Elapsed);
-            }
-        }
-
-        override internal void Append(List<AuxOutEvent> auxList)
-        {
+            base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask);
             
-           //Console.WriteLine("Appending next " + auxList.Count + " aux events to buffer");
 
-            lock (this)
-            {
-                outerbuffer.AddRange(auxList);
-            }
         }
-
-        //write as much f the current aux state as possible
-        internal bool ApplyCurrentAuxState()
+        //with this version only one channel can have a non-zero voltage at a time-  eventually might want to switch to a version where keep voltages from previous
+        protected override void writeEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
-            //how many samples should we write?
-            if (numEventsWritten < totalAuxEvents)
-            {
-                samples2Finish = nextAux.sampleIndex - currentAux.sampleIndex - numSampWrittenForCurrent;
-            }
-            else // last aux event sets aux state to 0
-            {
-                samples2Finish = BUFFSIZE;
-            }
-
-            //write samples to the buffer
-            for (ulong i = 0; (i < samples2Finish) & (bufferIndex < BUFFSIZE); i++)
-            {
-                WriteSample();
-            }
-
-            return (bufferIndex < BUFFSIZE);
-        }
-
-        //examines the next aux event, determines if it is within range and loads
-        //returns if aux event is within range or not
-        internal bool NextAuxStateAppending()
-        {
-            lock (this)
-            {
-                if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
-                {
-                    // Current Aux State
-                    currentAux = new AuxOutEvent(outerbuffer.ElementAt(0).sampleIndex,
-                        outerbuffer.ElementAt(0).eventChannel,
-                        outerbuffer.ElementAt(0).eventVoltage);
-                    outerbuffer.RemoveAt(0);
-
-                    // Next Aux state
-                    if (outerbuffer.Count > 0)
-                        nextAux = new AuxOutEvent(outerbuffer.ElementAt(0).sampleIndex,
-                            outerbuffer.ElementAt(0).eventChannel,
-                            outerbuffer.ElementAt(0).eventVoltage);
-                    else
-                        nextAux = new AuxOutEvent(currentAux.sampleIndex + 1,
-                            currentAux.eventChannel,
-                            0);
-
-                    if (outerbuffer.Count == (queueThreshold - 1))
-                        OnThreshold(EventArgs.Empty);
-
-                    numSampWrittenForCurrent = 0;
-                    bufferIndex = currentAux.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this Buffer
-                    if (currentAux.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
-                    {
-                        throw new Exception("trying to write an expired aux output: event at sample no. " + currentAux.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentAux.eventChannel);
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    numSampWrittenForCurrent = 0;
-                    bufferIndex = BUFFSIZE;//we are done with this buffer
-                    return false;
-                }
-            }
-        }
-
-        internal void WriteSample()
-        {
-            auxBufferLoad[currentAux.eventChannel-1, (int)bufferIndex] = currentAux.eventVoltage;
-            numSampWrittenForCurrent++;
-            bufferIndex++;
-        }
-
-        internal void CalculateLoadsRequired(double finalEventTime)
-        {
-            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
-            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalEventTime / (double)BUFFSIZE));
-        }
-
-        internal double GetTime()    
-        {
-            return (double)((auxOutputTask.Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
-        }
-
-        public uint GetBufferSize()
-        {
-            return BUFFSIZE;
+            anEventValues = new List<double[,]>();
+            anEventValues.Add(new double[4,1]);
+            
+                anEventValues.ElementAt(0)[stim.eventChannel-1, 1] = stim.eventVoltage;
+            
+            
+            digEventValues = null;
         }
         
-        public void SetNumberofEvents(ulong totalNumberOfAuxEvents)
-        {
-            totalAuxEvents = totalNumberOfAuxEvents;
-        }
 
-        private void OnThreshold(EventArgs e)
-        {
-            if (AuxQueueLessThanThreshold != null)
-                AuxQueueLessThanThreshold(this, e);
-        }
+        
 
-        private void OnBufferLoad(EventArgs e)
-        {
-            if (AuxDAQLoadCompleted != null)
-                AuxDAQLoadCompleted(this, e);
-        }
+        
+
+        
+
+        
+
+       
+
+        
+
+        
+
+       
+        
     }
 }

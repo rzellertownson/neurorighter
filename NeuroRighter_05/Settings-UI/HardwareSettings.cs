@@ -431,6 +431,7 @@ namespace NeuroRighter
         private void checkBox_UseAODO_CheckedChanged(object sender, EventArgs e)
         {
             comboBox_SigOutDev.Enabled = checkBox_UseAODO.Checked;
+            Properties.Settings.Default.UseAODO = checkBox_UseAODO.Checked;
         }
 
         private void comboBox_AuxAnalogInputDevice_SelectedIndexChanged(object sender, EventArgs e)

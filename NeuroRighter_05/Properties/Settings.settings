@@ -197,5 +197,8 @@
     <Setting Name="DAQPollingPeriodSec" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.01</Value>
     </Setting>
+    <Setting Name="UseAODO" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

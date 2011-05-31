@@ -819,8 +819,9 @@ namespace NeuroRighter
             }
 
 
-            NRStartRecording();
+            
             closedLoopSynchronizedOutput.Start();
+            NRStartRecording();
             //start everything
             //Console.WriteLine(stimSrv);
 

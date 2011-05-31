@@ -51,22 +51,28 @@ namespace NeuroRighter.StimSrv
         internal void Setup()
         {
             ConfigureCounter();
-            ConfigureStim(masterTask);
-            ConfigureAODO(true, masterTask);
+            
+            
                 
             //assign tasks to buffers
-            AuxOut.immortal = true;
-            DigitalOut.immortal = true;
-            StimOut.immortal = true;
+            if (Properties.Settings.Default.UseAODO)
+            {
+                ConfigureAODO(true, masterTask);
+                AuxOut.immortal = true;
+                DigitalOut.immortal = true;
+                DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
+                AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask);
+                AuxOut.Start();
+                DigitalOut.Start();
+            }
 
-            
-            DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
-            AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask);
-            StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask);
-
-            AuxOut.Start();
-            DigitalOut.Start();
-            StimOut.Start();
+            if (Properties.Settings.Default.UseStimulator)
+            {
+                ConfigureStim(masterTask);
+                StimOut.immortal = true;
+                StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask);
+                StimOut.Start();
+            }
         }
 
         internal void StartAllTasks()

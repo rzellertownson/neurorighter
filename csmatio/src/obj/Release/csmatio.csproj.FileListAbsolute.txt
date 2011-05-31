@@ -68,3 +68,8 @@ C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\bin\Release\csmatio.xml
 C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\bin\Release\zlib.net.dll
 C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\obj\Release\csmatio.dll

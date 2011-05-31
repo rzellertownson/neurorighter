@@ -378,7 +378,7 @@ namespace NeuroRighter.Output
                 double stop = 0;
             if (running)
                 stop = this.GetTime();
-                //Console.WriteLine(this.ToString() + " just finished buffering through sample " + currentSample+ " which took " + (stop-start)+ "ms");
+                Console.WriteLine(this.ToString() + " just finished buffering through sample " + currentSample+ " which took " + (stop-start)+ "ms");
 
         }
 

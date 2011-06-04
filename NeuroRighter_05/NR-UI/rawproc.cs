@@ -428,8 +428,8 @@ namespace NeuroRighter
         {
             int taskNumber = (int)e.Result;
 
-            //Check whether timed recording is done
-            if (checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime)
+            //Check whether timed recording is done or stopped
+            if ((checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime) || (!taskRunning))
             {
                 if (taskNumber == spikeReader.Count - 1)
                 {
@@ -459,6 +459,7 @@ namespace NeuroRighter
                 }
                 catch (DaqException exception)
                 {
+                    Console.WriteLine("DaqException caused reset while attempting to read from task " + taskNumber.ToString() + ": " + exception.Message);
                     reset();
                 }
             }

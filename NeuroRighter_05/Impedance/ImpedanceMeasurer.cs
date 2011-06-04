@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using NationalInstruments.DAQmx;
 using NationalInstruments.Analysis.Dsp;
 using NationalInstruments.Analysis.SignalGeneration;
@@ -43,6 +44,7 @@ namespace NeuroRighter.Impedance
         internal event ChannelFinishedHandler alertChannelFinished;
         internal delegate void AllFinishedHandler(object sender);
         internal event AllFinishedHandler alertAllFinished;
+        //private string saveImpedanceDiretory;
 
         internal ImpedanceMeasurer()
         {
@@ -381,10 +383,12 @@ namespace NeuroRighter.Impedance
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "MAT files (*.mat)|*.mat|All files (*.*)|*.*";
             saveFileDialog.DefaultExt = "mat";
+            saveFileDialog.InitialDirectory = Properties.Settings.Default.saveImpedanceDirectory;
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string filename = saveFileDialog.FileName;
-
+                string tmpinfo = new FileInfo(filename).DirectoryName;
+                Properties.Settings.Default.saveImpedanceDirectory = tmpinfo;
                 List<MLArray> mlList = new List<MLArray>();
                 MLStructure structure = new MLStructure("imp", new int[] { 1, 1 });
                 structure["f", 0] = new MLDouble("", freqs, freqs.Length);

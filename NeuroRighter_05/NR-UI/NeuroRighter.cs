@@ -860,6 +860,7 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
             {
+                stimSrv.StopAllBuffers();
                 stimSrv.KillAllAODOTasks();
                 stimSrv = null;
             }

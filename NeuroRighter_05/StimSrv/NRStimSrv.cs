@@ -80,6 +80,17 @@ namespace NeuroRighter.StimSrv
             buffLoadTask.Start();
         }
 
+        internal void StopAllBuffers()
+        {
+            if (AuxOut != null)
+                AuxOut.Stop();
+            if (DigitalOut != null)
+                DigitalOut.Stop();
+            if (StimOut != null)
+                StimOut.Stop();
+    
+        }
+
         internal void KillAllAODOTasks()
         {
             if (buffLoadTask != null)

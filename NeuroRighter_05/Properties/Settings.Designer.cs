@@ -121,6 +121,9 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +		
+		            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +		
+            "tring>Dev1</string>\r\n</ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection AnalogInDevice {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["AnalogInDevice"]));
@@ -801,6 +804,54 @@ namespace NeuroRighter.Properties {
             }
             set {
                 this["UseAODO"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\".\"")]
+        public string CLstimdiretory {
+            get {
+                return ((string)(this["CLstimdiretory"]));
+            }
+            set {
+                this["CLstimdiretory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\".\"")]
+        public string OLstimdirectory {
+            get {
+                return ((string)(this["OLstimdirectory"]));
+            }
+            set {
+                this["OLstimdirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\".\"")]
+        public string savedirectory {
+            get {
+                return ((string)(this["savedirectory"]));
+            }
+            set {
+                this["savedirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\".\"")]
+        public string saveImpedanceDirectory {
+            get {
+                return ((string)(this["saveImpedanceDirectory"]));
+            }
+            set {
+                this["saveImpedanceDirectory"] = value;
             }
         }
     }

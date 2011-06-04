@@ -44,7 +44,10 @@ namespace NeuroRighter
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)
             {
-                int idx = comboBox_analogInputDevice1.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[0]);
+                int idx=0;
+                if (Properties.Settings.Default.AnalogInDevice!=null)
+                    idx = comboBox_analogInputDevice1.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[0]);
+                
                 if (idx >= 0)
                     comboBox_analogInputDevice1.SelectedIndex = idx;
                 else

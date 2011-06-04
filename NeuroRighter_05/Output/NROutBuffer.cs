@@ -224,7 +224,7 @@ namespace NeuroRighter.Output
             //Console.Write("anda...");
            // thrd = Thread.CurrentThread;
           //  thrd.Priority = ThreadPriority.Highest;
-            double tickDiff = GetTime();
+            //double tickDiff = GetTime();
             if (running)
             {
               //  Console.WriteLine(Convert.ToString(tickDiff) + ": " + this.ToString() + " DAQ half-load event.");

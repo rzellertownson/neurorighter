@@ -473,6 +473,17 @@ namespace NeuroRighter.Output
         {
             auxDone = true;
         }
+        internal void StopAllBuffers()
+        {
+            if (auxProtocol != null)
+                auxProtocol.Stop();
+            if (digProtocol != null)
+                digProtocol.Stop();
+            if (stimProtocol != null)
+                stimProtocol.Stop();
+            
+
+        }
 
 
     }

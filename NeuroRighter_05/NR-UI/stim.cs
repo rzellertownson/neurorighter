@@ -534,12 +534,17 @@ namespace NeuroRighter
             OpenFileDialog OLFileDialog = new OpenFileDialog();
             OLFileDialog.DefaultExt = "*.olstim";         //default extension is for olstim files
             OLFileDialog.Filter = "Open Loop Stimulation Files|*.olstim|All Files|*.*";
+            OLFileDialog.InitialDirectory = Properties.Settings.Default.OLstimdirectory;
 
             // Display Save File Dialog (Windows forms control)
             DialogResult result = OLFileDialog.ShowDialog();
 
+            
+
             if (result == DialogResult.OK)
             {
+                string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
+                Properties.Settings.Default.OLstimdirectory = tmp;
                 filenameOutput = OLFileDialog.FileName;
                 textBox_protocolFileLocations.Text = filenameOutput;
             }
@@ -551,12 +556,14 @@ namespace NeuroRighter
             OpenFileDialog OLFileDialog = new OpenFileDialog();
             OLFileDialog.DefaultExt = "*.oldig";         //default extension is for olstim files
             OLFileDialog.Filter = "Open Loop Digital Files|*.oldig|All Files|*.*";
-
+            OLFileDialog.InitialDirectory = Properties.Settings.Default.OLstimdirectory;
             // Display Save File Dialog (Windows forms control)
             DialogResult result = OLFileDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
+                string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
+                Properties.Settings.Default.OLstimdirectory = tmp;
                 filenameOutput = OLFileDialog.FileName;
                 textBox_digitalProtocolFileLocation.Text = filenameOutput;
             } 
@@ -568,12 +575,14 @@ namespace NeuroRighter
             OpenFileDialog OLFileDialog = new OpenFileDialog();
             OLFileDialog.DefaultExt = "*.olaux";         //default extension is for olstim files
             OLFileDialog.Filter = "Open Loop Auxiliary Files|*.olaux|All Files|*.*";
-
+            OLFileDialog.InitialDirectory = Properties.Settings.Default.OLstimdirectory;
             // Display Save File Dialog (Windows forms control)
             DialogResult result = OLFileDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
+                string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
+                Properties.Settings.Default.OLstimdirectory = tmp;
                 filenameOutput = OLFileDialog.FileName;
                 textBox_AuxFile.Text = filenameOutput;
             }
@@ -698,7 +707,11 @@ namespace NeuroRighter
             try
             {
                 if (openLoopSynchronizedOutput != null)
+                {
+                    openLoopSynchronizedOutput.StopAllBuffers();
                     openLoopSynchronizedOutput.KillAllAODOTasks();
+                    
+                }
 
                 //ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
                 //    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
@@ -732,6 +745,7 @@ namespace NeuroRighter
             {
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
+                   // NROutputShutdown();
                     ResetUIAfterOpenLoopOut(false);
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
@@ -750,13 +764,16 @@ namespace NeuroRighter
             // Set dialog's default properties
             OpenFileDialog CLFileDialog = new OpenFileDialog();
             CLFileDialog.DefaultExt = "*.dll";         //default extension is for olstim files
-            CLFileDialog.Filter = "dynamic libraries|*.dll|All Files|*.*";
+            CLFileDialog.Filter = "library files|*.dll|All Files|*.*";
+            CLFileDialog.InitialDirectory = Properties.Settings.Default.CLstimdiretory;
 
             // Display Save File Dialog (Windows forms control)
             DialogResult result = CLFileDialog.ShowDialog();
-
+            
             if (result == DialogResult.OK)
             {
+                string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
+                Properties.Settings.Default.CLstimdiretory = tmp;
                 filenameOutput = CLFileDialog.FileName;
                 
                 textBox_ClosedLoopProtocolFile.Text = filenameOutput;
@@ -771,11 +788,11 @@ namespace NeuroRighter
                     
                     if (types[i].BaseType.Equals(typeof(ClosedLoopExperiment)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
                     {
-                        ClosedLoopExperiment tmp = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
+                        ClosedLoopExperiment tmpcl = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
                         //experimentList.Add(tmp);//and activated them as such.
-                        Console.WriteLine(tmp.ToString());
+                        Console.WriteLine(tmpcl.ToString());
                         comboBox_closedLoopProtocol.Enabled = true;
-                        comboBox_closedLoopProtocol.Items.Add(tmp);
+                        comboBox_closedLoopProtocol.Items.Add(tmpcl);
                     }
                 }
 
@@ -828,6 +845,7 @@ namespace NeuroRighter
             //gui stuff
             button_startClosedLoopStim.Enabled = false;
             button_stopClosedLoopStim.Enabled = true;
+            buttonStop.Enabled = false;
         }
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
         {

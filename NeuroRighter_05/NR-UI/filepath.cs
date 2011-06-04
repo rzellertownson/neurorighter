@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace NeuroRighter
 {
@@ -35,10 +36,11 @@ namespace NeuroRighter
             saveFileDialog_OutputFile.DefaultExt = "*.spk";         //default extension is for spike files
             saveFileDialog_OutputFile.FileName = filenameOutput;    //default file name
             saveFileDialog_OutputFile.Filter = "NeuroRighter Files|*.spk|All Files|*.*";
-
+            saveFileDialog_OutputFile.InitialDirectory = Properties.Settings.Default.savedirectory;
             // Display Save File Dialog (Windows forms control)
             DialogResult result = saveFileDialog_OutputFile.ShowDialog();
-
+            string tmp = new FileInfo(saveFileDialog_OutputFile.FileName).DirectoryName;
+            Properties.Settings.Default.savedirectory = tmp;
             if (result == DialogResult.OK)
             {
                 filenameOutput = saveFileDialog_OutputFile.FileName;

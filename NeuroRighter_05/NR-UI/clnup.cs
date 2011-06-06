@@ -67,7 +67,7 @@ namespace NeuroRighter
             if (waveformPlotData != null)
                 if (waveformPlotData.getGain() != null)
                     Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
-
+            Console.WriteLine("reset: gains saved");
             taskRunning = false;
             if (triggerWriter != null)
             {
@@ -81,10 +81,11 @@ namespace NeuroRighter
                 triggerWriter.WriteWaveform(true, wfm);
                 triggerTask.WaitUntilDone();
             }
-
+            Console.WriteLine("reset: trigger cleared");
             // Kill the background workers
             lock (this)
             {
+                Console.WriteLine("reset: entered lock");
                 if (bwSpikes != null)
                 {
                     try
@@ -93,15 +94,18 @@ namespace NeuroRighter
                             //block while bw finishes
                             if (bwSpikes[i] != null)
                             {
+                                Console.WriteLine("reset: " + bwSpikes[i].ToString() + " " +i.ToString() + "is busy");
                                 while (bwSpikes[i].IsBusy)
                                 {
                                     Application.DoEvents();
                                 }
+                                Console.WriteLine("reset: " + bwSpikes[i].ToString() + " " + i.ToString() + "finished");
                             }
 
                     }
                     catch
                     {
+                        Console.WriteLine("reset: error while clearing spike tasks");
                         //All the bw workers are done, so we'll kill them
                         for (int i = 0; i < bwSpikes.Count; ++i)
                             bwSpikes[i].Dispose();
@@ -109,7 +113,9 @@ namespace NeuroRighter
                         bwSpikes = null;
                     }
                 }
+                Console.WriteLine("reset: left lock");
             }
+            Console.WriteLine("reset: spike tasks cleared");
 
             if (waveformPlotData != null) waveformPlotData.stop();
             if (Properties.Settings.Default.SeparateLFPBoard && lfpTask != null) lfpTask.Dispose();
@@ -119,7 +125,7 @@ namespace NeuroRighter
             if (triggerTask != null) triggerTask.Dispose();
             if (auxAnInTask != null) auxAnInTask.Dispose();
             if (auxDigInTask != null) auxDigInTask.Dispose();
-
+            Console.WriteLine("reset: tasks disposed of");
             buttonStop.Enabled = false;
             buttonStart.Enabled = true;
             comboBox_numChannels.Enabled = true;
@@ -139,7 +145,7 @@ namespace NeuroRighter
             numericUpDown_NumSnipsDisplayed.Enabled = true;
             button_stopClosedLoopStim.Enabled = false;
             button_startClosedLoopStim.Enabled = true;
-
+            
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegNumChannels.Enabled = true;
@@ -148,10 +154,10 @@ namespace NeuroRighter
             }
             if (Properties.Settings.Default.SeparateLFPBoard)
                 comboBox_LFPGain.Enabled = true;
-
+            Console.WriteLine("reset: gui updated");
             // Clean up data streams
             recordingSettings.Flush();
-
+            Console.WriteLine("reset: recording streams flushed");
             if (triggerWriter != null) triggerWriter = null;
             channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
 

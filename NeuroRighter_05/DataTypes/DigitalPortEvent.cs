@@ -30,7 +30,7 @@ namespace NeuroRighter.DataTypes
     /// <author> Jon Newman </author>
     /// </summary>
     
-    internal sealed class DigitalPortEvent : NREvent
+    public sealed class DigitalPortEvent : NREvent
     {
         
         //internal ulong sampleIndex;

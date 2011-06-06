@@ -126,7 +126,7 @@ namespace NeuroRighter
 
                             wfmDataOffset[k] = temp + offset;
                         }
-                        waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel, wfmDataOffset));
+                        waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel-1, wfmDataOffset));
                         ++numWfmsStored[newWaveforms[i].channel];
                     }
                 }

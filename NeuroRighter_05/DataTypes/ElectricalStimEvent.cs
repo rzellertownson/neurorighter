@@ -46,15 +46,15 @@ namespace NeuroRighter.DataTypes
     /// <author> Jon Newman </author>
     /// </summary>
 
-    internal sealed class ElectricalStimEvent : NREvent
+    public sealed class ElectricalStimEvent : NREvent
     {
 
         //internal ulong sampleIndex;
-        internal short channel;
+        public short channel;
         internal double amplitude;
         internal double width;
         internal List<double> auxInfo = null;
-        internal double[] waveform;
+        //public double[] waveform;
 
        
         internal ElectricalStimEvent(ulong sampleIndex, short channel, double amplitude, double width)
@@ -63,6 +63,11 @@ namespace NeuroRighter.DataTypes
             this.channel = channel;
             this.amplitude = amplitude;
             this.width = width;
+        }
+
+        override internal NREvent Copy()
+        {
+            return new ElectricalStimEvent(this.sampleIndex, this.channel, this.amplitude, this.width);
         }
 
        

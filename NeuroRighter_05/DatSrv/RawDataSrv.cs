@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace NeuroRighter.DatSrv
 {
-    class RawDataSrv
+    public class RawDataSrv
     {
         // The mutex class for concurrent read and write access to data buffers
         protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
@@ -15,6 +15,7 @@ namespace NeuroRighter.DatSrv
         // Main storage buffer
         private RawMultiChannelBuffer dataBuffer;
         private int numSamplesPerWrite; // The number of samples to be writen for each channel during a write operations
+        private int numTasks;
 
         /// <summary>
         /// Generic raw data server for multichannel data streams. The main data buffer that this class updates i
@@ -27,13 +28,14 @@ namespace NeuroRighter.DatSrv
         /// <param name="bufferSizeSec"> The history of the channels that should be kept, in seconds</param>
         /// <param name="sampleFrequencyHz"> The sampling frequency of an individual channel in the stream</param>
         /// <param name="numSamplesPerWrite"> The number of samples to be written each time the DAQ is polled and the dataBuffer is updated.</param>
-        internal RawDataSrv(double sampleFrequencyHz, int numChannels, double bufferSizeSec, int numSamplesPerWrite)
+        internal RawDataSrv(double sampleFrequencyHz, int numChannels, double bufferSizeSec, int numSamplesPerWrite,int numTasks)
         {
-            this.dataBuffer = new RawMultiChannelBuffer(sampleFrequencyHz, numChannels, (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz));
-            this.numSamplesPerWrite = numSamplesPerWrite; 
+            this.dataBuffer = new RawMultiChannelBuffer(sampleFrequencyHz, numChannels, (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz), numTasks);
+            this.numSamplesPerWrite = numSamplesPerWrite;
+            this.numTasks = numTasks;
         }
 
-        internal void WriteToBuffer(double[][] newData) 
+        internal void WriteToBuffer(double[][] newData, int task, int offset) 
         { 
             // Lock out other write operations
             bufferLock.EnterWriteLock();
@@ -44,11 +46,11 @@ namespace NeuroRighter.DatSrv
                 {
                     for (int j = 0; j < dataBuffer.numChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample] = newData[j][i];
+                        dataBuffer.rawMultiChannelBuffer[offset*task+j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
-                    dataBuffer.IncrementCurrentPosition();
+                    dataBuffer.IncrementCurrentPosition(task);
                 }
             }
             finally
@@ -58,12 +60,12 @@ namespace NeuroRighter.DatSrv
             }
         }
 
-        internal ulong[] EstimateAvaiableTimeRange()
+        public ulong[] EstimateAvaiableTimeRange()
         {
             return dataBuffer.startAndEndSample;
         }
 
-        internal RawMultiChannelBuffer ReadFromBuffer(double[] desiredSampleRange) 
+        public RawMultiChannelBuffer ReadFromBuffer(double[] desiredSampleRange) 
         {
             // Make sure the desiredSampleRange is correctly formatted
             if (desiredSampleRange[0] > desiredSampleRange[1])
@@ -93,7 +95,7 @@ namespace NeuroRighter.DatSrv
                     // Lower bound
                     if (desiredSampleRange[0] <= dataBuffer.startAndEndSample[0])
                     {
-                        startIndex = dataBuffer.leastCurrentCircularSample;
+                        startIndex = dataBuffer.netLeastAndMostCurrentCircular[0];
                     }
                     else
                     {
@@ -103,7 +105,7 @@ namespace NeuroRighter.DatSrv
                     // Upper bound
                     if (desiredSampleRange[1] >= dataBuffer.startAndEndSample[1])
                     {
-                        stopIndex = dataBuffer.mostCurrentCircularSample;
+                        stopIndex = dataBuffer.netLeastAndMostCurrentCircular[1];
                     }
                     else
                     {
@@ -111,7 +113,7 @@ namespace NeuroRighter.DatSrv
                     }
 
                     // Instantiate the returnBuffer
-                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz,dataBuffer.numChannels,stopIndex - startIndex);
+                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, stopIndex - startIndex, numTasks);
 
                     for (int j = startIndex; j <stopIndex; ++j)
                     {

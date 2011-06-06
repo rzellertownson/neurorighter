@@ -24,7 +24,7 @@ using System.Threading;
 
 namespace NeuroRighter.DatSrv
 {
-    class EventDataSrv<T> where T : NREvent
+    public class EventDataSrv<T> where T : NREvent
     {
         // The mutex class for concurrent read and write access to data buffers
         protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
@@ -32,23 +32,27 @@ namespace NeuroRighter.DatSrv
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
         
-        private ulong currentSample;
-        private int bufferSizeInSamples; // The maximum number of samples between  the
+        private ulong[] currentSample;
+        private ulong bufferSizeInSamples; // The maximum number of samples between  the
                                          // current sample and the last avaialbe mixed
                                          // event time before it expires and is removed.
         private int numSamplesPerWrite;  // The number of samples for each buffer that
                                          // mixed events could have been detected in
+        internal int noTasks;
+        private ulong mincurrentSample;
 
-        internal EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite)
+        internal EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int noTasks)
         {
-            this.currentSample = 0;
+            this.currentSample = new ulong[noTasks];
+            this.mincurrentSample = 0;
            
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
-            this.bufferSizeInSamples = (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
+            this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
+            this.noTasks = noTasks;
         }
 
-        internal void WriteToBuffer(EventBuffer<T> newData) 
+        internal void WriteToBuffer(EventBuffer<T> newData, int taskNo) 
         { 
             // Lock out other write operations
             bufferLock.EnterWriteLock();
@@ -57,18 +61,35 @@ namespace NeuroRighter.DatSrv
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
+                int rem = 0;
                 for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
                 {
                     // Remove expired data
-                    if (dataBuffer.eventBuffer[i].sampleIndex < currentSample - (ulong)numSamplesPerWrite)
+                    if (mincurrentSample > bufferSizeInSamples)
+                        if (dataBuffer.eventBuffer[i].sampleIndex < (mincurrentSample - bufferSizeInSamples))
                     {
                         dataBuffer.eventBuffer.RemoveAt(i);
+                        rem++;
                     }
                 }
 
                 // Add new data
-                dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
-                currentSample += (ulong)numSamplesPerWrite;
+                //need to use copy method!
+                int added = 0;
+                foreach (T stim in newData.eventBuffer)
+                {
+                    dataBuffer.eventBuffer.Add((T)stim.Copy());
+                    added++;
+                }
+                //Console.WriteLine(this.ToString() + " added " + added+ " removed " +rem+ " at sample " + currentSample);
+                //.AddRange(newData.eventBuffer);
+                currentSample[taskNo] += (ulong)numSamplesPerWrite;
+                mincurrentSample = currentSample[0];
+                for (int i = 1; i < this.noTasks; i++)
+                {
+                    if (mincurrentSample>currentSample[i])
+                        mincurrentSample = currentSample[i];
+                }
             }
             finally
             {
@@ -78,11 +99,12 @@ namespace NeuroRighter.DatSrv
 
         }
 
-        internal void WriteToBufferRelative(EventBuffer<T> newData)
+        internal void WriteToBufferRelative(EventBuffer<T> newData, int taskNo)
         {
             // This write operation is used when the sampleIndicies in the newData buffer
             // correspond to the start of a DAQ buffer poll rather than the start of the record
-
+            int added = 0; int rem = 0;
+            string times = "";
             // Lock out other write operations
             bufferLock.EnterWriteLock();
             try
@@ -90,38 +112,51 @@ namespace NeuroRighter.DatSrv
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
+                
                 for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
                 {
-                    // Remove expired data
-                    if (dataBuffer.eventBuffer[i].sampleIndex < currentSample - (ulong)numSamplesPerWrite)
+                    if (mincurrentSample > bufferSizeInSamples)
+                        if (dataBuffer.eventBuffer[i].sampleIndex < mincurrentSample - (ulong)bufferSizeInSamples)
                     {
                         dataBuffer.eventBuffer.RemoveAt(i);
+                        rem++;
                     }
                 }
                 
                 // Move time stamps to absolute scheme
+                
                 for (int i = 0; i < newData.eventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
                     T tmp = (T)newData.eventBuffer[i].Copy();
-                    tmp.sampleIndex = tmp.sampleIndex + currentSample;
+                    tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
                     dataBuffer.eventBuffer.Add(tmp);
+                    times += tmp.sampleIndex.ToString() + ", ";
+                    added++;
                 }
+                
 
                 // Add new data
                // dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
 
-                currentSample += (ulong)numSamplesPerWrite;
+                currentSample[taskNo] += (ulong)numSamplesPerWrite;
+                mincurrentSample = currentSample[0];
+                for (int i = 1; i < this.noTasks; i++)
+                {
+                    if (mincurrentSample > currentSample[i])
+                        mincurrentSample = currentSample[i];
+                }
             }
             finally
             {
                 // release the write lock
                 bufferLock.ExitWriteLock();
             }
+            //Console.WriteLine("WriteToBufferRelative: added "+added+ "/removed " +rem+  "at "+currentSample[taskNo]+"/task " +taskNo + " mincur " + mincurrentSample + " ex: " +times);
 
         }
 
-        internal ulong[] EstimateAvaiableTimeRange()
+        public ulong[] EstimateAvaiableTimeRange()
         {
             ulong[] timeRange = new ulong[2];
             timeRange[0] = ulong.MaxValue;
@@ -141,25 +176,28 @@ namespace NeuroRighter.DatSrv
             return timeRange;
         }
 
-        internal EventBuffer<T> ReadFromBuffer(double[] desiredSampleRange) 
+        public EventBuffer<T> ReadFromBuffer(ulong[] desiredSampleRange) 
         {
             EventBuffer<T> returnBuffer = new EventBuffer<T>(dataBuffer.sampleFrequencyHz);
 
             // Enforce a read lock
+            
             bufferLock.EnterReadLock();
             try
             {
                 // Collect all the data within the desired sample range and add to the returnBuffer
                 // object
-                int i = 0;
-                while (i < dataBuffer.eventBuffer.Count)
+                int added = 0;
+                for (int i = 0; i < dataBuffer.eventBuffer.Count;i++ )
                 {
                     if (dataBuffer.eventBuffer[i].sampleIndex > desiredSampleRange[0] &&
                         dataBuffer.eventBuffer[i].sampleIndex <= desiredSampleRange[1])
                     {
-                        returnBuffer.eventBuffer.Add(dataBuffer.eventBuffer[i]);
+                        returnBuffer.eventBuffer.Add((T)dataBuffer.eventBuffer[i].Copy());
+                        added++;
                     }
                 }
+                Console.WriteLine("ReadFromBuffer: " + added + " /" + this.dataBuffer.eventBuffer.Count.ToString() + "read, range " + desiredSampleRange[0]+ "-" +desiredSampleRange[1]);
             }
             finally
             {

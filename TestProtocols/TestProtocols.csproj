@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NeuroRighter, Version=0.5.4.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\NeuroRighter_05\bin\Release\NeuroRighter.exe</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -56,6 +52,13 @@
     <Compile Include="SilentBarrageExperimentClient.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SilentBarrageProt2.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NeuroRighter_05\NeuroRighter_05.csproj">
+      <Project>{BB2A4100-DBDA-4A63-8708-8A7F9F6810E0}</Project>
+      <Name>NeuroRighter_05</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

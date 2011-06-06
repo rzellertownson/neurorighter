@@ -31,12 +31,12 @@ namespace NeuroRighter.DataTypes
     /// <author> Jon Newman </author>
     /// </summary>
     
-    internal sealed class SpikeEvent : NREvent
+    public sealed class SpikeEvent : NREvent
     {
         //internal ulong sampleIndex;
-        internal Int16 channel;
-        internal double threshold;
-        internal double[] waveform;
+        public Int16 channel;
+        public double threshold;
+        public double[] waveform;
 
         public SpikeEvent(int channel, ulong sampleIndex, double threshold, double[] waveform)
         {

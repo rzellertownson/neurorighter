@@ -29,24 +29,28 @@ namespace NeuroRighter
     ///<author>Jon Newman</author>
     sealed internal partial class NeuroRighter
     {
+        string filenameOutputs;
         private void button_BrowseOutputFile_Click(object sender, EventArgs e)
         {
             // Set dialog's default properties
             SaveFileDialog saveFileDialog_OutputFile = new SaveFileDialog();
             saveFileDialog_OutputFile.DefaultExt = "*.spk";         //default extension is for spike files
-            saveFileDialog_OutputFile.FileName = filenameOutput;    //default file name
+            saveFileDialog_OutputFile.FileName = filenameOutputs;    //default file name
             saveFileDialog_OutputFile.Filter = "NeuroRighter Files|*.spk|All Files|*.*";
-            saveFileDialog_OutputFile.InitialDirectory = Properties.Settings.Default.savedirectory;
+            string tmp = Properties.Settings.Default.savedirectory;
+            saveFileDialog_OutputFile.InitialDirectory = tmp;
             // Display Save File Dialog (Windows forms control)
             DialogResult result = saveFileDialog_OutputFile.ShowDialog();
-            string tmp = new FileInfo(saveFileDialog_OutputFile.FileName).DirectoryName;
-            Properties.Settings.Default.savedirectory = tmp;
+            
             if (result == DialogResult.OK)
             {
-                filenameOutput = saveFileDialog_OutputFile.FileName;
-                textBox_OutputFile.Text = filenameOutput;
-                toolTip_outputFilename.SetToolTip(textBox_OutputFile, filenameOutput);
-                filenameBase = filenameOutput.Substring(0, filenameOutput.Length - 4);
+                tmp = new FileInfo(saveFileDialog_OutputFile.FileName).DirectoryName;
+                Properties.Settings.Default.savedirectory = tmp;
+                Properties.Settings.Default.Save();
+                filenameOutputs = saveFileDialog_OutputFile.FileName;
+                textBox_OutputFile.Text = filenameOutputs;
+                toolTip_outputFilename.SetToolTip(textBox_OutputFile, filenameOutputs);
+                filenameBase = filenameOutputs.Substring(0, filenameOutputs.Length - 4);
                 originalNameBase = filenameBase;// Save original namebase for repeated recording
             }
         }

@@ -11,6 +11,7 @@ namespace NeuroRighter.Output
     {
         IPEndPoint ipep;
         Socket server;
+        TcpClient s2;
         double[] motorPoles;
         double[] motorHeight;
         double[] sensorData;
@@ -22,16 +23,16 @@ namespace NeuroRighter.Output
             IPAddress[] addresslist = Dns.GetHostAddresses(IPaddress);
 
              ipep = new IPEndPoint(addresslist[0], port);
-             server = new Socket(AddressFamily.InterNetwork,
-                      SocketType.Stream, ProtocolType.Tcp);
-
+             //server = new Socket(AddressFamily.InterNetwork,
+             //         SocketType.Stream, ProtocolType.Tcp);
+             s2 = new TcpClient();
              sensorData = new double[expectedInputs];
              motorPoles = new double[expectedInputs];
              motorHeight = new double[expectedInputs];
              for (int i = 0; i < expectedInputs; i++)
              {
                  motorPoles[i] = i+1;
-                //motorHeight[i] = 50;
+                motorHeight[i] = 50;
 
              }
 
@@ -41,8 +42,11 @@ namespace NeuroRighter.Output
         {
             try
             {
-                server.Connect(ipep);
-                server.Send(Encoding.ASCII.GetBytes("C"));
+                s2.Connect(ipep);
+                toServer("C");
+                
+               // server.Connect(ipep);
+                //server.Send();
                 connected = true;
             }
             catch (SocketException e)
@@ -60,12 +64,16 @@ namespace NeuroRighter.Output
         {
             try
             {
-                byte[] data = new byte[1024];
+                if (s2.GetStream().DataAvailable)
+                {
+                    byte[] data = new byte[1024];
 
-                 int recv = server.Receive(data);
-                string stringData = Encoding.ASCII.GetString(data, 0, recv);
-                Console.WriteLine("incoming: " + stringData);
-                parseInput(stringData);
+                    int recv = s2.GetStream().Read(data, 0, data.Length);
+                    //server.ReceiveAsync(data);
+                    string stringData = Encoding.ASCII.GetString(data, 0, recv);
+                    Console.WriteLine("incoming: " + stringData);
+                    parseInput(stringData);
+                }
 
             }
             catch (SocketException e)
@@ -84,6 +92,11 @@ namespace NeuroRighter.Output
                 motorHeight = height;
             }
         }
+        private void toServer(string toSend)
+        {
+            byte[] outt = Encoding.ASCII.GetBytes(toSend);
+            s2.GetStream().Write(outt,0,outt.Length);
+        }
         private void parseInput(string input)
         {
             while (input.Length > 0)
@@ -91,7 +104,8 @@ namespace NeuroRighter.Output
                 if (input.Substring(0, 4).Equals("moto"))
                 {
                     //request for data
-                    server.Send(Encoding.ASCII.GetBytes(motorOut()));
+                    toServer(motorOut());
+                    //server.Send(Encoding.ASCII.GetBytes(motorOut()));
                     Console.WriteLine(motorOut());
 
                     input = input.Substring(4);
@@ -140,7 +154,7 @@ namespace NeuroRighter.Output
 
         internal void close()
         {
-            server.Send(Encoding.ASCII.GetBytes("Q"));
+            toServer("Q");
             server.Shutdown(SocketShutdown.Both);
             server.Close();
             connected = false;

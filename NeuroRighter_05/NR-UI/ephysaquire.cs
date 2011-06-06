@@ -121,6 +121,8 @@ namespace NeuroRighter
                                 //     "which electrode in the group of eight".  E.g., electrode
                                 //     16 would have v1=2 and v2=8.  'v1' and 'v2' are always in
                                 //     the range of 1-8 volts
+                                EventBuffer<ElectricalStimEvent> tempStimBuff = new EventBuffer<ElectricalStimEvent>(Properties.Settings.Default.RawSampleFrequency);
+                                        
                                 for (int i = 0; i < spikeBufferLength; ++i)
                                 {
                                     //Check for stimIndices (this uses a different buffer, so it's synced to each buffer read
@@ -132,7 +134,6 @@ namespace NeuroRighter
                                     {
 
                                         // Create ElectricalStimEvent Buffer and add it datSrv
-                                        EventBuffer<ElectricalStimEvent> tempStimBuff = new EventBuffer<ElectricalStimEvent>(Properties.Settings.Default.RawSampleFrequency);
                                         ElectricalStimEvent tempStimEvent = new ElectricalStimEvent((ulong)(startTimeStim + i),
                                             (short)((Convert.ToInt16((prependedData[i + 1] + prependedData[i + (int)stimJump]) / 2) - 
                                             (short)1) * (short)8 +
@@ -142,7 +143,7 @@ namespace NeuroRighter
                                         tempStimBuff.eventBuffer.Add(tempStimEvent);
 
                                         // send to datSrv
-                                        datSrv.stimSrv.WriteToBuffer(tempStimBuff);
+                                        
 
                                         if (switch_record.Value && recordingSettings.recordStim)
                                         {
@@ -155,6 +156,7 @@ namespace NeuroRighter
                                         i += (int)(9 * stimJump); //Jump past rest of waveform
                                     }
                                 }
+                                datSrv.stimSrv.WriteToBuffer(tempStimBuff,taskNumber);
                                 if (!inTrigger) //Assumes trigger lasts longer than refresh time
                                 {
                                     for (int i = 0; i < stimData.GetLength(1); ++i)
@@ -268,7 +270,7 @@ namespace NeuroRighter
                             lfpFilter[i].filterData(filtLFPData[i]);
 
                     //Send to datSrv
-                    datSrv.lfpSrv.WriteToBuffer(filtLFPData);
+                    datSrv.lfpSrv.WriteToBuffer(filtLFPData,0,numChannels);
 
                     //Post to PlotData buffer
                     lfpPlotData.write(filtLFPData, 0, numChannels);
@@ -329,7 +331,7 @@ namespace NeuroRighter
                             filtEEGData[i] = eegFilter[i].FilterData(filtEEGData[i]);
 
                     // Send to datSrv
-                    datSrv.eegSrv.WriteToBuffer(filtEEGData);
+                    datSrv.eegSrv.WriteToBuffer(filtEEGData,0,numChannels);
 
                     //Stacked plot (if the LFP tab is selected)
                     int jMax = eegPlotData.GetLength(1) - eegBufferLength / eegDownsample;
@@ -394,7 +396,7 @@ namespace NeuroRighter
 
                         // Send to datSrv
                         double[][] auxAnDataDouble = neuralDataScaler.ConvertInt16ToSoftRaw(ref auxAnData);
-                        datSrv.auxAnalogSrv.WriteToBuffer(auxAnDataDouble);
+                        datSrv.auxAnalogSrv.WriteToBuffer(auxAnDataDouble,0,numChannels);
 
                         //Write to file in format [numChannels numSamples]
                         #region Write aux file
@@ -444,7 +446,7 @@ namespace NeuroRighter
                                 thisDigitalEventBuffer.eventBuffer.Add(thisPortEvent);
                                 
                                 // send to datSrv
-                                datSrv.auxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer);
+                                datSrv.auxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer,0);
                                 
                                 if (switch_record.Value && recordingSettings.recordAuxDig)
                                 {

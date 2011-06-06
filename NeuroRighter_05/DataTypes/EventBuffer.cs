@@ -28,10 +28,10 @@ namespace NeuroRighter.DataTypes
     /// the digital event occured and portState, which is the integer
     /// state of the digital port at the time of the event.
     /// </summary>
-    class EventBuffer<T> where T : NREvent
+    public class EventBuffer<T> where T : NREvent
     {
-        internal double sampleFrequencyHz;
-        internal List<T> eventBuffer = new List<T>();
+        public double sampleFrequencyHz;
+        public List<T> eventBuffer = new List<T>();
 
         internal EventBuffer(double sampleFrequencyHz)
         {

@@ -33,7 +33,7 @@ namespace NeuroRighter.DataTypes
         /// 
         
         //when did it occur
-        internal ulong sampleIndex;
+        public ulong sampleIndex;
         //how long is it.  0 is the default, used for state change events
         internal uint sampleDuration=0;
 

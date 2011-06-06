@@ -545,6 +545,7 @@ namespace NeuroRighter
             {
                 string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
                 Properties.Settings.Default.OLstimdirectory = tmp;
+                Properties.Settings.Default.Save();
                 filenameOutput = OLFileDialog.FileName;
                 textBox_protocolFileLocations.Text = filenameOutput;
             }
@@ -564,6 +565,7 @@ namespace NeuroRighter
             {
                 string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
                 Properties.Settings.Default.OLstimdirectory = tmp;
+                Properties.Settings.Default.Save();
                 filenameOutput = OLFileDialog.FileName;
                 textBox_digitalProtocolFileLocation.Text = filenameOutput;
             } 
@@ -583,6 +585,7 @@ namespace NeuroRighter
             {
                 string tmp = new FileInfo(OLFileDialog.FileName).DirectoryName;
                 Properties.Settings.Default.OLstimdirectory = tmp;
+                Properties.Settings.Default.Save();
                 filenameOutput = OLFileDialog.FileName;
                 textBox_AuxFile.Text = filenameOutput;
             }
@@ -774,6 +777,7 @@ namespace NeuroRighter
             {
                 string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
                 Properties.Settings.Default.CLstimdiretory = tmp;
+                Properties.Settings.Default.Save();
                 filenameOutput = CLFileDialog.FileName;
                 
                 textBox_ClosedLoopProtocolFile.Text = filenameOutput;

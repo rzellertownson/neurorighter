@@ -61,7 +61,7 @@ namespace NeuroRighter
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
             trackingProc[taskNumber]++;
-
+            //double[][] filtSpikeData;
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
@@ -73,15 +73,15 @@ namespace NeuroRighter
                     filtSpikeData[i][j] = ampdec * filtSpikeData[i][j];
 
             // Send filtSpikeData to datSrv
-            datSrv.rawElectrodeSrv.WriteToBuffer(filtSpikeData);
+            datSrv.rawElectrodeSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
 
             #region Write RAW data
             //Write data to file
 
             if (switch_record.Value && recordingSettings.recordRaw && spikeTask != null)
             {
-                
-                lock (this)
+
+                lock (recordingSettings.rawOut)
                 {
 
                     for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
@@ -140,7 +140,7 @@ namespace NeuroRighter
                 if (IISDetected != null) IISDetected(this, finalLFPData, numSpikeReads[taskNumber]);
 
                 // Send to datSrv
-                datSrv.lfpSrv.WriteToBuffer(finalLFPData);
+                datSrv.lfpSrv.WriteToBuffer(finalLFPData,0,numChannels);
 
                 #region WriteLFPFile
                 if (switch_record.Value && recordingSettings.recordLFP && spikeTask != null) //Convert to 16-bit ints, then write to file
@@ -187,7 +187,7 @@ namespace NeuroRighter
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, stimIndices, 0);
                
                 // Send filtSpikeData to datSrv
-                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData);
+                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData,taskNumber,numChannelsPerDev);
 
             }
             else if (checkBox_SALPA.Checked)
@@ -195,13 +195,13 @@ namespace NeuroRighter
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, stimIndices, numStimReads[taskNumber] - 1);
 
                 // Send filtSpikeData to datSrv
-                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData);
+                datSrv.salpaElectrodeSrv.WriteToBuffer(filtSpikeData,taskNumber,numChannelsPerDev);
 
             }
 
             if (switch_record.Value && recordingSettings.recordSALPA && spikeTask != null)
             {
-                lock (this)
+                lock (recordingSettings.salpaOut)
                 {
                     int startIdx;
 
@@ -245,13 +245,14 @@ namespace NeuroRighter
                     spikeFilter[i].filterData(filtSpikeData[i]);
 
                 // Send filtSpikeData to datSrv
-                datSrv.filteredElectrodeSrv.WriteToBuffer(filtSpikeData);
+                datSrv.filteredElectrodeSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
 
-                lock (this)
-                {
+                
 
-                if (switch_record.Value && recordingSettings.recordSpikeFilt && spikeTask != null)
+                if (switch_record.Value && recordingSettings.recordSpikeFilt && (spikeTask != null))
                 {
+                    lock (recordingSettings.spkFiltOut)
+                    {
 
                     int startIdx;
                     if (firstRawWrite[taskNumber] && checkBox_SALPA.Checked) // account for SALPA delay
@@ -302,7 +303,7 @@ namespace NeuroRighter
             //Common average or median referencing
             if (referncer != null)
             {
-                lock (this)
+                lock (referncer)
                     referncer.reference(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
             #endregion
@@ -319,23 +320,33 @@ namespace NeuroRighter
             EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
+            foreach (SpikeEvent spike in newWaveforms.eventBuffer)
+            {
+                //spike.channel += CHAN_INDEX_START;
+                //spike.sampleIndex += (ulong)startTime;
 
+            }
             // Send waveform data to datSrv
-            datSrv.spikeSrv.WriteToBufferRelative(newWaveforms);
-
+           
+            
             //Extract waveforms
+            EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
             if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
             {
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
+                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].Copy();
+                    tmp.sampleIndex += (ulong)startTime;
+                    tmp.channel = (short)(tmp.channel + CHAN_INDEX_START);
+                    toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
                     rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
                     if (switch_record.Value)
                     {
-                        lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
+                        lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
-                            recordingSettings.spkOut.WriteSpikeToFile((short)(newWaveforms.eventBuffer[j].channel + CHAN_INDEX_START), startTime + (int)newWaveforms.eventBuffer[j].sampleIndex,
-                                newWaveforms.eventBuffer[j].threshold, waveformData);
+                            recordingSettings.spkOut.WriteSpikeToFile(tmp.channel, (int)tmp.sampleIndex,
+                                    tmp.threshold, tmp.waveform);
                         }
                     }
                     #endregion
@@ -343,24 +354,32 @@ namespace NeuroRighter
             }
             else //in vitro mappings
             {
+                
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
+                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].Copy();
+                    tmp.sampleIndex += (ulong)startTime;
+                    tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel + CHAN_INDEX_START);
+                    toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
+                    
+
                     rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
                     if (switch_record.Value)
                     {
-                        lock (recordingSettings) //Lock so another NI card doesn't try writing at the same time
+                        lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
                             if (Properties.Settings.Default.recordSpikes)
                             {
-                                recordingSettings.spkOut.WriteSpikeToFile((short)(MEAChannelMappings.channel2LinearCR(newWaveforms.eventBuffer[j].channel) + CHAN_INDEX_START), startTime + (int)newWaveforms.eventBuffer[j].sampleIndex,
-                                    newWaveforms.eventBuffer[j].threshold, waveformData);
+                                recordingSettings.spkOut.WriteSpikeToFile(tmp.channel, (int)tmp.sampleIndex,
+                                    tmp.threshold, tmp.waveform);
                             }
                         }
                     }
                     #endregion
                 }
             }
+            datSrv.spikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
             //Post to PlotData
             waveformPlotData.write(newWaveforms.eventBuffer);
@@ -370,12 +389,12 @@ namespace NeuroRighter
             //That's definitely not the best way to do it.
             if (spikesAcquired != null)
             {
-                lock (this)
+                lock (newWaveforms)
                 {
                     //Check to see if spikes are within trigger
                     for (int i = 0; i < newWaveforms.eventBuffer.Count; ++i)
                     {
-                        if ((int)newWaveforms.eventBuffer[i].sampleIndex + startTime >= triggerStartTime && (int)newWaveforms.eventBuffer[i].sampleIndex + startTime <= triggerStopTime)
+                        if ((int)newWaveforms.eventBuffer[i].sampleIndex  >= triggerStartTime && (int)newWaveforms.eventBuffer[i].sampleIndex + startTime <= triggerStopTime)
                         {
                             _waveforms.Add(newWaveforms.eventBuffer[i]);
 #if (DEBUG1)

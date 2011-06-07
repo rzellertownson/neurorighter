@@ -9,7 +9,7 @@ namespace NeuroRighter.DataTypes
     public sealed class DigitalOutEvent:NREvent
     {   
         //internal ulong EventTime; // digital time (in 100ths of ms)
-        internal  UInt32 Byte; // Integer specifying output Byte corresponding to event time
+        public  UInt32 Byte; // Integer specifying output Byte corresponding to event time
         /// <summary>
         /// Data stucture for holding digital output events
         /// <author> Jon Newman

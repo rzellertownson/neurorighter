@@ -62,7 +62,7 @@ namespace NeuroRighter
             if (spikePlotData != null)
                 if (spikePlotData.getGain() != null)
                     Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
-            if (Properties.Settings.Default.UseLFPs)
+            if (Properties.Settings.Default.UseLFPs & (lfpPlotData!=null))
                 Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
             if (waveformPlotData != null)
                 if (waveformPlotData.getGain() != null)

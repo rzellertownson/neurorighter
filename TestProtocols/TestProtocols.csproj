@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClosedLoopDigitalTest.cs" />
     <Compile Include="ClosedLoopTest.cs" />
     <Compile Include="SilentBarrageClosedLoop.cs">
       <SubType>Code</SubType>

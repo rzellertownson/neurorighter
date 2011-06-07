@@ -50,6 +50,7 @@ namespace NeuroRighter.Output
             digEventValues = new List<uint[]>();
             digEventValues.Add(new uint[1]);
             digEventValues.ElementAt(0)[0] = stim.Byte;
+            //Console.Write(stim.Byte.ToString() + " ");
         }
 
        

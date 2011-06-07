@@ -106,14 +106,23 @@ namespace NeuroRighter.Output
 
         internal void Dispose()
         {
-            if (analogTask != null) 
-            { 
-                analogTask.Dispose(); analogTask = null; 
-            }
+           
             if (digitalTask != null) 
-            { 
-                digitalTask.Dispose(); digitalTask = null; 
+            {
+                digitalTask.Stop();
+                Console.WriteLine("digital stopped");
+                digitalTask.Dispose();
+                Console.WriteLine("digital disposed"); 
+                digitalTask = null;
+                Console.WriteLine("digital null");
             }
+            Console.WriteLine("digital dead");
+            if (analogTask != null)
+            {
+                analogTask.Stop();
+                analogTask.Dispose(); analogTask = null;
+            }
+            Console.WriteLine("analog dead");
         }
 
     }

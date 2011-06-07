@@ -6,7 +6,8 @@ using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
-    public sealed class DigitalOutEvent:NREvent
+    [Serializable]
+    public sealed class DigitalOutEvent : NREvent
     {   
         //internal ulong EventTime; // digital time (in 100ths of ms)
         public  UInt32 Byte; // Integer specifying output Byte corresponding to event time
@@ -23,10 +24,11 @@ namespace NeuroRighter.DataTypes
             this.Byte = Byte;
             this.sampleDuration = 0;
         }
-        internal override NREvent Copy()
-        {
-            return new DigitalOutEvent(this.sampleIndex, this.Byte);
-        }
+
+        //internal override NREvent Copy()
+        //{
+        //    return new DigitalOutEvent(this.sampleIndex, this.Byte);
+        //}
 
     }
 }

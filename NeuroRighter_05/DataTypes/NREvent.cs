@@ -21,10 +21,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NeuroRighter.DataTypes
 {
-    public abstract class NREvent
+
+    [Serializable] 
+    public abstract class NREvent 
+
     {
         /// <summary>
         /// Base class for event type data wrapper classes in NR.
@@ -44,12 +49,12 @@ namespace NeuroRighter.DataTypes
 
         public NREvent() {}
 
-        virtual internal NREvent Copy()
-        {
+        //virtual internal NREvent Copy()
+        //{
 
-            MessageBox.Show("this should have been overriden!");
-            return this;
-        }
+        //    Console.WriteLine("Trying to copy an NREvent that doesn't have it's own copy method  (" + this.ToString() + ")");
+        //    return this;
+        //}
         
         
 

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
 using System.Threading;
+using ExtensionMethods;
 
 namespace NeuroRighter.DatSrv
 {
@@ -78,7 +79,7 @@ namespace NeuroRighter.DatSrv
                 int added = 0;
                 foreach (T stim in newData.eventBuffer)
                 {
-                    dataBuffer.eventBuffer.Add((T)stim.Copy());
+                    dataBuffer.eventBuffer.Add((T)stim.DeepClone());
                     added++;
                 }
                 //Console.WriteLine(this.ToString() + " added " + added+ " removed " +rem+ " at sample " + currentSample);
@@ -128,7 +129,7 @@ namespace NeuroRighter.DatSrv
                 for (int i = 0; i < newData.eventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
-                    T tmp = (T)newData.eventBuffer[i].Copy();
+                    T tmp = (T)newData.eventBuffer[i].DeepClone();
                     tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
                     dataBuffer.eventBuffer.Add(tmp);
                     times += tmp.sampleIndex.ToString() + ", ";
@@ -193,7 +194,7 @@ namespace NeuroRighter.DatSrv
                     if (dataBuffer.eventBuffer[i].sampleIndex > desiredSampleRange[0] &&
                         dataBuffer.eventBuffer[i].sampleIndex <= desiredSampleRange[1])
                     {
-                        returnBuffer.eventBuffer.Add((T)dataBuffer.eventBuffer[i].Copy());
+                        returnBuffer.eventBuffer.Add((T)dataBuffer.eventBuffer[i].DeepClone());
                         added++;
                     }
                 }

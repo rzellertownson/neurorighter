@@ -28,8 +28,9 @@ namespace TestProtocols
             ulong recordedToStim = 0;
             ulong processedToStim = 0;
             ulong recordedToSpike = 0;
-            ulong processedToSpike = 0;
             ulong[] range;
+            ulong processedToSpike = 0;
+           
             List<SpikeEvent> recspikes = new List<SpikeEvent>(); ;
             List<ElectricalStimEvent> recstim = new List<ElectricalStimEvent>();
             while (Running)

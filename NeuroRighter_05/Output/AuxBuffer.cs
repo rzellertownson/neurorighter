@@ -43,7 +43,7 @@ namespace NeuroRighter.Output
             anEventValues = new List<double[,]>();
             anEventValues.Add(new double[4,1]);
             
-                anEventValues.ElementAt(0)[stim.eventChannel-1, 1] = stim.eventVoltage;
+                anEventValues.ElementAt(0)[stim.eventChannel-1, 0] = stim.eventVoltage;
             
             
             digEventValues = null;

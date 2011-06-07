@@ -16,6 +16,9 @@ namespace TestProtocols
         double lastStimTime = 0;
         int offset = 0;
         Random r = new Random();
+        List<SpikeEvent> recspikes = new List<SpikeEvent>();
+        ulong recordedToSpike = 0;
+        ulong[] range;
 
         protected override void Run()
         {
@@ -28,8 +31,34 @@ namespace TestProtocols
 
 
                 System.Threading.Thread.Sleep(1000);
+                string outs = "";
+                string outc = "";
+                foreach (SpikeEvent spike in recspikes)
+                {
+                    outs += ((double)(spike.sampleIndex) / 25000.0).ToString() + ",";
+                    outc += (spike.channel + 1) + ",";
+                }
+              //  Console.WriteLine(outs);
+              //  Console.WriteLine(outc);
+
+
+                ulong tmp;
+                try
+                {
+                    tmp = DatSrv.spikeSrv.EstimateAvaiableTimeRange()[1];
+                    range = new ulong[2] { recordedToSpike, tmp };
+                    recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range).eventBuffer);
+                    recordedToSpike = tmp;
+                    //  Console.WriteLine("spike read completed");
+                }
+                catch (Exception eeeee)
+                {
+                    //  Console.WriteLine("error reading spikes: " + e.Message);
+                }
+
 
             }
+            
         }
 
         protected override void BuffLoadEvent(object sender, EventArgs e)
@@ -37,6 +66,10 @@ namespace TestProtocols
             if (Running)
             {
                 // Console.WriteLine(StimSrv.StimOut.GetTime() + ": going strong, boss!");
+
+                
+
+
                 List<DigitalOutEvent> toAppend = new List<DigitalOutEvent>();
                 freq = r.NextDouble() * 100;
                 
@@ -55,9 +88,9 @@ namespace TestProtocols
 
                     toAppend.Add(new DigitalOutEvent((ulong)(lastStimTime + offset), sigout));
                     outbytes += toAppend.ElementAt(toAppend.Count-1).Byte.ToString() + " ";
-                    Console.Write(", " + (ulong)(lastStimTime + offset));
+                   // Console.Write(", " + (ulong)(lastStimTime + offset));
                 }
-
+                
 
 
 

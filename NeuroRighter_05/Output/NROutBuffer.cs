@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
+using ExtensionMethods;
 
 
 namespace NeuroRighter.Output
@@ -409,7 +410,7 @@ namespace NeuroRighter.Output
                 double stop = 0;
                 if (running)
                     stop = this.GetTime();
-                Console.WriteLine(this.ToString() + " : " + currentSample + " samples. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
+              //  Console.WriteLine(this.ToString() + " : " + currentSample + " samples have been written. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
             }
         }
 
@@ -463,7 +464,7 @@ namespace NeuroRighter.Output
                     if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                     {
 
-                        currentStim = (T)outerbuffer.ElementAt(0).Copy();
+                        currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
                       //  Console.WriteLine("currentstim = " + currentStim.sampleIndex.ToString());
                         outerbuffer.RemoveAt(0);
 

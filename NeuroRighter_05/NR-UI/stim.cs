@@ -858,6 +858,7 @@ namespace NeuroRighter
             {
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
+                    Console.WriteLine("Closed loop stimulation stop initiated");
                     NROutputShutdown();
                     this.buttonStop.Enabled = true;
                     closedLoopSynchronizedOutput.Stop();

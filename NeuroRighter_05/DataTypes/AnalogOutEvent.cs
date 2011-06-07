@@ -10,7 +10,8 @@ namespace NeuroRighter.DataTypes
     /// by a discrete point in time, but also have a channel and voltage
     /// <author> Riley Zeller-Townson </author>
     /// </summary>
-    /// 
+    
+    [Serializable]
     internal sealed class AnalogOutEvent : NREvent
     {
         //internal ulong sampleIndex;
@@ -24,9 +25,9 @@ namespace NeuroRighter.DataTypes
             this.voltage = voltage;
         }
 
-        internal override NREvent Copy()
-        {
-            return new AnalogOutEvent(this.sampleIndex, this.channel, this.voltage);
-        }
+        //internal override NREvent Copy()
+        //{
+        //    return new AnalogOutEvent(this.sampleIndex, this.channel, this.voltage);
+        //}
     }
 }

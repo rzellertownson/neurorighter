@@ -45,6 +45,7 @@ using csmatio.io;
 using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.DataTypes;
+using ExtensionMethods;
 
 
 namespace NeuroRighter
@@ -335,7 +336,7 @@ namespace NeuroRighter
             {
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
-                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].Copy();
+                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
                     tmp.sampleIndex += (ulong)startTime;
                     tmp.channel = (short)(tmp.channel + CHAN_INDEX_START);
                     toRawsrv.eventBuffer.Add(tmp);
@@ -357,7 +358,7 @@ namespace NeuroRighter
                 
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
-                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].Copy();
+                    SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
                     tmp.sampleIndex += (ulong)startTime;
                     tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel + CHAN_INDEX_START);
                     toRawsrv.eventBuffer.Add(tmp);

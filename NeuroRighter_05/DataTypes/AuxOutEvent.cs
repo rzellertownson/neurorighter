@@ -5,6 +5,7 @@ using System.Text;
 
 namespace NeuroRighter.DataTypes
 {
+    [Serializable]
     public sealed class AuxOutEvent:NREvent
     {
         //internal ulong eventTime; // auxiliary event time (in 100ths of ms)

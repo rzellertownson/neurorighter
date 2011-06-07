@@ -65,10 +65,10 @@ namespace NeuroRighter.DataTypes
             this.width = width;
         }
 
-        override internal NREvent Copy()
-        {
-            return new ElectricalStimEvent(this.sampleIndex, this.channel, this.amplitude, this.width);
-        }
+        //override internal NREvent Copy()
+        //{
+        //    return new ElectricalStimEvent(this.sampleIndex, this.channel, this.amplitude, this.width);
+        //}
 
        
     }

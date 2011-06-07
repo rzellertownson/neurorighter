@@ -29,7 +29,7 @@ namespace NeuroRighter.DataTypes
     /// by an 32 bit integer, associated with them.
     /// <author> Jon Newman </author>
     /// </summary>
-    
+    [Serializable]
     public sealed class DigitalPortEvent : NREvent
     {
         
@@ -41,5 +41,6 @@ namespace NeuroRighter.DataTypes
             this.sampleIndex = sampleIndex;
             this.portState = portState;
         }
+
     }
 }

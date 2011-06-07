@@ -868,6 +868,7 @@ namespace NeuroRighter
             {
                 Console.WriteLine("NROutputShutdown called but stimSrv does not exist");
             }
+            Console.WriteLine("NROutputShutdown complete");
         }
 
         // Start all the tasks having to do with recording

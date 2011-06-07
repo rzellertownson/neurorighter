@@ -31,6 +31,7 @@ namespace NeuroRighter.DataTypes
     /// <author> Jon Newman </author>
     /// </summary>
     
+    [Serializable]
     public sealed class SpikeEvent : NREvent
     {
         //internal ulong sampleIndex;
@@ -44,15 +45,16 @@ namespace NeuroRighter.DataTypes
             this.sampleIndex = sampleIndex;
             this.threshold = threshold;
             this.waveform = waveform;
+            
         }
-        override internal NREvent Copy()
-        {
-            double[] wavecpy = new double[waveform.Length];
-            for (int i = 0; i < waveform.Length; i++)
-            {
-                wavecpy[i] = waveform[i];
-            }
-            return new SpikeEvent(this.channel, this.sampleIndex, this.threshold, wavecpy);
-        }
+        //override internal NREvent Copy()
+        //{
+        //    double[] wavecpy = new double[waveform.Length];
+        //    for (int i = 0; i < waveform.Length; i++)
+        //    {
+        //        wavecpy[i] = waveform[i];
+        //    }
+        //    return new SpikeEvent(this.channel, this.sampleIndex, this.threshold, wavecpy);
+        //}
     }
 }

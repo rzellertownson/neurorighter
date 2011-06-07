@@ -63,6 +63,7 @@ namespace NeuroRighter.StimSrv
                 DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
                 AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask);
                 AuxOut.Start();
+                
                 DigitalOut.Start();
             }
 
@@ -88,28 +89,35 @@ namespace NeuroRighter.StimSrv
                 DigitalOut.Stop();
             if (StimOut != null)
                 StimOut.Stop();
-    
+            Console.WriteLine("NRStimSrv: StimSrv output Buffers Stopped");
         }
 
         internal void KillAllAODOTasks()
         {
             if (buffLoadTask != null)
             {
+                buffLoadTask.Stop();
                 buffLoadTask.Dispose();
                 buffLoadTask = null;
-            }
+            } 
+            Console.WriteLine("NRStimSrv: buffLoadTask is no more");
 
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
+            
 
             if (auxTaskMaker != null)
             {
                 auxTaskMaker.Dispose();
                 auxTaskMaker = null;
             }
+            Console.WriteLine("NRStimSrv: auxTasks are no more");
+
+            if (stimTaskMaker != null)
+            {
+
+                stimTaskMaker.Dispose();
+                stimTaskMaker = null;
+            }
+            Console.WriteLine("NRStimSrv: stimTasks are no more");
 
         }
 

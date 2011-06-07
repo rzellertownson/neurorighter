@@ -20,14 +20,17 @@ namespace NeuroRighter.Output
             this.StimSrv = StimSrv;
             this.fs = fs;
         }
+
         internal void GrabWave(double[] waveform)
         {
             cannedWaveform = waveform;
         }
+
         internal void Stop()
         {
             Running = false;
         }
+
         internal void Start()
         {
             Running = true;

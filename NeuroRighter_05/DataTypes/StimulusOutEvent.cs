@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace NeuroRighter.DataTypes
 {
+    [Serializable]
     public sealed class StimulusOutEvent:NREvent
     {
 
@@ -56,10 +57,10 @@ namespace NeuroRighter.DataTypes
             this.sampleDuration = sampleDuration;
         }
 
-        override internal NREvent Copy()
-        {
-            return new StimulusOutEvent(this.channel, this.sampleIndex, this.waveform,this.sampleDuration);
-        }
+        //override internal NREvent Copy()
+        //{
+        //    return new StimulusOutEvent(this.channel, this.sampleIndex, this.waveform,this.sampleDuration);
+        //}
 
         //User should need to only call the constructor, first instance in which this data is being used by code that knows the 
         //stim sampling frequency, perform this operation.  shouldn't be a problem if it is called twice, assuming using the same

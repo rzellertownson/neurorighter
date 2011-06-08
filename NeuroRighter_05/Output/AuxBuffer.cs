@@ -20,8 +20,15 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void AuxDAQLoadCompletedHandler(object sender, EventArgs e);
 
+    /// <summary>
+    /// General class for continuously regenerable NR output of auxiliary, analog signals. Used by open-loop stimulation
+    /// from file as well as closed loop protocols.
+    /// </summary>
     public class AuxBuffer : NROutBuffer<AuxOutEvent>
     {
+        double[,] lastAuxOutState = new double[4, 1]; // Holds the place of the auxiliary analog ouputs so they are not reset everytime an 
+                                                      // new event is written.
+
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
 
@@ -34,37 +41,20 @@ namespace NeuroRighter.Output
             analogTasks[0] = auxOutputTask;
 
             base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask);
-            
 
         }
+
         //with this version only one channel can have a non-zero voltage at a time-  eventually might want to switch to a version where keep voltages from previous
         protected override void writeEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
+            // Increment the auxilary state when an event is encountered
             anEventValues = new List<double[,]>();
-            anEventValues.Add(new double[4,1]);
-            
-                anEventValues.ElementAt(0)[stim.eventChannel-1, 0] = stim.eventVoltage;
-            
-            
+            anEventValues.Add(lastAuxOutState);
+            anEventValues.ElementAt(0)[stim.eventChannel, 0] = stim.eventVoltage;
+            lastAuxOutState = anEventValues.ElementAt(0);
             digEventValues = null;
         }
         
-
-        
-
-        
-
-        
-
-        
-
-       
-
-        
-
-        
-
-       
         
     }
 }

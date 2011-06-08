@@ -7,6 +7,10 @@ using NeuroRighter.DatSrv;
 
 namespace NeuroRighter.Output
 {
+    /// <summary>
+    /// NeuroRighter's abstract class for user defined closed loop experiments.
+    /// <author> Riley Zeller-Townson</author>
+    /// </summary>
     public abstract class ClosedLoopExperiment
     {
         protected NRDataSrv DatSrv;
@@ -36,8 +40,16 @@ namespace NeuroRighter.Output
             Running = true;
         }
 
+        // USER OVERRIDEN CLOSED LOOP METHODS
+
+        /// <summary>
+        /// This method must be overriden in a derived closed-loop class.
+        /// </summary>
         internal protected abstract void Run();
 
+        /// <summary>
+        /// This method must be overriden in a derived closed-loop class.
+        /// </summary>
         internal protected virtual void BuffLoadEvent(object sender, EventArgs e)
         { }
         

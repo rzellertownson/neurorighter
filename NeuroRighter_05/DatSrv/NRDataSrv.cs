@@ -47,7 +47,7 @@ namespace NeuroRighter.DatSrv
                 Properties.Settings.Default.RawSampleFrequency,
                 Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                 bufferSizeSeconds,
-                Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                 2);
 
             //2. SALPA data
@@ -57,7 +57,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                     2);
             }
 
@@ -68,7 +68,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                     2);
             }
 
@@ -79,7 +79,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency),
                     1);
             }
 
@@ -90,7 +90,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.EEGSamplingRate),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.EEGSamplingRate),
                     1);
             }
 
@@ -101,14 +101,14 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Properties.Settings.Default.auxAnalogInChan.Count,
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                     1);
             }
 
             //7. Spike data, always available
             spikeSrv = new EventDataSrv<SpikeEvent>(
                 Properties.Settings.Default.RawSampleFrequency,bufferSizeSeconds,
-                Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                 2);
 
             //8. Auxiliary Digital data
@@ -116,7 +116,7 @@ namespace NeuroRighter.DatSrv
             {
                 auxDigitalSrv = new EventDataSrv<DigitalPortEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                     1);
             }
 
@@ -125,7 +125,7 @@ namespace NeuroRighter.DatSrv
             {
                 stimSrv = new EventDataSrv<ElectricalStimEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.DAQPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
+                    Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency),
                     2
                 );
             }

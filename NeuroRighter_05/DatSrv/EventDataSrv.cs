@@ -75,7 +75,6 @@ namespace NeuroRighter.DatSrv
                 }
 
                 // Add new data
-                //need to use copy method!
                 int added = 0;
                 foreach (T stim in newData.eventBuffer)
                 {

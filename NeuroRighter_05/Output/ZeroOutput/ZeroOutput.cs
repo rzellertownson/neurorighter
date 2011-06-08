@@ -17,13 +17,13 @@ namespace NeuroRighter.Output
     /// </summary>
     class ZeroOutput
     {
-        private int clearingBufferSize;
-        private int clearingSampleRate;
+        //private int clearingBufferSize;
+        //private int clearingSampleRate;
 
-        public ZeroOutput(int clearingBufferSize, int clearingSampleRate) 
+        public ZeroOutput() //int clearingBufferSize, int clearingSampleRate
         {
-            this.clearingBufferSize = clearingBufferSize;
-            this.clearingSampleRate = clearingSampleRate;
+            //this.clearingBufferSize = clearingBufferSize;
+            //this.clearingSampleRate = clearingSampleRate;
         }
 
         internal void ZeroAOChanOnDev(string dev, int[] channelsToZero)
@@ -41,17 +41,23 @@ namespace NeuroRighter.Output
                         analogClearingTask.AOChannels.CreateVoltageChannel(
                             "/" + dev + "/ao" + chan, "", -10.0, 10.0, AOVoltageUnits.Volts);
 
-                    analogClearingTask.Timing.ConfigureSampleClock("/" + dev + "/100KHzTimeBase",
-                        clearingSampleRate,
-                        SampleClockActiveEdge.Rising,
-                        SampleQuantityMode.FiniteSamples,
-                        clearingBufferSize);
+                    //analogClearingTask.Timing.ConfigureSampleClock("/" + dev + "/PF",
+                    //    clearingSampleRate,
+                    //    SampleClockActiveEdge.Rising,
+                    //    SampleQuantityMode.FiniteSamples,
+                    //    clearingBufferSize);
+                    analogClearingTask.Timing.ReferenceClockSource = ("/" + dev + "/PFI2");
+                    analogClearingTask.Timing.ReferenceClockRate = 10e6;
 
                     AnalogMultiChannelWriter analogClearingWriter = new
                         AnalogMultiChannelWriter(analogClearingTask.Stream);
 
-                    double[,] zeroData = new double[4,clearingBufferSize];
-                    analogClearingWriter.WriteMultiSample(true, zeroData);
+                    double[] zeroData = new double[channelsToZero.Length];
+                    analogClearingWriter.BeginWriteSingleSample(false, zeroData, null, null);
+                    analogClearingTask.Control(TaskAction.Verify);
+                    analogClearingTask.Start();
+                    //analogClearingWriter.WriteSingleSample(true, zeroData);
+                    //analogClearingWriter.WriteMultiSample(true, zeroData);
                     analogClearingTask.WaitUntilDone(30);
                     analogClearingTask.Stop();
                     analogClearingTask.Dispose();
@@ -75,16 +81,15 @@ namespace NeuroRighter.Output
                     // Write clearingBufferSize zeros to that port. Wait
                     // until this is finished and destroy the clearning Task.
                     Task digitalClearingTask = new Task("DigiClear");
-                    digitalClearingTask.DOChannels.CreateChannel("/" + dev + "Port" + port, "", 
+                    digitalClearingTask.DOChannels.CreateChannel("/" + dev + "/Port" + port, "", 
                         ChannelLineGrouping.OneChannelForAllLines);
-                    digitalClearingTask.Timing.ConfigureSampleClock("100KHzTimeBase",
-                        clearingSampleRate,
-                        SampleClockActiveEdge.Rising,
-                        SampleQuantityMode.FiniteSamples,
-                        clearingBufferSize);
+                    //digitalClearingTask.Timing.ConfigureSampleClock("100KHzTimeBase",
+                    //    clearingSampleRate,
+                    //    SampleClockActiveEdge.Rising,
+                    //    SampleQuantityMode.FiniteSamples,
+                    //    clearingBufferSize);
                     DigitalSingleChannelWriter digitalClearingWriter = new DigitalSingleChannelWriter(digitalClearingTask.Stream);
-                    byte[] zeroData = new byte[clearingBufferSize];
-                    digitalClearingWriter.WriteMultiSamplePort(true, zeroData);
+                    digitalClearingWriter.BeginWriteSingleSamplePort(true,0,null,null);
                     digitalClearingTask.WaitUntilDone(30);
                     digitalClearingTask.Stop();
                     digitalClearingTask.Dispose();

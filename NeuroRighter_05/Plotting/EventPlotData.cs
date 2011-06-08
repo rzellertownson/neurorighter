@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.Threading;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.DataTypes;
+using ExtensionMethods;
 
 namespace NeuroRighter
 {
@@ -126,7 +127,7 @@ namespace NeuroRighter
 
                             wfmDataOffset[k] = temp + offset;
                         }
-                        waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel-1, wfmDataOffset));
+                        waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel, wfmDataOffset));
                         ++numWfmsStored[newWaveforms[i].channel];
                     }
                 }
@@ -137,9 +138,9 @@ namespace NeuroRighter
         {
             lock (waveforms)
             {
-                List<PlotSpikeWaveform> output = new List<PlotSpikeWaveform>(waveforms.Count);
-                for (int i = 0; i < waveforms.Count; ++i) output.Add(waveforms[i]);
-
+                List<PlotSpikeWaveform> output = waveforms.DeepClone();
+                //for (int i = 0; i < waveforms.Count; ++i) output.Add(waveforms[i]);
+                //output = 
                 waveforms.Clear();
                 for (int i = 0; i < numWfmsStored.Length; ++i) numWfmsStored[i] = 0;
                 return output;

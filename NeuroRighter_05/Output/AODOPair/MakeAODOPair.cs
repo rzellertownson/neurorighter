@@ -85,6 +85,14 @@ namespace NeuroRighter.Output
                 bufferSize);
         }
 
+        // Pipe master reference clock to a specified PFI channel on this device
+        internal void PipeReferenceClockToPFI(Task masterTask, string PFILine)
+        {
+            // Pipe the master clock to PFI0 on the current device for use with zeroing
+            DaqSystem.Local.ConnectTerminals(masterTask.Timing.ReferenceClockSource,
+                "/" + analogTask.Devices[0] + "/" + PFILine);
+        }
+
         // Sync both AO and DO to main AI start
         internal void SyncTasksToMasterStart(Task masterTask)
         {
@@ -109,20 +117,17 @@ namespace NeuroRighter.Output
            
             if (digitalTask != null) 
             {
-                digitalTask.Stop();
-                Console.WriteLine("digital stopped");
                 digitalTask.Dispose();
-                Console.WriteLine("digital disposed"); 
                 digitalTask = null;
-                Console.WriteLine("digital null");
+                Console.WriteLine("A digital output task was destroyed"); 
             }
-            Console.WriteLine("digital dead");
+           
             if (analogTask != null)
             {
-                analogTask.Stop();
-                analogTask.Dispose(); analogTask = null;
+                analogTask.Dispose(); 
+                analogTask = null;
+                Console.WriteLine("An analog output task was destroyed"); 
             }
-            Console.WriteLine("analog dead");
         }
 
     }

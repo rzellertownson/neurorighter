@@ -21,7 +21,7 @@ namespace TestProtocols
         {
             
             double starttime = StimSrv.StimOut.GetTime();
-            offset = StimSrv.getBuffSize() * 3;
+            offset = StimSrv.GetBuffSize() * 3;
             Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
             SBclient = new SilentBarrageExperimentClient("alzrig.neuro.gatech.edu", 3490);
             SBclient.connect();
@@ -126,13 +126,13 @@ namespace TestProtocols
                 List<StimulusOutEvent> toAppend = new List<StimulusOutEvent>();
 
                 buffInc++;
-                //Console.Write("perceived at " + inc * StimSrv.getBuffSize());
-                while ((lastStimTime + isi) <= (buffInc * StimSrv.getBuffSize()))
+                //Console.Write("perceived at " + inc * StimSrv.GetBuffSize());
+                while ((lastStimTime + isi) <= (buffInc * StimSrv.GetBuffSize()))
                 {
 
                     lastStimTime += isi;
-                    if (lastStimTime < (buffInc - 1) * StimSrv.getBuffSize())
-                        lastStimTime = buffInc * StimSrv.getBuffSize();
+                    if (lastStimTime < (buffInc - 1) * StimSrv.GetBuffSize())
+                        lastStimTime = buffInc * StimSrv.GetBuffSize();
                     toAppend.Add(new StimulusOutEvent((buffInc % 64) + 1, (ulong)(lastStimTime + offset), cannedWaveform));
                     inc++;
                     // Console.Write(", " + (lastStimTime + offset));

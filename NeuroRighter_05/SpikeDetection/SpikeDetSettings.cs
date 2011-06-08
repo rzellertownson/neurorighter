@@ -18,7 +18,7 @@ namespace NeuroRighter.SpikeDetection
         private int sampleRate;
         private int spikeBufferLength;
         private int numChannels;
-        private double DEVICE_REFRESH;
+        //private double Properties.Settings.Default.ADCPollingPeriodSec;
 
         internal SpikeDetector spikeDetector;
         internal int numPre; // num smaples to save pre-spike
@@ -28,11 +28,11 @@ namespace NeuroRighter.SpikeDetection
         internal delegate void resetSpkDetSettingsHandler(object sender, EventArgs e);
         internal event resetSpkDetSettingsHandler SettingsHaveChanged;
 
-        public SpikeDetSettings(int spikeBufferLength, int numChannels, double DEVICE_REFRESH, int sampleRate)
+        public SpikeDetSettings(int spikeBufferLength, int numChannels, int sampleRate)
         {
             this.spikeBufferLength = spikeBufferLength;
             this.numChannels = numChannels;
-            this.DEVICE_REFRESH = DEVICE_REFRESH;
+            //this.Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             this.sampleRate = sampleRate;
             InitializeComponent();
 
@@ -76,12 +76,12 @@ namespace NeuroRighter.SpikeDetection
                 case 0:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value),detectionDeadTime,minSpikeWidth,maxSpikeWidth,
-                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, DEVICE_REFRESH);
+                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
                     break;
                 case 1:  //RMS Adaptive
                     spikeDetector = new AdaptiveRMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
-                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, DEVICE_REFRESH);
+                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
                     break;
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,

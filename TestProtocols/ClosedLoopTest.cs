@@ -21,7 +21,7 @@ namespace TestProtocols
         protected override void Run()
         {
             double starttime = StimSrv.StimOut.GetTime();
-            offset = StimSrv.getBuffSize() * 3;
+            offset = StimSrv.GetBuffSize() * 3;
             Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
             
             while (Running)
@@ -42,13 +42,13 @@ namespace TestProtocols
                 freq = r.NextDouble() * 100;
                 isi = fs / freq;
                 inc++;
-                //Console.Write("perceived at " + inc * StimSrv.getBuffSize());
-                while ((lastStimTime + isi) <= (inc * StimSrv.getBuffSize()))
+                //Console.Write("perceived at " + inc * StimSrv.GetBuffSize());
+                while ((lastStimTime + isi) <= (inc * StimSrv.GetBuffSize()))
                 {
                     
                     lastStimTime += isi;
-                    if (lastStimTime < (inc-1) * StimSrv.getBuffSize())
-                        lastStimTime = inc * StimSrv.getBuffSize();
+                    if (lastStimTime < (inc-1) * StimSrv.GetBuffSize())
+                        lastStimTime = inc * StimSrv.GetBuffSize();
                     toAppend.Add(new StimulusOutEvent((inc % 64) + 1, (ulong)(lastStimTime + offset), cannedWaveform));
                    // Console.Write(", " + (lastStimTime + offset));
                 }

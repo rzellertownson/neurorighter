@@ -211,7 +211,8 @@ namespace NeuroRighter
                     comboBox_AuxDigInputPort.SelectedIndex = 0;
             }
 
-            textBox_DAQPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.DAQPollingPeriodSec);
+            textBox_ADCPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.ADCPollingPeriodSec);
+            textBox_DACPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.DACPollingPeriodSec);
             textBox_datSrvBufferSizeSec.Text = Convert.ToString(Properties.Settings.Default.datSrvBufferSizeSec);
             textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
@@ -266,7 +267,8 @@ namespace NeuroRighter
         {
             // Recording selections
             Properties.Settings.Default.datSrvBufferSizeSec = Convert.ToDouble(textBox_datSrvBufferSizeSec.Text);
-            Properties.Settings.Default.DAQPollingPeriodSec = Convert.ToDouble(textBox_DAQPollingPeriodSec.Text);
+            Properties.Settings.Default.DACPollingPeriodSec = Convert.ToDouble(textBox_DACPollingPeriodSec.Text);
+            Properties.Settings.Default.ADCPollingPeriodSec = Convert.ToDouble(textBox_ADCPollingPeriodSec.Text);
             Properties.Settings.Default.AnalogInDevice.Clear();
             Properties.Settings.Default.auxAnalogInChan.Clear();
             Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
@@ -462,6 +464,5 @@ namespace NeuroRighter
             Properties.Settings.Default.useAuxDigitalInput = checkBox_UseAuxDigitalInput.Checked;
             comboBox_AuxDigInputPort.Enabled = checkBox_UseAuxDigitalInput.Checked;
         }
-
     }
 }

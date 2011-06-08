@@ -298,36 +298,6 @@ namespace NeuroRighter.Output
             }
         }
 
-        //internal void protProgressChangedHandler(object sender, EventArgs e, int percentage)
-        //{
-        //    Console.WriteLine("Percent complete : " + percentage);
-        //    updateProgressPercentage(percentage);
-        //}
-
-        //internal void updateProgressPercentage(int percentage)
-        //{
-        //    if (progressBar_protocolFromFile.InvokeRequired)
-        //    {
-        //        crossThreadFormUpdateDelegate del = updateProgressPercentage;
-        //        progressBar_protocolFromFile.Invoke(del, new object[] { percentage });
-        //    }
-        //    else
-        //    {
-        //        progressBar_protocolFromFile.Value = percentage;
-        //    }
-
-        //}
-
-        //internal void protFinisheddHandler(object sender, EventArgs e)
-        //{
-        //    // Return buttons to default configuration when finished
-        //    updateProgressPercentage(0);
-        //    MessageBox.Show("Stimulation protocol " + textBox_protocolFileLocations.Text + " is complete. Click Stop to end recording.");
-        //    buttonStop.Enabled = true;
-        //    button_startStimFromFile.Enabled = true;
-        //    button_stopStimFromFile.Enabled = false;
-        //}
-
         internal bool CheckFilePath(string filePath)
         {
             string sourceFile = @filePath;
@@ -418,6 +388,9 @@ namespace NeuroRighter.Output
             auxTaskMaker.SyncTasksToMasterClock(masterTask);
             auxTaskMaker.SyncTasksToMasterStart(masterTask);
 
+            //// Pipe the master clock to PFI1 on this board (for use with zeroing)
+            auxTaskMaker.PipeReferenceClockToPFI(masterTask, "PFI2");
+
             // Create buffer writters
             auxTaskMaker.MakeWriters();
 
@@ -473,6 +446,7 @@ namespace NeuroRighter.Output
         {
             auxDone = true;
         }
+
         internal void StopAllBuffers()
         {
             if (auxProtocol != null)

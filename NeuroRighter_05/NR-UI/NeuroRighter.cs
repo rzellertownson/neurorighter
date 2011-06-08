@@ -68,19 +68,19 @@ namespace NeuroRighter
             this.Text += " (BETA)";
 
             // Set the refresh DAQ refresh period and the datSrv buffer length
-            //Properties.Settings.Default.DAQPollingPeriodSec = DEVICE_REFRESH;
+            //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
 
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
-            DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
+            //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
-            spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             this.currentRef = new int[2];
 
             // Create a new spike detection form so we can access its parameters
-            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, DEVICE_REFRESH, spikeSamplingRate);
+            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
             spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
             spikeDet.SetSpikeDetector();
             this.numPre = spikeDet.numPre;
@@ -260,7 +260,7 @@ namespace NeuroRighter
                             recordingSettings.SetNumElectrodes(numChannels);
                         }
                         //set device refresh rate
-                        DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
+                        //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
 
                         // Find out how many devs and channels/dev we are going to need
                         int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
@@ -551,7 +551,7 @@ namespace NeuroRighter
                         //Initialize graphs
                         if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }
                         spikeGraph = new GridGraph();
-                        int samplesPerPlot = (int)(Math.Ceiling(DEVICE_REFRESH * spikeSamplingRate / downsample) * (spikeplotlength / DEVICE_REFRESH));
+                        int samplesPerPlot = (int)(Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * spikeSamplingRate / downsample) * (spikeplotlength / Properties.Settings.Default.ADCPollingPeriodSec));
                         spikeGraph.setup(numRows, numCols, samplesPerPlot, false, 1 / 4.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                         spikeGraph.setMinMax(0, (float)(samplesPerPlot * numCols) - 1,
                             (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
@@ -562,13 +562,13 @@ namespace NeuroRighter
                         {
                             if (lfpGraph != null) { lfpGraph.Dispose(); lfpGraph = null; }
                             lfpGraph = new RowGraph();
-                            lfpGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                            lfpGraph.setup(numChannels, (int)((Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * lfpSamplingRate / downsample) * (5 / Properties.Settings.Default.ADCPollingPeriodSec))),
                                 5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
                             if (Properties.Settings.Default.SeparateLFPBoard)
-                                lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                                lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * lfpSamplingRate / downsample) / Properties.Settings.Default.ADCPollingPeriodSec) - 1,
                                     (float)(lfpTask.AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(lfpTask.AIChannels.All.RangeHigh));
                             else
-                                lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * lfpSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                                lfpGraph.setMinMax(0, 5 * (int)(Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * lfpSamplingRate / downsample) / Properties.Settings.Default.ADCPollingPeriodSec) - 1,
                                     (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
                             lfpGraph.Dock = DockStyle.Fill;
                             lfpGraph.Parent = tabPage_LFPs;
@@ -578,15 +578,15 @@ namespace NeuroRighter
                         {
                             if (muaGraph != null) { muaGraph.Dispose(); muaGraph = null; }
                             muaGraph = new RowGraph();
-                            muaGraph.setup(numChannels, (int)((Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) * (5 / DEVICE_REFRESH))),
+                            muaGraph.setup(numChannels, (int)((Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * muaSamplingRate / downsample) * (5 / Properties.Settings.Default.ADCPollingPeriodSec))),
                                 5.0, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
-                            muaGraph.setMinMax(0, 5 * (int)(Math.Ceiling(DEVICE_REFRESH * muaSamplingRate / downsample) / DEVICE_REFRESH) - 1,
+                            muaGraph.setMinMax(0, 5 * (int)(Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * muaSamplingRate / downsample) / Properties.Settings.Default.ADCPollingPeriodSec) - 1,
                                     (float)(spikeTask[0].AIChannels.All.RangeLow * (numChannels * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
                             muaGraph.Dock = DockStyle.Fill;
                             muaGraph.Parent = tabPage_MUA;
 
                             muaPlotData = new PlotDataRows(numChannels, downsample, muaSamplingRate * 5, muaSamplingRate,
-                                    (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                                    (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
                             //muaPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
 
                             //muaGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
@@ -599,7 +599,7 @@ namespace NeuroRighter
 
                         spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
                             (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength,
-                            Properties.Settings.Default.ChannelMapping, DEVICE_REFRESH);
+                            Properties.Settings.Default.ChannelMapping, Properties.Settings.Default.ADCPollingPeriodSec);
                         spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
                         spikePlotData.setGain(Properties.Settings.Default.SpikeDisplayGain);
                         spikeGraph.setDisplayGain(Properties.Settings.Default.SpikeDisplayGain);
@@ -608,9 +608,9 @@ namespace NeuroRighter
                         {
                             if (Properties.Settings.Default.SeparateLFPBoard)
                                 lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                                    (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                                    (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
                             else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
-                                    (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, DEVICE_REFRESH);
+                                    (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
                             lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
 
                             lfpGraph.setDisplayGain(Properties.Settings.Default.LFPDisplayGain);
@@ -625,8 +625,8 @@ namespace NeuroRighter
                         waveformPlotData.start();
                         #endregion
 
-                        spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-                        lfpBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+                        spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+                        lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
 
                         if (Properties.Settings.Default.UseEEG)
                         {
@@ -642,7 +642,7 @@ namespace NeuroRighter
                         if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
                         resetEEGFilter();
 
-                        muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, DEVICE_REFRESH);
+                        muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, Properties.Settings.Default.ADCPollingPeriodSec);
                         #endregion
 
                         #region Setup_DataStorage
@@ -812,7 +812,7 @@ namespace NeuroRighter
 
                         //Make channel playback task
                         if (Properties.Settings.Default.UseSingleChannelPlayback)
-                            BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, DEVICE_REFRESH, spikeTask[0],
+                            BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, Properties.Settings.Default.ADCPollingPeriodSec, spikeTask[0],
                                 Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
                         this.Cursor = Cursors.Default;
@@ -850,12 +850,12 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DAQPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
             stimSrv.Setup();
             stimSrv.StartAllTasks();
             return stimSrv.buffLoadTask;
         }
-
+        
         private void NROutputShutdown()
         {
             if (stimSrv != null)

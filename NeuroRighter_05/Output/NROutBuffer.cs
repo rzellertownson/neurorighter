@@ -85,11 +85,6 @@ namespace NeuroRighter.Output
         //private DateTime tickTime;
         //private TimeSpan tickDiff;
 
-        
-
-        
-        
-
         #region internal methods- used by NR objects
 
         //creates the NROutBuffer so that you can start appending and whatnot.

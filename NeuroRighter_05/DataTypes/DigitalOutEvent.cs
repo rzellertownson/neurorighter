@@ -11,24 +11,17 @@ namespace NeuroRighter.DataTypes
     {   
         //internal ulong EventTime; // digital time (in 100ths of ms)
         public  UInt32 Byte; // Integer specifying output Byte corresponding to event time
+
         /// <summary>
         /// Data stucture for holding digital output events
-        /// <author> Jon Newman
-        /// </author>
         /// </summary>
-        /// <param name="EventTime"></param>
-        /// <param name="Byte"></param>
+        /// <param name="EventTime"> Sample of digital event</param>
+        /// <param name="Byte">The port state of the event, 32 bit unsigned integer</param>
         public DigitalOutEvent(ulong EventTime,UInt32 Byte)
         {
             this.sampleIndex = EventTime;
             this.Byte = Byte;
-            this.sampleDuration = 0;
+            //this.sampleDuration = 0;
         }
-
-        //internal override NREvent Copy()
-        //{
-        //    return new DigitalOutEvent(this.sampleIndex, this.Byte);
-        //}
-
     }
 }

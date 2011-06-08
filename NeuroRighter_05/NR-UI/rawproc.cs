@@ -318,19 +318,17 @@ namespace NeuroRighter
             if (checkBox_SALPA.Checked)
                 startTime -= SALPAFilter.offset(); //To account for delay of SALPA filter
 
+            //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
             EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
-            foreach (SpikeEvent spike in newWaveforms.eventBuffer)
-            {
-                //spike.channel += CHAN_INDEX_START;
-                //spike.sampleIndex += (ulong)startTime;
-
-            }
+            
             // Send waveform data to datSrv
            
             
             //Extract waveforms
+            //toRawsrv: 0 index, includes timing offsets, channel remapping
+            //saved: 1 index
             EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
             if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
             {
@@ -338,7 +336,7 @@ namespace NeuroRighter
                 {
                     SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
                     tmp.sampleIndex += (ulong)startTime;
-                    tmp.channel = (short)(tmp.channel + CHAN_INDEX_START);
+                    
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
                     rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
@@ -346,7 +344,8 @@ namespace NeuroRighter
                     {
                         lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
-                            recordingSettings.spkOut.WriteSpikeToFile(tmp.channel, (int)tmp.sampleIndex,
+                            //short ch = CHAN_INDEX_START;
+                            recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);
                         }
                     }
@@ -360,7 +359,7 @@ namespace NeuroRighter
                 {
                     SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
                     tmp.sampleIndex += (ulong)startTime;
-                    tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel + CHAN_INDEX_START);
+                    tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel);
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
                     
@@ -372,7 +371,8 @@ namespace NeuroRighter
                         {
                             if (Properties.Settings.Default.recordSpikes)
                             {
-                                recordingSettings.spkOut.WriteSpikeToFile(tmp.channel, (int)tmp.sampleIndex,
+                                //
+                                recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);
                             }
                         }

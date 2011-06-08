@@ -41,9 +41,6 @@ namespace NeuroRighter.StimSrv
             DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
 
-            
-
-
             //basically, this needs to run, or at least start, the code for all the 'File2X' classes.
         }
 
@@ -52,8 +49,6 @@ namespace NeuroRighter.StimSrv
         {
             ConfigureCounter();
             
-            
-                
             //assign tasks to buffers
             if (Properties.Settings.Default.UseAODO)
             {
@@ -102,8 +97,6 @@ namespace NeuroRighter.StimSrv
             } 
             Console.WriteLine("NRStimSrv: buffLoadTask is no more");
 
-            
-
             if (auxTaskMaker != null)
             {
                 auxTaskMaker.Dispose();
@@ -113,7 +106,6 @@ namespace NeuroRighter.StimSrv
 
             if (stimTaskMaker != null)
             {
-
                 stimTaskMaker.Dispose();
                 stimTaskMaker = null;
             }
@@ -121,10 +113,11 @@ namespace NeuroRighter.StimSrv
 
         }
 
-        public int getBuffSize()
+        public int GetBuffSize()
         {
             return INNERBUFFSIZE;
         }
+
         private void ConfigureCounter()
         {
             //configure counter
@@ -144,15 +137,11 @@ namespace NeuroRighter.StimSrv
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
-            {
-
-               
-                Thread thrd = Thread.CurrentThread;
-
-                thrd.Priority = ThreadPriority.Highest;
-                    //Console.WriteLine("buffload tick");
-            }
-                );
+                {
+                    Thread thrd = Thread.CurrentThread;
+                    thrd.Priority = ThreadPriority.Highest;  
+                }
+            );
         }
 
         private void ConfigureStim(Task masterTask)

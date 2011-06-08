@@ -134,14 +134,14 @@ namespace NeuroRighter
         {
             try
             {
-                DEVICE_REFRESH = Properties.Settings.Default.DAQPollingPeriodSec;
+                //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
                 int numChannelsPerDevice = (numChannels > 32 ? 32 : numChannels);
                 int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
 
                 int fs = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                if (fs * DEVICE_REFRESH <= numPost + numPre + 1)
+                if (fs * Properties.Settings.Default.ADCPollingPeriodSec <= numPost + numPre + 1)
                 {
-                    int fsmin = (int)Math.Ceiling((numPost + numPre + 1) / DEVICE_REFRESH);
+                    int fsmin = (int)Math.Ceiling((numPost + numPre + 1) / Properties.Settings.Default.ADCPollingPeriodSec);
                     textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
                     fs = fsmin;
                 }
@@ -159,7 +159,7 @@ namespace NeuroRighter
                 textBox_spikeSamplingRate.Text = "25000"; //Set to default of 1kHz
             }
 
-            spikeBufferLength = Convert.ToInt32(DEVICE_REFRESH * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             resetReferencers();
 
             // Reset the spike detector if it exists

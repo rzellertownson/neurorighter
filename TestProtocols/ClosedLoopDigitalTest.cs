@@ -23,7 +23,7 @@ namespace TestProtocols
         protected override void Run()
         {
             double starttime = StimSrv.DigitalOut.GetTime();
-            offset = StimSrv.getBuffSize() * 3;
+            offset = StimSrv.GetBuffSize() * 3;
             Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
 
             while (Running)
@@ -78,12 +78,12 @@ namespace TestProtocols
                 inc++;
                 string outbytes = "";
                 //Console.Write("perceived at " + inc * StimSrv.getBuffSize());
-                while ((lastStimTime + isi) <= (inc * StimSrv.getBuffSize()))
+                while ((lastStimTime + isi) <= (inc * StimSrv.GetBuffSize()))
                 {
                     uint sigout = (uint)r.Next();
                     lastStimTime += isi;
-                    if (lastStimTime < (inc - 1) * StimSrv.getBuffSize())
-                        lastStimTime = inc * StimSrv.getBuffSize();
+                    if (lastStimTime < (inc - 1) * StimSrv.GetBuffSize())
+                        lastStimTime = inc * StimSrv.GetBuffSize();
 
 
                     toAppend.Add(new DigitalOutEvent((ulong)(lastStimTime + offset), sigout));

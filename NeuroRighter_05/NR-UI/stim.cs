@@ -716,9 +716,7 @@ namespace NeuroRighter
                     
                 }
 
-                //ZeroOutput zeroOpenLoopOutput = new ZeroOutput(
-                //    openLoopSynchronizedOutput.OUTPUT_BUFFER_SIZE,
-                //    STIM_SAMPLING_FREQ);
+                //ZeroOutput zeroOpenLoopOutput = new ZeroOutput();
 
                 //int[] analogChannelsToZero = { 0, 1, 2, 3 };
                 //zeroOpenLoopOutput.ZeroAOChanOnDev(
@@ -859,9 +857,9 @@ namespace NeuroRighter
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
                     Console.WriteLine("Closed loop stimulation stop initiated");
+                    closedLoopSynchronizedOutput.Stop();
                     NROutputShutdown();
                     this.buttonStop.Enabled = true;
-                    closedLoopSynchronizedOutput.Stop();
                     buttonStop.PerformClick();
                     Console.WriteLine("Closed loop stimulation closed mid process");
                 });
@@ -885,7 +883,7 @@ namespace NeuroRighter
             iisZap = new IISZapper((int)numericUpDown_IISZapper_phaseWidth.Value,
                 (double)numericUpDown_IISZapper_voltage.Value, (int)numericUpDown_IISZapper_channel.Value,
                 (int)numericUpDown_IISZapper_pulsePerTrain.Value, (double)numericUpDown_IISZapper_rate.Value,
-                stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter, DEVICE_REFRESH,
+                stimDigitalTask, stimPulseTask, stimDigitalWriter, stimPulseWriter, Properties.Settings.Default.ADCPollingPeriodSec,
                 this);
 
             iisZap.start(this);

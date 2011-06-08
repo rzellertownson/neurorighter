@@ -27,6 +27,8 @@ namespace NeuroRighter
     /// 
     /// </summary>
     /// <author>John Rolston (rolston2@gmail.com)</author>
+    /// 
+    [Serializable]
     internal sealed class PlotSpikeWaveform
     {
         public Int16 channel;

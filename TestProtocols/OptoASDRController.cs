@@ -20,7 +20,7 @@ namespace TestProtocols
         ulong[] range;
 
         // Closed loop alg. prameters
-        double alpha = 0.001; // Hz per 100 ms.
+        double alpha = 0.01; // Hz per 100 ms.
         double asdrDes = 100; // Hz
         double stimVoltage = 2; // Volts
         double stimFreq = 2; // Hz
@@ -29,21 +29,16 @@ namespace TestProtocols
             protected override void Run()
             {
                 double starttime = StimSrv.DigitalOut.GetTime();
-                offset = StimSrv.getBuffSize() * 3;
+                offset = StimSrv.GetBuffSize() * 3;
                 Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
-
+                
                 while (Running)
                 {
 
 
                     System.Threading.Thread.Sleep(1000);
-                    string outs = "";
-                    string outc = "";
-                    foreach (SpikeEvent spike in recspikes)
-                    {
-                        outs += ((double)(spike.sampleIndex) / 25000.0).ToString() + ",";
-                        outc += (spike.channel + 1) + ",";
-                    }
+                    
+                    
                     //  Console.WriteLine(outs);
                     //  Console.WriteLine(outc);
 
@@ -57,13 +52,23 @@ namespace TestProtocols
                         recordedToSpike = tmp;
                         //  Console.WriteLine("spike read completed");
                     }
-                    catch (Exception eeeee)
+                    catch (Exception e)
                     {
-                        //  Console.WriteLine("error reading spikes: " + e.Message);
+                        Console.WriteLine("error reading spikes: " + e.Message);
                     }
 
 
                 }
+                string outs = "";
+                string outc = "";
+                foreach (SpikeEvent spike in recspikes)
+                {
+                    outs += ((double)(spike.sampleIndex) / 25000.0).ToString() + ",";
+                    outc += (spike.channel + 1) + ",";
+                }
+               // Console.WriteLine("spikes detected by closed loop:");
+               // Console.WriteLine(outs);
+               // Console.WriteLine(outc);
 
             }
 
@@ -71,13 +76,22 @@ namespace TestProtocols
             {
                 if (Running)
                 {
-                    // Console.WriteLine(StimSrv.StimOut.GetTime() + ": going strong, boss!");
-
-                    // First figure out what spikes we have in the buffer
+                    // First, figure out what history of spikes we have
                     ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvaiableTimeRange();
 
                     // Try to get the number of spikes within the available time range
                     EventBuffer<SpikeEvent> lastSpikes = DatSrv.spikeSrv.ReadFromBuffer(spikeTimeRange);
+
+                    // ********** DEBUG - look at the channel numbering
+                    int[] channels = new int[lastSpikes.eventBuffer.Count];
+                    for (int i = 0; i < channels.Length; ++i)
+                    {
+                        channels[i] = lastSpikes.eventBuffer[i].channel;
+                    }
+
+                    // report min and max channel
+                    if (channels.Length > 0)
+                        Console.WriteLine("Min channel number: " + channels.Min() + "Max channel number: " + channels.Max());
 
                     // Estimate the ASDR for the last time window
                     double asdrEstimate = (double)lastSpikes.eventBuffer.Count/((double)(spikeTimeRange[1]-spikeTimeRange[0])/lastSpikes.sampleFrequencyHz);
@@ -90,12 +104,11 @@ namespace TestProtocols
                     if (!double.IsNaN(stimFreq1))
                         stimFreq = stimFreq1;
 
-
                     // Bound stim freq between 0.5 and 100 Hz
-                    if (stimFreq < 0.5)
-                        stimFreq = 0.5;
-                    else if (stimFreq > 100)
-                        stimFreq = 100;
+                    if (stimFreq < 5)
+                        stimFreq = 5;
+                    else if (stimFreq > 50)
+                        stimFreq = 50;
 
                     // Make new output buffers based on input
                     List<AuxOutEvent> toAppendAnalog = new List<AuxOutEvent>();
@@ -104,28 +117,27 @@ namespace TestProtocols
                     isi = fs / stimFreq;
                     ulong pw = (ulong)(fs * stimPulseWidth);
                     inc++;
+
                     //string outbytes = "";
-                    //Console.Write("perceived at " + inc * StimSrv.getBuffSize());
+                    //Console.Write("perceived at " + inc * StimSrv.GetBuffSize());
 
                     // Make periodic stimulation
-                    while ((lastStimTime + isi) <= (inc * StimSrv.getBuffSize()))
+                    while ((lastStimTime + isi) <= (inc * StimSrv.GetBuffSize()))
                     {
-
-                        uint digOut = (uint)r.Next();
-
+                        // Get event time
                         lastStimTime += isi;
+                        if (lastStimTime < (inc - 1) * StimSrv.GetBuffSize())
+                            lastStimTime = inc * StimSrv.GetBuffSize();
 
-                        if (lastStimTime < (inc - 1) * StimSrv.getBuffSize())
-                            lastStimTime = inc * StimSrv.getBuffSize();
-
-                        // Set LED current
-                        toAppendAnalog.Add(new AuxOutEvent((ulong)(lastStimTime + offset), 1, stimVoltage));
+                        // Set LED current(ulong)(lastStimTime + offset), 1, stimVoltage)
+                        toAppendAnalog.Add(new AuxOutEvent((ulong)(lastStimTime + offset) , 0, stimVoltage));
 
                         // Stim turns on
-                        toAppendDig.Add(new DigitalOutEvent((ulong)(lastStimTime + offset), 1));
+                        toAppendDig.Add(new DigitalOutEvent((ulong)(lastStimTime + offset)+pw, 1));
 
                         // Stim turns off
-                        toAppendDig.Add(new DigitalOutEvent((ulong)(lastStimTime + offset) +pw, 0));
+                        toAppendDig.Add(new DigitalOutEvent((ulong)(lastStimTime + offset) + 2*pw, 0));
+                        toAppendAnalog.Add(new AuxOutEvent((ulong)(lastStimTime + offset) + 3*pw, 0, 0.328));
 
                         //outbytes += toAppend.ElementAt(toAppend.Count - 1).sampleIndex.ToString() + " ";
                         // Console.Write(", " + (ulong)(lastStimTime + offset));
@@ -134,7 +146,7 @@ namespace TestProtocols
 
                     StimSrv.DigitalOut.writeToBuffer(toAppendDig);
                     StimSrv.AuxOut.writeToBuffer(toAppendAnalog);
-                    //  Console.WriteLine(outbytes);
+                    Console.WriteLine(toAppendAnalog.Count + " stims " + toAppendDig.Count + " digs");
 
                 }
             }

@@ -63,13 +63,10 @@ namespace NeuroRighter
         private Task eegTask;
         private Task videoTask;  //To synch up Cineplex system
         private Task triggerTask; //To trigger everything simultaneously, using AO
-        //private Task digitalOutputTask; //Allows user to generate arbitrary digital output signals if a digital device is specified
         private Task stimDigitalTask;
         private Task stimPulseTask;
         private Task stimTimeTask; //Records timing of stim pulses
         private Task stimIvsVTask; //Determines whether stim is current or voltage controlled
-        //private Task buffLoadTask; //Used to decide when buffer reload is needed in stimbuffer class
-        //private Task auxOutputTask;
         private Task spikeOutTask;
         private Task auxAnInTask; // For recording AI channels
         private Task auxDigInTask;
@@ -94,9 +91,6 @@ namespace NeuroRighter
         private string filenameOutput;
         private string filenameBase;
         private string originalNameBase;
-        //private string filenameEEG;
-        //private string filenameSpks;  //Spike times and waveforms
-        //private string filenameStim; //Stim times
 
         // Buffers
         private List<AnalogWaveform<double>[]> spikeData;
@@ -214,7 +208,6 @@ namespace NeuroRighter
         #endregion
 
         #region Constants
-        internal double DEVICE_REFRESH = 0.005; //Time in seconds between reads of NI-DAQs
         private const int NUM_SECONDS_TRAINING = 3; //Num. seconds to train noise levels
         private int STIM_SAMPLING_FREQ = 100000; //Resolution at which stim pulse waveforms are generated
         private const int STIM_PADDING = 10; //Num. 0V samples on each side of stim. waveform 

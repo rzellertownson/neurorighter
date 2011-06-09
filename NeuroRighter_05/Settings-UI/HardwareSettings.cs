@@ -56,11 +56,12 @@ namespace NeuroRighter
             comboBox_analogInputDevice2.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice2.Items.Count > 0)
             {
-                int idx;
-                if (Properties.Settings.Default.AnalogInDevice.Count > 1)
-                    idx = comboBox_analogInputDevice2.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[1]);
-                else
-                    idx = -1;
+                int idx = -1;
+                if (Properties.Settings.Default.AnalogInDevice!=null)
+                    if (Properties.Settings.Default.AnalogInDevice.Count > 1)
+                        idx = comboBox_analogInputDevice2.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[1]);
+                
+                    
                 if (idx >= 0)
                     comboBox_analogInputDevice2.SelectedIndex = idx;
                 else
@@ -269,7 +270,9 @@ namespace NeuroRighter
             Properties.Settings.Default.datSrvBufferSizeSec = Convert.ToDouble(textBox_datSrvBufferSizeSec.Text);
             Properties.Settings.Default.DACPollingPeriodSec = Convert.ToDouble(textBox_DACPollingPeriodSec.Text);
             Properties.Settings.Default.ADCPollingPeriodSec = Convert.ToDouble(textBox_ADCPollingPeriodSec.Text);
+            Properties.Settings.Default.AnalogInDevice = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.AnalogInDevice.Clear();
+            Properties.Settings.Default.auxAnalogInChan = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.auxAnalogInChan.Clear();
             Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
             Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice1.SelectedItem));

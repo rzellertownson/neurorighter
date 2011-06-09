@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferSkipTesting.cs" />
     <Compile Include="OptoASDRController.cs" />
     <Compile Include="ClosedLoopDigitalTest.cs" />
     <Compile Include="ClosedLoopTest.cs" />

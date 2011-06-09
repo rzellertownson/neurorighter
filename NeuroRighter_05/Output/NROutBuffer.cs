@@ -130,8 +130,8 @@ namespace NeuroRighter.Output
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(TimerTick);
 
            // Populate the outer-buffer twice
-            PopulateBufferAppending(true);
-            PopulateBufferAppending(true);
+            PopulateBufferAppending(true,false);
+            PopulateBufferAppending(true,false);
 
             
         }
@@ -208,6 +208,10 @@ namespace NeuroRighter.Output
             return BUFFSIZE;
         }
 
+        //write a bunch of zeros to the DAQ so that we don't leave non-zero values on our outputs
+        //must be called Before you clear tasks
+        
+
         #endregion
 
         #region private methods
@@ -230,7 +234,9 @@ namespace NeuroRighter.Output
             }
             else
             {
-               // Console.WriteLine(Convert.ToString(tickDiff) + ": "+this.ToString() +" not running.");
+                //if the buffer is not longer running, then write out a bunch of zeros
+                ZeroOut();
+                // Console.WriteLine(Convert.ToString(tickDiff) + ": "+this.ToString() +" not running.");
                 FinishStimulation(e);
             }
          //   thrd.Priority = ThreadPriority.Normal;
@@ -246,11 +252,13 @@ namespace NeuroRighter.Output
                 {
                     t.Stop();
                     t.Dispose();
+                   
                 }
                 foreach (Task t in digitalTasks)
                 {
                     t.Stop();
                     t.Dispose();
+                    
                 }
                 
                 // Tell NR that stimulation has finished
@@ -267,7 +275,7 @@ namespace NeuroRighter.Output
             //Console.WriteLine("Write to Buffer Started");
             //Now look in the outer buffer and grab whatever is needed for this load.
             //this operation is the most intensive the buffer needs to 
-            PopulateBufferAppending(true);
+            PopulateBufferAppending(true,false);
             
             
             done = true;
@@ -278,7 +286,7 @@ namespace NeuroRighter.Output
         //creates a set of empty buffers (arrays) for each task, and then goes through
         //the outerbuffer (list) and looks for events that need to be applied during 
         //this particular load.  Those events are then written to the buffer
-        private void PopulateBufferAppending(bool firstTime)
+        private void PopulateBufferAppending(bool firstTime, bool zeroOnly)
         {
             //create the buffers we are about to write to the DAQ
             lock(this)
@@ -304,73 +312,76 @@ namespace NeuroRighter.Output
                     dbuffs.Add(dbuff);
 
                 }
+                //timing/debugging stuff
+                double bufferEvent = 0;
+                double loadBuffers = 0;
+                double analogbu = 0;
 
-
-
-
-
-                bufferIndex = 0;
-                //double clearBuffers = 0;
-                //if (running)
-                //    clearBuffers = this.GetTime(); 
-
-
-                //if we don't have a stimulus 'on deck', look for one (needed for state change buffers).
-                if ((outerbuffer.Count > 0) & (nextStim == null))
+                if (!zeroOnly)
                 {
-                    nextStim = outerbuffer.ElementAt(0);
-                   // Console.WriteLine("n nextstim: " + nextStim.sampleIndex.ToString());
-                }
-                //are we in the middle of a stimulus?  if so, finish as much as you can
-                if (currentStim != null)
-                {
-                    //   MessageBox.Show("examining first stim");
-                    bool finished = ApplyCurrentStimulus();
-                    if (finished)
+
+                    bufferIndex = 0;
+                    //double clearBuffers = 0;
+                    //if (running)
+                    //    clearBuffers = this.GetTime(); 
+
+
+                    //if we don't have a stimulus 'on deck', look for one (needed for state change buffers).
+                    if ((outerbuffer.Count > 0) & (nextStim == null))
                     {
-                        FinishStim();
+                        nextStim = outerbuffer.ElementAt(0);
+                        // Console.WriteLine("n nextstim: " + nextStim.sampleIndex.ToString());
                     }
-
-                }
-
-                //at this point, we have either finished a stimulus, or finished the buffer.
-                //therefore, if there is room left in this buffer, find the next stimulus and move to it.
-
-                //for state change buffers, keep in mind that ApplyCurrentStimulus will go until the next stimulus
-                //or until the end of this particular buffer
-                while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
-                {
-                    //is next stimulus within range of this buffload?
-                    bool ready = NextStimulusAppending();
-
-                    if (ready)
+                    //are we in the middle of a stimulus?  if so, finish as much as you can
+                    if (currentStim != null)
                     {
+                        //   MessageBox.Show("examining first stim");
                         bool finished = ApplyCurrentStimulus();
                         if (finished)
                         {
                             FinishStim();
                         }
+
                     }
+
+                    //at this point, we have either finished a stimulus, or finished the buffer.
+                    //therefore, if there is room left in this buffer, find the next stimulus and move to it.
+
+                    //for state change buffers, keep in mind that ApplyCurrentStimulus will go until the next stimulus
+                    //or until the end of this particular buffer
+                    while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+                    {
+                        //is next stimulus within range of this buffload?
+                        bool ready = NextStimulusAppending();
+
+                        if (ready)
+                        {
+                            bool finished = ApplyCurrentStimulus();
+                            if (finished)
+                            {
+                                FinishStim();
+                            }
+                        }
+                    }
+
+                    //
+                    //if (running)
+                    //    loadBuffers = this.GetTime(); 
+
+                    //congratulations!  we finished the buffer!
+                    numBuffLoadsCompleted++;
+                    currentSample = numBuffLoadsCompleted * BUFFSIZE;
+                    // Check if protocol is completed
+                    if ((numBuffLoadsCompleted >= numBuffLoadsRequired) & (!immortal))
+                    {
+                        Stop(); // Start clean up cascade
+                    }
+
+                    OnBufferLoad(EventArgs.Empty);
+                   
+                    if (running)
+                        bufferEvent = this.GetTime();
                 }
-
-                //double loadBuffers = 0;
-                //if (running)
-                //    loadBuffers = this.GetTime(); 
-
-                //congratulations!  we finished the buffer!
-                numBuffLoadsCompleted++;
-                currentSample = numBuffLoadsCompleted * BUFFSIZE;
-                // Check if protocol is completed
-                if ((numBuffLoadsCompleted >= numBuffLoadsRequired) & (!immortal))
-                {
-                    Stop(); // Start clean up cascade
-                }
-
-                OnBufferLoad(EventArgs.Empty);
-                double bufferEvent = 0;
-                if (running)
-                bufferEvent = this.GetTime();
-                
                    
                 //write buffers
                 
@@ -387,7 +398,7 @@ namespace NeuroRighter.Output
 
                 }
 
-                double analogbu = 0;
+                
                 if (running)
                     analogbu = this.GetTime();
                 for (int i = 0; i < digitalWriters.Length; i++)
@@ -559,6 +570,12 @@ namespace NeuroRighter.Output
 
         }
 
+        private void ZeroOut()
+        {
+            // outerbuffer.Clear();
+            PopulateBufferAppending(true, true);
+        }
+
         private void OnThreshold(EventArgs e)
         {
             if (QueueLessThanThreshold != null)
@@ -570,6 +587,7 @@ namespace NeuroRighter.Output
             if (DAQLoadCompleted != null)
                 DAQLoadCompleted(this, e);
         }
+
         
         #endregion
     }

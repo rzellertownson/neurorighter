@@ -161,18 +161,31 @@ namespace NeuroRighter.DatSrv
             ulong[] timeRange = new ulong[2];
             timeRange[0] = ulong.MaxValue;
             timeRange[1] = ulong.MinValue;
-            for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
-            {
-                if (timeRange[0] > dataBuffer.eventBuffer[i].sampleIndex)
-                {
-                    timeRange[0] = dataBuffer.eventBuffer[i].sampleIndex;
-                }
 
-                if (timeRange[1] < dataBuffer.eventBuffer[i].sampleIndex)
+            // Enforce a read lock
+            bufferLock.EnterReadLock();
+            try
+            {
+
+                for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
                 {
-                    timeRange[1] = dataBuffer.eventBuffer[i].sampleIndex;
+                    if (timeRange[0] > dataBuffer.eventBuffer[i].sampleIndex)
+                    {
+                        timeRange[0] = dataBuffer.eventBuffer[i].sampleIndex;
+                    }
+
+                    if (timeRange[1] < dataBuffer.eventBuffer[i].sampleIndex)
+                    {
+                        timeRange[1] = dataBuffer.eventBuffer[i].sampleIndex;
+                    }
                 }
             }
+            finally
+            {
+                // release the read lock
+                bufferLock.ExitReadLock();
+            }
+
             return timeRange;
         }
 
@@ -181,7 +194,6 @@ namespace NeuroRighter.DatSrv
             EventBuffer<T> returnBuffer = new EventBuffer<T>(dataBuffer.sampleFrequencyHz);
 
             // Enforce a read lock
-            
             bufferLock.EnterReadLock();
             try
             {

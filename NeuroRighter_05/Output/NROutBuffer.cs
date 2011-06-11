@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 using ExtensionMethods;
 
 
@@ -80,7 +81,7 @@ namespace NeuroRighter.Output
 
         // DEBUGGING
         // these are in place so you can watch the timing of your NROutBuffer
-        
+        RealTimeDebugger Debugger;
         //private double startTime;
         //private DateTime tickTime;
         //private TimeSpan tickDiff;
@@ -101,10 +102,10 @@ namespace NeuroRighter.Output
 
         //this NROutBuffer has configured the NI DAQs for use, and has written the first two buffer loads to the DAQs.  If you have any stimuli 
         //that you plan on applying within the first two buffer loads, append those before calling this method.
-        internal void Setup(AnalogMultiChannelWriter[] AnalogWriters, DigitalSingleChannelWriter[] DigitalWriters, Task[] AnalogTasks, Task[] DigitalTasks,  Task BuffLoadTask)
+        internal void Setup(AnalogMultiChannelWriter[] AnalogWriters, DigitalSingleChannelWriter[] DigitalWriters, Task[] AnalogTasks, Task[] DigitalTasks,  Task BuffLoadTask, RealTimeDebugger Debugger)
         {
 
-
+            this.Debugger = Debugger;
             this.analogWriters = new AnalogMultiChannelWriter[AnalogWriters.Length];
             this.analogTasks = new Task[AnalogTasks.Length];
             for (int i = 0; i < AnalogWriters.Length; i++)
@@ -291,6 +292,7 @@ namespace NeuroRighter.Output
             //create the buffers we are about to write to the DAQ
             lock(this)
             {
+                Debugger.Write(this.ToString() + " start");
                 double start;
                 if (running)
                     start = this.GetTime();
@@ -384,7 +386,7 @@ namespace NeuroRighter.Output
                 }
                    
                 //write buffers
-                
+                Debugger.Write(this.ToString() + " buffers calculated");
                 for (int i = 0; i < analogWriters.Length; i++)
                 {
                     if (firstTime)
@@ -398,7 +400,7 @@ namespace NeuroRighter.Output
 
                 }
 
-                
+                Debugger.Write(this.ToString() + " analog written");
                 if (running)
                     analogbu = this.GetTime();
                 for (int i = 0; i < digitalWriters.Length; i++)
@@ -413,9 +415,8 @@ namespace NeuroRighter.Output
                     uint[] tmp = dbuffs.ElementAt(i);
                     tmp = null;
                 }
-                double stop = 0;
-                if (running)
-                    stop = this.GetTime();
+                Debugger.Write(this.ToString() + " digital written");
+                
               //  Console.WriteLine(this.ToString() + " : " + currentSample + " samples have been written. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
             }
         }

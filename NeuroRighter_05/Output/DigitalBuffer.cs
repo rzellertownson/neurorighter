@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
@@ -28,7 +29,7 @@ namespace NeuroRighter.Output
        
        
 
-        internal void Setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask)
+        internal void Setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
         {
             //encapsulate the tasks and writer given into arrays
             DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
@@ -37,7 +38,7 @@ namespace NeuroRighter.Output
             Task[] digitalTasks = new Task[1];
             digitalTasks[0]=digitalOutputTask;
 
-            base.Setup(new AnalogMultiChannelWriter[0],digitalWriters,new Task[0],digitalTasks,buffLoadTask);
+            base.Setup(new AnalogMultiChannelWriter[0],digitalWriters,new Task[0],digitalTasks,buffLoadTask,Debugger);
             
 
         }

@@ -8,11 +8,13 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
     class File2Aux
     {
+        RealTimeDebugger debugger;
         StreamReader olauxfile; // The stream reader for the .olaux file being used
         internal string auxfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makeauxfile.m
         internal string line; // line from the .olaux file
@@ -46,7 +48,7 @@ namespace NeuroRighter.Output
         internal event AllFinishedHandler AlertAllFinished;
 
         internal File2Aux(string auxfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task auxOutputTask,
-            Task buffLoadTask, AnalogMultiChannelWriter auxOutputWriter, ulong numEventPerLoad, bool auxFileExists)
+            Task buffLoadTask, AnalogMultiChannelWriter auxOutputWriter, ulong numEventPerLoad, bool auxFileExists, RealTimeDebugger debugger)
         {
             this.auxfile = auxfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -56,6 +58,7 @@ namespace NeuroRighter.Output
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.numEventPerLoad = numEventPerLoad;
             this.auxFileExists = auxFileExists;
+            this.debugger = debugger;
 
             // Instatiate a DigitalBuffer object
             auxBuff = new AuxBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
@@ -117,7 +120,7 @@ namespace NeuroRighter.Output
                 auxBuff.writeToBuffer(auxDataChunk); // Append all the stimuli
                 numLoadsCompleted = numAuxEvent;
                 lastLoad = true;
-                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask);
+                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
             }
             else
             {
@@ -127,7 +130,7 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 auxBuff.writeToBuffer(auxDataChunk);//append first N stimuli
                 numLoadsCompleted++;
-                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask);
+                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
 
             }
 

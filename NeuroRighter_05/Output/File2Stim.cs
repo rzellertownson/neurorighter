@@ -7,12 +7,14 @@ using NationalInstruments.DAQmx;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using NeuroRighter.dbg;
 
 
 namespace NeuroRighter.Output
 {
     class File2Stim
     {
+        RealTimeDebugger debugger;
         StreamReader olstimfile; // The stream reader for the .olstim file being used
         internal string stimfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
         internal string line; // line from the .olstim file
@@ -46,7 +48,7 @@ namespace NeuroRighter.Output
 
         internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
             Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
-            AnalogMultiChannelWriter stimAnalogWriter)
+            AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger)
         {
 
             this.stimfile = stimfile;
@@ -59,13 +61,14 @@ namespace NeuroRighter.Output
             this.stimDigitalWriter = stimDigitalWriter;
             this.stimAnalogWriter = stimAnalogWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
+            this.debugger = debugger;
 
             stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
 
         internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
             Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
-            AnalogMultiChannelWriter stimAnalogWriter, double[] cannedWave)
+            AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger, double[] cannedWave)
         {
 
             this.stimfile = stimfile;
@@ -79,6 +82,7 @@ namespace NeuroRighter.Output
             this.stimAnalogWriter = stimAnalogWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.cannedWaveform = cannedWave;
+            this.debugger = debugger;
 
             stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         }
@@ -156,7 +160,7 @@ namespace NeuroRighter.Output
                 stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted = numstim;
                 lastLoad = true;
-                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
 
             }
             else
@@ -173,7 +177,7 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask);
+                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
 
             }
 

@@ -164,6 +164,14 @@ namespace NeuroRighter
             led_recording.OnColor = Color.Lime;
             if (!button_startStimFromFile.Enabled) { button_startStimFromFile.Enabled = true; }
 
+
+            //debugger
+            if (Debugger != null)
+            {
+                Debugger.Close();
+                Debugger = null;
+            }
+
             timer_timeElapsed.Enabled = false;
             Console.WriteLine("Reset Complete");
         }
@@ -326,10 +334,11 @@ namespace NeuroRighter
                             }
                             else
                             {
-                            stimPulseTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
-                            stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
+                                stimPulseTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                stimPulseTask.Timing.ReferenceClockRate = 10000000.0; //10 MHz timebase
                             }
                         }
+
                         stimDigitalTask.Timing.ConfigureSampleClock("100KHzTimebase", STIM_SAMPLING_FREQ,
                            SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
                         stimPulseTask.Timing.ConfigureSampleClock("100KHzTimebase", STIM_SAMPLING_FREQ,

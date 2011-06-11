@@ -7,6 +7,7 @@ using NeuroRighter.Output;
 using NationalInstruments.DAQmx;
 using System.Threading;
 using System.Diagnostics;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.StimSrv
 {
@@ -25,11 +26,12 @@ namespace NeuroRighter.StimSrv
 
         // Master timing and triggering task
         internal Task masterTask;
+        private RealTimeDebugger debugger;
 
         private int INNERBUFFSIZE;
         private int STIM_SAMPLING_FREQ;
 
-        public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask)
+        public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger)
         {
             this.masterTask = masterTask;
             this.INNERBUFFSIZE = INNERBUFFSIZE;
@@ -40,7 +42,7 @@ namespace NeuroRighter.StimSrv
             AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
-
+            this.debugger = debugger;
             //basically, this needs to run, or at least start, the code for all the 'File2X' classes.
         }
 
@@ -55,8 +57,8 @@ namespace NeuroRighter.StimSrv
                 ConfigureAODO(true, masterTask);
                 AuxOut.immortal = true;
                 DigitalOut.immortal = true;
-                DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask);
-                AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask);
+                DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask, debugger);
+                AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask, debugger);
                 AuxOut.Start();
                 
                 DigitalOut.Start();
@@ -66,7 +68,7 @@ namespace NeuroRighter.StimSrv
             {
                 ConfigureStim(masterTask);
                 StimOut.immortal = true;
-                StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask);
+                StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask, debugger);
                 StimOut.Start();
             }
         }
@@ -139,7 +141,8 @@ namespace NeuroRighter.StimSrv
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
                 {
                     Thread thrd = Thread.CurrentThread;
-                    thrd.Priority = ThreadPriority.Highest;  
+                    thrd.Priority = ThreadPriority.Highest;
+                    debugger.WriteReference("counter tick");
                 }
             );
         }

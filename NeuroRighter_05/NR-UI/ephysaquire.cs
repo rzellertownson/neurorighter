@@ -44,7 +44,6 @@ using ExtensionMethods;
 using NeuroRighter.DataTypes;
 using System.Media;
 
-
 namespace NeuroRighter
 {
     ///<summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG) 
@@ -78,13 +77,14 @@ namespace NeuroRighter
 
         private void AnalogInCallback_spikes(IAsyncResult ar)
         {
+            Debugger.Write("spike callback start");
             try
             {
                 if (taskRunning)
                 {
                     int taskNumber = (int)ar.AsyncState;
                     trackingReads[taskNumber]++;
-
+                    
                     #region Stim_Timing_Acquisition
                     if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                     {
@@ -103,8 +103,24 @@ namespace NeuroRighter
 
                             if (getStimData)
                             {
-                                double[,] stimData = stimTimeReader.ReadMultiSample(spikeBufferLength);
-                                //NB: Should make this read memory optimized...
+                                //This read handles both stim data and optional aux analog in data. Both are stored in stimDataTmp and parsed out later
+                                int numSampRead;
+                                stimTimeReader.MemoryOptimizedReadMultiSample(spikeBufferLength, ref stimDataTmp,out numSampRead);
+
+                                //Read the available data from the channels
+                                if (twoAITasksOnSingleBoard)
+                                {
+                                    // Pull out the correct channels
+                                    for (int i = 0; i < stimTimeChanSet.numericalChannels.Length; ++i)
+                                    {
+                                        for (int j = 0; j < spikeBufferLength; ++j)
+                                        {
+                                            stimData[i,j] = stimDataTmp[stimTimeChanSet.numericalChannels[i], j];
+                                        }
+                                    }
+
+                                    AuxAnalogFromStimData(ref stimDataTmp);
+                                }
 
                                 //Copy new data into prepended data, to deal with edge effects
                                 double[] prependedData = new double[spikeBufferLength + STIM_BUFFER_LENGTH];
@@ -230,6 +246,7 @@ namespace NeuroRighter
                 MessageBox.Show(exception.Message);
                 reset();
             }
+            Debugger.Write("spike callback stop");
         }
         #endregion //End spike acquisition
 
@@ -383,32 +400,64 @@ namespace NeuroRighter
         // Aux Data Aquisition
         #region Aux Data Aquisition
 
+        private void AuxAnalogFromStimData(ref double[,] combinedAnalogData)
+        {
+            // Create space for the buffer
+            auxAnData = new double[auxChanSet.numericalChannels.Length,spikeBufferLength];
+                
+            // Pull out the correct channels
+            for (int i =0; i < auxChanSet.numericalChannels.Length; ++i)
+            {
+                for (int j =0; j < spikeBufferLength; ++j)
+                {
+                    auxAnData[i,j] = combinedAnalogData[auxChanSet.numericalChannels[i],j];
+                }
+            }
+
+
+            // Send to datSrv
+            datSrv.auxAnalogSrv.WriteToBuffer(auxAnData,0,numChannels);
+
+            //Write to file in format [numChannels numSamples]
+            #region Write aux file
+            if (switch_record.Value && recordingSettings.recordAuxAnalog)
+            {
+                short[,] shortAuxAnData = new short[auxChanSet.numericalChannels.Length, spikeBufferLength];
+                shortAuxAnData = neuralDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
+                recordingSettings.auxAnalogOut.read(shortAuxAnData,auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
+            }
+            #endregion
+        }
+
         private void AnalogInCallback_AuxAn(IAsyncResult ar)
         {
+            // Only called when there is no other AI task on aux in board
             lock (this)
             {
                 try
                 {
                     if (taskRunning)
                     {
-                        //Read the available data from the channels
-                        auxAnData = auxAnReader.EndReadInt16(ar);
 
+                        //Read the available data from the channels
+                        int numAuxSampRead;
+                        auxAnData = auxAnReader.EndMemoryOptimizedReadMultiSample(ar, out numAuxSampRead);
+  
                         // Send to datSrv
-                        double[][] auxAnDataDouble = neuralDataScaler.ConvertInt16ToSoftRaw(ref auxAnData);
-                        datSrv.auxAnalogSrv.WriteToBuffer(auxAnDataDouble,0,numChannels);
+                        datSrv.auxAnalogSrv.WriteToBuffer(auxAnData,0,numChannels);
 
                         //Write to file in format [numChannels numSamples]
                         #region Write aux file
                         if (switch_record.Value && recordingSettings.recordAuxAnalog)
                         {
-                            //auxDataScaler.ShiftUnscaledInt16ToZero(ref auxAnData);
-                            recordingSettings.auxAnalogOut.read(auxAnData, auxAnInTask.AIChannels.Count, 0, spikeBufferLength);
+                            short[,] shortAuxAnData = new short[auxChanSet.numericalChannels.Length,spikeBufferLength];
+                            shortAuxAnData = neuralDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
+                            recordingSettings.auxAnalogOut.read(shortAuxAnData, auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
                         }
                         #endregion
 
                         // Start next read
-                        auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
+                        auxAnReader.BeginMemoryOptimizedReadMultiSample(spikeBufferLength, auxAnCallback, null, auxAnData); 
                     }
                 }
                 catch (DaqException exception)

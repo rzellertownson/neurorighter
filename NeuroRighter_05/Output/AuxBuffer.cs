@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
@@ -32,7 +33,7 @@ namespace NeuroRighter.Output
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
 
-        internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask)
+        internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
         {
             AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
             analogWriters[0] = auxOutputWriter;
@@ -40,7 +41,7 @@ namespace NeuroRighter.Output
             Task[] analogTasks = new Task[1];
             analogTasks[0] = auxOutputTask;
 
-            base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask);
+            base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask,Debugger);
 
         }
 

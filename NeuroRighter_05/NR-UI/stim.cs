@@ -354,7 +354,7 @@ namespace NeuroRighter
             stimDigitalTask.Control(TaskAction.Verify);
 
             stim_params sp = (stim_params)e.Argument;
-
+             
             //Create randomized list of channels
             int numStimChannels = sp.stimChannelList.GetLength(0);
             ArrayList chListSorted = new ArrayList(numStimChannels);
@@ -619,11 +619,11 @@ namespace NeuroRighter
             if (checkBox_useManStimWaveform.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0], stimWaveform);
+                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0],Debugger,stimWaveform);
             }
             else
             {
-                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0]);
+                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0], Debugger);
             }
 
             // Subscribe the stopStimFromFile Click to the event raised when

@@ -290,7 +290,6 @@ namespace NeuroRighter
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             
             
-
             // Set up devices
             if (checkBox_useSecondBoard.Checked)
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
@@ -320,6 +319,16 @@ namespace NeuroRighter
                 Properties.Settings.Default.SigOutDev = Convert.ToString(comboBox_SigOutDev.SelectedItem);
             if (checkBox_UseAuxAnalogInput.Checked)
             {
+                if ((checkBox_useSecondBoard.Checked && comboBox_AuxAnalogInputDevice.SelectedItem.ToString() == comboBox_analogInputDevice2.SelectedItem.ToString())
+                    || comboBox_AuxAnalogInputDevice.SelectedItem.ToString() == comboBox_analogInputDevice1.SelectedItem.ToString()
+                    || (checkBox_sepLFPBoard1.Checked && comboBox_AuxAnalogInputDevice.SelectedItem.ToString() == comboBox_LFPDevice1.SelectedItem.ToString()))
+                {
+                    MessageBox.Show("Auxiliary analog input cannot be recorded from a device that is also being used to record neural data (such as" +
+                                    " raw electrode input or LFPs). Please make a change in your selections.");
+                    return;
+                }
+
+
                 Properties.Settings.Default.auxAnalogInDev = Convert.ToString(comboBox_AuxAnalogInputDevice.SelectedItem);
                 for (int i = 0; i < listBox_AuxAnalogInChan.SelectedItems.Count; ++i)
                     Properties.Settings.Default.auxAnalogInChan.Add(listBox_AuxAnalogInChan.SelectedItems[i].ToString());

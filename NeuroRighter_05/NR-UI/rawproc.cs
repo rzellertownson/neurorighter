@@ -91,7 +91,7 @@ namespace NeuroRighter
                         Int16[] tempBuff;
                         
                         // Convert raw data to 16-bit int
-                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+                        tempBuff = neuralDataScaler.ConvertSoftRawRowToInt16(ref filtSpikeData[i]);
 
                         // Send data to file writer
                         for (int j = 0; j < spikeBufferLength; ++j)
@@ -152,7 +152,7 @@ namespace NeuroRighter
                         Int16[] tempLFPBuff;
 
                         // Convert raw data to 16-bit int
-                        tempLFPBuff = neuralDataScaler.ConvertSoftRawToInt16(ref finalLFPData[i]);
+                        tempLFPBuff = neuralDataScaler.ConvertSoftRawRowToInt16(ref finalLFPData[i]);
 
                         // Send data to file writer
                         for (int j = 0; j < lfpBufferLength; ++j)
@@ -223,7 +223,7 @@ namespace NeuroRighter
                         Int16[] tempBuff;
 
                         // Convert raw data to 16-bit int
-                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+                        tempBuff = neuralDataScaler.ConvertSoftRawRowToInt16(ref filtSpikeData[i]);
 
                         // Send data to file writer
                         for (int j = startIdx; j < spikeBufferLength; ++j)
@@ -272,7 +272,7 @@ namespace NeuroRighter
                         Int16[] tempBuff;
 
                         // Convert raw data to 16-bit int
-                        tempBuff = neuralDataScaler.ConvertSoftRawToInt16(ref filtSpikeData[i]);
+                        tempBuff = neuralDataScaler.ConvertSoftRawRowToInt16(ref filtSpikeData[i]);
 
                         // Send data to file writer
                         for (int j = startIdx; j < spikeBufferLength; ++j)

@@ -45,7 +45,7 @@ namespace NeuroRighter.DataTypes
     /// value and an optional a list of auxiliary doubles that can be inserted by the user.
     /// <author> Jon Newman </author>
     /// </summary>
-
+    [Serializable]
     public sealed class ElectricalStimEvent : NREvent
     {
 

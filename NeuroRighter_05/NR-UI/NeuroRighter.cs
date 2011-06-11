@@ -22,6 +22,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -50,6 +51,7 @@ using ExtensionMethods;
 using NeuroRighter.DatSrv;
 using NeuroRighter.StimSrv;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter
 {
@@ -420,6 +422,7 @@ namespace NeuroRighter
                         {
                             try
                             {
+                                
                                 numStimReads = new List<int>(numDevices);
                                 for (int i = 0; i < spikeTask.Count; ++i)
                                     numStimReads.Add(0);
@@ -433,17 +436,33 @@ namespace NeuroRighter
                                 DaqSystem.Local.ConnectTerminals(spikeTask[0].Timing.ReferenceClockSource,
                                     "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0");
 
-                                stimTimeTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                                    
-                                    
-                                    
-                                    //"/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                stimTimeTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
                                 stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                                 stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
                                     SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                                 stimTimeTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
                                     "/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
                                 stimTimeTask.Control(TaskAction.Verify);
+
+                                // stim Timing Channel settings object
+                                StringCollection stimTimePhysChan = new StringCollection();
+                                for (int i = 0; i < stimTimeTask.AIChannels.Count; ++i)
+                                {
+                                    stimTimePhysChan.Add(stimTimeTask.AIChannels[i].PhysicalName);
+                                }
+                                
+                                // Write down the indicies corresponding to the portion of this task that will
+                                // actually record stimulus infromation instead of aux analog input
+                                stimTimeChanSet = new NRAIChannelCollection(stimTimePhysChan);
+                                int[] stimTimeChannels = new int[] { 0, 1 };
+                                stimTimeChanSet.SetupNumericalChannelOnly(stimTimeChannels);
+
+                                // Start with the assumption that we are only recording stim time on this task
+                                stimDataTmp = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+
+                                // True stimulus data buffer
+                                stimData = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+
                                 Console.WriteLine("NRAcquisitionSetup complete");
                             }
                             catch (Exception e)
@@ -464,35 +483,45 @@ namespace NeuroRighter
                         // Setup auxiliary recording tasks
                         if (Properties.Settings.Default.useAuxAnalogInput)
                         {
+                            // Set up the aux channel set
+                            auxChanSet = new NRAIChannelCollection(Properties.Settings.Default.auxAnalogInChan);
 
-                            auxAnInTask = new Task("AuxiliaryAnalogInput");
-                            NRAIChannelCollection auxChanSet = new NRAIChannelCollection(Properties.Settings.Default.auxAnalogInChan);
-                            auxChanSet.SetupAuxCollection(ref auxAnInTask);
-
-                            auxAnInTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                            auxAnInTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-
-                            //Pipe ai dev0's sample clock to slave devices
-                            auxAnInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
-
-                            //Trigger off of ai dev0's trigger
-                            // THIS DOES NOT WORK
-                            // NEED TO TURN AUX AN INPUT INTO SAME TASK AS STIM TIMING.
                             if (Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.StimInfoDevice
-                                && Properties.Settings.Default.RecordStimTimes
-                                || Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.AnalogInDevice[0]
-                                || Properties.Settings.Default.auxAnalogInDev == Properties.Settings.Default.AnalogInDevice[1])
+                                && Properties.Settings.Default.RecordStimTimes)
                             {
-                                MessageBox.Show("NeuroRighter does not currently support the recording of raw auxiliary signals on a device being used for other" +
-                                                    " forms of analog input (e.g. stimulation timing or neural data). If you do not need to record stimulation timing," +
-                                                    " then deselect that recording from the recording streams menu and send your auxiliary signals to AI lines on the device being used to record stimulation timing.");
+                                // In this case we are recording both stimulus times and aux analog input times on the same
+                                // DAQ, so we need to just make the auxAnInTask reference the stimulus timing task
+                                twoAITasksOnSingleBoard = true;
+                                auxInSource = "stimTimeTask";
+                                auxAnInTask = stimTimeTask;
+                                auxChanSet.SetupAuxCollection(ref auxAnInTask);
+
+                                // Allocate space for both inputs in a single matrix
+                                stimDataTmp = new double[auxChanSet.numericalChannels.Length + stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+
                             }
                             else
                             {
+                                // In this case there is no conflict for AI, so we can create a dedicated task for aux analog input
+                                twoAITasksOnSingleBoard = false;
+                                auxInSource = "AuxiliaryAnalogInput";
+                                auxAnInTask = new Task("AuxiliaryAnalogInput");
+                                auxChanSet.SetupAuxCollection(ref auxAnInTask);
+
+                                auxAnInTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                                auxAnInTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+
+                                //Pipe ai dev0's sample clock to slave devices
+                                auxAnInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
+                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                                 auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+
                             }
+
+                            // Create space for the buffer
+                            auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
                         }
+
                         if (Properties.Settings.Default.useAuxDigitalInput)
                         {
                             auxDigInTask = new Task("AuxiliaryDigitalInput");
@@ -778,7 +807,7 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.useAuxAnalogInput)
                         {
-                            auxAnReader = new AnalogUnscaledReader(auxAnInTask.Stream);
+                            auxAnReader = new AnalogMultiChannelReader(auxAnInTask.Stream);
                             auxAnReader.SynchronizeCallbacks = true;
                             auxAnCallback = new AsyncCallback(AnalogInCallback_AuxAn);
                         }
@@ -836,6 +865,9 @@ namespace NeuroRighter
                         MessageBox.Show(exception.Message);
                         reset();
                     }
+                    Debugger = new RealTimeDebugger();
+                    Debugger.GrabTimer(spikeTask[0]);
+                    Debugger.SetPath("NRDebuggerOutput.txt");
                 }
                 else
                 {
@@ -850,7 +882,7 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0]);
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0],Debugger);
             stimSrv.Setup();
             stimSrv.StartAllTasks();
             return stimSrv.buffLoadTask;
@@ -863,6 +895,7 @@ namespace NeuroRighter
                 stimSrv.StopAllBuffers();
                 stimSrv.KillAllAODOTasks();
                 stimSrv = null;
+                Debugger.Close();
             }
             else
             {
@@ -901,7 +934,7 @@ namespace NeuroRighter
                         auxDigInTask.Start();
                     if (Properties.Settings.Default.UseStimulator && Properties.Settings.Default.RecordStimTimes)
                         stimTimeTask.Start();
-                    if (Properties.Settings.Default.useAuxAnalogInput)
+                    if (Properties.Settings.Default.useAuxAnalogInput && !twoAITasksOnSingleBoard)
                         auxAnInTask.Start();
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         lfpTask.Start();
@@ -911,8 +944,8 @@ namespace NeuroRighter
                         spikeTask[i].Start(); //Start first task last, since it has master clock
 
                     // Start data collection
-                    if (Properties.Settings.Default.useAuxAnalogInput)
-                        auxAnReader.BeginReadInt16(spikeBufferLength, auxAnCallback, auxAnReader);
+                    if (Properties.Settings.Default.useAuxAnalogInput && !twoAITasksOnSingleBoard)
+                        auxAnReader.BeginMemoryOptimizedReadMultiSample(spikeBufferLength, auxAnCallback, null, auxAnData); 
                     if (Properties.Settings.Default.useAuxDigitalInput)
                         auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
@@ -983,7 +1016,7 @@ namespace NeuroRighter
                         // 3. other
                         recordingSettings.Setup("stim", spikeTask[0]);
                         if (auxAnInTask != null)
-                            recordingSettings.Setup("aux", auxAnInTask);
+                            recordingSettings.Setup("aux", auxAnInTask,auxChanSet.numericalChannels.Length);
                         recordingSettings.Setup("dig", spikeTask[0]);
                     }
                     catch (System.IO.IOException ex)
@@ -1004,13 +1037,6 @@ namespace NeuroRighter
             updateRecSettings();
         }
 
-       
-
-        
-
-        
-
-        
 
     }
 }

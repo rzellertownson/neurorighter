@@ -44,6 +44,7 @@ using Microsoft.Xna.Framework.Content;
 using NeuroRighter.DatSrv;
 using NeuroRighter.DataTypes;
 using NeuroRighter.StimSrv;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter
 {
@@ -79,7 +80,7 @@ namespace NeuroRighter
         private AnalogMultiChannelWriter stimPulseWriter;
         private AnalogMultiChannelReader stimTimeReader;
         private DigitalSingleChannelWriter stimIvsVWriter;
-        private AnalogUnscaledReader auxAnReader;
+        private AnalogMultiChannelReader auxAnReader;
         private DigitalSingleChannelReader auxDigReader;
         private AsyncCallback spikeCallback;
         private AsyncCallback lfpCallback;
@@ -105,20 +106,22 @@ namespace NeuroRighter
         private int[] numSpkWfms;   //Num. of plotted spike waveforms per channel
         private short[,] lfpData;
         private short[,] eegData;
+        private double[,] stimData;
+        private double[,] stimDataTmp;
         private rawType[][] filtSpikeData;
         private rawType[][] filtLFPData;
         private rawType[][] filtEEGData;
         private rawType[][] finalLFPData; //Stores filtered and downsampled LFP
         private double[] stimDataBuffer; //Stores some of the old samples for the next read (to avoid reading only half an encoding during a buffer read)
-        private short[,] auxAnData;
+        private double[,] auxAnData;
         private uint lastDigState = 0; // stores the digtial state after a port change occurs
         private uint[] auxDigData;
         private DigitalWaveform auxDigitalWaveform;
         internal List<StimulusOutEvent> _stimulations;
         internal List<StimulusOutEvent> stimulations
-            {
-                get { return _stimulations; }
-            }
+        {
+            get { return _stimulations; }
+        }
         private List<SpikeEvent> _waveforms;  //Locations of threshold crossings
         internal List<SpikeEvent> waveforms
         {
@@ -126,6 +129,10 @@ namespace NeuroRighter
         }
 
         // Recording Parameters
+        private NRAIChannelCollection stimTimeChanSet;
+        private NRAIChannelCollection auxChanSet;
+        private bool twoAITasksOnSingleBoard = false;
+        private string auxInSource = "";
         private int spikeSamplingRate;
         private int lfpSamplingRate;
         private int eegSamplingRate;
@@ -197,6 +204,7 @@ namespace NeuroRighter
 
         // Closed-loop AO/DO
         private ClosedLoopOut closedLoopSynchronizedOutput;
+        private RealTimeDebugger Debugger;
 
         #endregion
 

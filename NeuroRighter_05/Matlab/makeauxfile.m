@@ -34,7 +34,7 @@ if size(time,1) ~= size(channel,1) || size(time,1) ~= size(voltage,1)
     error(['Error:dim',' The non-singleton dimension of the time, channel ' ...
           'and voltage vectors must be equal in size']);
 end
-if min(time) < 0 || max(channel) > 3 || min(channel) < 0 || min(voltage < -10) || max(voltage) > 10
+if min(time) < 0 || max(channel) >3 || min(channel) < 0 || min(voltage < -10) || max(voltage) > 10
     error([ 'Error:InvalidData',' One or more of values occupying the time, channel and/or voltage ' ... 
             'vectors is invalid. Type help makeolaux into matlab to see valid ranges']);
 end

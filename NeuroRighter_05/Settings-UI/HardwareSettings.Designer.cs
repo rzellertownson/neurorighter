@@ -96,6 +96,9 @@ namespace NeuroRighter
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPag_Gen = new System.Windows.Forms.TabPage();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.textBox_ADCPollingPeriodSec = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.textBox_datSrvBufferSizeSec = new System.Windows.Forms.TextBox();
             this.textBox_DACPollingPeriodSec = new System.Windows.Forms.TextBox();
@@ -126,9 +129,6 @@ namespace NeuroRighter
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.textBox_ADCPollingPeriodSec = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -851,7 +851,7 @@ namespace NeuroRighter
             this.tabPag_Gen.Padding = new System.Windows.Forms.Padding(3);
             this.tabPag_Gen.Size = new System.Drawing.Size(300, 499);
             this.tabPag_Gen.TabIndex = 4;
-            this.tabPag_Gen.Text = "Gen";
+            this.tabPag_Gen.Text = "General";
             this.tabPag_Gen.UseVisualStyleBackColor = true;
             // 
             // groupBox21
@@ -870,6 +870,33 @@ namespace NeuroRighter
             this.groupBox21.TabIndex = 17;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "DAC Polling/Buffering";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(6, 24);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(122, 13);
+            this.label24.TabIndex = 21;
+            this.label24.Text = "ADC Polling Period (sec)";
+            // 
+            // textBox_ADCPollingPeriodSec
+            // 
+            this.textBox_ADCPollingPeriodSec.Location = new System.Drawing.Point(172, 21);
+            this.textBox_ADCPollingPeriodSec.Name = "textBox_ADCPollingPeriodSec";
+            this.textBox_ADCPollingPeriodSec.Size = new System.Drawing.Size(100, 20);
+            this.textBox_ADCPollingPeriodSec.TabIndex = 20;
+            this.textBox_ADCPollingPeriodSec.Tag = "";
+            this.textBox_ADCPollingPeriodSec.Text = "0.1";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(6, 54);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(0, 13);
+            this.label23.TabIndex = 19;
+            this.label23.Tag = "ADC Polling Period (sec)";
             // 
             // label22
             // 
@@ -1156,33 +1183,6 @@ namespace NeuroRighter
             this.label20.Size = new System.Drawing.Size(158, 13);
             this.label20.TabIndex = 1;
             this.label20.Text = "Amplifier Gain for Extracell. Rec.";
-            // 
-            // textBox_ADCPollingPeriodSec
-            // 
-            this.textBox_ADCPollingPeriodSec.Location = new System.Drawing.Point(172, 21);
-            this.textBox_ADCPollingPeriodSec.Name = "textBox_ADCPollingPeriodSec";
-            this.textBox_ADCPollingPeriodSec.Size = new System.Drawing.Size(100, 20);
-            this.textBox_ADCPollingPeriodSec.TabIndex = 20;
-            this.textBox_ADCPollingPeriodSec.Tag = "";
-            this.textBox_ADCPollingPeriodSec.Text = "0.1";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(6, 54);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(0, 13);
-            this.label23.TabIndex = 19;
-            this.label23.Tag = "ADC Polling Period (sec)";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(6, 24);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(122, 13);
-            this.label24.TabIndex = 21;
-            this.label24.Text = "ADC Polling Period (sec)";
             // 
             // HardwareSettings
             // 

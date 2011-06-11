@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {   
@@ -60,7 +61,7 @@ namespace NeuroRighter.Output
             
             }
 
-        internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask)//, ulong starttime)
+        internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask, RealTimeDebugger Debugger)//, ulong starttime)
         {
             AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
             analogWriters[0] = stimAnalogWriter;
@@ -74,7 +75,7 @@ namespace NeuroRighter.Output
             Task[] digitalTasks = new Task[1];
             digitalTasks[0] = stimDigitalTask;
 
-            base.Setup(analogWriters, digitalWriters, analogTasks, digitalTasks, buffLoadTask);
+            base.Setup(analogWriters, digitalWriters, analogTasks, digitalTasks, buffLoadTask,Debugger);
         }
 
 
@@ -97,10 +98,6 @@ namespace NeuroRighter.Output
             }
 
         }
-        //NUM_SAMPLES_BLANKING * 2
-
-
-
 
         //write as much of the current stimulus as possible
         //agnostic as to whether or not you've finished this stimulus or not.

@@ -8,12 +8,13 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using NeuroRighter.DataTypes;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
     class File2Dig
     {
-
+        RealTimeDebugger debugger;
         private StreamReader oldigfile; // The stream reader for the .olstim file being used
         private string digfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
         private string line; // line from the .olstim file
@@ -43,7 +44,7 @@ namespace NeuroRighter.Output
         internal event AllFinishedHandler AlertAllFinished;
 
         internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task digitalOutputTask,
-            Task buffLoadTask, DigitalSingleChannelWriter digitalOutputWriter, ulong numEventPerLoad)
+            Task buffLoadTask, DigitalSingleChannelWriter digitalOutputWriter, ulong numEventPerLoad, RealTimeDebugger debugger)
         {
             this.digfile = digfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -53,6 +54,7 @@ namespace NeuroRighter.Output
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.numEventPerLoad = numEventPerLoad;
             this.lastLoad = false;
+            this.debugger = debugger;
 
             // Instatiate a DigitalBuffer object
             digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
@@ -102,7 +104,7 @@ namespace NeuroRighter.Output
                 digbuff.writeToBuffer(DigitalDataChunk); // Append all the stimuli
                 numLoadsCompleted = numDigEvent;
                 lastLoad = true;
-                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
+                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask, debugger);
 
             }
             else
@@ -113,7 +115,7 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 digbuff.writeToBuffer(DigitalDataChunk); //append first N stimuli
                 numLoadsCompleted++;
-                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask);
+                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask,debugger);
 
             }
 

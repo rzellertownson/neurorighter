@@ -60,9 +60,44 @@ namespace NeuroRighter.DatSrv
             }
         }
 
-        public ulong[] EstimateAvaiableTimeRange()
+        internal void WriteToBuffer(double[,] newData, int task, int offset)
         {
-            return dataBuffer.startAndEndSample;
+            // Lock out other write operations
+            bufferLock.EnterWriteLock();
+            try
+            {
+                // Overwrite expired samples.
+                for (int i = 0; i < numSamplesPerWrite; ++i)
+                {
+                    for (int j = 0; j < dataBuffer.numChannels; ++j)
+                    {
+                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j,i];
+                    }
+
+                    // Increment start, end and write markers
+                    dataBuffer.IncrementCurrentPosition(task);
+                }
+            }
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitWriteLock();
+            }
+        }
+
+        public ulong[] EstimateAvaiableTimeRange()
+        { 
+            // Enforce a read lock
+            bufferLock.EnterReadLock();
+            try
+            {
+                return dataBuffer.startAndEndSample;
+            }
+            finally
+            {
+                // release the read lock
+                bufferLock.ExitReadLock();
+            }
         }
 
         public RawMultiChannelBuffer ReadFromBuffer(double[] desiredSampleRange) 

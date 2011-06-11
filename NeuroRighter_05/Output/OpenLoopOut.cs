@@ -22,6 +22,7 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 using System.IO;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
@@ -34,6 +35,9 @@ namespace NeuroRighter.Output
     /// </summary>
     internal class OpenLoopOut
     {
+
+        RealTimeDebugger debugger;
+
         // File locations
         internal string stimFid;
         internal string digFid;
@@ -70,7 +74,7 @@ namespace NeuroRighter.Output
         public delegate void OpenLoopOutFinishedEventHandler(object sender, EventArgs e);
         public event OpenLoopOutFinishedEventHandler OpenLoopOutIsFinished;
 
-        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask)
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, RealTimeDebugger debugger)
         {
             this.stimFid = sf;
             this.digFid = df;
@@ -78,9 +82,10 @@ namespace NeuroRighter.Output
             this.outputSampFreq = fs;
             this.masterTask = masterTask;
             this.useManStimWave = false;
+            this.debugger = debugger;
         }
 
-        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, double[] standardWave)
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, RealTimeDebugger debugger, double[] standardWave)
         {
             this.stimFid = sf;
             this.digFid = df;
@@ -88,6 +93,7 @@ namespace NeuroRighter.Output
             this.outputSampFreq = fs;
             this.masterTask = masterTask;
             this.guiWave = standardWave;
+            this.debugger = debugger;
             this.useManStimWave = true;
         }
 
@@ -172,6 +178,7 @@ namespace NeuroRighter.Output
                             buffLoadTask,
                             stimTaskMaker.digitalWriter,
                             stimTaskMaker.analogWriter,
+                            debugger,
                             guiWave);
 
                         stimProtocol.AlertAllFinished +=
@@ -188,7 +195,8 @@ namespace NeuroRighter.Output
                             stimTaskMaker.analogTask,
                             buffLoadTask,
                             stimTaskMaker.digitalWriter,
-                            stimTaskMaker.analogWriter);
+                            stimTaskMaker.analogWriter,
+                            debugger);
 
                         stimProtocol.AlertAllFinished +=
                             new File2Stim.AllFinishedHandler(SetStimDone);
@@ -243,7 +251,8 @@ namespace NeuroRighter.Output
                         buffLoadTask,
                         auxTaskMaker.analogWriter,
                         EVENTS_PER_BUFFER_LOAD,
-                        auxFileProvided);
+                        auxFileProvided,
+                        debugger);
 
                     auxProtocol.AlertAllFinished +=
                         new File2Aux.AllFinishedHandler(SetAuxDone);
@@ -256,7 +265,8 @@ namespace NeuroRighter.Output
                         auxTaskMaker.digitalTask,
                         buffLoadTask,
                         auxTaskMaker.digitalWriter,
-                        EVENTS_PER_BUFFER_LOAD);
+                        EVENTS_PER_BUFFER_LOAD,
+                        debugger);
 
                     digProtocol.AlertAllFinished +=
                         new File2Dig.AllFinishedHandler(SetDigDone);

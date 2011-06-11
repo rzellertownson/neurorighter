@@ -15,10 +15,12 @@ namespace NeuroRighter.Aquisition
     /// </summary>
     class NRAIChannelCollection
     {
-
+        
         private int numDevices;
         private int numChannelsPerDev;
         private StringCollection physicalChannels;
+
+        internal int[] numericalChannels; // The row indicies that indicate the channels in this collection
 
         public NRAIChannelCollection(int numDevices, int numChannelsPerDev)
         {
@@ -50,12 +52,23 @@ namespace NeuroRighter.Aquisition
 
         internal void SetupAuxCollection(ref Task auxAITask)
         {
+            numericalChannels = new int[physicalChannels.Count];
+            int preExistingChannels = auxAITask.AIChannels.Count;
+
             //Create virtual channels for analog input
             for (int j = 0; j < physicalChannels.Count; ++j)
             {
+
                 auxAITask.AIChannels.CreateVoltageChannel(physicalChannels[j],
                     "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
+
+                numericalChannels[j] = j + preExistingChannels;
             }
+        }
+
+        internal void SetupNumericalChannelOnly(int[] channelIndicies)
+        {
+            numericalChannels = channelIndicies;
         }
     }
 }

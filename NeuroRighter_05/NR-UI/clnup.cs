@@ -215,6 +215,9 @@ namespace NeuroRighter
             // update the recordingSettings object
             recordingSettings.Refresh();
 
+            // update recording type to nominal
+            isNormalRecording = true;
+
             // Refresh all the NI Tasks
             try
             {

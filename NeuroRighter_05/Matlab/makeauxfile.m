@@ -23,11 +23,11 @@ function makeauxfile(filename, time, channel, voltage)
 %    Licensed under the GPL: http://www.gnu.org/licenses/gpl.txt
 
 % Make sure that input is correctly formated
-if nargin < 3
+if nargin < 4
     error('Error:dim',' All four arguments are needed');
 end
 if size(time,2) > 1 || size(channel,2) > 1 || size(voltage,2) > 1
-vo    error(['Error:dim',' The time, channel ' ...
+    error(['Error:dim',' The time, channel ' ...
           'and voltage vectors are column vectors']);
 end
 if size(time,1) ~= size(channel,1) || size(time,1) ~= size(voltage,1)

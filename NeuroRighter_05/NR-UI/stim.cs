@@ -93,18 +93,10 @@ namespace NeuroRighter
                 {
                     //this line goes high (TTL-wise) when we're doing current-controlled stim, low for voltage-controlled
                     stimIvsVTask = new Task("stimIvsV");
-                    //stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port0/line8:15", "",
-                    //    ChannelLineGrouping.OneChannelForAllLines);
                     stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                         ChannelLineGrouping.OneChannelForAllLines);
                     stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);
-                    //stimIvsVTask.Timing.ConfigureSampleClock("100kHztimebase", 100000,
-                    //    SampleClockActiveEdge.Rising, SampleQuantityMode.FiniteSamples);
                     stimIvsVTask.Control(TaskAction.Verify);
-                    //byte[] b_array = new byte[5] { 0, 0, 0, 0, 0 };
-                    //DigitalWaveform wfm = new DigitalWaveform(5, 8, DigitalState.ForceDown);
-                    //wfm = NationalInstruments.DigitalWaveform.FromPort(b_array);
-                    //stimIvsVWriter.WriteWaveform(true, wfm);
                     stimIvsVWriter.WriteSingleSampleSingleLine(true, false);
                     stimIvsVTask.WaitUntilDone();
                     stimIvsVTask.Stop();
@@ -596,6 +588,8 @@ namespace NeuroRighter
             // Update all the recording/stim settings
             updateSettings();
 
+
+            // Start the protocol
             numOpenLoopsPerformed = 0;
             numOpenLoopRepeats = (double)numericUpDown_NumberOfOpenLoopRepeats.Value;
             StartOpenLoopCallback();
@@ -608,6 +602,8 @@ namespace NeuroRighter
 
             // Set up recording so we can access the task info from spikeTask[0] to sync
             // clock and start
+            // Set the recording type to non-normal since this is a OL protocol
+            isNormalRecording = false;
             NRAcquisitionSetup();
 
             // Get OL filenames
@@ -806,11 +802,15 @@ namespace NeuroRighter
 
         private void button_startClosedLoopStim_Click(object sender, EventArgs e)
         {
-            
+            // Update all the recording/stim settings
+            updateSettings();
+
+            // Set the recording type to non-normal since this is a OL protocol
+            isNormalRecording = false;
+
+            // Start the protocol
             startClosedLoopStim();
             
-            //debugging stuff:
-           // Console.WriteLine(stimSrv);
         }
         private void startClosedLoopStim()
         {

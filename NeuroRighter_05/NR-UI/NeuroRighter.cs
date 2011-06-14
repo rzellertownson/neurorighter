@@ -190,6 +190,7 @@ namespace NeuroRighter
                 spikeDet.SetSpikeDetector();
 
             // Call the recording setup/start functions
+            updateRecSettings();
             NRAcquisitionSetup();
             NRStartRecording();
 
@@ -200,7 +201,6 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                updateRecSettings();
 
                 if (!taskRunning)
                 {
@@ -431,12 +431,16 @@ namespace NeuroRighter
                                     AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
                                 stimTimeTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.StimInfoDevice + "/ai0", "", AITerminalConfiguration.Nrse,
                                     -10.0, 10.0, AIVoltageUnits.Volts); //For triggers
-
+                                
+                                
                                 // Pipe the spikeTasks sample clock to PFI14 on the stim board
                                 DaqSystem.Local.ConnectTerminals(spikeTask[0].Timing.ReferenceClockSource,
                                     "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0");
-
-                                stimTimeTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                
+                                if (isNormalRecording)
+                                    stimTimeTask.Timing.ReferenceClockSource = "/" + Properties.Settings.Default.StimulatorDevice.ToString() + "/PFI0";
+                                else
+                                    stimTimeTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                                 stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                                 stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
                                     SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
@@ -457,11 +461,9 @@ namespace NeuroRighter
                                 int[] stimTimeChannels = new int[] { 0, 1 };
                                 stimTimeChanSet.SetupNumericalChannelOnly(stimTimeChannels);
 
-                                // Start with the assumption that we are only recording stim time on this task
-                                stimDataTmp = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
-
-                                // True stimulus data buffer
-                                stimData = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+                                //// Make the master buffer for stim/aux input
+                                //for (int i = 0; i < stimTimeChanSet.numericalChannels.Length + auxChanSet.numericalChannels.Length; ++i)
+                                //    stimDataTmp[i] = new AnalogWaveform<double>(spikeBufferLength);
 
                                 Console.WriteLine("NRAcquisitionSetup complete");
                             }
@@ -495,10 +497,6 @@ namespace NeuroRighter
                                 auxInSource = "stimTimeTask";
                                 auxAnInTask = stimTimeTask;
                                 auxChanSet.SetupAuxCollection(ref auxAnInTask);
-
-                                // Allocate space for both inputs in a single matrix
-                                stimDataTmp = new double[auxChanSet.numericalChannels.Length + stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
-
                             }
                             else
                             {
@@ -518,8 +516,6 @@ namespace NeuroRighter
 
                             }
 
-                            // Create space for the buffer
-                            auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
                         }
 
                         if (Properties.Settings.Default.useAuxDigitalInput)

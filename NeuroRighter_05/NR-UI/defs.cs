@@ -95,6 +95,8 @@ namespace NeuroRighter
 
         // Buffers
         private List<AnalogWaveform<double>[]> spikeData;
+        //private AnalogWaveform<double>[] stimDataTmp;
+        private double[,] auxAnData;
         private double[,] eegPlotData;
         private int spikeBufferLength;  //How much data is acquired per read
         private int lfpBufferLength;
@@ -106,14 +108,11 @@ namespace NeuroRighter
         private int[] numSpkWfms;   //Num. of plotted spike waveforms per channel
         private short[,] lfpData;
         private short[,] eegData;
-        private double[,] stimData;
-        private double[,] stimDataTmp;
         private rawType[][] filtSpikeData;
         private rawType[][] filtLFPData;
         private rawType[][] filtEEGData;
         private rawType[][] finalLFPData; //Stores filtered and downsampled LFP
         private double[] stimDataBuffer; //Stores some of the old samples for the next read (to avoid reading only half an encoding during a buffer read)
-        private double[,] auxAnData;
         private uint lastDigState = 0; // stores the digtial state after a port change occurs
         private uint[] auxDigData;
         private DigitalWaveform auxDigitalWaveform;
@@ -168,6 +167,7 @@ namespace NeuroRighter
         private Filters.MUAFilter muaFilter;
         private double[][] muaData;
         private int SALPA_WIDTH;
+        private bool isNormalRecording = true;
 
         //Plots
         private List<Microsoft.Xna.Framework.Graphics.Color> NRBrainbow;

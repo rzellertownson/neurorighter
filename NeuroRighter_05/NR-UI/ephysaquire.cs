@@ -103,23 +103,23 @@ namespace NeuroRighter
 
                             if (getStimData)
                             {
+                                // This holds everything up since it does not have a callback or anything.
                                 //This read handles both stim data and optional aux analog in data. Both are stored in stimDataTmp and parsed out later
-                                int numSampRead;
-                                stimTimeReader.MemoryOptimizedReadMultiSample(spikeBufferLength, ref stimDataTmp,out numSampRead);
+                                //int numSampRead;
+                                double[,] stimDataTmp = stimTimeReader.ReadMultiSample(spikeBufferLength);
+
+                                //stimTimeReader.MemoryOptimizedReadMultiSample(spikeBufferLength, ref stimDataTmp, out numSampRead);
+
+                                double[,] stimData = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
 
                                 //Read the available data from the channels
                                 if (twoAITasksOnSingleBoard)
                                 {
-                                    // Pull out the correct channels
-                                    for (int i = 0; i < stimTimeChanSet.numericalChannels.Length; ++i)
-                                    {
-                                        for (int j = 0; j < spikeBufferLength; ++j)
-                                        {
-                                            stimData[i,j] = stimDataTmp[stimTimeChanSet.numericalChannels[i], j];
-                                        }
-                                    }
 
-                                    AuxAnalogFromStimData(ref stimDataTmp);
+                                    Array.Copy(stimDataTmp, stimTimeChanSet.numericalChannels[0] * spikeBufferLength, stimData, 
+                                        0, stimTimeChanSet.numericalChannels.Length * spikeBufferLength);
+
+                                    AuxAnalogFromStimData(stimDataTmp);
                                 }
 
                                 //Copy new data into prepended data, to deal with edge effects
@@ -171,8 +171,10 @@ namespace NeuroRighter
                                             prependedData[j + i] = 0;
                                         i += (int)(9 * stimJump); //Jump past rest of waveform
                                     }
+                                
                                 }
                                 datSrv.stimSrv.WriteToBuffer(tempStimBuff,taskNumber);
+
                                 if (!inTrigger) //Assumes trigger lasts longer than refresh time
                                 {
                                     for (int i = 0; i < stimData.GetLength(1); ++i)
@@ -400,21 +402,15 @@ namespace NeuroRighter
         // Aux Data Aquisition
         #region Aux Data Aquisition
 
-        private void AuxAnalogFromStimData(ref double[,] combinedAnalogData)
+        private void AuxAnalogFromStimData(double[,] combinedAnalogData)
         {
             // Create space for the buffer
             auxAnData = new double[auxChanSet.numericalChannels.Length,spikeBufferLength];
-                
+
             // Pull out the correct channels
-            for (int i =0; i < auxChanSet.numericalChannels.Length; ++i)
-            {
-                for (int j =0; j < spikeBufferLength; ++j)
-                {
-                    auxAnData[i,j] = combinedAnalogData[auxChanSet.numericalChannels[i],j];
-                }
-            }
-
-
+            Array.Copy(combinedAnalogData, auxChanSet.numericalChannels[0] * spikeBufferLength, auxAnData,
+                0, auxChanSet.numericalChannels.Length * spikeBufferLength);
+           
             // Send to datSrv
             datSrv.auxAnalogSrv.WriteToBuffer(auxAnData,0,numChannels);
 
@@ -423,7 +419,7 @@ namespace NeuroRighter
             if (switch_record.Value && recordingSettings.recordAuxAnalog)
             {
                 short[,] shortAuxAnData = new short[auxChanSet.numericalChannels.Length, spikeBufferLength];
-                shortAuxAnData = neuralDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
+                shortAuxAnData = auxDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
                 recordingSettings.auxAnalogOut.read(shortAuxAnData,auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
             }
             #endregion
@@ -451,7 +447,7 @@ namespace NeuroRighter
                         if (switch_record.Value && recordingSettings.recordAuxAnalog)
                         {
                             short[,] shortAuxAnData = new short[auxChanSet.numericalChannels.Length,spikeBufferLength];
-                            shortAuxAnData = neuralDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
+                            shortAuxAnData = auxDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
                             recordingSettings.auxAnalogOut.read(shortAuxAnData, auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
                         }
                         #endregion

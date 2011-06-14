@@ -10,14 +10,14 @@ function makedigfile(varargin)
 %         t0          [N 1] vector specifying the time that event i in
 %                           N events goes low (sec)
 %
-%    y = MAKEDIGFILE(filename, int, tchange) takes as input:
+%    y = MAKEDIGFILE(filename, tchange, int) takes as input:
 %         filename    string specifying file name
-%         int         [N 1] vector specifying a 32 bit integer
-%                     (0 to 4,294,967,295) that dictates the digital output
-%                     port state at the coresponding index of tchange.
 %         tchange     [N 1] vector specifying the time the digital output
 %                     port shoult take the state specified by the
 %                     corresponding index of integer.
+%         int         [N 1] vector specifying a 32 bit integer
+%                     (0 to 4,294,967,295) that dictates the digital output
+%                     port state at the coresponding index of tchange.
 %
 %    The program returns a .oldig file that specifies an open-loop digital
 %    output protocol for use with the NeuroRighter system
@@ -52,8 +52,9 @@ if nargin == 4
 elseif nargin == 3
     
     filename = varargin{1};
-    int = varargin{2};
-    tchange = varargin{3};
+    tchange = varargin{2};
+    int = varargin{3};
+    
     
     if ~ischar(filename)
         error('Error:arguments','filename must be a string)');

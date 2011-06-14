@@ -35,7 +35,7 @@ namespace NeuroRighter
         {
             Type reflectedClass = typeof(NeuroRighter);
             using (Process p = Process.GetCurrentProcess())
-                p.PriorityClass = ProcessPriorityClass.High;
+                p.PriorityClass = ProcessPriorityClass.RealTime;
             Thread thrd = Thread.CurrentThread;
 
             thrd.Priority = ThreadPriority.BelowNormal;

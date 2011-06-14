@@ -830,11 +830,11 @@ namespace NeuroRighter
             if (checkBox_useManStimWaveformCL.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, stimWaveform);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger, stimWaveform);
             }
             else
             {
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger);
             }
 
 
@@ -857,8 +857,11 @@ namespace NeuroRighter
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
                     Console.WriteLine("Closed loop stimulation stop initiated");
+                    Debugger.Write("Closed loop stimulation stop initiated");
                     closedLoopSynchronizedOutput.Stop();
+                    Debugger.Write("closed loop code has indicated it has completed.");
                     NROutputShutdown();
+                    Debugger.Write("output buffers successfully shut down.  Goodbye.");
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
                     Console.WriteLine("Closed loop stimulation closed mid process");

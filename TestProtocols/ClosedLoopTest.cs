@@ -26,8 +26,8 @@ namespace TestProtocols
             
             while (Running)
             {
-                
-               
+
+                Debugger.Write("HI!  I AM A CLOSED LOOP PROTOCOL!  WILL YOU BE MY FRIEND?");
                 System.Threading.Thread.Sleep(1000);
                 
             }

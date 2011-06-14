@@ -77,12 +77,13 @@ namespace NeuroRighter
 
         private void AnalogInCallback_spikes(IAsyncResult ar)
         {
-            Debugger.Write("spike callback start");
+            
             try
             {
                 if (taskRunning)
                 {
                     int taskNumber = (int)ar.AsyncState;
+                    Debugger.Write(taskNumber.ToString() + ":spike callback start");
                     trackingReads[taskNumber]++;
                     
                     #region Stim_Timing_Acquisition
@@ -239,7 +240,7 @@ namespace NeuroRighter
                         string format = "HH:mm:ss";    // Use this format
                         Console.WriteLine("Warning: bwSpikes was busy at: " + errortime.ToString(format));  // Write to console
                     }
-
+                    Debugger.Write(taskNumber.ToString() + ":spike callback stop");
                 }
             }
             catch (DaqException exception)
@@ -248,7 +249,7 @@ namespace NeuroRighter
                 MessageBox.Show(exception.Message);
                 reset();
             }
-            Debugger.Write("spike callback stop");
+            
         }
         #endregion //End spike acquisition
 

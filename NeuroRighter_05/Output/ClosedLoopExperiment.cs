@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NeuroRighter.StimSrv;
 using NeuroRighter.DatSrv;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
@@ -15,13 +16,15 @@ namespace NeuroRighter.Output
     {
         protected NRDataSrv DatSrv;
         protected NRStimSrv StimSrv;
+        protected RealTimeDebugger Debugger;
         protected bool Running;
         protected double[] cannedWaveform;
         protected int fs;
-        internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv,int fs)
+        internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv,RealTimeDebugger Debugger ,int fs)
         {
             this.DatSrv = DatSrv;
             this.StimSrv = StimSrv;
+            this.Debugger = Debugger;
             this.fs = fs;
         }
 

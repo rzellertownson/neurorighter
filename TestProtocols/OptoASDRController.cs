@@ -46,7 +46,7 @@ namespace TestProtocols
                     ulong tmp;
                     try
                     {
-                        tmp = DatSrv.spikeSrv.EstimateAvaiableTimeRange()[1];
+                        tmp = DatSrv.spikeSrv.EstimateAvailableTimeRange()[1];
                         range = new ulong[2] { recordedToSpike, tmp };
                         recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range).eventBuffer);
                         recordedToSpike = tmp;
@@ -77,7 +77,7 @@ namespace TestProtocols
                 if (Running)
                 {
                     // First, figure out what history of spikes we have
-                    ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvaiableTimeRange();
+                    ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvailableTimeRange();
 
                     // Try to get the number of spikes within the available time range
                     EventBuffer<SpikeEvent> lastSpikes = DatSrv.spikeSrv.ReadFromBuffer(spikeTimeRange);

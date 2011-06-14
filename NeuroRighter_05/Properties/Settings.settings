@@ -201,16 +201,16 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="CLstimdiretory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"."</Value>
+      <Value Profile="(Default)">.</Value>
     </Setting>
     <Setting Name="OLstimdirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"."</Value>
+      <Value Profile="(Default)">.</Value>
     </Setting>
     <Setting Name="savedirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"."</Value>
+      <Value Profile="(Default)">.</Value>
     </Setting>
     <Setting Name="saveImpedanceDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"."</Value>
+      <Value Profile="(Default)">.</Value>
     </Setting>
   </Settings>
 </SettingsFile>

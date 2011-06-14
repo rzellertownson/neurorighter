@@ -863,7 +863,7 @@ namespace NeuroRighter
                     }
                     Debugger = new RealTimeDebugger();
                     Debugger.GrabTimer(spikeTask[0]);
-                    Debugger.SetPath("NRDebuggerOutput.txt");
+                    Debugger.SetPath(Properties.Settings.Default.savedirectory +"\\NRDebuggerOutput.txt");
                 }
                 else
                 {
@@ -891,7 +891,7 @@ namespace NeuroRighter
                 stimSrv.StopAllBuffers();
                 stimSrv.KillAllAODOTasks();
                 stimSrv = null;
-                Debugger.Close();
+                //Debugger.Close();
             }
             else
             {

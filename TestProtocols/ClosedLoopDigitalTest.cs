@@ -45,7 +45,7 @@ namespace TestProtocols
                 ulong tmp;
                 try
                 {
-                    tmp = DatSrv.spikeSrv.EstimateAvaiableTimeRange()[1];
+                    tmp = DatSrv.spikeSrv.EstimateAvailableTimeRange()[1];
                     range = new ulong[2] { recordedToSpike, tmp };
                     recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range).eventBuffer);
                     recordedToSpike = tmp;

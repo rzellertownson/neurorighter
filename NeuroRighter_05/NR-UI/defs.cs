@@ -55,6 +55,7 @@ namespace NeuroRighter
         # region Internal Variables
         internal NRDataSrv datSrv;
         internal NRStimSrv stimSrv;
+        internal RealTimeDebugger Debugger;
 
         #endregion
 
@@ -204,7 +205,7 @@ namespace NeuroRighter
 
         // Closed-loop AO/DO
         private ClosedLoopOut closedLoopSynchronizedOutput;
-        private RealTimeDebugger Debugger;
+        
 
         #endregion
 

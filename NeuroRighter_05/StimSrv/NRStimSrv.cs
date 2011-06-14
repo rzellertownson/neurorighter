@@ -30,6 +30,7 @@ namespace NeuroRighter.StimSrv
 
         private int INNERBUFFSIZE;
         private int STIM_SAMPLING_FREQ;
+        private int buffloadcount;
 
         public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger)
         {
@@ -43,6 +44,7 @@ namespace NeuroRighter.StimSrv
             DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
             this.debugger = debugger;
+            buffloadcount = 0;
             //basically, this needs to run, or at least start, the code for all the 'File2X' classes.
         }
 
@@ -91,6 +93,7 @@ namespace NeuroRighter.StimSrv
 
         internal void KillAllAODOTasks()
         {
+            
             if (buffLoadTask != null)
             {
                 buffLoadTask.Stop();
@@ -98,19 +101,20 @@ namespace NeuroRighter.StimSrv
                 buffLoadTask = null;
             } 
             Console.WriteLine("NRStimSrv: buffLoadTask is no more");
-
-            if (auxTaskMaker != null)
-            {
-                auxTaskMaker.Dispose();
-                auxTaskMaker = null;
-            }
+            lock(AuxOut)
+                lock(DigitalOut)
+                    if (auxTaskMaker != null)
+                    {
+                        auxTaskMaker.Dispose();
+                        auxTaskMaker = null;
+                    }
             Console.WriteLine("NRStimSrv: auxTasks are no more");
-
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
+            lock(StimOut)
+                if (stimTaskMaker != null)
+                {
+                    stimTaskMaker.Dispose();
+                    stimTaskMaker = null;
+                }
             Console.WriteLine("NRStimSrv: stimTasks are no more");
 
         }
@@ -142,7 +146,8 @@ namespace NeuroRighter.StimSrv
                 {
                     Thread thrd = Thread.CurrentThread;
                     thrd.Priority = ThreadPriority.Highest;
-                    debugger.WriteReference("counter tick");
+                    debugger.Write("output counter tick " +buffloadcount.ToString());
+                    buffloadcount++;
                 }
             );
         }

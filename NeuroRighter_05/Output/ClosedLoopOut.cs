@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using NeuroRighter.StimSrv;
 using NeuroRighter.DatSrv;
 using NationalInstruments.DAQmx;
+using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
 {
@@ -17,6 +18,7 @@ namespace NeuroRighter.Output
         private int outputSampFreq;
         private NRDataSrv DatSrv;
         private NRStimSrv StimSrv;
+        private RealTimeDebugger Debugger;
 
             // waveform that gets ripped off NR UI
         bool useManStimWave;
@@ -41,7 +43,7 @@ namespace NeuroRighter.Output
         internal event AllFinishedHandler AlertAllFinished;
 
 
-        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask)
+        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger)
         {
             this.CLE = CLE;
             this.outputSampFreq = fs;
@@ -49,11 +51,12 @@ namespace NeuroRighter.Output
             this.StimSrv = StimSrv;
             this.useManStimWave = false;
             this.buffLoadTask = buffLoadTask;
+            this.Debugger = Debugger;
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.BuffLoadEvent);
         }
 
-        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, double[] standardWave)
-            : this(CLE, fs, DatSrv, StimSrv, buffLoadTask)
+        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, double[] standardWave)
+            : this(CLE, fs, DatSrv, StimSrv, buffLoadTask,Debugger)
         {
             this.guiWave = standardWave;
             this.useManStimWave = true;
@@ -106,7 +109,7 @@ namespace NeuroRighter.Output
             {
                 //pnpcl = new pnpClosedLoop();
                 bw_returned =false;
-                CLE.Grab(DatSrv, StimSrv, outputSampFreq);
+                CLE.Grab(DatSrv, StimSrv,Debugger, outputSampFreq);
                 
                 if (useManStimWave)
                     CLE.GrabWave(guiWave);

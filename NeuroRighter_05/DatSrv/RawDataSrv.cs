@@ -85,7 +85,7 @@ namespace NeuroRighter.DatSrv
             }
         }
 
-        public ulong[] EstimateAvaiableTimeRange()
+        public ulong[] EstimateAvailableTimeRange()
         { 
             // Enforce a read lock
             bufferLock.EnterReadLock();

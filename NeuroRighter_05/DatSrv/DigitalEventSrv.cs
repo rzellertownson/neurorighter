@@ -65,7 +65,7 @@ namespace NeuroRighter.DatSrv
 
         }
 
-        internal ulong[] EstimateAvaiableTimeRange()
+        internal ulong[] EstimateAvailableTimeRange()
         {
 
             ulong[] timeRange = new ulong[2];

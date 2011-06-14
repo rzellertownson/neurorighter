@@ -156,7 +156,7 @@ namespace NeuroRighter.DatSrv
 
         }
 
-        public ulong[] EstimateAvaiableTimeRange()
+        public ulong[] EstimateAvailableTimeRange()
         {
             ulong[] timeRange = new ulong[2];
             timeRange[0] = ulong.MaxValue;

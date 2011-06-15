@@ -17,6 +17,9 @@ namespace NeuroRighter.DatSrv
         private int numSamplesPerWrite; // The number of samples to be writen for each channel during a write operations
         private int numTasks;
 
+        // Public variables
+        public double sampleFrequencyHz;
+
         /// <summary>
         /// Generic raw data server for multichannel data streams. The main data buffer that this class updates i
         /// 'dataBuffer', itself a RawMultiChannelBuffer object. The class has one method that the user should worry about
@@ -30,6 +33,7 @@ namespace NeuroRighter.DatSrv
         /// <param name="numSamplesPerWrite"> The number of samples to be written each time the DAQ is polled and the dataBuffer is updated.</param>
         internal RawDataSrv(double sampleFrequencyHz, int numChannels, double bufferSizeSec, int numSamplesPerWrite,int numTasks)
         {
+            this.sampleFrequencyHz = sampleFrequencyHz;
             this.dataBuffer = new RawMultiChannelBuffer(sampleFrequencyHz, numChannels, (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz), numTasks);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.numTasks = numTasks;

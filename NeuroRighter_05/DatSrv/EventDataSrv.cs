@@ -39,14 +39,19 @@ namespace NeuroRighter.DatSrv
                                          // event time before it expires and is removed.
         private int numSamplesPerWrite;  // The number of samples for each buffer that
                                          // mixed events could have been detected in
-        internal int noTasks;
         private ulong mincurrentSample;
 
+        // Internal variables
+        internal int noTasks;
+
+        // Public variables
+        public double sampleFrequencyHz;
+        
         internal EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int noTasks)
         {
             this.currentSample = new ulong[noTasks];
             this.mincurrentSample = 0;
-           
+            this.sampleFrequencyHz = sampleFrequencyHz;
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);

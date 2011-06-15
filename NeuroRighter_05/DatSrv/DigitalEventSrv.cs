@@ -24,8 +24,12 @@ namespace NeuroRighter.DatSrv
         private int numSamplesPerWrite;  // The number of samples for each buffer that
                                          // mixed events could have been detected in
 
+        // Public variables
+        public double sampleFrequencyHz;
+
         internal DigitalEventSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite)
         {
+            this.sampleFrequencyHz = sampleFrequencyHz;
             this.dataBuffer = new DigitalEventBuffer(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);

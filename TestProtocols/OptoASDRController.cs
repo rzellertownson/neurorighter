@@ -20,56 +20,35 @@ namespace TestProtocols
         ulong[] range;
 
         // Closed loop alg. prameters
-        double alpha = 0.01; // Hz per 100 ms.
-        double asdrDes = 100; // Hz
-        double stimVoltage = 2; // Volts
+        Queue<double> csdrEstimates;
+        int queueLength;
+        int numRecChan = 59;
+        ulong numReadsCompleted = 0;
+        double daqPollingPeriodSec = 0.1; // Set this in hardware!
+        ulong daqPollingPeriodSamples; // Set this in hardware!
+        double windowSizeSec = 10; // moving window to estimate ASDR from
+        double alpha = 0.001; // Hz per refresh period
+        double csdrDes = 10; // Hz (desired median FR).
+        double stimVoltage = 0; // Volts
         double stimFreq = 2; // Hz
-        double stimPulseWidth = 0.0005; // sec
+        double stimPulseWidth = 0.002; // sec
+        double minFreq = 0.5; // Hz
+        double maxFreq = 50; // Hz
+
 
             protected override void Run()
             {
                 double starttime = StimSrv.DigitalOut.GetTime();
                 offset = StimSrv.GetBuffSize() * 3;
-                Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
+                Console.WriteLine("OPTO ASDR CONTROLLER starting out at time " + starttime.ToString() + " by StimOut clock");
                 
-                while (Running)
-                {
+                // Create CSDR Esimate Queue
+                queueLength = (int)(windowSizeSec/daqPollingPeriodSec);
+                csdrEstimates = new Queue<double>(queueLength);
 
-
-                    System.Threading.Thread.Sleep(1000);
-                    
-                    
-                    //  Console.WriteLine(outs);
-                    //  Console.WriteLine(outc);
-
-
-                    ulong tmp;
-                    try
-                    {
-                        tmp = DatSrv.spikeSrv.EstimateAvailableTimeRange()[1];
-                        range = new ulong[2] { recordedToSpike, tmp };
-                        recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range).eventBuffer);
-                        recordedToSpike = tmp;
-                        //  Console.WriteLine("spike read completed");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("error reading spikes: " + e.Message);
-                    }
-
-
-                }
-                string outs = "";
-                string outc = "";
-                foreach (SpikeEvent spike in recspikes)
-                {
-                    outs += ((double)(spike.sampleIndex) / 25000.0).ToString() + ",";
-                    outc += (spike.channel + 1) + ",";
-                }
-               // Console.WriteLine("spikes detected by closed loop:");
-               // Console.WriteLine(outs);
-               // Console.WriteLine(outc);
-
+                // calculate DAQ polling period in samples
+                daqPollingPeriodSamples = (ulong)Math.Round(daqPollingPeriodSec*DatSrv.spikeSrv.sampleFrequencyHz);
+               
             }
 
             protected override void BuffLoadEvent(object sender, EventArgs e)
@@ -80,35 +59,48 @@ namespace TestProtocols
                     ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvailableTimeRange();
 
                     // Try to get the number of spikes within the available time range
-                    EventBuffer<SpikeEvent> lastSpikes = DatSrv.spikeSrv.ReadFromBuffer(spikeTimeRange);
-
-                    // ********** DEBUG - look at the channel numbering
-                    int[] channels = new int[lastSpikes.eventBuffer.Count];
-                    for (int i = 0; i < channels.Length; ++i)
-                    {
-                        channels[i] = lastSpikes.eventBuffer[i].channel;
-                    }
-
-                    // report min and max channel
-                    if (channels.Length > 0)
-                        Console.WriteLine("Min channel number: " + channels.Min() + "Max channel number: " + channels.Max());
+                    ulong[] dataRange = new ulong[2] {spikeTimeRange[0], spikeTimeRange[0] - daqPollingPeriodSamples};
+                    EventBuffer<SpikeEvent> spikes = DatSrv.spikeSrv.ReadFromBuffer(dataRange);
 
                     // Estimate the ASDR for the last time window
-                    double asdrEstimate = (double)lastSpikes.eventBuffer.Count/((double)(spikeTimeRange[1]-spikeTimeRange[0])/lastSpikes.sampleFrequencyHz);
+                    double asdrEstimate = (double)spikes.eventBuffer.Count/daqPollingPeriodSec;
+                    ++numReadsCompleted;
 
-                    // Calculate error in ASDR
-                    double asdrDiff = asdrDes - asdrEstimate;
+                    // Update the csdr queue
+                    csdrEstimates.Enqueue(asdrEstimate / numRecChan);
 
-                    // Calculate stimulus frequency based on the asdr error
-                    double stimFreq1 = stimFreq + alpha*asdrDiff;
+                    // Caculate the csdr estimate
+                    double csdrEstimate;
+
+                    if (numReadsCompleted > (ulong)queueLength)
+                    {
+                        csdrEstimates.Dequeue();
+
+                        // Find the median of the csdr estimates thus far
+                        var orderedCsdr = from element in csdrEstimates
+                                          orderby element ascending
+                                          select element;
+                        csdrEstimate = orderedCsdr.ElementAt(queueLength / 2 - 1);
+                    }
+                    else
+                    {
+                        // Do this until buffer is filled
+                        csdrEstimate = csdrDes;
+                    }
+
+                    // Calculate error in CSDR
+                    double csdrDiff = csdrDes - csdrEstimate;
+
+                    // Calculate stimulus frequency based on the csdr error
+                    double stimFreq1 = stimFreq + alpha*csdrDiff;
                     if (!double.IsNaN(stimFreq1))
                         stimFreq = stimFreq1;
 
-                    // Bound stim freq between 0.5 and 100 Hz
-                    if (stimFreq < 5)
-                        stimFreq = 5;
-                    else if (stimFreq > 50)
-                        stimFreq = 50;
+                    // Bound stim freq
+                    if (stimFreq < minFreq)
+                        stimFreq = minFreq;
+                    else if (stimFreq > maxFreq)
+                        stimFreq = maxFreq;
 
                     // Make new output buffers based on input
                     List<AuxOutEvent> toAppendAnalog = new List<AuxOutEvent>();

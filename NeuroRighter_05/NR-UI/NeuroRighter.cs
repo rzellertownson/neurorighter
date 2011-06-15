@@ -226,6 +226,7 @@ namespace NeuroRighter
                         if (Properties.Settings.Default.SeparateLFPBoard)
                             comboBox_LFPGain.Enabled = false;
                         numericUpDown_NumSnipsDisplayed.Enabled = false;
+                        button_startClosedLoopStim.Enabled = false;
 
                         if (switch_record.Value)
                         {

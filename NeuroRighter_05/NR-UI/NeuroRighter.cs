@@ -223,6 +223,7 @@ namespace NeuroRighter
                         textBox_lfpSamplingRate.Enabled = false;
                         textBox_MUASamplingRate.Enabled = false;
                         button_startStimFromFile.Enabled = false;
+                        button_startClosedLoopStim.Enabled = false;
                         if (Properties.Settings.Default.SeparateLFPBoard)
                             comboBox_LFPGain.Enabled = false;
                         numericUpDown_NumSnipsDisplayed.Enabled = false;

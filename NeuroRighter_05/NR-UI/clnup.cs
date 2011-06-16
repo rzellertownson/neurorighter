@@ -142,6 +142,7 @@ namespace NeuroRighter
             textBox_lfpSamplingRate.Enabled = true;
             textBox_MUASamplingRate.Enabled = true;
             button_startStimFromFile.Enabled = true;
+            button_startClosedLoopStim.Enabled = true;
             numericUpDown_NumSnipsDisplayed.Enabled = true;
             button_stopClosedLoopStim.Enabled = false;
             button_startClosedLoopStim.Enabled = true;
@@ -265,7 +266,8 @@ namespace NeuroRighter
                     tabPage_LFPs = new TabPage("LFPs");
                     tabControl.TabPages.Insert(2, tabPage_LFPs);
                 }
-                else if (!Properties.Settings.Default.UseLFPs && tabControl.TabPages.Contains(tabPage_LFPs)) tabControl.TabPages.Remove(tabPage_LFPs);
+                else if (!Properties.Settings.Default.UseLFPs && tabControl.TabPages.Contains(tabPage_LFPs)) 
+                    tabControl.TabPages.Remove(tabPage_LFPs);
 
                 //Add MUA tab, if applicable
                 if (Properties.Settings.Default.ProcessMUA && !tabControl.TabPages.Contains(tabPage_MUA))

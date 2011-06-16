@@ -26,29 +26,35 @@ namespace NeuroRighter.DataTypes
 
         public StimulusOutEvent(int channel, ulong time, double[] waveform)
         {
-            this.channel = (short)channel;
-            this.sampleIndex= time;
-            this.waveform = new double[waveform.Length];
-          //  MessageBox.Show("creatingstim");
-            for (int i = 0; i < waveform.Length; i++)
+            try
             {
-                this.waveform[i] = waveform[i];
+                this.channel = (short)channel;
+                this.sampleIndex = time;
+                this.waveform = new double[waveform.Length];
+                //  MessageBox.Show("creatingstim");
+                for (int i = 0; i < waveform.Length; i++)
+                {
+                    this.waveform[i] = waveform[i];
+                }
+
+
+                //need to include PreCompute functions in here- parallel list with analog, digital encode data.
+
+                //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
+                this.AnalogEncode = new double[2];
+                this.DigitalEncode = new uint[3];
+                this.AnalogEncode[0] = Math.Ceiling((double)channel / 8.0);
+                this.AnalogEncode[1] = (double)((channel - 1) % 8) + 1.0;
+
+                this.DigitalEncode[0] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
+                this.DigitalEncode[1] = channel2MUX_noEN((double)channel);
+                this.DigitalEncode[2] = channel2MUX((double)channel);
+                this.sampleDuration = (uint)waveform.Length;
             }
-
-
-            //need to include PreCompute functions in here- parallel list with analog, digital encode data.
-
-            //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
-            this.AnalogEncode = new double[2];
-            this.DigitalEncode = new uint[3];
-            this.AnalogEncode[0] = Math.Ceiling((double)channel / 8.0);
-            this.AnalogEncode[1] = (double)((channel - 1) % 8) + 1.0;
-
-            this.DigitalEncode[0] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
-            this.DigitalEncode[1] = channel2MUX_noEN((double)channel);
-            this.DigitalEncode[2] = channel2MUX((double)channel);
-            this.sampleDuration = (uint)waveform.Length;
-           // MessageBox.show("created stim");
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         public StimulusOutEvent(int channel, ulong time, double[] waveform, uint sampleDuration)

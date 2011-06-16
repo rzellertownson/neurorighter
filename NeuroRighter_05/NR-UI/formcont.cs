@@ -96,7 +96,6 @@ namespace NeuroRighter
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (tabControl.SelectedTab.Text)
-            //switch (tabControl.SelectedIndex)
             {
                 //case 0: //Spike graph
                 case "Spikes":

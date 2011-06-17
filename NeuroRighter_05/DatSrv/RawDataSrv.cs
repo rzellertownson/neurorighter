@@ -89,6 +89,11 @@ namespace NeuroRighter.DatSrv
             }
         }
 
+        /// <summary>
+        /// Estimate the avialable samples in the buffer. This can be used to inform
+        /// the user of good arguments for the ReadFromBuffer method.
+        /// </summary>
+        /// <returns></returns>
         public ulong[] EstimateAvailableTimeRange()
         { 
             // Enforce a read lock
@@ -104,10 +109,19 @@ namespace NeuroRighter.DatSrv
             }
         }
 
-        public RawMultiChannelBuffer ReadFromBuffer(double[] desiredSampleRange) 
+        /// <summary>
+        /// Read data from buffer. This method will attempt to retrieve samples within the range
+        /// specified by the input arguements. The RawMultiChannelBuffer object that is returned
+        /// will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
+        /// method to get a (time-sensitive) estimate for good-arguments for this method.
+        /// </summary>
+        /// <param name="desiredStartIndex"></param>
+        /// <param name="desiredStopIndex"></param>
+        /// <returns></returns>
+        public RawMultiChannelBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
         {
             // Make sure the desiredSampleRange is correctly formatted
-            if (desiredSampleRange[0] > desiredSampleRange[1])
+            if (desiredStartIndex > desiredStopIndex)
             {
                 throw new FormatException("The first element of desiredSampleRange must be smaller or equal to the last element.");
             }
@@ -116,49 +130,52 @@ namespace NeuroRighter.DatSrv
             int startIndex; // Where to start taking samples
             int stopIndex; // where to stop taking samples
             RawMultiChannelBuffer returnBuffer = null;
-            
-            // Convert desired sample range to ulong's
-            ulong[] desiredSampleRangeUlong  = new ulong[2];
-            desiredSampleRangeUlong[0] = (ulong)Math.Floor(desiredSampleRange[0]);
-            desiredSampleRangeUlong[1] = (ulong)Math.Ceiling(desiredSampleRange[1]);
 
             // Enforce a read lock
             bufferLock.EnterReadLock();
             try
             {
                 // First make sure that there are samples available within the desired range
-                if (dataBuffer.startAndEndSample[0] <= desiredSampleRange[0] &&
-                   dataBuffer.startAndEndSample[1] >= desiredSampleRange[0])
+                if (dataBuffer.startAndEndSample[0] <= desiredStartIndex ||
+                   dataBuffer.startAndEndSample[1] >= desiredStopIndex)
                 {
                     // Figure out what part of the buffer we want in reference to the leastCurrentSample
                     // Lower bound
-                    if (desiredSampleRange[0] <= dataBuffer.startAndEndSample[0])
+                    ulong absStart;
+                    ulong absStop;
+                    if (desiredStartIndex <= dataBuffer.startAndEndSample[0])
                     {
                         startIndex = dataBuffer.netLeastAndMostCurrentCircular[0];
+                        absStart = dataBuffer.startAndEndSample[0];
                     }
                     else
                     {
-                        startIndex = dataBuffer.FindSampleIndex((int)(desiredSampleRangeUlong[0] - dataBuffer.startAndEndSample[0]));
+                        startIndex = dataBuffer.FindSampleIndex(desiredStartIndex);
+                        absStart = desiredStartIndex;
                     }
 
                     // Upper bound
-                    if (desiredSampleRange[1] >= dataBuffer.startAndEndSample[1])
+                    if (desiredStopIndex >= dataBuffer.startAndEndSample[1])
                     {
                         stopIndex = dataBuffer.netLeastAndMostCurrentCircular[1];
+                        absStop = dataBuffer.startAndEndSample[1];
                     }
                     else
                     {
-                        stopIndex = dataBuffer.FindSampleIndex((int)(desiredSampleRangeUlong[1] - dataBuffer.startAndEndSample[0]));
+                        stopIndex = dataBuffer.FindSampleIndex(desiredStopIndex);
+                        absStop = desiredStopIndex;
                     }
 
                     // Instantiate the returnBuffer
-                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, stopIndex - startIndex, numTasks);
+                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, (int)(absStop - absStart), numTasks);
+                    returnBuffer.startAndEndSample = new ulong[] {absStart,absStop};
 
-                    for (int j = startIndex; j <stopIndex; ++j)
+                    for (ulong j = absStart; j < absStop; ++j)
                     {
+                        int circSample = dataBuffer.FindSampleIndex(j);
                         for (int i = 0; i < dataBuffer.numChannels; ++i)
                         {
-                            returnBuffer.rawMultiChannelBuffer[i][j - startIndex] = dataBuffer.rawMultiChannelBuffer[i][j];
+                            returnBuffer.rawMultiChannelBuffer[i][j - absStart] = dataBuffer.rawMultiChannelBuffer[i][circSample];
                         }
                     }
                 }

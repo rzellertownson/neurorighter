@@ -15,6 +15,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -194,7 +195,7 @@ namespace NeuroRighter.DatSrv
             return timeRange;
         }
 
-        public EventBuffer<T> ReadFromBuffer(ulong[] desiredSampleRange) 
+        public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
         {
             EventBuffer<T> returnBuffer = new EventBuffer<T>(dataBuffer.sampleFrequencyHz);
 
@@ -207,14 +208,13 @@ namespace NeuroRighter.DatSrv
                 int added = 0;
                 for (int i = 0; i < dataBuffer.eventBuffer.Count;i++ )
                 {
-                    if (dataBuffer.eventBuffer[i].sampleIndex > desiredSampleRange[0] &&
-                        dataBuffer.eventBuffer[i].sampleIndex <= desiredSampleRange[1])
+                    if (dataBuffer.eventBuffer[i].sampleIndex > desiredStartIndex &&
+                        dataBuffer.eventBuffer[i].sampleIndex <= desiredStopIndex)
                     {
                         returnBuffer.eventBuffer.Add((T)dataBuffer.eventBuffer[i].DeepClone());
                         added++;
                     }
                 }
-                Console.WriteLine("ReadFromBuffer: " + added + " /" + this.dataBuffer.eventBuffer.Count.ToString() + "read, range " + desiredSampleRange[0]+ "-" +desiredSampleRange[1]);
             }
             finally
             {

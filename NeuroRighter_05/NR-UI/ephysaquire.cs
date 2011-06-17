@@ -423,6 +423,13 @@ namespace NeuroRighter
                 shortAuxAnData = auxDataScaler.ConvertSoftRawMatixToInt16(ref auxAnData);
                 recordingSettings.auxAnalogOut.read(shortAuxAnData,auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
             }
+
+            if (updateAuxGraph)
+            {
+                auxInputGraphController.updateScatterGraph(datSrv.auxAnalogSrv, 
+                    (double)numericUpDown_RequestedAuxHistory.Value,
+                    (double)numericUpDown_AuxPlotVoltage.Value);
+            }
             #endregion
         }
 
@@ -435,10 +442,12 @@ namespace NeuroRighter
                 {
                     if (taskRunning)
                     {
+                        // Create space for the buffer
+                        auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
 
                         //Read the available data from the channels
-                        int numAuxSampRead;
-                        auxAnData = auxAnReader.EndMemoryOptimizedReadMultiSample(ar, out numAuxSampRead);
+                        int numAuxSampRead = 0;
+                        auxAnData = auxAnReader.EndMemoryOptimizedReadMultiSample(ar,out numAuxSampRead);
   
                         // Send to datSrv
                         datSrv.auxAnalogSrv.WriteToBuffer(auxAnData,0,numChannels);
@@ -452,6 +461,13 @@ namespace NeuroRighter
                             recordingSettings.auxAnalogOut.read(shortAuxAnData, auxChanSet.numericalChannels.Length, 0, spikeBufferLength);
                         }
                         #endregion
+
+                        if (updateAuxGraph)
+                        {
+                            auxInputGraphController.updateScatterGraph(datSrv.auxAnalogSrv,
+                            (double)numericUpDown_RequestedAuxHistory.Value,
+                            (double)numericUpDown_AuxPlotVoltage.Value);
+                        }
 
                         // Start next read
                         auxAnReader.BeginMemoryOptimizedReadMultiSample(spikeBufferLength, auxAnCallback, null, auxAnData); 

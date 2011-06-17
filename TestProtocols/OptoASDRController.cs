@@ -60,7 +60,7 @@ namespace TestProtocols
 
                     // Try to get the number of spikes within the available time range
                     ulong[] dataRange = new ulong[2] {spikeTimeRange[0], spikeTimeRange[0] - daqPollingPeriodSamples};
-                    EventBuffer<SpikeEvent> spikes = DatSrv.spikeSrv.ReadFromBuffer(dataRange);
+                    EventBuffer<SpikeEvent> spikes = DatSrv.spikeSrv.ReadFromBuffer(dataRange[0],dataRange[1]);
 
                     // Estimate the ASDR for the last time window
                     double asdrEstimate = (double)spikes.eventBuffer.Count/daqPollingPeriodSec;

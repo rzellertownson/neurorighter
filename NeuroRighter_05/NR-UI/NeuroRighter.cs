@@ -69,8 +69,9 @@ namespace NeuroRighter
             this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.Text += " (BETA)";
 
-            // Set the refresh DAQ refresh period and the datSrv buffer length
-            //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
+            // Set spike buffer lengths
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
 
             //Set default values for certain controls
             comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
@@ -516,6 +517,9 @@ namespace NeuroRighter
                                     SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                                 auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
 
+                                // Create space for the buffer
+                                auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
+
                             }
 
                         }
@@ -652,14 +656,36 @@ namespace NeuroRighter
                         waveformPlotData.start();
                         #endregion
 
-                        spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-                        lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+
 
                         if (Properties.Settings.Default.UseEEG)
                         {
                             eegGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_eegSamplingRate.Text), 5);
                             eegPlotData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem),
                                 Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
+                        }
+
+                        if (Properties.Settings.Default.useAuxAnalogInput)
+                        {
+                            // Remov existing plots
+                            for (int i = scatterGraph_AuxAnalogData.Plots.Count-1; i > 0; --i)
+                            {
+                                scatterGraph_AuxAnalogData.Plots.RemoveAt(i);
+                            }
+                            // Initialize the aux data scatter graph with a plot for each aux Analog channel
+                            for (int i = 0; i < Properties.Settings.Default.auxAnalogInChan.Count-1; ++i)
+                            {
+                                ScatterPlot p = new ScatterPlot();
+                                scatterGraph_AuxAnalogData.Plots.Add(p);
+                            }
+
+                            // Initialize the controller
+                            auxInputGraphController = new ScatterGraphContoller(ref scatterGraph_AuxAnalogData);
+
+                            // Make history selector reflect current limits on input
+                            numericUpDown_RequestedAuxHistory.Minimum = (decimal)(Properties.Settings.Default.ADCPollingPeriodSec * 5);
+                            numericUpDown_RequestedAuxHistory.Maximum = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
+
                         }
                         #endregion
 
@@ -943,7 +969,7 @@ namespace NeuroRighter
 
                     // Start data collection
                     if (Properties.Settings.Default.useAuxAnalogInput && !twoAITasksOnSingleBoard)
-                        auxAnReader.BeginMemoryOptimizedReadMultiSample(spikeBufferLength, auxAnCallback, null, auxAnData); 
+                        auxAnReader.BeginMemoryOptimizedReadMultiSample(spikeBufferLength, auxAnCallback,null, auxAnData); 
                     if (Properties.Settings.Default.useAuxDigitalInput)
                         auxDigReader.BeginReadMultiSamplePortUInt32(spikeBufferLength, auxDigCallback, auxDigReader);
                     if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)

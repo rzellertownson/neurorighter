@@ -99,6 +99,7 @@ namespace NeuroRighter
             {
                 //case 0: //Spike graph
                 case "Spikes":
+                    updateAuxGraph = false;
                     spikeGraph.Visible = true;
                     spkWfmGraph.Visible = false;
                     if (eegGraph != null) eegGraph.Visible = false;
@@ -106,6 +107,7 @@ namespace NeuroRighter
                     break;
                 //case 1: //Waveform graph
                 case "Spk Wfms":
+                    updateAuxGraph = false;
                     spkWfmGraph.Visible = true;
                     spikeGraph.Visible = false;
                     if (eegGraph != null) eegGraph.Visible = false;
@@ -113,6 +115,7 @@ namespace NeuroRighter
                     break;
                 //case 2: //LFP Graph
                 case "LFPs":
+                    updateAuxGraph = false;
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
                     if (eegGraph != null) eegGraph.Visible = false;
@@ -120,16 +123,25 @@ namespace NeuroRighter
                     break;
                 //case 3: //EEG Graph
                 case "EEG":
+                    updateAuxGraph = false;
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
                     if (muaGraph != null) muaGraph.Visible = false;
                     eegGraph.Visible = true;
                     break;
                 case "MUA":
+                    updateAuxGraph = false;
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
                     if (eegGraph != null) eegGraph.Visible = false;
                     muaGraph.Visible = true;
+                    break;
+                case "Aux Input":
+                    updateAuxGraph = true;
+                    spikeGraph.Visible = false;
+                    spkWfmGraph.Visible = false;
+                    if (eegGraph != null) eegGraph.Visible = false;
+                    if (muaGraph != null) muaGraph.Visible = false;
                     break;
                 default:
                     spikeGraph.Visible = false;

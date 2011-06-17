@@ -7,7 +7,7 @@ namespace NeuroRighter.DataTypes
 {
     /// <summary>
     /// This class is the standard NR buffer class for raw analog data coming from
-    /// mulitple input channels. It has a startAndEndSample property that specifies
+    /// multiple input channels. It has a startAndEndSample property that specifies
     /// the start and end sample indicies, relative to the start of data collection
     /// contained in the data buffer corresponding to the first and last positions
     /// of the rawMultichannelBuffer array (one channel's worth of data along each row).
@@ -30,7 +30,7 @@ namespace NeuroRighter.DataTypes
         {
             this.netLeastAndMostCurrentCircular = new int[2];
             this.sampleFrequencyHz = sampleFrequencyHz;
-            this.numChannels = numChannels;
+            this.numChannels = numChannelsPerTask;
             this.bufferLengthInSamples = bufferLengthInSamples;
             this.startAndEndSample = new ulong[2];
             this.startAndEndSample[0] = 0;
@@ -60,6 +60,7 @@ namespace NeuroRighter.DataTypes
             leastCurrentCircularSample[task] = (++leastCurrentCircularSample[task]) % bufferLengthInSamples;
             ulong tmpa =totalNumSamplesWritten[0];
             ulong tmpi = totalNumSamplesWritten[0];
+
             //find the minimum and maximum no of samples written
             for (int i = 1;i<totalNumSamplesWritten.Length;i++)
             {
@@ -85,9 +86,9 @@ namespace NeuroRighter.DataTypes
         }
 
         //used for reading only.  this means that we care about the 'youngest' of the two oldest samples and the 
-        internal int FindSampleIndex(int numberOfSamplesFromLeastCurrentOne)
+        internal int FindSampleIndex(ulong absoluteSampleIndex)
         {
-            return (netLeastAndMostCurrentCircular[0] + numberOfSamplesFromLeastCurrentOne) % bufferLengthInSamples;
+            return (int)(absoluteSampleIndex % (ulong)bufferLengthInSamples);
         }
     }
 }

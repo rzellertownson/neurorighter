@@ -43,7 +43,7 @@ namespace TestProtocols
                 {
                     tmp = DatSrv.spikeSrv.EstimateAvailableTimeRange()[1];
                     range = new ulong[2] { recordedToSpike, tmp };
-                    recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range).eventBuffer);
+                    recspikes.AddRange(DatSrv.spikeSrv.ReadFromBuffer(range[0], range[1]).eventBuffer);
                     recordedToSpike = tmp;
                   //  Console.WriteLine("spike read completed");
                 }

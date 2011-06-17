@@ -74,11 +74,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExtentionMethods\Mowog.PersistWindowState.dll</HintPath>
     </Reference>
-    <Reference Include="NationalInstruments.Analysis.Professional, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.Common, Version=8.9.35.302, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.32, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.UI, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
-    <Reference Include="NationalInstruments.UI.WindowsForms, Version=8.6.35.189, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Analysis.Professional, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.UI, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.UI.WindowsForms, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -97,6 +97,8 @@
     <None Include="Miscellaneous\Microsoft Permissive License.rtf" />
     <None Include="Miscellaneous\National_Instruments_software_license_agreement.pdf" />
     <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
+    <None Include="obj\Release\build.force" />
+    <None Include="obj\Release\NeuroRighter_05.csproj.ResolveComReference.cache" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -130,6 +132,12 @@
     <Compile Include="Filters\filter.cs" />
     <Compile Include="Filters\LocalFit.cs" />
     <Compile Include="Filters\SALPA3.cs" />
+    <Compile Include="Note-UI\RecordingNote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Note-UI\RecordingNote.Designer.cs">
+      <DependentUpon>RecordingNote.cs</DependentUpon>
+    </Compile>
     <Compile Include="NR-UI\diagnostics.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -174,6 +182,13 @@
     <Compile Include="Output\OpenLoopOut.cs" />
     <Compile Include="Output\NROutBuffer.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
+    <Compile Include="Plotting\ScatterGraphContoller.cs" />
+    <Compile Include="Plotting\SpikeWaveformGraph.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Plotting\SpikeWaveformGraph.Designer.cs">
+      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
+    </Compile>
     <Compile Include="Settings-UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -260,12 +275,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="obj\Note-UI\RecordingNote.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="obj\Note-UI\RecordingNote.Designer.cs">
-      <DependentUpon>RecordingNote.cs</DependentUpon>
-    </Compile>
     <Compile Include="SALPA\inv.cs" />
     <Compile Include="SALPA\lu.cs" />
     <Compile Include="SALPA\SALPA.cs" />
@@ -304,6 +313,13 @@
       <DependentUpon>RecordingSetup.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Note-UI\RecordingNote.resx">
+      <DependentUpon>RecordingNote.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plotting\SpikeWaveformGraph.resx">
+      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Settings-UI\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -325,10 +341,6 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="obj\Note-UI\RecordingNote.resx">
-      <DependentUpon>RecordingNote.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SpikeDetection\SpikeDetSettings.resx">
       <DependentUpon>SpikeDetSettings.cs</DependentUpon>
@@ -357,6 +369,11 @@
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="obj\Release\AxInterop.CWUIControlsLib.dll" />
+    <Content Include="obj\Release\Interop.CWUIControlsLib.dll" />
+    <Content Include="obj\Release\Interop.GUSILib.dll" />
+    <Content Include="obj\Release\NeuroRighter_05.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Release\TempPE\Properties.Resources1.Designer.cs.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -422,6 +439,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

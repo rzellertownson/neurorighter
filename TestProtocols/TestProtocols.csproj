@@ -57,7 +57,7 @@
     <Compile Include="SilentBarrageProt2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NeuroRighter_05\NeuroRighter_05.csproj">
+    <ProjectReference Include="..\NeuroRighter\NeuroRighter_05.csproj">
       <Project>{BB2A4100-DBDA-4A63-8708-8A7F9F6810E0}</Project>
       <Name>NeuroRighter_05</Name>
     </ProjectReference>

@@ -146,6 +146,7 @@ namespace NeuroRighter
             numericUpDown_NumSnipsDisplayed.Enabled = true;
             button_stopClosedLoopStim.Enabled = false;
             button_startClosedLoopStim.Enabled = true;
+            checkBox_SALPA.Enabled = true;
             
             if (Properties.Settings.Default.UseEEG)
             {

@@ -203,6 +203,18 @@ namespace NeuroRighter
 
             comboBox_AuxDigInputPort.Items.AddRange
                 (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DIPort, PhysicalChannelAccess.External));
+            
+            // Remove ports 1 and 2
+            for (int i = comboBox_AuxDigInputPort.Items.Count - 1; i >= 0; --i)
+            {
+                string tempChan = comboBox_AuxDigInputPort.Items[i].ToString();
+                string[] splitPort = tempChan.Split('/');
+                string whatPort = splitPort[1];
+                char portNo = whatPort[whatPort.Length-1];
+                if (! (portNo == '0'))
+                    comboBox_AuxDigInputPort.Items.RemoveAt(i);
+            }
+
             if (comboBox_AuxDigInputPort.Items.Count > 0)
             {
                 int idx = comboBox_AuxDigInputPort.Items.IndexOf(Properties.Settings.Default.auxDigitalInPort);

@@ -225,6 +225,7 @@ namespace NeuroRighter
                         textBox_MUASamplingRate.Enabled = false;
                         button_startStimFromFile.Enabled = false;
                         button_startClosedLoopStim.Enabled = false;
+                        checkBox_SALPA.Enabled = false;
                         if (Properties.Settings.Default.SeparateLFPBoard)
                             comboBox_LFPGain.Enabled = false;
                         numericUpDown_NumSnipsDisplayed.Enabled = false;
@@ -374,6 +375,9 @@ namespace NeuroRighter
                             //Trigger off of ai dev0's trigger
                             spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
                                 "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
+
+                            // Manually allocate buffer memory
+                            spikeTask[i].Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
                         //if (Properties.Settings.Default.UseSingleChannelPlayback)
                         //{
@@ -389,6 +393,9 @@ namespace NeuroRighter
                             lfpTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                             lfpTask.Timing.ConfigureSampleClock("", lfpSamplingRate,
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_lfpSamplingRate.Text) / 2));
+
+                            // Manually allocate buffer memory
+                            lfpTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
                         if (Properties.Settings.Default.UseEEG)
@@ -397,6 +404,9 @@ namespace NeuroRighter
                             eegTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                             eegTask.Timing.ConfigureSampleClock("", eegSamplingRate,
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 2));
+                            
+                            // Manually allocate buffer memory
+                            eegTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
                         if (Properties.Settings.Default.UseCineplex)
@@ -464,9 +474,8 @@ namespace NeuroRighter
                                 int[] stimTimeChannels = new int[] { 0, 1 };
                                 stimTimeChanSet.SetupNumericalChannelOnly(stimTimeChannels);
 
-                                //// Make the master buffer for stim/aux input
-                                //for (int i = 0; i < stimTimeChanSet.numericalChannels.Length + auxChanSet.numericalChannels.Length; ++i)
-                                //    stimDataTmp[i] = new AnalogWaveform<double>(spikeBufferLength);
+                                // Manually allocate buffer memory
+                                stimTimeTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
 
                                 Console.WriteLine("NRAcquisitionSetup complete");
                             }
@@ -517,6 +526,9 @@ namespace NeuroRighter
                                     SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                                 auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
 
+                                // Manually allocate buffer memory
+                                auxAnInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+
                                 // Create space for the buffer
                                 auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
 
@@ -533,6 +545,9 @@ namespace NeuroRighter
                             auxDigInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
                             auxDigInTask.Timing.SampleClockSource = spikeTask[0].Timing.SampleClockTerminal;
+
+                            // Manually allocate buffer memory
+                            auxDigInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
                         #region Setup_Plotting
@@ -683,7 +698,7 @@ namespace NeuroRighter
                             auxInputGraphController = new ScatterGraphContoller(ref scatterGraph_AuxAnalogData);
 
                             // Make history selector reflect current limits on input
-                            numericUpDown_RequestedAuxHistory.Minimum = (decimal)(Properties.Settings.Default.ADCPollingPeriodSec * 5);
+                            //numericUpDown_RequestedAuxHistory.Minimum = (decimal)(Properties.Settings.Default.ADCPollingPeriodSec * 5);
                             numericUpDown_RequestedAuxHistory.Maximum = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
 
                         }
@@ -1060,7 +1075,6 @@ namespace NeuroRighter
                 reset();
             updateRecSettings();
         }
-
 
     }
 }

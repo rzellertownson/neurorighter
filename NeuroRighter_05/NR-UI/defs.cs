@@ -227,6 +227,7 @@ namespace NeuroRighter
         private const double VOLTAGE_EPSILON = 1E-7; //If two samples are within 100 nV, I'll call them "same"
         private const int MUA_DOWNSAMPLE_FACTOR = 50;
         private const short CHAN_INDEX_START = 1;
+        private const long DAQ_BUFFER_SIZE_SAMPLES = 1000000;
          
         #endregion
     }

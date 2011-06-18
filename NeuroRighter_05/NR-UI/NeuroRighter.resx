@@ -120,6 +120,12 @@
   <metadata name="toolTip_outputFilename.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>221, 17</value>
   </metadata>
+  <data name="checkBox_SALPA.ToolTip" xml:space="preserve">
+    <value>Artifact subtraction algorithm.  Train noise levels
+before using. More information on parameters in 'Real
+-time artifact subtraction by local polynomial fitting'
+Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="button_scaleReset.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

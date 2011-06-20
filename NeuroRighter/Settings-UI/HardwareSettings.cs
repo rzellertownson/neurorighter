@@ -23,6 +23,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
 using NationalInstruments.UI;
@@ -39,7 +40,11 @@ namespace NeuroRighter
         /// </summary>
         public HardwareSettings()
         {
+
             InitializeComponent();
+
+            // Store form size and location
+            //HWpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
 
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)

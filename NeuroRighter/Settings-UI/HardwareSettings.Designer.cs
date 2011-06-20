@@ -125,10 +125,10 @@ namespace NeuroRighter
             this.checkBox_useChannelPlayback = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox_singleChannelPlaybackDevice = new System.Windows.Forms.ComboBox();
-            this.persistWindowComponent1 = new Mowog.PersistWindowComponent(this.components);
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
+            this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -913,7 +913,7 @@ namespace NeuroRighter
             this.textBox_datSrvBufferSizeSec.Name = "textBox_datSrvBufferSizeSec";
             this.textBox_datSrvBufferSizeSec.Size = new System.Drawing.Size(100, 20);
             this.textBox_datSrvBufferSizeSec.TabIndex = 17;
-            this.textBox_datSrvBufferSizeSec.Text = "10";
+            this.textBox_datSrvBufferSizeSec.Text = "2.5";
             // 
             // textBox_DACPollingPeriodSec
             // 
@@ -921,7 +921,7 @@ namespace NeuroRighter
             this.textBox_DACPollingPeriodSec.Name = "textBox_DACPollingPeriodSec";
             this.textBox_DACPollingPeriodSec.Size = new System.Drawing.Size(100, 20);
             this.textBox_DACPollingPeriodSec.TabIndex = 16;
-            this.textBox_DACPollingPeriodSec.Text = "0.01";
+            this.textBox_DACPollingPeriodSec.Text = "0.1";
             // 
             // groupBox23
             // 
@@ -1152,11 +1152,6 @@ namespace NeuroRighter
             this.comboBox_singleChannelPlaybackDevice.TabIndex = 7;
             this.comboBox_singleChannelPlaybackDevice.Text = "Dev1";
             // 
-            // persistWindowComponent1
-            // 
-            this.persistWindowComponent1.Form = this;
-            this.persistWindowComponent1.XMLFilePath = "WindowState.xml";
-            // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(172, 21);
@@ -1183,6 +1178,11 @@ namespace NeuroRighter
             this.label20.Size = new System.Drawing.Size(158, 13);
             this.label20.TabIndex = 1;
             this.label20.Text = "Amplifier Gain for Extracell. Rec.";
+            // 
+            // HWpersistWindowComponent
+            // 
+            this.HWpersistWindowComponent.Form = this;
+            this.HWpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
             // HardwareSettings
             // 
@@ -1334,7 +1334,7 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_UseAuxDigitalInput;
         private System.Windows.Forms.ListBox listBox_AuxAnalogInChan;
         private System.Windows.Forms.Label label19;
-        private Mowog.PersistWindowComponent persistWindowComponent1;
+        private Mowog.PersistWindowComponent HWpersistWindowComponent;
         private System.Windows.Forms.TabPage tabPag_Gen;
         private System.Windows.Forms.GroupBox groupBox21;
         private System.Windows.Forms.TextBox textBox_DACPollingPeriodSec;

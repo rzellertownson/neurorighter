@@ -107,19 +107,19 @@ namespace NeuroRighter
                                 // This holds everything up since it does not have a callback or anything.
                                 //This read handles both stim data and optional aux analog in data. Both are stored in stimDataTmp and parsed out later
                                 //int numSampRead;
-                                double[,] stimDataTmp = stimTimeReader.ReadMultiSample(spikeBufferLength);
+                                double[,] stimData = stimTimeReader.ReadMultiSample(spikeBufferLength);
 
                                 //stimTimeReader.MemoryOptimizedReadMultiSample(spikeBufferLength, ref stimDataTmp, out numSampRead);
 
-                                double[,] stimData = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+                                double[,] stimDataTmp = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
 
                                 //Read the available data from the channels
                                 if (twoAITasksOnSingleBoard)
                                 {
 
-                                    Array.Copy(stimDataTmp, stimTimeChanSet.numericalChannels[0] * spikeBufferLength, stimData, 
-                                        0, stimTimeChanSet.numericalChannels.Length * spikeBufferLength);
-
+                                    Array.Copy(stimData, 0, stimDataTmp, stimTimeChanSet.numericalChannels[0] * spikeBufferLength, 
+                                        stimTimeChanSet.numericalChannels.Length * spikeBufferLength);
+                                     
                                     AuxAnalogFromStimData(stimDataTmp);
                                 }
 

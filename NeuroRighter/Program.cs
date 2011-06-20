@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace NeuroRighter
 {
@@ -38,7 +39,14 @@ namespace NeuroRighter
                 p.PriorityClass = ProcessPriorityClass.RealTime;
             Thread thrd = Thread.CurrentThread;
 
-            thrd.Priority = ThreadPriority.BelowNormal;
+            // Set application data path
+            Properties.Settings.Default.neurorighterAppDataPath = Path.Combine(Environment.GetFolderPath(
+                            Environment.SpecialFolder.ApplicationData) , "NeuroRighter");
+
+            // persist window path
+            Properties.Settings.Default.persistWindowPath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "windowState.xml");
+
+            thrd.Priority = ThreadPriority.AboveNormal;
             try
             {
                 Application.EnableVisualStyles();

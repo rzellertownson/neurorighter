@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using rawType = System.Double;
 
@@ -34,7 +35,11 @@ namespace NeuroRighter.SpikeDetection
             this.numChannels = numChannels;
             //this.Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             this.sampleRate = sampleRate;
+
             InitializeComponent();
+
+            // Store form size and location
+            //spkDetpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
 
             //Default spike det. algorithm is fixed RMS
             this.comboBox_spikeDetAlg.SelectedIndex = 0;

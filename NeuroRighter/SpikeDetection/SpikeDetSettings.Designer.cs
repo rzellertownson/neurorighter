@@ -64,7 +64,7 @@
             this.label15 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.button_SaveAndClose = new System.Windows.Forms.Button();
-            this.persistWindowComponent_ForSpkDet = new Mowog.PersistWindowComponent(this.components);
+            this.spkDetpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DeadTime)).BeginInit();
@@ -139,9 +139,9 @@
             this.label71.AutoSize = true;
             this.label71.Location = new System.Drawing.Point(18, 306);
             this.label71.Name = "label71";
-            this.label71.Size = new System.Drawing.Size(114, 13);
+            this.label71.Size = new System.Drawing.Size(117, 13);
             this.label71.TabIndex = 52;
-            this.label71.Text = "Min spike width (uSec)";
+            this.label71.Text = "Min spike width (uSec):";
             // 
             // numericUpDown_DeadTime
             // 
@@ -183,9 +183,9 @@
             this.label92.AutoSize = true;
             this.label92.Location = new System.Drawing.Point(18, 374);
             this.label92.Name = "label92";
-            this.label92.Size = new System.Drawing.Size(125, 13);
+            this.label92.Size = new System.Drawing.Size(128, 13);
             this.label92.TabIndex = 48;
-            this.label92.Text = "Max spike amplitude (uV)";
+            this.label92.Text = "Max spike amplitude (uV):";
             // 
             // label12
             // 
@@ -277,9 +277,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(18, 340);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(117, 13);
+            this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 55;
-            this.label1.Text = "Max spike width (uSec)";
+            this.label1.Text = "Max spike width (uSec):";
             // 
             // numericUpDown_MaxSpkAmp
             // 
@@ -390,27 +390,27 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(7, 25);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(57, 13);
+            this.label9.Size = new System.Drawing.Size(144, 13);
             this.label9.TabIndex = 38;
-            this.label9.Text = "Threshold:";
+            this.label9.Text = "Threshold ( x noise estimate):";
             // 
             // label63
             // 
             this.label63.AutoSize = true;
             this.label63.Location = new System.Drawing.Point(7, 61);
             this.label63.Name = "label63";
-            this.label63.Size = new System.Drawing.Size(136, 13);
+            this.label63.Size = new System.Drawing.Size(139, 13);
             this.label63.TabIndex = 50;
-            this.label63.Text = "Detection dead-time (uSec)";
+            this.label63.Text = "Detection dead-time (uSec):";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(7, 199);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(120, 13);
+            this.label4.Size = new System.Drawing.Size(123, 13);
             this.label4.TabIndex = 60;
-            this.label4.Text = "Min spike slope (uV/ms)";
+            this.label4.Text = "Min spike slope (uV/ms):";
             // 
             // label2
             // 
@@ -435,7 +435,7 @@
             this.numericUpDown_MinSpikeSlope.TabIndex = 61;
             this.numericUpDown_MinSpikeSlope.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinSpikeSlope.Value = new decimal(new int[] {
-            5,
+            2,
             0,
             0,
             0});
@@ -534,10 +534,10 @@
             this.button_SaveAndClose.UseVisualStyleBackColor = true;
             this.button_SaveAndClose.Click += new System.EventHandler(this.button_SaveAndClose_Click);
             // 
-            // persistWindowComponent_ForSpkDet
+            // spkDetpersistWindowComponent
             // 
-            this.persistWindowComponent_ForSpkDet.Form = this;
-            this.persistWindowComponent_ForSpkDet.XMLFilePath = "WindowState.xml";
+            this.spkDetpersistWindowComponent.Form = this;
+            this.spkDetpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
             // SpikeDetSettings
             // 
@@ -618,7 +618,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label_PreSampConv;
         private System.Windows.Forms.Label label_PostSampConv;
-        private Mowog.PersistWindowComponent persistWindowComponent_ForSpkDet;
+        private Mowog.PersistWindowComponent spkDetpersistWindowComponent;
 
     }
 }

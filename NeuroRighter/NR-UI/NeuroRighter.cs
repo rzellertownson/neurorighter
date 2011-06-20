@@ -63,7 +63,11 @@ namespace NeuroRighter
         // Neurorighter object constructor
         public NeuroRighter()
         {
+
             InitializeComponent();
+
+            // Store form size and location
+            NRPersistWindowComponent.XMLFilePath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "windowState.xml");
 
             //Set version number
             this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -772,7 +776,7 @@ namespace NeuroRighter
                         //if devices refresh rate is reset, need to reset SALPA
                         if (checkBox_SALPA.Checked)
                             resetSALPA();
-                        if (spikeDet != null)
+                        if (spikeDet != null && isNormalRecording)
                             spikeDet.SetSpikeDetector();
 
 
@@ -906,7 +910,9 @@ namespace NeuroRighter
                     }
                     Debugger = new RealTimeDebugger();
                     Debugger.GrabTimer(spikeTask[0]);
-                    Debugger.SetPath(Properties.Settings.Default.savedirectory +"\\NRDebuggerOutput.txt");
+
+                    // Send debug output to the user's application data folder
+                    Debugger.SetPath(Path.Combine(Properties.Settings.Default.neurorighterAppDataPath,"neurorighter-log.txt"));
                 }
                 else
                 {

@@ -54,7 +54,7 @@
       <Value Profile="(Default)">invivo</Value>
     </Setting>
     <Setting Name="DefaultNumChannels" Type="System.String" Scope="User">
-      <Value Profile="(Default)">64</Value>
+      <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="UseLFPs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -211,6 +211,12 @@
     </Setting>
     <Setting Name="saveImpedanceDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">.</Value>
+    </Setting>
+    <Setting Name="neurorighterAppDataPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="persistWindowPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

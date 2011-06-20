@@ -43,9 +43,6 @@ namespace NeuroRighter
 
             InitializeComponent();
 
-            // Store form size and location
-            //HWpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
-
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)
             {
@@ -492,6 +489,12 @@ namespace NeuroRighter
         {
             Properties.Settings.Default.useAuxDigitalInput = checkBox_UseAuxDigitalInput.Checked;
             comboBox_AuxDigInputPort.Enabled = checkBox_UseAuxDigitalInput.Checked;
+        }
+
+        private void checkBox_RecStimTimes_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.RecordStimTimes = checkBox_RecStimTimes.Checked;
+            comboBox_stimInfoDev.Enabled = checkBox_RecStimTimes.Checked;
         }
     }
 }

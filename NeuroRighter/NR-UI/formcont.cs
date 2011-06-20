@@ -43,6 +43,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using NeuroRighter.SpikeDetection;
 
 namespace NeuroRighter
 {
@@ -56,6 +57,7 @@ namespace NeuroRighter
             HardwareSettings nc_s = new HardwareSettings();
             nc_s.ShowDialog();
             updateSettings();
+            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
         }
 
         private void toolStripMenuItem_DisplaySettings_Click(object sender, EventArgs e)

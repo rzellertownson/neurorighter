@@ -38,9 +38,6 @@ namespace NeuroRighter.SpikeDetection
 
             InitializeComponent();
 
-            // Store form size and location
-            //spkDetpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
-
             //Default spike det. algorithm is fixed RMS
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
             this.numPre = (int)numPreSamples.Value;

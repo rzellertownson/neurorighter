@@ -44,7 +44,7 @@ namespace NeuroRighter
                             Environment.SpecialFolder.ApplicationData) , "NeuroRighter");
 
             // persist window path
-            Properties.Settings.Default.persistWindowPath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "windowState.xml");
+            Properties.Settings.Default.persistWindowPath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "WindowState.xml");
 
             thrd.Priority = ThreadPriority.AboveNormal;
             try
@@ -63,11 +63,6 @@ namespace NeuroRighter
                 dbg.ExecptDBG startErrorHandler = new dbg.ExecptDBG();
                 startErrorHandler.DisplayInnerException(startEx, reflectedClass);
             }
-
-
-
-
-
 
         }
     }

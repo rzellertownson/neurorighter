@@ -66,9 +66,6 @@ namespace NeuroRighter
 
             InitializeComponent();
 
-            // Store form size and location
-            NRPersistWindowComponent.XMLFilePath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "windowState.xml");
-
             //Set version number
             this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.Text += " (BETA)";
@@ -133,9 +130,6 @@ namespace NeuroRighter
             //Create plots
             try
             {
-                //Create plot colormap
-                NRBrainbow = numChannels.GenerateBrainbow();
-
                 double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
 
                 spikeGraph = new GridGraph();
@@ -597,6 +591,9 @@ namespace NeuroRighter
                                 downsample = 5;
                                 break;
                         }
+
+                        //Create plot colormap
+                        NRBrainbow = numChannels.GenerateBrainbow();
 
                         //Initialize graphs
                         if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }

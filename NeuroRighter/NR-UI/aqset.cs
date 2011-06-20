@@ -40,6 +40,8 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using NeuroRighter.SpikeDetection;
+
 
 namespace NeuroRighter
 {
@@ -101,7 +103,10 @@ namespace NeuroRighter
             
             // Reset the spike detector if it exists
             if (spikeDet != null)
+            {
+                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
                 spikeDet.SetSpikeDetector();
+            }
 
             resetReferencers();
         }

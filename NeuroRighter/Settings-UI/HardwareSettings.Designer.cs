@@ -1070,6 +1070,7 @@ namespace NeuroRighter
             // 
             // comboBox_stimInfoDev
             // 
+            this.comboBox_stimInfoDev.Enabled = false;
             this.comboBox_stimInfoDev.FormattingEnabled = true;
             this.comboBox_stimInfoDev.Location = new System.Drawing.Point(180, 42);
             this.comboBox_stimInfoDev.Name = "comboBox_stimInfoDev";
@@ -1095,6 +1096,7 @@ namespace NeuroRighter
             this.checkBox_RecStimTimes.TabIndex = 15;
             this.checkBox_RecStimTimes.Text = "Enable pulsatile stimulation-timing recording";
             this.checkBox_RecStimTimes.UseVisualStyleBackColor = true;
+            this.checkBox_RecStimTimes.CheckedChanged += new System.EventHandler(this.checkBox_RecStimTimes_CheckedChanged);
             // 
             // comboBox_stimInfoDevice
             // 

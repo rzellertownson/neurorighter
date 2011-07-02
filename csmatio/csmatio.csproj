@@ -89,7 +89,7 @@
     </Reference>
     <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\zlib.net.dll</HintPath>
+      <HintPath>src\zlib.net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

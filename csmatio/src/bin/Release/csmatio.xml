@@ -4,12 +4,183 @@
         <name>csmatio</name>
     </assembly>
     <members>
-        <member name="T:csmatio.types.MLStructure">
+        <member name="T:csmatio.types.GenericArrayCreator`1">
             <summary>
-            This class represents Matlab's Structure object (structure array).
+            Interface used to create a generic array GenericArrayCreator.
+            </summary>
+            <typeparam name="T">Generic Type for the array.</typeparam>
+        </member>
+        <member name="M:csmatio.types.GenericArrayCreator`1.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="T:csmatio.io.MatlabIOException">
+            <summary>
+            MAT-file reader/writer exception
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.io.MatlabIOException.#ctor(System.String)">
+            <summary>
+            Construct a new <c>MatlabIOException</c>.
+            </summary>
+            <param name="s">A string containing the error information.</param>
+        </member>
+        <member name="T:csmatio.io.MatFileInputStream">
+            <summary>
+            MAT-file input stream class.
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.#ctor(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Attach MAT-file input stream to <c>ByteBuffer</c>
+            </summary>
+            <param name="buf"><c>BinaryReader</c></param>
+            <param name="type">Type of data stream</param>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadInt">
+            <summary>
+            Reads data (number of bytes read is determined by <i>data type</i>)
+            from the stream to <c>int</c>.
+            </summary>
+            <returns><c>int</c></returns>
+            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadChar">
+            <summary>
+            Reads data (number of bytes read is determined by <i>data type</i>)
+            from the stream to <c>char</c>.
+            </summary>
+            <returns><c>char</c></returns>
+            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadDouble">
+            <summary>
+            Reads data (number of bytes read is determined by <i>data type</i>)
+            from the stream to <c>double</c>.
+            </summary>
+            <returns><c>double</c></returns>
+            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadByte">
+            <summary>
+            Reads data (number of bytes read is determined by <i>data type</i>)
+            from the stream to <c>byte</c>.
+            </summary>
+            <returns><c>byte</c></returns>
+            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadLong">
+            <summary>
+            Reads data (number of bytes read is determined by <i>data type</i>)
+            from the stream to <c>long</c>.
+            </summary>
+            <returns><c>long</c></returns>
+            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileInputStream.ReadToByteBuffer(csmatio.common.ByteBuffer,System.Int32,csmatio.types.ByteStorageSupport)">
+            <summary>
+            Reads the data into a <c>ByteBuffer</c>.
+            </summary>
+            <param name="dest">The destination <c>ByteBuffer</c></param>
+            <param name="elements">The number of elements to read into a buffer</param>
+            <param name="storage">The backing <c>ByteStorageSupport</c> that
+            gives information on how data should be interpreted</param>
+            <returns>Reference to the destination <c>ByteBuffer</c></returns>
+            <exception cref="T:System.NotSupportedException">When attempting to read an unsupported
+            class type from the buffer</exception>
+        </member>
+        <member name="T:csmatio.types.ByteStorageSupport">
+            <summary>
+            A public interface for storing and manipulating byte arrays
+            </summary>
+        </member>
+        <member name="M:csmatio.types.ByteStorageSupport.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.ByteStorageSupport.GetByteArray(System.Object)">
+            <summary>
+            Gets a byte array from a numeric object.
+            </summary>
+            <param name="val">The numeric object to convert into a byte array.</param>
+        </member>
+        <member name="P:csmatio.types.ByteStorageSupport.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.ByteStorageSupport.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.io.MatFileFilter">
+            <summary>
+            File filter.
+            </summary>
+            <remarks>
+            This class is used to tell <c>MatFileReader</c> which matrices
+            should be processed.  This is useful when operating on big MAT-files,
+            when there's no need to load arrays into memory.
+            </remarks>
+            <example>
+            <code>
+            // Create new filter instance
+            MatFileFilter filter = new MatFileFilter();
+            // add a needle
+            filter.AddArrayName( "your_array_name" );
             
-            Note: An array of structures can contain only structures of the same type,
-            meaning structures that have the same field names.
+            // Read array from file (haystack) looking _only_ for a specific array (needle)
+            MatFileReader mfr = new MatFileReader( fileName, filter );
+            </code>
+            </example>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.io.MatFileFilter.#ctor">
+            <summary>
+            Creates an empty filter instance.
+            
+            <i>Note: Empty filter accepts all results.</i>
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatFileFilter.#ctor(System.String[])">
+            <summary>
+            Creates a filter instance and add the array of names.
+            </summary>
+            <param name="Names">Array of names (needles)</param>
+        </member>
+        <member name="M:csmatio.io.MatFileFilter.AddArrayName(System.String)">
+            <summary>
+            Add an array name to the filter.  This array will be processed
+            while crawling through the MAT-file.
+            </summary>
+            <param name="Name">Array name (needle)</param>
+        </member>
+        <member name="M:csmatio.io.MatFileFilter.Matches(System.String)">
+            <summary>
+            Test if given name matches the filter.
+            </summary>
+            <param name="Name">Array name to be tested</param>
+            <returns><c>True</c> if array (matrix) of this name should be processed.</returns>
+        </member>
+        <member name="T:csmatio.types.MLSingle">
+            <summary>
+            This class represents an Double (64-bit Floating-point) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="T:csmatio.types.MLNumericArray`1">
+            <summary>
+            Abstract class for numeric arrays.
             </summary>
             <author>David Zier (david.zier@gmail.com)</author>
         </member>
@@ -244,330 +415,6 @@
         <member name="P:csmatio.types.MLArray.IsUnknown">
             <summary>Is Array an Unknown Type?</summary>
         </member>
-        <member name="F:csmatio.types.MLStructure._keys">
-            <summary>
-            A Hashtable that keeps structure field names
-            </summary>
-        </member>
-        <member name="F:csmatio.types.MLStructure._mlStructArray">
-            <summary>
-            Array of structures
-            </summary>
-        </member>
-        <member name="F:csmatio.types.MLStructure._currentIndex">
-            <summary>
-            Current structure pointer for bulk insert
-            </summary>
-        </member>
-        <member name="M:csmatio.types.MLStructure.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create an <c>MLStructure</c> class object.
-            </summary>
-            <param name="Name">The name of the <c>MLStructure</c></param>
-            <param name="Dims">The array dimensions of the <c>MLStructure</c></param>
-        </member>
-        <member name="M:csmatio.types.MLStructure.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Create a new <c>MLStructure</c> class object.
-            </summary>
-            <param name="Name">The name of the structure</param>
-            <param name="Dims">The dimensions of the structure</param>
-            <param name="Type">The Matlab array type</param>
-            <param name="Attributes">The array attributes</param>
-        </member>
-        <member name="M:csmatio.types.MLStructure.GetKeySetToByteArray">
-            <summary>
-            Dumps field names to byte array.  Field names are written as Zero End Strings.
-            </summary>
-            <returns>A <c>byte</c> array for all the field names</returns>
-        </member>
-        <member name="M:csmatio.types.MLStructure.ContentToString">
-            <summary>
-            Get a string representation for the content of the array.
-            See <see cref="M:csmatio.types.MLArray.ContentToString"/>
-            </summary>
-            <returns>A string representation.</returns>
-        </member>
-        <member name="P:csmatio.types.MLStructure.Item(System.String)">
-            <summary>
-            Public accessor to the field desribed by <c>Name</c> from the current structure.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLStructure.Item(System.String,System.Int32,System.Int32)">
-            <summary>
-            Public accessor to the field described by <c>Name</c> from the (m,n)'th structure
-            in the structure array.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLStructure.Item(System.String,System.Int32)">
-            <summary>
-            Public accessor to the field described by <c>Name</c> from the index'th structure
-            in the structure array.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLStructure.MaxFieldLength">
-            <summary>
-            Gets the maximum length of field descriptor
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLStructure.AllFields">
-            <summary>
-            Gets all the fields from the struct array as a flat list of fields.
-            </summary>
-        </member>
-        <member name="T:csmatio.io.MatFileInputStream">
-            <summary>
-            MAT-file input stream class.
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.#ctor(System.IO.BinaryReader,System.Int32)">
-            <summary>
-            Attach MAT-file input stream to <c>ByteBuffer</c>
-            </summary>
-            <param name="buf"><c>BinaryReader</c></param>
-            <param name="type">Type of data stream</param>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadInt">
-            <summary>
-            Reads data (number of bytes read is determined by <i>data type</i>)
-            from the stream to <c>int</c>.
-            </summary>
-            <returns><c>int</c></returns>
-            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadChar">
-            <summary>
-            Reads data (number of bytes read is determined by <i>data type</i>)
-            from the stream to <c>char</c>.
-            </summary>
-            <returns><c>char</c></returns>
-            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadDouble">
-            <summary>
-            Reads data (number of bytes read is determined by <i>data type</i>)
-            from the stream to <c>double</c>.
-            </summary>
-            <returns><c>double</c></returns>
-            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadByte">
-            <summary>
-            Reads data (number of bytes read is determined by <i>data type</i>)
-            from the stream to <c>byte</c>.
-            </summary>
-            <returns><c>byte</c></returns>
-            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadLong">
-            <summary>
-            Reads data (number of bytes read is determined by <i>data type</i>)
-            from the stream to <c>long</c>.
-            </summary>
-            <returns><c>long</c></returns>
-            <exception cref="T:System.ArgumentException">If input stream type is not known</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileInputStream.ReadToByteBuffer(csmatio.common.ByteBuffer,System.Int32,csmatio.types.ByteStorageSupport)">
-            <summary>
-            Reads the data into a <c>ByteBuffer</c>.
-            </summary>
-            <param name="dest">The destination <c>ByteBuffer</c></param>
-            <param name="elements">The number of elements to read into a buffer</param>
-            <param name="storage">The backing <c>ByteStorageSupport</c> that
-            gives information on how data should be interpreted</param>
-            <returns>Reference to the destination <c>ByteBuffer</c></returns>
-            <exception cref="T:System.NotSupportedException">When attempting to read an unsupported
-            class type from the buffer</exception>
-        </member>
-        <member name="T:csmatio.io.MatFileFilter">
-            <summary>
-            File filter.
-            </summary>
-            <remarks>
-            This class is used to tell <c>MatFileReader</c> which matrices
-            should be processed.  This is useful when operating on big MAT-files,
-            when there's no need to load arrays into memory.
-            </remarks>
-            <example>
-            <code>
-            // Create new filter instance
-            MatFileFilter filter = new MatFileFilter();
-            // add a needle
-            filter.AddArrayName( "your_array_name" );
-            
-            // Read array from file (haystack) looking _only_ for a specific array (needle)
-            MatFileReader mfr = new MatFileReader( fileName, filter );
-            </code>
-            </example>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.io.MatFileFilter.#ctor">
-            <summary>
-            Creates an empty filter instance.
-            
-            <i>Note: Empty filter accepts all results.</i>
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatFileFilter.#ctor(System.String[])">
-            <summary>
-            Creates a filter instance and add the array of names.
-            </summary>
-            <param name="Names">Array of names (needles)</param>
-        </member>
-        <member name="M:csmatio.io.MatFileFilter.AddArrayName(System.String)">
-            <summary>
-            Add an array name to the filter.  This array will be processed
-            while crawling through the MAT-file.
-            </summary>
-            <param name="Name">Array name (needle)</param>
-        </member>
-        <member name="M:csmatio.io.MatFileFilter.Matches(System.String)">
-            <summary>
-            Test if given name matches the filter.
-            </summary>
-            <param name="Name">Array name to be tested</param>
-            <returns><c>True</c> if array (matrix) of this name should be processed.</returns>
-        </member>
-        <member name="T:csmatio.types.MLChar">
-            <summary>
-            This class represents an Matlab Char array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="T:csmatio.types.GenericArrayCreator`1">
-            <summary>
-            Interface used to create a generic array GenericArrayCreator.
-            </summary>
-            <typeparam name="T">Generic Type for the array.</typeparam>
-        </member>
-        <member name="M:csmatio.types.GenericArrayCreator`1.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.#ctor(System.String,System.String)">
-            <summary>
-            Creates an <c>MLChar</c> object from a character string.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Val">A character string array</param>
-        </member>
-        <member name="M:csmatio.types.MLChar.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLChar.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.SetChar(System.Char,System.Int32)">
-            <summary>
-            Sets an individual <c>char</c> in the character array.
-            </summary>
-            <param name="Ch">The <c>char</c> to be set</param>
-            <param name="Index">The index into the array</param>
-            <exception cref="T:System.IndexOutOfRangeException">Thrown if the index either negative or
-            greater than the length of the character array</exception>
-        </member>
-        <member name="M:csmatio.types.MLChar.Set(System.String)">
-            <summary>
-            Sets the character array to a specific character string.
-            </summary>
-            <param name="Val">A character string</param>
-        </member>
-        <member name="M:csmatio.types.MLChar.ExportChar">
-            <summary>
-            Get the entire character array.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.GetChar(System.Int32,System.Int32)">
-            <summary>
-            Get a character within the 2D character matrix.
-            </summary>
-            <param name="m">The row index</param>
-            <param name="n">The column index</param>
-            <returns>The fetched character</returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.Equals(System.Object)">
-            <summary>
-            Overridden equals operator, see <see cref="M:System.Object.Equals(System.Object)"/>
-            </summary>
-            <param name="o">A <c>System.Object</c> to be compared with.</param>
-            <returns>True if the object match.</returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.GetHashCode">
-            <summary>
-            Serves as a hash function for an MLNumericArray.
-            </summary>
-            <returns>A hashcode for this object</returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.GetString(System.Int32)">
-            <summary>
-            Gets the m-th character matrix's row as <c>string</c>.
-            </summary>
-            <param name="m">Row number</param>
-            <returns><c>String</c></returns>
-        </member>
-        <member name="M:csmatio.types.MLChar.ContentToString">
-            <summary>
-            Get a string representation for the content of the array.
-            </summary>
-            <returns>A string representation.</returns>
-        </member>
-        <member name="T:csmatio.types.MLUInt32">
-            <summary>
-            This class represents an UInt32 (uint) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="T:csmatio.types.MLNumericArray`1">
-            <summary>
-            Abstract class for numeric arrays.
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="T:csmatio.types.ByteStorageSupport">
-            <summary>
-            A public interface for storing and manipulating byte arrays
-            </summary>
-        </member>
-        <member name="M:csmatio.types.ByteStorageSupport.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.ByteStorageSupport.GetByteArray(System.Object)">
-            <summary>
-            Gets a byte array from a numeric object.
-            </summary>
-            <param name="val">The numeric object to convert into a byte array.</param>
-        </member>
-        <member name="P:csmatio.types.ByteStorageSupport.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.ByteStorageSupport.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
         <member name="M:csmatio.types.MLNumericArray`1.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
             <summary>
             Constructs an abstract MLNumericArray class object
@@ -791,1358 +638,6 @@
             Gets the type of numeric object that this byte storage represents
             </summary>
         </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxINT32_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLInt64</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>long[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>long[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[],System.UInt32[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[][],System.UInt32[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.Int2DToInt(System.UInt32[][])">
-            <summary>
-            Converts int[][] to int[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.IntToDouble(System.UInt32[])">
-            <summary>
-            Convert <c>int[]</c> into a <c>double[]</c>
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt32.GetByteArray(System.Object)">
-            <summary>
-            Gets a <c>byte[]</c> for a particular long value.
-            </summary>
-            <param name="val">The long value</param>
-            <returns>A byte array</returns>
-        </member>
-        <member name="P:csmatio.types.MLUInt32.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLUInt32.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLUInt64">
-            <summary>
-            This class represents an UInt64 (ulong) array (matrix)
-            </summary>
-            <remarks>
-            For some reason, Matlab sees the <c>mxUINT64</c> class as an array of
-            doubles, so in order to get this to work, <c>MLUInt64</c> actually converts
-            all of the long data to doubles.
-            </remarks>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxUINT64_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLInt64</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of doubles, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>byte[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[],System.UInt64[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[][],System.UInt64[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.Long2DToLong(System.UInt64[][])">
-            <summary>
-            Converts long[][] to long[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.LongToDouble(System.UInt64[])">
-            <summary>
-            Converts a <c>long[]</c> into a <c>double[]</c>
-            </summary>
-            <param name="dd"><c>long[]</c></param>
-            <returns><c>double[]</c></returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt64.GetByteArray(System.Object)">
-            <summary>
-            Gets a <c>byte[]</c> for a particular long value.
-            </summary>
-            <param name="val">The long value</param>
-            <returns>A byte array</returns>
-        </member>
-        <member name="P:csmatio.types.MLUInt64.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLUInt64.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLEmptyArray">
-            <summary>
-            An Empty array class
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLEmptyArray.#ctor">
-            <summary>
-            Create an basic empty array
-            </summary>
-        </member>
-        <member name="M:csmatio.types.MLEmptyArray.#ctor(System.String)">
-            <summary>
-            Ceate an basic empty array
-            </summary>
-            <param name="name">The name of the array</param>
-        </member>
-        <member name="M:csmatio.types.MLEmptyArray.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Construct an MLEmptyArray object.
-            </summary>
-            <param name="name">The name of the array</param>
-            <param name="dims">The array dimensions</param>
-            <param name="type">The type of array</param>
-            <param name="attributes">Any attributes for this array</param>
-        </member>
-        <member name="T:csmatio.types.MLCell">
-            <summary>
-            This class represents an Matlab Char array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLCell.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a basic empty <c>MLCell</c> object for a specific set of dimensions
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLCell.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLCell.ContentToString">
-            <summary>
-            Get a string representation for the content of the array.
-            </summary>
-            <returns>A string representation.</returns>
-        </member>
-        <member name="P:csmatio.types.MLCell.Item(System.Int32,System.Int32)">
-            <summary>
-            Public accessor to the cell array for 2-dimensions.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLCell.Item(System.Int32)">
-            <summary>
-            Public accessor to the cell array for 1 dimension.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLCell.Cells">
-            <summary>
-            Public Get Accessor for the cells array list
-            </summary>
-        </member>
-        <member name="T:csmatio.io.MatTag">
-            <summary>
-            Used to create a MAT-file style tag
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="F:csmatio.io.MatTag._type">
-            <summary>
-            The array type for this tag.
-            </summary>
-        </member>
-        <member name="F:csmatio.io.MatTag._size">
-            <summary>
-            The size of the tag.
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatTag.#ctor(System.Int32,System.Int32)">
-            <summary>
-            Create a new MAT-file tag object.
-            </summary>
-            <param name="Type">The type of the array for this tag</param>
-            <param name="Size">The size of the tag</param>
-        </member>
-        <member name="M:csmatio.io.MatTag.GetPadding(System.Int32,System.Boolean)">
-            <summary>
-            Calculate the padding for the element.
-            </summary>
-            <param name="size">The size of the element.</param>
-            <param name="compressed">Is the tag compressed?</param>
-            <returns>The number of padding bytes</returns>
-        </member>
-        <member name="M:csmatio.io.MatTag.ToString">
-            <summary>
-            <see cref="M:System.Object.ToString"/>
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatTag.SizeOf">
-            <summary>
-            Get size of single data in this tag.
-            </summary>
-            <returns>The number of bytes for single data</returns>
-        </member>
-        <member name="P:csmatio.io.MatTag.Type">
-            <summary>
-            Get the type of the MatTag
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatTag.Size">
-            <summary>
-            Get the number of bytes for the MAT-Data object
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLInt16">
-            <summary>
-            This class represents an Int16 (long) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxINT64_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLInt64</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>long[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>long[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[],System.Int16[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[][],System.Int16[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLInt16.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt16.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt16.Short2DToShort(System.Int16[][])">
-            <summary>
-            Converts short[][] to short[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLInt16.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt16.GetByteArray(System.Object)">
-            <summary>
-            Gets a <c>byte[]</c> for a particular long value.
-            </summary>
-            <param name="val">The long value</param>
-            <returns>A byte array</returns>
-        </member>
-        <member name="P:csmatio.types.MLInt16.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLInt16.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLSparse">
-            <summary>
-            This class represents a Matlab Sparse matrix
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLSparse.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Construct a new <c>MLSparse</c> object
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Attributes">Array flags</param>
-            <param name="nzMax">Maximum number of non-zero numbers</param>
-        </member>
-        <member name="M:csmatio.types.MLSparse.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.GetReal(System.Int32,System.Int32)">
-            <summary>
-            Gets a single real array element of A(m,n).
-            </summary>
-            <param name="M">Row index</param>
-            <param name="N">Column index</param>
-            <returns>Array Element</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.GetReal(System.Int32)">
-            <summary>
-            Get a single real array element
-            </summary>
-            <param name="Index">Column-packed vector index.</param>
-            <returns>Array Element.</returns>
-            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
-            access by a column-packed index.</exception>
-        </member>
-        <member name="M:csmatio.types.MLSparse.SetReal(System.Double,System.Int32,System.Int32)">
-            <summary>
-            Sets a single real array element.
-            </summary>
-            <param name="Val">The element value.</param>
-            <param name="M">The row index.</param>
-            <param name="N">The column index.</param>
-        </member>
-        <member name="M:csmatio.types.MLSparse.SetReal(System.Double,System.Int32)">
-            <summary>
-            Sets a single real array element.
-            </summary>
-            <param name="Val">The element value.</param>
-            <param name="Index">Column-packed vector index.</param>
-            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
-            access by a column-packed index.</exception>
-        </member>
-        <member name="M:csmatio.types.MLSparse.GetImaginary(System.Int32,System.Int32)">
-            <summary>
-            Gets a single imaginary array element of A(m,n)
-            </summary>
-            <param name="M">Row index</param>
-            <param name="N">Column index</param>
-            <returns>Array element</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.GetImaginary(System.Int32)">
-            <summary>
-            Gets a single imaginary array element.
-            </summary>
-            <param name="Index">Column-packed vector index</param>
-            <returns>Array Element</returns>
-            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
-            access by a column-packed index.</exception>
-        </member>
-        <member name="M:csmatio.types.MLSparse.SetImaginary(System.Double,System.Int32,System.Int32)">
-            <summary>
-            Sets a single imaginary array element.
-            </summary>
-            <param name="Val">Element value.</param>
-            <param name="M">Row Index.</param>
-            <param name="N">Column Index.</param>
-        </member>
-        <member name="M:csmatio.types.MLSparse.SetImaginary(System.Double,System.Int32)">
-            <summary>
-            Sets a single imaginary array element.
-            </summary>
-            <param name="Val">Element Value</param>
-            <param name="Index">Column-packed vector index.</param>
-            /// <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
-            access by a column-packed index.</exception>
-        </member>
-        <member name="M:csmatio.types.MLSparse.ExportReal">
-            <summary>
-            Export all the real numbers in the sparse matrix to a <c>double</c> array.
-            </summary>
-            <returns><c>System.Double</c> array</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.ExportImaginary">
-            <summary>
-            Export all the imaginary numbers in the sparse matrix to a <c>double</c> array.
-            </summary>
-            <returns><c>System.Double</c> array</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.ContentToString">
-            <summary>
-            Get a string representation for the content of the array.
-            See <see cref="M:csmatio.types.MLArray.ContentToString"/>
-            </summary>
-            <returns>A string representation.</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-            <exception cref="T:System.ArgumentException">Thrown when there are insufficient bytes in the
-            byte array to create a <c>double</c></exception>
-        </member>
-        <member name="M:csmatio.types.MLSparse.GetByteArray(System.Object)">
-            <summary>
-            Gets a byte array from a numeric object.
-            </summary>
-            <param name="val">The numeric object to convert into a byte array.</param>
-        </member>
-        <member name="P:csmatio.types.MLSparse.MaxNZ">
-            <summary>
-            Gets the maximum number of non-zero values.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLSparse.IR">
-            <summary>
-            Gets row indices
-            </summary>
-            <remarks><c>IR</c> points to an integer array of length <c>MaxNZ</c> containing the 
-            row indices of the correspoding elements in <c>PR</c> and <c>PI</c></remarks>
-        </member>
-        <member name="P:csmatio.types.MLSparse.JC">
-            <summary>
-            Gets column indices.
-            </summary>
-            <remarks>
-            <c>JC</c> points to an integer array of length <c>N+1</c> that contains column index information.
-            For j, in the range of <c>0&lt;=j&lt;=N-1</c>, <c>JC[j]</c> is the index in the <c>IR</c> and <c>PI</c>
-            (and <c>PI</c> if it exists) of the first nonzero entry in the jth column and <c>JC[j+1]-1</c> index
-            of the last nonzero entry. As a result, <c>JC[N]</c> is also equal to <c>nnz</c>, the number of
-            nonzero entries in the matrix.  If <c>nnz</c> is less than <c>MaxNZ</c>, then more nonzero entries
-            can be inserted in the array without allocating additional storage.
-            </remarks>
-        </member>
-        <member name="P:csmatio.types.MLSparse.Flags">
-            <summary>Gets the flags for this array.</summary>
-        </member>
-        <member name="P:csmatio.types.MLSparse.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLSparse.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLSparse.IndexMN">
-            <summary>
-            Matrix index (m,n)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLSparse.IndexMN.#ctor(System.Int32,System.Int32)">
-            <summary>
-            Construct a basic <c>IndexMN</c> object from
-            row and column indices.
-            </summary>
-            <param name="m">The row index</param>
-            <param name="n">The column index</param>
-        </member>
-        <member name="M:csmatio.types.MLSparse.IndexMN.GetHashCode">
-            <summary>
-            Serves as a hash function for an IndexMN.
-            </summary>
-            <returns>A hashcode for this object</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.IndexMN.Equals(System.Object)">
-            <summary>
-            Overridden equals operator, see <see cref="M:System.Object.Equals(System.Object)"/>
-            </summary>
-            <param name="obj">A <c>System.Object</c> to be compared with.</param>
-            <returns>True if the object match.</returns>
-        </member>
-        <member name="M:csmatio.types.MLSparse.IndexMN.ToString">
-            <summary>
-            Get a string representation for this <c>IndexMN</c>.
-            </summary>
-            <returns>A <c>System.String</c></returns>
-        </member>
-        <member name="P:csmatio.types.MLSparse.IndexMN.M">
-            <summary>
-            Public accessor to the row index.
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLSparse.IndexMN.N">
-            <summary>
-            Public accessor to the column index.
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLInt8">
-            <summary>
-            This class represents an Int8 array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLUInt8</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of doubles, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>byte[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[],System.SByte[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[][],System.SByte[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt8.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt8.Byte2DToByte(System.SByte[][])">
-            <summary>
-            Converts byte[][] to byte[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLInt8.SByteToShort(System.SByte[])">
-            <summary>
-            Converts an sbyte[] to a short[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLInt8.GetByteArray(System.Object)">
-            <summary>
-            Gets a byte array from a numeric object.
-            </summary>
-            <param name="val">The numeric object to convert into a byte array.</param>
-        </member>
-        <member name="M:csmatio.types.MLInt8.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="P:csmatio.types.MLInt8.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLInt8.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLDouble">
-            <summary>
-            This class represents an Double (64-bit Floating-point) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLDouble</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of doubles, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>byte[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[],System.Double[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of double for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of double for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[][],System.Double[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of double for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of double for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLDouble.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLDouble.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLDouble.Double2DToDouble(System.Double[][])">
-            <summary>
-            Converts double[][] to double[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLDouble.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLDouble.GetByteArray(System.Object)">
-            <summary>
-            Gets a <c>byte[]</c> for a particular double value.
-            </summary>
-            <param name="val">The double value</param>
-            <returns>A byte array</returns>
-        </member>
-        <member name="P:csmatio.types.MLDouble.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLDouble.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLUInt8">
-            <summary>
-            This class represents an UInt8 (byte) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxUINT8_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLUInt8</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of doubles, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>byte[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[],System.Byte[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[][],System.Byte[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.Byte2DToByte(System.Byte[][])">
-            <summary>
-            Converts byte[][] to byte[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.GetByteArray(System.Object)">
-            <summary>
-            Gets a byte array from a numeric object.
-            </summary>
-            <param name="val">The numeric object to convert into a byte array.</param>
-        </member>
-        <member name="M:csmatio.types.MLUInt8.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLUInt8._Get(csmatio.common.ByteBuffer,System.Int32)">
-            <summary>
-            Override to accelerate the performance
-            </summary>
-            <param name="buffer"></param>
-            <param name="index"></param>
-            <returns></returns>
-        </member>
-        <member name="P:csmatio.types.MLUInt8.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLUInt8.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.io.MatFileWriter">
-            <summary>
-            MAT-file writer.
-            </summary>
-            <example> Usage:
-            <code>
-            	//1. First create example arrays
-            	double[] src = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
-            	MLDouble mlDouble = new MLDouble( "double_arr", src, 3 );
-            	MLChar mlChar = new MLChar( "char_arr", "I am dummy" );
-            	
-            	//2. Write arrays to file
-            	List&lt;MLArray&gt; list = new List&lt;MLArray&gt;();
-            	list.Add( mlDouble );
-            	list.Add( mlChar );
-            	
-            	new MatFileWriter( "mat_file.mat", list, true );
-            </code>
-            
-            This is "equal" to the Matlab commands:
-            <code>
-            >> double_arr = [ 1 2; 3 4; 5 6 ];
-            >> char_arr = 'I am dummy';
-            >>
-            >> save('mat_file.mat', 'double_arr', 'char_arr');
-            </code>
-            </example>
-            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.#ctor(System.String,System.Collections.Generic.List{csmatio.types.MLArray},System.Boolean)">
-            <summary>
-            Create a MatFileWriter by specifying a filename.
-            </summary>
-            <param name="fileName">The name of the file to create.</param>
-            <param name="data">The <c>MLArray</c> data to be written to the file.</param>
-            <param name="compress">Use data compression?</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.#ctor(System.IO.FileStream,System.Collections.Generic.List{csmatio.types.MLArray},System.Boolean)">
-            <summary>
-            Create a MatFileWriter by specifying a Filestream.
-            </summary>
-            <param name="file">The <c>FileStream</c> to write the MAT-file to.</param>
-            <param name="data">The <c>MLArray</c> data that is to be written.</param>
-            <param name="compress">Use data compression?</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.#ctor(System.IO.BinaryWriter,System.Collections.ICollection,System.Boolean)">
-            <summary>
-            Writes MLArrays into <c>OutputStream</c>
-            </summary>
-            <remarks>
-            Writes MAT-file header and compressed data (<c>miCompressed</c>).
-            </remarks>
-            <param name="stream"><c>Stream</c></param>
-            <param name="data"><c>Collection</c> of <c>MLArray</c> elements.</param>
-            <param name="compress">Use data compression?</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.WriteHeader(System.IO.BinaryWriter)">
-            <summary>
-            Writes MAT-file header into <c>Stream</c>
-            </summary>
-            <param name="stream">The output stream</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.WriteMatrix(System.IO.BinaryWriter,csmatio.types.MLArray)">
-            <summary>
-            Writes MATRIX into <c>BinaryWriter</c> stream
-            </summary>
-            <param name="output">The <c>BinaryWriter</c> stream</param>
-            <param name="array">The <c>MLArray</c> matrix</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.WriteFlags(System.IO.BinaryWriter,csmatio.types.MLArray)">
-            <summary>
-            Write the flag values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
-            </summary>
-            <param name="bw"><c>BinaryWriter</c> stream</param>
-            <param name="array"><c>MLArray</c> matrix</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.WriteDimensions(System.IO.BinaryWriter,csmatio.types.MLArray)">
-            <summary>
-            Write the Dimensions values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
-            </summary>
-            <param name="bw"><c>BinaryWriter</c> stream</param>
-            <param name="array"><c>MLArray</c> matrix</param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.WriteName(System.IO.BinaryWriter,csmatio.types.MLArray)">
-            <summary>
-            Write the Name values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
-            </summary>
-            <param name="bw"><c>BinaryWriter</c> stream</param>
-            <param name="array"><c>MLArray</c> matrix</param>
-        </member>
-        <member name="T:csmatio.io.MatFileWriter.OSArrayTag">
-            <summary>
-            Tiny class that represents MAT-file TAG
-            It simplifies writing data.  Automates writing padding for instance.
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.#ctor(System.Int32,System.Byte[])">
-            <summary>
-            Creates TAG and sets its <c>size</c> as a size of byte array
-            </summary>
-            <param name="Type">The Matlab array type</param>
-            <param name="Data"><c>byte[]</c></param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.#ctor(System.Int32,csmatio.common.ByteBuffer)">
-            <summary>
-            Creates TAG and sets its <c>size</c> as a size of byte array
-            </summary>
-            <param name="Type">The Matlab array type</param>
-            <param name="Data"><c>ByteBuffer</c></param>
-        </member>
-        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.WriteTo(System.IO.BinaryWriter)">
-            <summary>
-            Writes tag and data to <c>BinaryWriter</c> output stream.  Writes padding if neccesary.
-            </summary>
-            <param name="os"><c>BinaryWriter</c> output stream</param>
-        </member>
-        <member name="T:csmatio.io.MatFileReader">
-            <summary>
-            MAT-file reader.  Reads MAT-file into <c>MLArray</c> objects.
-            </summary>
-            <example>
-            <code>
-            	// read in the file
-            	MatFileReader mfr = new MatFileReader( "mat_file.mat" );
-            	
-            	// Get array of a name "my_array" from file
-            	MLArray mlArrayRetrived = mfr.GetMLArray( "my_array" );
-            	
-            	// or get the collection of all arrays that were stored in the file
-            	Hashtable content = mfr.Content;
-            </code>
-            </example>
-            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
-        </member>
-        <member name="F:csmatio.io.MatFileReader._matFileHeader">
-            <summary>
-            MAT-file header
-            </summary>
-        </member>
-        <member name="F:csmatio.io.MatFileReader._data">
-            <summary>
-            Contianer for read <c>MLArray</c>s
-            </summary>
-        </member>
-        <member name="F:csmatio.io.MatFileReader._filter">
-            <summary>
-            Array name filter
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.#ctor(System.String)">
-            <summary>
-            Creates instance of <c>MatFileReader</c> and reads MAT-file with then name
-            <c>fileName</c>.
-            </summary>
-            <remarks>
-            This method reads MAT-file without filtering.
-            </remarks>
-            <param name="fileName">The name of the MAT-file to open</param>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.#ctor(System.String,csmatio.io.MatFileFilter)">
-            <summary>
-            Creates instance of <c>MatFileReader</c> and reads MAT-file with then name
-            <c>fileName</c>.
-            </summary>
-            <remarks>
-            Results are filtered by <c>MatFileFilter</c>.  Arrays that do not meet
-            filter match condition will not be available in results.
-            </remarks>
-            <param name="fileName">The name of the MAT-file to open</param>
-            <param name="filter"><c>MatFileFilter</c></param>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.GetMLArray(System.String)">
-            <summary>
-            Returns the value to which the read file maps the specific array name.
-            </summary>
-            <remarks>
-            Returns <c>null</c> if the file contains no content for this name.
-            </remarks>
-            <param name="name">Array name</param>
-            <returns>The <c>MLArray</c> to which this file maps the specific name,
-            or null if the file contains no content for this name</returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.Inflate(System.IO.Stream,System.Int32)">
-            <summary>
-            Decompresses (inflates) bytes from input stream.
-            </summary>
-            <remarks>
-            Stream marker is being set at +<code>numOfBytes</code> position of the stream.
-            </remarks>
-            <param name="buf">Input byte buffer stream.</param>
-            <param name="numOfBytes">The number of bytes to be read.</param>
-            <returns>new <c>ByteBuffer</c> with the inflated block of data.</returns>
-            <exception cref="T:System.IO.IOException">When an error occurs while reading or inflating the buffer.</exception>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadData(System.IO.Stream)">
-            <summary>
-            Reads data from the <c>BinaryReader</c> stream. Searches for either
-            <c>miCOMPRESSED</c> data or <c>miMATRIX</c> data.
-            </summary>
-            <remarks>
-            Compressed data is inflated and the product is recursively passed back
-            to this same method.
-            </remarks>
-            <param name="buf">The input <c>BinaryReader</c> stream.</param>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadMatrix(System.IO.Stream,System.Boolean)">
-            <summary>
-            Reads <c>miMATRIX</c> from the input stream.
-            </summary>
-            <remarks>
-            If reading was not finished (which is normal for filtered results)
-            returns <c>null</c>.
-            </remarks>
-            <param name="buf">The <c>BinaryReader</c> input stream.</param>
-            <param name="isRoot">When <c>true</c> informs that if this is a top level
-            matrix.</param>
-            <returns><c>MLArray</c> or <c>null</c> if matrix does not match <c>filter</c></returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ZeroEndByteArrayToString(System.Byte[])">
-            <summary>
-            Converts a byte array to <c>string</c>.  It assumes that the string ends with \0 value.
-            </summary>
-            <param name="bytes">Byte array containing the string.</param>
-            <returns>String retrieved from byte array</returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadFlags(System.IO.Stream)">
-            <summary>
-            Reads Matrix flags.
-            </summary>
-            <param name="buf"><c>BinaryReader</c> input stream</param>
-            <returns>Flags int array</returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadDimension(System.IO.Stream)">
-            <summary>
-            Reads Matrix dimensions.
-            </summary>
-            <param name="buf"><c>BinaryReader</c> input stream</param>
-            <returns>Dimensions int array</returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadName(System.IO.Stream)">
-            <summary>
-            Reads Matrix name.
-            </summary>
-            <param name="buf"><c>BinaryReader</c> input stream</param>
-            <returns><c>string</c></returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ReadHeader(System.IO.Stream)">
-            <summary>
-            Reads MAT-file header.
-            </summary>
-            <param name="buf"><c>BinaryReader</c> input stream</param>
-        </member>
-        <member name="P:csmatio.io.MatFileReader.MatFileHeader">
-            <summary>
-            Gets MAT-file header.
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatFileReader.Data">
-            <summary>
-            Returns list of <c>MLArray</c> objects that were inside the MAT-file
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatFileReader.Content">
-            <summary>
-            Returns a map of <c>MLArray</c> objects that were inside MAT-file.
-            </summary>
-            <remarks>MLArrays are keyed with the MLArrays' name.</remarks>
-        </member>
-        <member name="T:csmatio.io.MatFileReader.ISMatTag">
-            <summary>
-            TAG operator.  Facilitates reading operations.
-            </summary>
-            <remarks>
-            <i>Note: Reading from buffer and/or stream modifies it's position.</i>
-            </remarks>
-            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
-        </member>
-        <member name="F:csmatio.io.MatFileReader.ISMatTag.Buf">
-            <summary>
-            A <c>ByteBuffer</c> object for this tag
-            </summary>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.#ctor(System.IO.Stream)">
-            <summary>
-            Create an ISMatTag from a <c>ByteBuffer</c>.
-            </summary>
-            <param name="buf"><c>ByteBuffer</c></param>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToByteBuffer(csmatio.common.ByteBuffer,csmatio.types.ByteStorageSupport)">
-            <summary>
-            Read MAT-file tag to a byte buffer.
-            </summary>
-            <param name="buff"><c>ByteBuffer</c></param>
-            <param name="storage"><c>ByteStorageSupport</c></param>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToByteArray">
-            <summary>
-            Read MAT-file tag to a <c>byte</c> array
-            </summary>
-            <returns><c>byte[]</c></returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToDoubleArray">
-            <summary>
-            Read MAT-file tag to a <c>double</c> array
-            </summary>
-            <returns><c>double[]</c></returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToIntArray">
-            <summary>
-            Read MAT-file tag to a <c>int</c> array
-            </summary>
-            <returns><c>int[]</c></returns>
-        </member>
-        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToCharArray">
-            <summary>
-            Read MAT-file tag to a <c>char</c> array
-            </summary>
-            <returns><c>int[]</c></returns>
-        </member>
-        <member name="T:csmatio.io.MatFileHeader">
-            <summary>
-            MAT-file header
-            </summary>
-            <remarks>
-            Level 5 MAT-files begin with a 128-byte header made up of a 124 byte text field
-            and two, 16-bit flag fields
-            </remarks>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.io.MatFileHeader.#ctor(System.String,System.Int32,System.Byte[])">
-            <summary>
-            Create a new MAT-file header.
-            </summary>
-            <param name="Description">Descriptive text (no longer than 116 characters)</param>
-            <param name="Version">By default, is set to 0x0100</param>
-            <param name="EndianIndicator">Byte array size of 2 indicating byte-swapping requirements</param>
-        </member>
-        <member name="M:csmatio.io.MatFileHeader.CreateHeader">
-            <summary>
-            A static factory that creates a new <c>MatFileHeader</c> instance with default header values:
-            <list type="bullet">
-            <item>Mat-file is 5.0 version</item>
-            <item>Version is set to 0x0100</item>
-            <item>No byte-swapping</item>
-            </list>
-            </summary>
-            <returns>A new <c>MatFileHeader</c> instance</returns>
-        </member>
-        <member name="M:csmatio.io.MatFileHeader.ToString">
-            <summary>
-            <see cref="M:System.Object.ToString"/>
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatFileHeader.Description">
-            <summary>
-            Gets the descriptive text.
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatFileHeader.EndianIndicator">
-            <summary>
-            Gets the endian indicator.  Bytes written as "MI" suggest that byte-swapping operation is required
-            in order to interpret data correctly.  If value is set to "IM", byte-swapping is not needed.
-            </summary>
-        </member>
-        <member name="P:csmatio.io.MatFileHeader.Version">
-            <summary>
-            When creating a MAT-file, set version to 0x0100
-            </summary>
-        </member>
-        <member name="T:csmatio.types.MLSingle">
-            <summary>
-            This class represents an Double (64-bit Floating-point) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
         <member name="M:csmatio.types.MLSingle.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
             <summary>
             Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
@@ -2240,214 +735,6 @@
             <summary>
             Gets the type of numeric object that this byte storage represents
             </summary>
-        </member>
-        <member name="T:csmatio.common.MatDataTypes">
-            <summary>
-            MAT-file data types
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUNKNOWN">
-            <summary>Unknown data type</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miINT8">
-            <summary>8-bit, signed</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUINT8">
-            <summary>8-bit, unsigned</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miINT16">
-            <summary>16-bit, signed</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUINT16">
-            <summary>16-bit, unsigned</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miINT32">
-            <summary>32-bit, signed</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUINT32">
-            <summary>32-bit, unsigned</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSINGLE">
-            <summary>IEEE 754 single format</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miDOUBLE">
-            <summary>IEEE 754 double format</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miINT64">
-            <summary>64-bit, signed</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUINT64">
-            <summary>64-bit, unsigned</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miMATRIX">
-            <summary>MATLAB array</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miCOMPRESSED">
-            <summary>Compressed data</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUTF8">
-            <summary>Unicode UTF-8 Encoded Character Data</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUTF16">
-            <summary>Unicode UTF-16 Encoded Character Data</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miUTF32">
-            <summary>Unicode UTF-12 Encoded Character Data</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT32">
-            <summary>Size of 32-bit, signed int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT16">
-            <summary>Size of 16-bit, signed int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT8">
-            <summary>Size of 8-bit, signed int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT32">
-            <summary>Size of 32-bit, unsigned int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT16">
-            <summary>Size of 16-bit, unsigned int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT8">
-            <summary>Size of 8-bit, unsigned int in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_DOUBLE">
-            <summary>Size of IEEE 754 double in bytes</summary>
-        </member>
-        <member name="F:csmatio.common.MatDataTypes.miSIZE_CHAR">
-            <summary>Size of an 8-bit char in bytes</summary>
-        </member>
-        <member name="M:csmatio.common.MatDataTypes.SizeOf(System.Int32)">
-            <summary>
-            Return the number of bytes for a given type.
-            </summary>
-            <param name="type">MatDataTypes</param>
-            <returns>Size of the type.</returns>
-        </member>
-        <member name="M:csmatio.common.MatDataTypes.TypeToString(System.Int32)">
-            <summary>
-            Get a string representation of a data type
-            </summary>
-            <param name="type">A MatDataTypes data type</param>
-            <returns>String representation.</returns>
-        </member>
-        <member name="T:csmatio.types.MLInt32">
-            <summary>
-            This class represents an Int32 (long) array (matrix)
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
-            <summary>
-            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-            <param name="Type">Array type: here <c>mxINT32_CLASS</c></param>
-            <param name="Attributes">Array flags</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[])">
-            <summary>
-            Create a <c>MLInt64</c> array with given name and dimensions.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Dims">Array dimensions</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
-            <param name="m">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D real matrix from <c>long[][]</c>.
-            </summary>
-            <remarks>Note: Array is converted to <c>long[]</c></remarks>
-            <param name="Name">Array name</param>
-            <param name="vals">Two-dimensional array of values</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32[],System.Int32)">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-            <param name="M">Number of rows</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[][],System.Int32[][])">
-            <summary>
-            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
-            construct a 2D imaginary matrix from a one-dimensional packed array.
-            </summary>
-            <param name="Name">Array name</param>
-            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
-            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
-        </member>
-        <member name="M:csmatio.types.MLInt32.CreateArray(System.Int32,System.Int32)">
-            <summary>
-            Creates a generic byte array.
-            </summary>
-            <param name="m">The number of columns in the array</param>
-            <param name="n">The number of rows in the array</param>
-            <returns>A generic array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt32.GetArray">
-            <summary>
-            Gets a two-dimensional array.
-            </summary>
-            <returns>2D real array.</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt32.Int2DToInt(System.Int32[][])">
-            <summary>
-            Converts int[][] to int[]
-            </summary>
-            <param name="dd"></param>
-            <returns></returns>
-        </member>
-        <member name="M:csmatio.types.MLInt32.BuildFromBytes(System.Byte[])">
-            <summary>
-            Builds a numeric object from a byte array.
-            </summary>
-            <param name="bytes">A byte array containing the data.</param>
-            <returns>A numeric object</returns>
-        </member>
-        <member name="M:csmatio.types.MLInt32.GetByteArray(System.Object)">
-            <summary>
-            Gets a <c>byte[]</c> for a particular long value.
-            </summary>
-            <param name="val">The long value</param>
-            <returns>A byte array</returns>
-        </member>
-        <member name="P:csmatio.types.MLInt32.GetBytesAllocated">
-            <summary>
-            Gets the number of bytes allocated for a type
-            </summary>
-        </member>
-        <member name="P:csmatio.types.MLInt32.GetStorageType">
-            <summary>
-            Gets the type of numeric object that this byte storage represents
-            </summary>
-        </member>
-        <member name="T:csmatio.io.MatlabIOException">
-            <summary>
-            MAT-file reader/writer exception
-            </summary>
-            <author>David Zier (david.zier@gmail.com)</author>
-        </member>
-        <member name="M:csmatio.io.MatlabIOException.#ctor(System.String)">
-            <summary>
-            Construct a new <c>MatlabIOException</c>.
-            </summary>
-            <param name="s">A string containing the error information.</param>
         </member>
         <member name="T:csmatio.common.ByteBuffer">
             <summary>
@@ -2875,6 +1162,1523 @@
             Gets the type of numeric object that this byte storage represents
             </summary>
         </member>
+        <member name="T:csmatio.types.MLStructure">
+            <summary>
+            This class represents Matlab's Structure object (structure array).
+            
+            Note: An array of structures can contain only structures of the same type,
+            meaning structures that have the same field names.
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="F:csmatio.types.MLStructure._keys">
+            <summary>
+            A Hashtable that keeps structure field names
+            </summary>
+        </member>
+        <member name="F:csmatio.types.MLStructure._mlStructArray">
+            <summary>
+            Array of structures
+            </summary>
+        </member>
+        <member name="F:csmatio.types.MLStructure._currentIndex">
+            <summary>
+            Current structure pointer for bulk insert
+            </summary>
+        </member>
+        <member name="M:csmatio.types.MLStructure.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create an <c>MLStructure</c> class object.
+            </summary>
+            <param name="Name">The name of the <c>MLStructure</c></param>
+            <param name="Dims">The array dimensions of the <c>MLStructure</c></param>
+        </member>
+        <member name="M:csmatio.types.MLStructure.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Create a new <c>MLStructure</c> class object.
+            </summary>
+            <param name="Name">The name of the structure</param>
+            <param name="Dims">The dimensions of the structure</param>
+            <param name="Type">The Matlab array type</param>
+            <param name="Attributes">The array attributes</param>
+        </member>
+        <member name="M:csmatio.types.MLStructure.GetKeySetToByteArray">
+            <summary>
+            Dumps field names to byte array.  Field names are written as Zero End Strings.
+            </summary>
+            <returns>A <c>byte</c> array for all the field names</returns>
+        </member>
+        <member name="M:csmatio.types.MLStructure.ContentToString">
+            <summary>
+            Get a string representation for the content of the array.
+            See <see cref="M:csmatio.types.MLArray.ContentToString"/>
+            </summary>
+            <returns>A string representation.</returns>
+        </member>
+        <member name="P:csmatio.types.MLStructure.Item(System.String)">
+            <summary>
+            Public accessor to the field desribed by <c>Name</c> from the current structure.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLStructure.Item(System.String,System.Int32,System.Int32)">
+            <summary>
+            Public accessor to the field described by <c>Name</c> from the (m,n)'th structure
+            in the structure array.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLStructure.Item(System.String,System.Int32)">
+            <summary>
+            Public accessor to the field described by <c>Name</c> from the index'th structure
+            in the structure array.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLStructure.MaxFieldLength">
+            <summary>
+            Gets the maximum length of field descriptor
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLStructure.AllFields">
+            <summary>
+            Gets all the fields from the struct array as a flat list of fields.
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLEmptyArray">
+            <summary>
+            An Empty array class
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLEmptyArray.#ctor">
+            <summary>
+            Create an basic empty array
+            </summary>
+        </member>
+        <member name="M:csmatio.types.MLEmptyArray.#ctor(System.String)">
+            <summary>
+            Ceate an basic empty array
+            </summary>
+            <param name="name">The name of the array</param>
+        </member>
+        <member name="M:csmatio.types.MLEmptyArray.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Construct an MLEmptyArray object.
+            </summary>
+            <param name="name">The name of the array</param>
+            <param name="dims">The array dimensions</param>
+            <param name="type">The type of array</param>
+            <param name="attributes">Any attributes for this array</param>
+        </member>
+        <member name="T:csmatio.types.MLChar">
+            <summary>
+            This class represents an Matlab Char array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLChar.#ctor(System.String,System.String)">
+            <summary>
+            Creates an <c>MLChar</c> object from a character string.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Val">A character string array</param>
+        </member>
+        <member name="M:csmatio.types.MLChar.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLChar.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.SetChar(System.Char,System.Int32)">
+            <summary>
+            Sets an individual <c>char</c> in the character array.
+            </summary>
+            <param name="Ch">The <c>char</c> to be set</param>
+            <param name="Index">The index into the array</param>
+            <exception cref="T:System.IndexOutOfRangeException">Thrown if the index either negative or
+            greater than the length of the character array</exception>
+        </member>
+        <member name="M:csmatio.types.MLChar.Set(System.String)">
+            <summary>
+            Sets the character array to a specific character string.
+            </summary>
+            <param name="Val">A character string</param>
+        </member>
+        <member name="M:csmatio.types.MLChar.ExportChar">
+            <summary>
+            Get the entire character array.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.GetChar(System.Int32,System.Int32)">
+            <summary>
+            Get a character within the 2D character matrix.
+            </summary>
+            <param name="m">The row index</param>
+            <param name="n">The column index</param>
+            <returns>The fetched character</returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.Equals(System.Object)">
+            <summary>
+            Overridden equals operator, see <see cref="M:System.Object.Equals(System.Object)"/>
+            </summary>
+            <param name="o">A <c>System.Object</c> to be compared with.</param>
+            <returns>True if the object match.</returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.GetHashCode">
+            <summary>
+            Serves as a hash function for an MLNumericArray.
+            </summary>
+            <returns>A hashcode for this object</returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.GetString(System.Int32)">
+            <summary>
+            Gets the m-th character matrix's row as <c>string</c>.
+            </summary>
+            <param name="m">Row number</param>
+            <returns><c>String</c></returns>
+        </member>
+        <member name="M:csmatio.types.MLChar.ContentToString">
+            <summary>
+            Get a string representation for the content of the array.
+            </summary>
+            <returns>A string representation.</returns>
+        </member>
+        <member name="T:csmatio.types.MLInt16">
+            <summary>
+            This class represents an Int16 (long) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxINT64_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLInt64</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>long[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>long[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[],System.Int16[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.#ctor(System.String,System.Int16[][],System.Int16[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLInt16.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt16.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt16.Short2DToShort(System.Int16[][])">
+            <summary>
+            Converts short[][] to short[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLInt16.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt16.GetByteArray(System.Object)">
+            <summary>
+            Gets a <c>byte[]</c> for a particular long value.
+            </summary>
+            <param name="val">The long value</param>
+            <returns>A byte array</returns>
+        </member>
+        <member name="P:csmatio.types.MLInt16.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLInt16.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLUInt32">
+            <summary>
+            This class represents an UInt32 (uint) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxINT32_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLInt64</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>long[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>long[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[],System.UInt32[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.#ctor(System.String,System.UInt32[][],System.UInt32[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.Int2DToInt(System.UInt32[][])">
+            <summary>
+            Converts int[][] to int[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.IntToDouble(System.UInt32[])">
+            <summary>
+            Convert <c>int[]</c> into a <c>double[]</c>
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt32.GetByteArray(System.Object)">
+            <summary>
+            Gets a <c>byte[]</c> for a particular long value.
+            </summary>
+            <param name="val">The long value</param>
+            <returns>A byte array</returns>
+        </member>
+        <member name="P:csmatio.types.MLUInt32.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLUInt32.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLUInt64">
+            <summary>
+            This class represents an UInt64 (ulong) array (matrix)
+            </summary>
+            <remarks>
+            For some reason, Matlab sees the <c>mxUINT64</c> class as an array of
+            doubles, so in order to get this to work, <c>MLUInt64</c> actually converts
+            all of the long data to doubles.
+            </remarks>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxUINT64_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLInt64</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of doubles, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>byte[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[],System.UInt64[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.#ctor(System.String,System.UInt64[][],System.UInt64[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.Long2DToLong(System.UInt64[][])">
+            <summary>
+            Converts long[][] to long[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.LongToDouble(System.UInt64[])">
+            <summary>
+            Converts a <c>long[]</c> into a <c>double[]</c>
+            </summary>
+            <param name="dd"><c>long[]</c></param>
+            <returns><c>double[]</c></returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt64.GetByteArray(System.Object)">
+            <summary>
+            Gets a <c>byte[]</c> for a particular long value.
+            </summary>
+            <param name="val">The long value</param>
+            <returns>A byte array</returns>
+        </member>
+        <member name="P:csmatio.types.MLUInt64.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLUInt64.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLCell">
+            <summary>
+            This class represents an Matlab Char array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLCell.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a basic empty <c>MLCell</c> object for a specific set of dimensions
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLCell.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLCell.ContentToString">
+            <summary>
+            Get a string representation for the content of the array.
+            </summary>
+            <returns>A string representation.</returns>
+        </member>
+        <member name="P:csmatio.types.MLCell.Item(System.Int32,System.Int32)">
+            <summary>
+            Public accessor to the cell array for 2-dimensions.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLCell.Item(System.Int32)">
+            <summary>
+            Public accessor to the cell array for 1 dimension.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLCell.Cells">
+            <summary>
+            Public Get Accessor for the cells array list
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLUInt8">
+            <summary>
+            This class represents an UInt8 (byte) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxUINT8_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLUInt8</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of doubles, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>byte[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[],System.Byte[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.#ctor(System.String,System.Byte[][],System.Byte[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.Byte2DToByte(System.Byte[][])">
+            <summary>
+            Converts byte[][] to byte[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.GetByteArray(System.Object)">
+            <summary>
+            Gets a byte array from a numeric object.
+            </summary>
+            <param name="val">The numeric object to convert into a byte array.</param>
+        </member>
+        <member name="M:csmatio.types.MLUInt8.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLUInt8._Get(csmatio.common.ByteBuffer,System.Int32)">
+            <summary>
+            Override to accelerate the performance
+            </summary>
+            <param name="buffer"></param>
+            <param name="index"></param>
+            <returns></returns>
+        </member>
+        <member name="P:csmatio.types.MLUInt8.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLUInt8.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.io.MatFileWriter">
+            <summary>
+            MAT-file writer.
+            </summary>
+            <example> Usage:
+            <code>
+            	//1. First create example arrays
+            	double[] src = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+            	MLDouble mlDouble = new MLDouble( "double_arr", src, 3 );
+            	MLChar mlChar = new MLChar( "char_arr", "I am dummy" );
+            	
+            	//2. Write arrays to file
+            	List&lt;MLArray&gt; list = new List&lt;MLArray&gt;();
+            	list.Add( mlDouble );
+            	list.Add( mlChar );
+            	
+            	new MatFileWriter( "mat_file.mat", list, true );
+            </code>
+            
+            This is "equal" to the Matlab commands:
+            <code>
+            >> double_arr = [ 1 2; 3 4; 5 6 ];
+            >> char_arr = 'I am dummy';
+            >>
+            >> save('mat_file.mat', 'double_arr', 'char_arr');
+            </code>
+            </example>
+            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.#ctor(System.String,System.Collections.Generic.List{csmatio.types.MLArray},System.Boolean)">
+            <summary>
+            Create a MatFileWriter by specifying a filename.
+            </summary>
+            <param name="fileName">The name of the file to create.</param>
+            <param name="data">The <c>MLArray</c> data to be written to the file.</param>
+            <param name="compress">Use data compression?</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.#ctor(System.IO.FileStream,System.Collections.Generic.List{csmatio.types.MLArray},System.Boolean)">
+            <summary>
+            Create a MatFileWriter by specifying a Filestream.
+            </summary>
+            <param name="file">The <c>FileStream</c> to write the MAT-file to.</param>
+            <param name="data">The <c>MLArray</c> data that is to be written.</param>
+            <param name="compress">Use data compression?</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.#ctor(System.IO.BinaryWriter,System.Collections.ICollection,System.Boolean)">
+            <summary>
+            Writes MLArrays into <c>OutputStream</c>
+            </summary>
+            <remarks>
+            Writes MAT-file header and compressed data (<c>miCompressed</c>).
+            </remarks>
+            <param name="stream"><c>Stream</c></param>
+            <param name="data"><c>Collection</c> of <c>MLArray</c> elements.</param>
+            <param name="compress">Use data compression?</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.WriteHeader(System.IO.BinaryWriter)">
+            <summary>
+            Writes MAT-file header into <c>Stream</c>
+            </summary>
+            <param name="stream">The output stream</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.WriteMatrix(System.IO.BinaryWriter,csmatio.types.MLArray)">
+            <summary>
+            Writes MATRIX into <c>BinaryWriter</c> stream
+            </summary>
+            <param name="output">The <c>BinaryWriter</c> stream</param>
+            <param name="array">The <c>MLArray</c> matrix</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.WriteFlags(System.IO.BinaryWriter,csmatio.types.MLArray)">
+            <summary>
+            Write the flag values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
+            </summary>
+            <param name="bw"><c>BinaryWriter</c> stream</param>
+            <param name="array"><c>MLArray</c> matrix</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.WriteDimensions(System.IO.BinaryWriter,csmatio.types.MLArray)">
+            <summary>
+            Write the Dimensions values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
+            </summary>
+            <param name="bw"><c>BinaryWriter</c> stream</param>
+            <param name="array"><c>MLArray</c> matrix</param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.WriteName(System.IO.BinaryWriter,csmatio.types.MLArray)">
+            <summary>
+            Write the Name values from the <c>MLArray</c> to the <c>BinaryWriter</c> stream.
+            </summary>
+            <param name="bw"><c>BinaryWriter</c> stream</param>
+            <param name="array"><c>MLArray</c> matrix</param>
+        </member>
+        <member name="T:csmatio.io.MatFileWriter.OSArrayTag">
+            <summary>
+            Tiny class that represents MAT-file TAG
+            It simplifies writing data.  Automates writing padding for instance.
+            </summary>
+        </member>
+        <member name="T:csmatio.io.MatTag">
+            <summary>
+            Used to create a MAT-file style tag
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="F:csmatio.io.MatTag._type">
+            <summary>
+            The array type for this tag.
+            </summary>
+        </member>
+        <member name="F:csmatio.io.MatTag._size">
+            <summary>
+            The size of the tag.
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatTag.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Create a new MAT-file tag object.
+            </summary>
+            <param name="Type">The type of the array for this tag</param>
+            <param name="Size">The size of the tag</param>
+        </member>
+        <member name="M:csmatio.io.MatTag.GetPadding(System.Int32,System.Boolean)">
+            <summary>
+            Calculate the padding for the element.
+            </summary>
+            <param name="size">The size of the element.</param>
+            <param name="compressed">Is the tag compressed?</param>
+            <returns>The number of padding bytes</returns>
+        </member>
+        <member name="M:csmatio.io.MatTag.ToString">
+            <summary>
+            <see cref="M:System.Object.ToString"/>
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatTag.SizeOf">
+            <summary>
+            Get size of single data in this tag.
+            </summary>
+            <returns>The number of bytes for single data</returns>
+        </member>
+        <member name="P:csmatio.io.MatTag.Type">
+            <summary>
+            Get the type of the MatTag
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatTag.Size">
+            <summary>
+            Get the number of bytes for the MAT-Data object
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.#ctor(System.Int32,System.Byte[])">
+            <summary>
+            Creates TAG and sets its <c>size</c> as a size of byte array
+            </summary>
+            <param name="Type">The Matlab array type</param>
+            <param name="Data"><c>byte[]</c></param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.#ctor(System.Int32,csmatio.common.ByteBuffer)">
+            <summary>
+            Creates TAG and sets its <c>size</c> as a size of byte array
+            </summary>
+            <param name="Type">The Matlab array type</param>
+            <param name="Data"><c>ByteBuffer</c></param>
+        </member>
+        <member name="M:csmatio.io.MatFileWriter.OSArrayTag.WriteTo(System.IO.BinaryWriter)">
+            <summary>
+            Writes tag and data to <c>BinaryWriter</c> output stream.  Writes padding if neccesary.
+            </summary>
+            <param name="os"><c>BinaryWriter</c> output stream</param>
+        </member>
+        <member name="T:csmatio.io.MatFileReader">
+            <summary>
+            MAT-file reader.  Reads MAT-file into <c>MLArray</c> objects.
+            </summary>
+            <example>
+            <code>
+            	// read in the file
+            	MatFileReader mfr = new MatFileReader( "mat_file.mat" );
+            	
+            	// Get array of a name "my_array" from file
+            	MLArray mlArrayRetrived = mfr.GetMLArray( "my_array" );
+            	
+            	// or get the collection of all arrays that were stored in the file
+            	Hashtable content = mfr.Content;
+            </code>
+            </example>
+            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
+        </member>
+        <member name="F:csmatio.io.MatFileReader._matFileHeader">
+            <summary>
+            MAT-file header
+            </summary>
+        </member>
+        <member name="F:csmatio.io.MatFileReader._data">
+            <summary>
+            Contianer for read <c>MLArray</c>s
+            </summary>
+        </member>
+        <member name="F:csmatio.io.MatFileReader._filter">
+            <summary>
+            Array name filter
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.#ctor(System.String)">
+            <summary>
+            Creates instance of <c>MatFileReader</c> and reads MAT-file with then name
+            <c>fileName</c>.
+            </summary>
+            <remarks>
+            This method reads MAT-file without filtering.
+            </remarks>
+            <param name="fileName">The name of the MAT-file to open</param>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.#ctor(System.String,csmatio.io.MatFileFilter)">
+            <summary>
+            Creates instance of <c>MatFileReader</c> and reads MAT-file with then name
+            <c>fileName</c>.
+            </summary>
+            <remarks>
+            Results are filtered by <c>MatFileFilter</c>.  Arrays that do not meet
+            filter match condition will not be available in results.
+            </remarks>
+            <param name="fileName">The name of the MAT-file to open</param>
+            <param name="filter"><c>MatFileFilter</c></param>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.GetMLArray(System.String)">
+            <summary>
+            Returns the value to which the read file maps the specific array name.
+            </summary>
+            <remarks>
+            Returns <c>null</c> if the file contains no content for this name.
+            </remarks>
+            <param name="name">Array name</param>
+            <returns>The <c>MLArray</c> to which this file maps the specific name,
+            or null if the file contains no content for this name</returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.Inflate(System.IO.Stream,System.Int32)">
+            <summary>
+            Decompresses (inflates) bytes from input stream.
+            </summary>
+            <remarks>
+            Stream marker is being set at +<code>numOfBytes</code> position of the stream.
+            </remarks>
+            <param name="buf">Input byte buffer stream.</param>
+            <param name="numOfBytes">The number of bytes to be read.</param>
+            <returns>new <c>ByteBuffer</c> with the inflated block of data.</returns>
+            <exception cref="T:System.IO.IOException">When an error occurs while reading or inflating the buffer.</exception>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadData(System.IO.Stream)">
+            <summary>
+            Reads data from the <c>BinaryReader</c> stream. Searches for either
+            <c>miCOMPRESSED</c> data or <c>miMATRIX</c> data.
+            </summary>
+            <remarks>
+            Compressed data is inflated and the product is recursively passed back
+            to this same method.
+            </remarks>
+            <param name="buf">The input <c>BinaryReader</c> stream.</param>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadMatrix(System.IO.Stream,System.Boolean)">
+            <summary>
+            Reads <c>miMATRIX</c> from the input stream.
+            </summary>
+            <remarks>
+            If reading was not finished (which is normal for filtered results)
+            returns <c>null</c>.
+            </remarks>
+            <param name="buf">The <c>BinaryReader</c> input stream.</param>
+            <param name="isRoot">When <c>true</c> informs that if this is a top level
+            matrix.</param>
+            <returns><c>MLArray</c> or <c>null</c> if matrix does not match <c>filter</c></returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ZeroEndByteArrayToString(System.Byte[])">
+            <summary>
+            Converts a byte array to <c>string</c>.  It assumes that the string ends with \0 value.
+            </summary>
+            <param name="bytes">Byte array containing the string.</param>
+            <returns>String retrieved from byte array</returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadFlags(System.IO.Stream)">
+            <summary>
+            Reads Matrix flags.
+            </summary>
+            <param name="buf"><c>BinaryReader</c> input stream</param>
+            <returns>Flags int array</returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadDimension(System.IO.Stream)">
+            <summary>
+            Reads Matrix dimensions.
+            </summary>
+            <param name="buf"><c>BinaryReader</c> input stream</param>
+            <returns>Dimensions int array</returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadName(System.IO.Stream)">
+            <summary>
+            Reads Matrix name.
+            </summary>
+            <param name="buf"><c>BinaryReader</c> input stream</param>
+            <returns><c>string</c></returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ReadHeader(System.IO.Stream)">
+            <summary>
+            Reads MAT-file header.
+            </summary>
+            <param name="buf"><c>BinaryReader</c> input stream</param>
+        </member>
+        <member name="P:csmatio.io.MatFileReader.MatFileHeader">
+            <summary>
+            Gets MAT-file header.
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatFileReader.Data">
+            <summary>
+            Returns list of <c>MLArray</c> objects that were inside the MAT-file
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatFileReader.Content">
+            <summary>
+            Returns a map of <c>MLArray</c> objects that were inside MAT-file.
+            </summary>
+            <remarks>MLArrays are keyed with the MLArrays' name.</remarks>
+        </member>
+        <member name="T:csmatio.io.MatFileReader.ISMatTag">
+            <summary>
+            TAG operator.  Facilitates reading operations.
+            </summary>
+            <remarks>
+            <i>Note: Reading from buffer and/or stream modifies it's position.</i>
+            </remarks>
+            <author>David Zier (<a href="mailto:david.zier@gmail.com">david.zier@gmail.com</a>)</author>
+        </member>
+        <member name="F:csmatio.io.MatFileReader.ISMatTag.Buf">
+            <summary>
+            A <c>ByteBuffer</c> object for this tag
+            </summary>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.#ctor(System.IO.Stream)">
+            <summary>
+            Create an ISMatTag from a <c>ByteBuffer</c>.
+            </summary>
+            <param name="buf"><c>ByteBuffer</c></param>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToByteBuffer(csmatio.common.ByteBuffer,csmatio.types.ByteStorageSupport)">
+            <summary>
+            Read MAT-file tag to a byte buffer.
+            </summary>
+            <param name="buff"><c>ByteBuffer</c></param>
+            <param name="storage"><c>ByteStorageSupport</c></param>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToByteArray">
+            <summary>
+            Read MAT-file tag to a <c>byte</c> array
+            </summary>
+            <returns><c>byte[]</c></returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToDoubleArray">
+            <summary>
+            Read MAT-file tag to a <c>double</c> array
+            </summary>
+            <returns><c>double[]</c></returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToIntArray">
+            <summary>
+            Read MAT-file tag to a <c>int</c> array
+            </summary>
+            <returns><c>int[]</c></returns>
+        </member>
+        <member name="M:csmatio.io.MatFileReader.ISMatTag.ReadToCharArray">
+            <summary>
+            Read MAT-file tag to a <c>char</c> array
+            </summary>
+            <returns><c>int[]</c></returns>
+        </member>
+        <member name="T:csmatio.io.MatFileHeader">
+            <summary>
+            MAT-file header
+            </summary>
+            <remarks>
+            Level 5 MAT-files begin with a 128-byte header made up of a 124 byte text field
+            and two, 16-bit flag fields
+            </remarks>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.io.MatFileHeader.#ctor(System.String,System.Int32,System.Byte[])">
+            <summary>
+            Create a new MAT-file header.
+            </summary>
+            <param name="Description">Descriptive text (no longer than 116 characters)</param>
+            <param name="Version">By default, is set to 0x0100</param>
+            <param name="EndianIndicator">Byte array size of 2 indicating byte-swapping requirements</param>
+        </member>
+        <member name="M:csmatio.io.MatFileHeader.CreateHeader">
+            <summary>
+            A static factory that creates a new <c>MatFileHeader</c> instance with default header values:
+            <list type="bullet">
+            <item>Mat-file is 5.0 version</item>
+            <item>Version is set to 0x0100</item>
+            <item>No byte-swapping</item>
+            </list>
+            </summary>
+            <returns>A new <c>MatFileHeader</c> instance</returns>
+        </member>
+        <member name="M:csmatio.io.MatFileHeader.ToString">
+            <summary>
+            <see cref="M:System.Object.ToString"/>
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatFileHeader.Description">
+            <summary>
+            Gets the descriptive text.
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatFileHeader.EndianIndicator">
+            <summary>
+            Gets the endian indicator.  Bytes written as "MI" suggest that byte-swapping operation is required
+            in order to interpret data correctly.  If value is set to "IM", byte-swapping is not needed.
+            </summary>
+        </member>
+        <member name="P:csmatio.io.MatFileHeader.Version">
+            <summary>
+            When creating a MAT-file, set version to 0x0100
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLSparse">
+            <summary>
+            This class represents a Matlab Sparse matrix
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLSparse.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Construct a new <c>MLSparse</c> object
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Attributes">Array flags</param>
+            <param name="nzMax">Maximum number of non-zero numbers</param>
+        </member>
+        <member name="M:csmatio.types.MLSparse.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.GetReal(System.Int32,System.Int32)">
+            <summary>
+            Gets a single real array element of A(m,n).
+            </summary>
+            <param name="M">Row index</param>
+            <param name="N">Column index</param>
+            <returns>Array Element</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.GetReal(System.Int32)">
+            <summary>
+            Get a single real array element
+            </summary>
+            <param name="Index">Column-packed vector index.</param>
+            <returns>Array Element.</returns>
+            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
+            access by a column-packed index.</exception>
+        </member>
+        <member name="M:csmatio.types.MLSparse.SetReal(System.Double,System.Int32,System.Int32)">
+            <summary>
+            Sets a single real array element.
+            </summary>
+            <param name="Val">The element value.</param>
+            <param name="M">The row index.</param>
+            <param name="N">The column index.</param>
+        </member>
+        <member name="M:csmatio.types.MLSparse.SetReal(System.Double,System.Int32)">
+            <summary>
+            Sets a single real array element.
+            </summary>
+            <param name="Val">The element value.</param>
+            <param name="Index">Column-packed vector index.</param>
+            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
+            access by a column-packed index.</exception>
+        </member>
+        <member name="M:csmatio.types.MLSparse.GetImaginary(System.Int32,System.Int32)">
+            <summary>
+            Gets a single imaginary array element of A(m,n)
+            </summary>
+            <param name="M">Row index</param>
+            <param name="N">Column index</param>
+            <returns>Array element</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.GetImaginary(System.Int32)">
+            <summary>
+            Gets a single imaginary array element.
+            </summary>
+            <param name="Index">Column-packed vector index</param>
+            <returns>Array Element</returns>
+            <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
+            access by a column-packed index.</exception>
+        </member>
+        <member name="M:csmatio.types.MLSparse.SetImaginary(System.Double,System.Int32,System.Int32)">
+            <summary>
+            Sets a single imaginary array element.
+            </summary>
+            <param name="Val">Element value.</param>
+            <param name="M">Row Index.</param>
+            <param name="N">Column Index.</param>
+        </member>
+        <member name="M:csmatio.types.MLSparse.SetImaginary(System.Double,System.Int32)">
+            <summary>
+            Sets a single imaginary array element.
+            </summary>
+            <param name="Val">Element Value</param>
+            <param name="Index">Column-packed vector index.</param>
+            /// <exception cref="T:System.ArgumentException">Always becuase a sparse array cannot be
+            access by a column-packed index.</exception>
+        </member>
+        <member name="M:csmatio.types.MLSparse.ExportReal">
+            <summary>
+            Export all the real numbers in the sparse matrix to a <c>double</c> array.
+            </summary>
+            <returns><c>System.Double</c> array</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.ExportImaginary">
+            <summary>
+            Export all the imaginary numbers in the sparse matrix to a <c>double</c> array.
+            </summary>
+            <returns><c>System.Double</c> array</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.ContentToString">
+            <summary>
+            Get a string representation for the content of the array.
+            See <see cref="M:csmatio.types.MLArray.ContentToString"/>
+            </summary>
+            <returns>A string representation.</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+            <exception cref="T:System.ArgumentException">Thrown when there are insufficient bytes in the
+            byte array to create a <c>double</c></exception>
+        </member>
+        <member name="M:csmatio.types.MLSparse.GetByteArray(System.Object)">
+            <summary>
+            Gets a byte array from a numeric object.
+            </summary>
+            <param name="val">The numeric object to convert into a byte array.</param>
+        </member>
+        <member name="P:csmatio.types.MLSparse.MaxNZ">
+            <summary>
+            Gets the maximum number of non-zero values.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLSparse.IR">
+            <summary>
+            Gets row indices
+            </summary>
+            <remarks><c>IR</c> points to an integer array of length <c>MaxNZ</c> containing the 
+            row indices of the correspoding elements in <c>PR</c> and <c>PI</c></remarks>
+        </member>
+        <member name="P:csmatio.types.MLSparse.JC">
+            <summary>
+            Gets column indices.
+            </summary>
+            <remarks>
+            <c>JC</c> points to an integer array of length <c>N+1</c> that contains column index information.
+            For j, in the range of <c>0&lt;=j&lt;=N-1</c>, <c>JC[j]</c> is the index in the <c>IR</c> and <c>PI</c>
+            (and <c>PI</c> if it exists) of the first nonzero entry in the jth column and <c>JC[j+1]-1</c> index
+            of the last nonzero entry. As a result, <c>JC[N]</c> is also equal to <c>nnz</c>, the number of
+            nonzero entries in the matrix.  If <c>nnz</c> is less than <c>MaxNZ</c>, then more nonzero entries
+            can be inserted in the array without allocating additional storage.
+            </remarks>
+        </member>
+        <member name="P:csmatio.types.MLSparse.Flags">
+            <summary>Gets the flags for this array.</summary>
+        </member>
+        <member name="P:csmatio.types.MLSparse.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLSparse.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLSparse.IndexMN">
+            <summary>
+            Matrix index (m,n)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLSparse.IndexMN.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Construct a basic <c>IndexMN</c> object from
+            row and column indices.
+            </summary>
+            <param name="m">The row index</param>
+            <param name="n">The column index</param>
+        </member>
+        <member name="M:csmatio.types.MLSparse.IndexMN.GetHashCode">
+            <summary>
+            Serves as a hash function for an IndexMN.
+            </summary>
+            <returns>A hashcode for this object</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.IndexMN.Equals(System.Object)">
+            <summary>
+            Overridden equals operator, see <see cref="M:System.Object.Equals(System.Object)"/>
+            </summary>
+            <param name="obj">A <c>System.Object</c> to be compared with.</param>
+            <returns>True if the object match.</returns>
+        </member>
+        <member name="M:csmatio.types.MLSparse.IndexMN.ToString">
+            <summary>
+            Get a string representation for this <c>IndexMN</c>.
+            </summary>
+            <returns>A <c>System.String</c></returns>
+        </member>
+        <member name="P:csmatio.types.MLSparse.IndexMN.M">
+            <summary>
+            Public accessor to the row index.
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLSparse.IndexMN.N">
+            <summary>
+            Public accessor to the column index.
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLInt32">
+            <summary>
+            This class represents an Int32 (long) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxINT32_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLInt64</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of <c>long</c>, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>long[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>long[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[],System.Int32[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.#ctor(System.String,System.Int32[][],System.Int32[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>long</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>long</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLInt32.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt32.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt32.Int2DToInt(System.Int32[][])">
+            <summary>
+            Converts int[][] to int[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLInt32.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt32.GetByteArray(System.Object)">
+            <summary>
+            Gets a <c>byte[]</c> for a particular long value.
+            </summary>
+            <param name="val">The long value</param>
+            <returns>A byte array</returns>
+        </member>
+        <member name="P:csmatio.types.MLInt32.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLInt32.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.types.MLInt8">
+            <summary>
+            This class represents an Int8 array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLUInt8</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of doubles, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>byte[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[],System.SByte[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.#ctor(System.String,System.SByte[][],System.SByte[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of <c>byte</c> for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of <c>byte</c> for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt8.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLInt8.Byte2DToByte(System.SByte[][])">
+            <summary>
+            Converts byte[][] to byte[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLInt8.SByteToShort(System.SByte[])">
+            <summary>
+            Converts an sbyte[] to a short[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLInt8.GetByteArray(System.Object)">
+            <summary>
+            Gets a byte array from a numeric object.
+            </summary>
+            <param name="val">The numeric object to convert into a byte array.</param>
+        </member>
+        <member name="M:csmatio.types.MLInt8.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="P:csmatio.types.MLInt8.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLInt8.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
         <member name="T:csmatio.types.MLInt64">
             <summary>
             This class represents an Int64 (long) array (matrix)
@@ -2990,6 +2794,202 @@
             <summary>
             Gets the type of numeric object that this byte storage represents
             </summary>
+        </member>
+        <member name="T:csmatio.types.MLDouble">
+            <summary>
+            This class represents an Double (64-bit Floating-point) array (matrix)
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Int32[],System.Int32,System.Int32)">
+            <summary>
+            Normally this constructor is used only by <c>MatFileReader</c> and <c>MatFileWriter</c>
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+            <param name="Type">Array type: here <c>mxDOUBLE_CLASS</c></param>
+            <param name="Attributes">Array flags</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Int32[])">
+            <summary>
+            Create a <c>MLDouble</c> array with given name and dimensions.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Dims">Array dimensions</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="vals">One-dimensional array of doubles, packed by columns</param>
+            <param name="m">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D real matrix from <c>byte[][]</c>.
+            </summary>
+            <remarks>Note: Array is converted to <c>byte[]</c></remarks>
+            <param name="Name">Array name</param>
+            <param name="vals">Two-dimensional array of values</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[],System.Double[],System.Int32)">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of double for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of double for <i>imaginary</i> values, packed by columns</param>
+            <param name="M">Number of rows</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.#ctor(System.String,System.Double[][],System.Double[][])">
+            <summary>
+            <a href="http://math.nist.gov/javanumerics/jama/">Jama</a> [math.nist.gov] style:
+            construct a 2D imaginary matrix from a one-dimensional packed array.
+            </summary>
+            <param name="Name">Array name</param>
+            <param name="Real">One-dimensional array of double for <i>real</i> values, packed by columns</param>
+            <param name="Imag">One-dimensional array of double for <i>imaginary</i> values, packed by columns</param>
+        </member>
+        <member name="M:csmatio.types.MLDouble.CreateArray(System.Int32,System.Int32)">
+            <summary>
+            Creates a generic byte array.
+            </summary>
+            <param name="m">The number of columns in the array</param>
+            <param name="n">The number of rows in the array</param>
+            <returns>A generic array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLDouble.GetArray">
+            <summary>
+            Gets a two-dimensional array.
+            </summary>
+            <returns>2D real array.</returns>
+        </member>
+        <member name="M:csmatio.types.MLDouble.Double2DToDouble(System.Double[][])">
+            <summary>
+            Converts double[][] to double[]
+            </summary>
+            <param name="dd"></param>
+            <returns></returns>
+        </member>
+        <member name="M:csmatio.types.MLDouble.BuildFromBytes(System.Byte[])">
+            <summary>
+            Builds a numeric object from a byte array.
+            </summary>
+            <param name="bytes">A byte array containing the data.</param>
+            <returns>A numeric object</returns>
+        </member>
+        <member name="M:csmatio.types.MLDouble.GetByteArray(System.Object)">
+            <summary>
+            Gets a <c>byte[]</c> for a particular double value.
+            </summary>
+            <param name="val">The double value</param>
+            <returns>A byte array</returns>
+        </member>
+        <member name="P:csmatio.types.MLDouble.GetBytesAllocated">
+            <summary>
+            Gets the number of bytes allocated for a type
+            </summary>
+        </member>
+        <member name="P:csmatio.types.MLDouble.GetStorageType">
+            <summary>
+            Gets the type of numeric object that this byte storage represents
+            </summary>
+        </member>
+        <member name="T:csmatio.common.MatDataTypes">
+            <summary>
+            MAT-file data types
+            </summary>
+            <author>David Zier (david.zier@gmail.com)</author>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUNKNOWN">
+            <summary>Unknown data type</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miINT8">
+            <summary>8-bit, signed</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUINT8">
+            <summary>8-bit, unsigned</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miINT16">
+            <summary>16-bit, signed</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUINT16">
+            <summary>16-bit, unsigned</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miINT32">
+            <summary>32-bit, signed</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUINT32">
+            <summary>32-bit, unsigned</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSINGLE">
+            <summary>IEEE 754 single format</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miDOUBLE">
+            <summary>IEEE 754 double format</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miINT64">
+            <summary>64-bit, signed</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUINT64">
+            <summary>64-bit, unsigned</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miMATRIX">
+            <summary>MATLAB array</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miCOMPRESSED">
+            <summary>Compressed data</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUTF8">
+            <summary>Unicode UTF-8 Encoded Character Data</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUTF16">
+            <summary>Unicode UTF-16 Encoded Character Data</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miUTF32">
+            <summary>Unicode UTF-12 Encoded Character Data</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT32">
+            <summary>Size of 32-bit, signed int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT16">
+            <summary>Size of 16-bit, signed int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_INT8">
+            <summary>Size of 8-bit, signed int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT32">
+            <summary>Size of 32-bit, unsigned int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT16">
+            <summary>Size of 16-bit, unsigned int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_UINT8">
+            <summary>Size of 8-bit, unsigned int in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_DOUBLE">
+            <summary>Size of IEEE 754 double in bytes</summary>
+        </member>
+        <member name="F:csmatio.common.MatDataTypes.miSIZE_CHAR">
+            <summary>Size of an 8-bit char in bytes</summary>
+        </member>
+        <member name="M:csmatio.common.MatDataTypes.SizeOf(System.Int32)">
+            <summary>
+            Return the number of bytes for a given type.
+            </summary>
+            <param name="type">MatDataTypes</param>
+            <returns>Size of the type.</returns>
+        </member>
+        <member name="M:csmatio.common.MatDataTypes.TypeToString(System.Int32)">
+            <summary>
+            Get a string representation of a data type
+            </summary>
+            <param name="type">A MatDataTypes data type</param>
+            <returns>String representation.</returns>
         </member>
     </members>
 </doc>

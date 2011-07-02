@@ -74,7 +74,7 @@ namespace NeuroRighter.SpikeDetection
                 Array.Sort(ChanThresh);
 
                 for (int j = 0; j < ThreshSorted.Length; ++j)
-                    ThreshSorted[j] = RMSList[channel, j];
+                    ThreshSorted[j] = ChanThresh[j];
 
                 threshold[0, channel] = ThreshSorted.Average();
                 ++numUpdates[channel]; // prevent further updates

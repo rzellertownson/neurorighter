@@ -58,7 +58,7 @@ namespace NeuroRighter
     {
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
-
+            bool test = Properties.Settings.Default.recordSpikes;
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
             Debugger.Write(taskNumber.ToString() + ": dowork begin");
@@ -340,6 +340,7 @@ namespace NeuroRighter
             //Extract waveforms
             //toRawsrv: 0 index, includes timing offsets, channel remapping
             //saved: 1 index
+            test = Properties.Settings.Default.recordSpikes;
             EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
             if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
             {
@@ -365,7 +366,7 @@ namespace NeuroRighter
             }
             else //in vitro mappings
             {
-                
+                test = Properties.Settings.Default.recordSpikes;
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
                     SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
@@ -378,10 +379,13 @@ namespace NeuroRighter
                     rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
                     if (switch_record.Value)
                     {
-                        lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
+                        test = Properties.Settings.Default.recordSpikes;
+                        if (test)
                         {
-                            if (Properties.Settings.Default.recordSpikes)
+                            lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                             {
+                                
+                            
                                 //
                                 recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);

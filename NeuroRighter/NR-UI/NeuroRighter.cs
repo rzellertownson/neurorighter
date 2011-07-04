@@ -699,8 +699,8 @@ namespace NeuroRighter
                             auxInputGraphController = new ScatterGraphContoller(ref scatterGraph_AuxAnalogData);
 
                             // Make history selector reflect current limits on input
-                            //numericUpDown_RequestedAuxHistory.Minimum = (decimal)(Properties.Settings.Default.ADCPollingPeriodSec * 5);
-                            numericUpDown_RequestedAuxHistory.Maximum = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
+                            slide_AnalogDispMaxVoltage.Range = new Range(0.05, 10);
+                            slide_AnalogDispWidth.Range = new Range(Properties.Settings.Default.ADCPollingPeriodSec * 5, Properties.Settings.Default.datSrvBufferSizeSec);
 
                         }
                         #endregion
@@ -775,18 +775,8 @@ namespace NeuroRighter
                             resetSALPA();
                         if (spikeDet != null && isNormalRecording)
                             spikeDet.SetSpikeDetector();
-
-
-                        //// Storage for aux input plotting and filtering
-                        //if (Properties.Settings.Default.recordAuxAnalog)
-                        //{
-                        //    for (int i = 0; i < auxAnInTask.AIChannels.Count; ++i)
-                        //        auxAnData[i] = new rawType[spikeBufferLength];
-                        //}
-                        //if (Properties.Settings.Default.recordAuxDigital)
-                        //{
-                        //        auxDigData = new uint[spikeBufferLength];
-                        //}
+                        if (spikeDet.spikeDetector == null)
+                            spikeDet.SetSpikeDetector();
 
                         #endregion
 

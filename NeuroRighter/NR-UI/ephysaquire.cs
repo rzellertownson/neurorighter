@@ -425,10 +425,10 @@ namespace NeuroRighter
             }
 
             if (updateAuxGraph)
-            {
-                auxInputGraphController.updateScatterGraph(datSrv.auxAnalogSrv, 
-                    (double)numericUpDown_RequestedAuxHistory.Value,
-                    (double)numericUpDown_AuxPlotVoltage.Value);
+            {;
+                auxInputGraphController.updateScatterGraph(datSrv.auxAnalogSrv,
+                        slide_AnalogDispWidth.Value,
+                        slide_AnalogDispMaxVoltage.Value);
             }
             #endregion
         }
@@ -465,8 +465,8 @@ namespace NeuroRighter
                         if (updateAuxGraph)
                         {
                             auxInputGraphController.updateScatterGraph(datSrv.auxAnalogSrv,
-                            (double)numericUpDown_RequestedAuxHistory.Value,
-                            (double)numericUpDown_AuxPlotVoltage.Value);
+                                    slide_AnalogDispWidth.Value,
+                                    slide_AnalogDispMaxVoltage.Value);
                         }
 
                         // Start next read

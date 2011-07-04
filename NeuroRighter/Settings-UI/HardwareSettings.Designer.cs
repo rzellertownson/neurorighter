@@ -329,6 +329,7 @@ namespace NeuroRighter
             this.groupBox12.TabIndex = 22;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Single Channel Playback";
+            this.groupBox12.Visible = false;
             // 
             // checkBox3
             // 

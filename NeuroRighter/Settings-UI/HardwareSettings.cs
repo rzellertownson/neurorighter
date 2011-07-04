@@ -226,6 +226,15 @@ namespace NeuroRighter
                     comboBox_AuxDigInputPort.SelectedIndex = 0;
             }
 
+            // set control states
+            comboBox_stimulatorDevice.Enabled = checkBox_useStimulator.Checked;
+            if (!checkBox_useStimulator.Checked) checkBox_RecStimTimes.Checked = false;
+            checkBox_RecStimTimes.Enabled = checkBox_useStimulator.Checked;
+            comboBox_stimInfoDev.Enabled = checkBox_useStimulator.Checked;
+            radioButton_16Mux.Enabled = checkBox_useStimulator.Checked;
+            radioButton_32bit.Enabled = checkBox_useStimulator.Checked;
+            radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
+            radioButton_8Mux.Enabled = checkBox_useStimulator.Checked;
             textBox_ADCPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.ADCPollingPeriodSec);
             textBox_DACPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.DACPollingPeriodSec);
             textBox_datSrvBufferSizeSec.Text = Convert.ToString(Properties.Settings.Default.datSrvBufferSizeSec);

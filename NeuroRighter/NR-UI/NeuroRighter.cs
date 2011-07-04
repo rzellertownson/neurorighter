@@ -765,7 +765,7 @@ namespace NeuroRighter
                         }
 
                         // Storage from spike waveforms
-                        _waveforms = new List<SpikeEvent>(10); //Initialize to store threshold crossings
+                       
                         numPre = Convert.ToInt32(spikeDet.numPreSamples.Value);
                         numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
 

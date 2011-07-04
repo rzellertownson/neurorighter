@@ -122,11 +122,8 @@ namespace NeuroRighter
         {
             get { return _stimulations; }
         }
-        private List<SpikeEvent> _waveforms;  //Locations of threshold crossings
-        internal List<SpikeEvent> waveforms
-        {
-            get { return _waveforms; }
-        }
+        //Locations of threshold crossings
+        
 
         // Recording Parameters
         private NRAIChannelCollection stimTimeChanSet;

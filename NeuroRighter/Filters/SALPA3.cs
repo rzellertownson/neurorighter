@@ -113,7 +113,7 @@ namespace NeuroRighter.Filters
 
          public int offset()
          {
-             return 0;// POST;
+             return POST;
          }
 
         

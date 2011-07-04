@@ -325,14 +325,13 @@ namespace NeuroRighter
 
             SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
-            int startTime = (numSpikeReads[taskNumber] - 1) * spikeBufferLength; //Used to mark spike time for *.spk file
-            if (checkBox_SALPA.Checked)
-                startTime -= SALPAFilter.offset(); //To account for delay of SALPA filter
+            ulong startTime = (ulong)(numSpikeReads[taskNumber] - 1) * (ulong)spikeBufferLength; //Used to mark spike time for *.spk file
+            
 
             //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
             EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i));
+                newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i,startTime));
             
             // Send waveform data to datSrv
            
@@ -347,7 +346,13 @@ namespace NeuroRighter
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
                     SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
-                    tmp.sampleIndex += (ulong)startTime;
+                    if (checkBox_SALPA.Checked)
+                        if (tmp.sampleIndex >= (ulong)SALPAFilter.offset())
+                            tmp.sampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                        else
+                            continue; //skip that one
+                    
+                     
                     
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
@@ -357,6 +362,7 @@ namespace NeuroRighter
                         lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
                             //short ch = CHAN_INDEX_START;
+                        
                             recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);
                         }
@@ -370,7 +376,14 @@ namespace NeuroRighter
                 for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
                 {
                     SpikeEvent tmp = (SpikeEvent)newWaveforms.eventBuffer[j].DeepClone();
-                    tmp.sampleIndex += (ulong)startTime;
+                    
+                    if (checkBox_SALPA.Checked)
+                        if (tmp.sampleIndex >= (ulong) SALPAFilter.offset())
+                            tmp.sampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                        else
+                            continue; //skip that one
+                    
+                     
                     tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel);
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
@@ -399,29 +412,6 @@ namespace NeuroRighter
 
             //Post to PlotData
             waveformPlotData.write(newWaveforms.eventBuffer);
-
-            #region WriteSpikeWfmsToListeningProcesses
-            //Alert any listening processes that we have new spikes.  It's up to them to clear wavefroms periodically.
-            //That's definitely not the best way to do it.
-            if (spikesAcquired != null)
-            {
-                lock (newWaveforms)
-                {
-                    //Check to see if spikes are within trigger
-                    for (int i = 0; i < newWaveforms.eventBuffer.Count; ++i)
-                    {
-                        if ((int)newWaveforms.eventBuffer[i].sampleIndex  >= triggerStartTime && (int)newWaveforms.eventBuffer[i].sampleIndex + startTime <= triggerStopTime)
-                        {
-                            _waveforms.Add(newWaveforms.eventBuffer[i]);
-#if (DEBUG1)
-                            logFile.WriteLine("Waveform in trigger, index: " + newWaveforms[i].index);
-#endif
-                        }
-                    }
-                }
-                spikesAcquired(this, inTrigger);
-            }
-            #endregion
 
             //Clear new ones, since we're done with them.
             newWaveforms.eventBuffer.Clear();

@@ -135,8 +135,13 @@ namespace NeuroRighter.SpikeDetection
         }
 
         // Spike detection method that all data goes through at some point
-        internal virtual List<SpikeEvent> DetectSpikes(double[] data, int channel)
+        internal virtual List<SpikeEvent> DetectSpikes(double[] data, int channel, ulong bufferOffset)
         {
+            if (bufferOffset==0)
+                for (int i = 0; i < numChannels; ++i)
+                {
+                    this.detectionCarryOverBuffer[i] = new double[carryOverLength];
+                }
             List<SpikeEvent> waveforms = new List<SpikeEvent>();
 
             lock (this)
@@ -293,8 +298,10 @@ namespace NeuroRighter.SpikeDetection
                         
                         ProcessSpike:
                             // Record the waveform
-                            waveforms.Add(new SpikeEvent(channel, 
-                                (ulong)(spikeMaxIndex - recIndexOffset), currentThreshold, waveform));
+                            ulong tmpindex = ((ulong)(spikeMaxIndex) + bufferOffset) - (ulong)(recIndexOffset);
+                   
+                            waveforms.Add(new SpikeEvent(channel,
+                                tmpindex, currentThreshold, waveform));
 
                             // Calculate dead-time
                             int dt;

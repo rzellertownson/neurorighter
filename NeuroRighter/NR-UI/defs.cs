@@ -169,6 +169,7 @@ namespace NeuroRighter
         private double[][] muaData;
         private int SALPA_WIDTH;
         private bool isNormalRecording = true;
+        private bool[] bwIsRunning;
 
         //Plots
         private List<Microsoft.Xna.Framework.Graphics.Color> NRBrainbow;

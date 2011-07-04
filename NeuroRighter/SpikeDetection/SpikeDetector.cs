@@ -184,7 +184,7 @@ namespace NeuroRighter.SpikeDetection
                 currentThreshold = threshold[0, channel];
                 for (; i < indiciesToSearchForReturn; ++i)
                 {
-
+                    //peak detection- just requires one sample
                     if (!inASpike[channel] && i < indiciesToSearchForCross)
                     {
                         if (spikeDetectionBuffer[i] < currentThreshold &&
@@ -202,6 +202,7 @@ namespace NeuroRighter.SpikeDetection
                             posCross = FindSpikePolarityBySlopeOfCrossing();
                         }
                     }
+                        //exiting a spike- requires + maxspikewidth (to find peak), -pre and +post (to find waveform)
                     else if (inASpike[channel] && 
                             ((posCross && spikeDetectionBuffer[i] < currentThreshold) ||
                              (!posCross && spikeDetectionBuffer[i] > -currentThreshold))

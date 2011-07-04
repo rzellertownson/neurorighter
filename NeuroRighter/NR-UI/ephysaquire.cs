@@ -231,7 +231,7 @@ namespace NeuroRighter
                         }
                     }
                     #endregion
-
+                    bwIsRunning[taskNumber] = true;
                     if (!bwSpikes[taskNumber].IsBusy)
                         bwSpikes[taskNumber].RunWorkerAsync(new Object[] { taskNumber, ar });
                     else

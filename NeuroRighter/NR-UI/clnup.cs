@@ -223,8 +223,17 @@ namespace NeuroRighter
             // Refresh all the NI Tasks
             try
             {
+                
                 if (spikeTask != null)
                 {
+                    bool cantReset = true;
+                    while (cantReset)
+                    {
+                        cantReset = false;
+                        for (int i = 0; i < spikeTask.Count; i++)
+                            cantReset = cantReset || bwIsRunning[i];
+                        System.Threading.Thread.Sleep(250);
+                    }
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Dispose();
                     spikeTask.Clear(); spikeTask = null;

@@ -851,6 +851,7 @@ namespace NeuroRighter
 
                         //Setup background workers for data processing
                         bwSpikes = new List<BackgroundWorker>(spikeTask.Count);
+                        bwIsRunning = new bool[spikeTask.Count];
                         for (int i = 0; i < spikeTask.Count; ++i)
                         {
                             bwSpikes.Add(new BackgroundWorker());

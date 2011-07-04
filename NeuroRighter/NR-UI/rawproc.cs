@@ -455,7 +455,7 @@ namespace NeuroRighter
             }
             #endregion
             Debugger.Write(taskNumber.ToString() + ": multi unit activity done/ processing done");
-            
+            bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;
         }
 

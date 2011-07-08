@@ -31,10 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NeuroRighter, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NeuroRighter\bin\Debug\NeuroRighter.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -55,12 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SilentBarrageProt2.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NeuroRighter\NeuroRighter_05.csproj">
-      <Project>{BB2A4100-DBDA-4A63-8708-8A7F9F6810E0}</Project>
-      <Name>NeuroRighter_05</Name>
-    </ProjectReference>
+    <Compile Include="SilentBarrageProt3.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

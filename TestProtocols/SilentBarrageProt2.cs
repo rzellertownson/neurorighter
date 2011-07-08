@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
+using NeuroRighter.dbg;
 
 namespace TestProtocols
 {
@@ -17,12 +18,15 @@ namespace TestProtocols
         int offset = 0;
         Random r = new Random();
         SilentBarrageExperimentClient SBclient;
+
+
         protected override void Run()
         {
             
             double starttime = StimSrv.StimOut.GetTime();
             offset = StimSrv.GetBuffSize() * 3;
-            Console.WriteLine("closed loop tester starting out at time " + starttime.ToString() + " by StimOut clock");
+            Debugger.Write("closed loop tester starting out");
+            
             SBclient = new SilentBarrageExperimentClient("alzrig.neuro.gatech.edu", 3490);
             SBclient.connect();
             ulong recordedToStim = 0;
@@ -37,7 +41,7 @@ namespace TestProtocols
             {
                 //read in all the newest stim/spike data
                 //spike
-                Console.WriteLine("begin process loop");
+                Debugger.Write("begin process loop");
                 ulong tmp;
                 try
                 {
@@ -73,8 +77,8 @@ namespace TestProtocols
                         outs += ((double)(spike.sampleIndex) / 25000.0).ToString() + ",";
                         outc += (spike.channel+1) + ",";
                     }
-                Console.WriteLine(outs);
-                Console.WriteLine(outc);
+                Debugger.Write(outs);
+                Debugger.Write(outc);
                // Console.WriteLine(recspikes.Count.ToString() + " spikes after "+recordedToSpike.ToString() +"samples, " + recstim.Count.ToString() + " stims after "+ recordedToStim.ToString() + "samples");
                 //process and discard as much stim/spike data as you can (into peristimulus)
                 //while(recstim.Count>0)
@@ -106,7 +110,7 @@ namespace TestProtocols
                     freq = 100;
                 if (freq < 1)
                     freq = 1;
-                Console.WriteLine("stim at freq: " + freq.ToString());
+                Debugger.Write("stim at freq: " + freq.ToString());
                 isi = fs / freq;
 
 

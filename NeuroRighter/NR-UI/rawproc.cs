@@ -188,6 +188,7 @@ namespace NeuroRighter
             Debugger.Write(taskNumber.ToString() + ": lfp filtered");
 
             #region SALPA Filtering
+            lock(stimIndices)
             if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
             {
                 SALPAFilter.filter(ref filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, stimIndices, 0);

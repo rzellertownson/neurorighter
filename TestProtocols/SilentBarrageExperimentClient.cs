@@ -38,7 +38,7 @@ namespace NeuroRighter.Output
 
         }
 
-        internal void connect()
+        internal bool connect()
         {
             try
             {
@@ -54,16 +54,18 @@ namespace NeuroRighter.Output
                 Console.WriteLine("Unable to connect to server.");
                 Console.WriteLine(e.ToString());
                 connected = false;
-                return;
+                
             }
+            return connected;
         }
 
         //check for a request for motor data, respond to it if it has been made.
         //check for updates on sensor information
-        internal void synch()
+        internal bool synch()
         {
             try
             {
+                toServer(motorOut());
                 if (s2.GetStream().DataAvailable)
                 {
                     byte[] data = new byte[1024];
@@ -81,8 +83,9 @@ namespace NeuroRighter.Output
                 Console.WriteLine("Unable to synch with server.");
                 Console.WriteLine(e.ToString());
                 connected = false;
-                return;
+                
             }
+            return connected;
         }
         internal void updateMotor(double[] pole, double[] height)
         {
@@ -94,6 +97,7 @@ namespace NeuroRighter.Output
         }
         private void toServer(string toSend)
         {
+            Console.Out.WriteLine("toServer: " + toSend);
             byte[] outt = Encoding.ASCII.GetBytes(toSend);
             s2.GetStream().Write(outt,0,outt.Length);
         }
@@ -155,8 +159,11 @@ namespace NeuroRighter.Output
         internal void close()
         {
             toServer("Q");
+            Console.Out.WriteLine("Q");
             server.Shutdown(SocketShutdown.Both);
+            Console.Out.WriteLine("shutdown");
             server.Close();
+            Console.Out.WriteLine("close");
             connected = false;
         }
 

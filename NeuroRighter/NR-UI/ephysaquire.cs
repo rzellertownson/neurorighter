@@ -111,16 +111,16 @@ namespace NeuroRighter
 
                                 //stimTimeReader.MemoryOptimizedReadMultiSample(spikeBufferLength, ref stimDataTmp, out numSampRead);
 
-                                double[,] stimDataTmp = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
+                                //double[,] stimDataTmp = new double[stimTimeChanSet.numericalChannels.Length, spikeBufferLength];
 
                                 //Read the available data from the channels
                                 if (twoAITasksOnSingleBoard)
                                 {
 
-                                    Array.Copy(stimData, 0, stimDataTmp, stimTimeChanSet.numericalChannels[0] * spikeBufferLength, 
-                                        stimTimeChanSet.numericalChannels.Length * spikeBufferLength);
+                                    //Array.Copy(stimData, 0, stimDataTmp, stimTimeChanSet.numericalChannels[0] * spikeBufferLength, 
+                                      //  stimTimeChanSet.numericalChannels.Length * spikeBufferLength);
                                      
-                                    AuxAnalogFromStimData(stimDataTmp);
+                                    AuxAnalogFromStimData(stimData);
                                 }
 
                                 //Copy new data into prepended data, to deal with edge effects
@@ -140,6 +140,7 @@ namespace NeuroRighter
                                 //     the range of 1-8 volts
                                 EventBuffer<ElectricalStimEvent> tempStimBuff = new EventBuffer<ElectricalStimEvent>(Properties.Settings.Default.RawSampleFrequency);
                                         
+                                lock(stimIndices)
                                 for (int i = 0; i < spikeBufferLength; ++i)
                                 {
                                     //Check for stimIndices (this uses a different buffer, so it's synced to each buffer read
@@ -222,6 +223,7 @@ namespace NeuroRighter
                                         if (numStimReads[i] < oldestStimRead)
                                             oldestStimRead = numStimReads[i];
                                     }
+                                    lock(stimIndices)
                                     for (int i = stimIndices.Count - 1; i >= 0; --i)
                                         if (stimIndices[i].numStimReads < oldestStimRead - 1) //Add -1 to buy us some breating room
                                             stimIndices.RemoveAt(i);

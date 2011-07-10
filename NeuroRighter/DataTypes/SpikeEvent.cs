@@ -35,10 +35,29 @@ namespace NeuroRighter.DataTypes
     public sealed class SpikeEvent : NREvent
     {
         //internal ulong sampleIndex;
+
+        /// <summary>
+        /// HW Channel that the spike occured on
+        /// </summary>
         public Int16 channel;
+
+        /// <summary>
+        /// The voltage threshold at which the spike was detected
+        /// </summary>
         public double threshold;
+
+        /// <summary>
+        /// A voltage vector specifying a spike snippet
+        /// </summary>
         public double[] waveform;
 
+        /// <summary>
+        /// Generic class for holding spike events generated within NR.
+        /// </summary>
+        /// <param name="channel">HW Channel that the spike occured on</param>
+        /// <param name="sampleIndex"> The sample index, relative to recording start, in which the peak of the spike occured.</param>
+        /// <param name="threshold"> The voltage threshold at which the spike was detected</param>
+        /// <param name="waveform">A voltage vector specifying a spike snippet</param>
         public SpikeEvent(int channel, ulong sampleIndex, double threshold, double[] waveform)
         {
             this.channel = (short)channel;
@@ -47,14 +66,5 @@ namespace NeuroRighter.DataTypes
             this.waveform = waveform;
             
         }
-        //override internal NREvent Copy()
-        //{
-        //    double[] wavecpy = new double[waveform.Length];
-        //    for (int i = 0; i < waveform.Length; i++)
-        //    {
-        //        wavecpy[i] = waveform[i];
-        //    }
-        //    return new SpikeEvent(this.channel, this.sampleIndex, this.threshold, wavecpy);
-        //}
     }
 }

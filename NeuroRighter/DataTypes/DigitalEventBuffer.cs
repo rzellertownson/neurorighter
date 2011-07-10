@@ -13,10 +13,25 @@ namespace NeuroRighter.DataTypes
         /// </summary>
         class DigitalEventBuffer
         {
-            internal double sampleFrequencyHz;
-            internal List<ulong> sampleBuffer;
-            internal List<int> portStateBuffer;
+            /// <summary>
+            /// Sampling frequency of data in the buffer</param>
+            /// </summary>
+            public double sampleFrequencyHz;
 
+            /// <summary>
+            /// The time stamp buffer.
+            /// </summary>
+            public List<ulong> sampleBuffer;
+
+            /// <summary>
+            /// The port state buffer.
+            /// </summary>
+            public List<int> portStateBuffer;
+
+            /// <summary>
+            /// Standard NR buffer class for digital event type data
+            /// </summary>
+            /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
             public DigitalEventBuffer(double sampleFrequencyHz)
             {
                 this.sampleFrequencyHz = sampleFrequencyHz;

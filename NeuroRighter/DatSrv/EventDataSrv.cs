@@ -26,9 +26,14 @@ using ExtensionMethods;
 
 namespace NeuroRighter.DatSrv
 {
+    /// <summary>
+    /// Data server for event-type data.
+    /// </summary>
     public class EventDataSrv<T> where T : NREvent
     {
-        // The mutex class for concurrent read and write access to data buffers
+        /// <summary>
+        ///  The mutex class for concurrent read and write access to data buffers
+        /// </summary>
         protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
 
         // Main storage buffer
@@ -43,12 +48,26 @@ namespace NeuroRighter.DatSrv
         private ulong mincurrentSample;
 
         // Internal variables
-        internal int noTasks;
+        internal int noTasks; // number of daq data colleciton tasks
 
-        // Public variables
+        /// <summary>
+        /// Sampling frequency for data collected for this server.
+        /// </summary>
         public double sampleFrequencyHz;
-        
-        internal EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int noTasks)
+
+
+        /// <summary>
+        /// Generic event-type data server (e.g. spikes). The main data buffer that this class updates
+        /// 'dataBuffer', is itself a EventBuffer object. The  method ReadFromBuffer accepts a time range (in seconds referenced to the start of the recording)
+        /// as input and will copy the portion of the current data buffer that is within that range to the user as a 
+        /// EventBuffer object. The EstimateAvailableTimeRange method can be used to get an estimate of a valide range
+        /// to enter for a Read operation. If there is no data in the time range provided, the method returns a null object.
+        /// </summary>
+        /// <param name="sampleFrequencyHz"> Sampling frequency of the DAQ that is feeding this server</param>
+        /// <param name="bufferSizeSec">The requested history of the buffer in seconds</param>
+        /// <param name="numSamplesPerWrite"> How many samples will the DAQ provide when a Write is called?</param>
+        /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
+        public EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks)
         {
             this.currentSample = new ulong[noTasks];
             this.mincurrentSample = 0;
@@ -56,7 +75,7 @@ namespace NeuroRighter.DatSrv
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
-            this.noTasks = noTasks;
+            this.noTasks = numDataCollectionTasks;
         }
 
         internal void WriteToBuffer(EventBuffer<T> newData, int taskNo) 
@@ -162,6 +181,11 @@ namespace NeuroRighter.DatSrv
 
         }
 
+        /// <summary>
+        /// Estimate the avialable samples in the buffer. This can be used to inform
+        /// the user of good arguments for the ReadFromBuffer method.
+        /// </summary>
+        /// <returns>timeRange</returns>
         public ulong[] EstimateAvailableTimeRange()
         {
             ulong[] timeRange = new ulong[2];
@@ -195,6 +219,15 @@ namespace NeuroRighter.DatSrv
             return timeRange;
         }
 
+        /// <summary>
+        /// Read data from buffer. This method will attempt to retrieve samples within the range
+        /// specified by the input arguements. The object that is returned
+        /// will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
+        /// method to get a (time-sensitive) estimate for good-arguments for this method.
+        /// </summary>
+        /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
+        /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
+        /// <returns>EventBuffer<T></returns>
         public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
         {
             EventBuffer<T> returnBuffer = new EventBuffer<T>(dataBuffer.sampleFrequencyHz);

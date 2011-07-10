@@ -23,17 +23,26 @@ using System.Text;
 namespace NeuroRighter.DataTypes
 {
     /// <summary>
-    /// This class is the standard NR buffer class for digital event type data. 
-    /// Properties are the timeSample which specifies the time, in samples, that
-    /// the digital event occured and portState, which is the integer
-    /// state of the digital port at the time of the event.
+    /// This class is the standard NR buffer class for event type data. 
+    /// The eventBuffer property contains generic events of a user defined type.
     /// </summary>
     public class EventBuffer<T> where T : NREvent
     {
+        /// <summary>
+        /// Sampling frequency of data in the buffer</param>
+        /// </summary>
         public double sampleFrequencyHz;
+
+        /// <summary>
+        /// The event buffer.
+        /// </summary>
         public List<T> eventBuffer = new List<T>();
 
-        internal EventBuffer(double sampleFrequencyHz)
+        /// <summary>
+        /// Standard NR buffer class for generic event data
+        /// </summary>
+        /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
+        public EventBuffer(double sampleFrequencyHz)
         {
             this.sampleFrequencyHz = sampleFrequencyHz;
         }

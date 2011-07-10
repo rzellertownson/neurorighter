@@ -107,3 +107,7 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\bin\Relea
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\bin\Release\zlib.net.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\csmatio.dll

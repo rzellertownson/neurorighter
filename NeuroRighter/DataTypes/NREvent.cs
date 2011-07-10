@@ -34,11 +34,13 @@ namespace NeuroRighter.DataTypes
         /// <summary>
         /// Base class for event type data wrapper classes in NR.
         /// <author>Jon Newman </author>
-        /// </summary>
-        /// 
+        /// </summary> 
         
-        //when did it occur
+        /// <summary>
+        /// Specifys when event occured relative to recording start
+        /// </summary>
         public ulong sampleIndex;
+
         //how long is it.  0 is the default, used for state change events
         internal uint sampleDuration=0;
 
@@ -48,15 +50,6 @@ namespace NeuroRighter.DataTypes
         //sampling frequencies
 
         public NREvent() {}
-
-        //virtual internal NREvent Copy()
-        //{
-
-        //    Console.WriteLine("Trying to copy an NREvent that doesn't have it's own copy method  (" + this.ToString() + ")");
-        //    return this;
-        //}
-        
-        
 
     }
 }

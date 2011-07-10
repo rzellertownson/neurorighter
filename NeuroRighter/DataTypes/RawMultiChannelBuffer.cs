@@ -16,17 +16,33 @@ namespace NeuroRighter.DataTypes
     /// </summary>
     public class RawMultiChannelBuffer
     {
-        internal double sampleFrequencyHz;
-        internal ulong[] startAndEndSample;
-        internal double[][] rawMultiChannelBuffer;
-        internal int numChannels;
-        internal int bufferLengthInSamples;
+        // User accessible
+        public double sampleFrequencyHz;
+        public ulong[] startAndEndSample;
+        public double[][] rawMultiChannelBuffer;
+        public int numChannels;
+        public int bufferLengthInSamples;
+
+        // NeuroRighter accessible
         internal int[] leastCurrentCircularSample;//one for each task
         internal int[] mostCurrentCircularSample;
         internal ulong[] totalNumSamplesWritten;
         internal int[] netLeastAndMostCurrentCircular;
 
-        public RawMultiChannelBuffer(double sampleFrequencyHz, int numChannelsPerTask, int bufferLengthInSamples, int noTasks)
+        /// <summary>
+        /// Standard NR buffer class for raw analog data coming from
+        /// multiple input channels. It has a startAndEndSample property that specifies
+        /// the start and end sample indicies, relative to the start of data collection
+        /// contained in the data buffer corresponding to the first and last positions
+        /// of the rawMultichannelBuffer array (one channel's worth of data along each row).
+        /// The samplePeriodSecond property allows client classes to determine the absolute
+        /// time stamp of each sample in seconds.
+        /// </summary>
+        /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
+        /// <param name="numChannelsPerTask"> Number of channels data collection task (argument 4) </param>
+        /// <param name="bufferLengthInSamples">The history of the channels that should be kept, in samples</param></param>
+        /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
+        public RawMultiChannelBuffer(double sampleFrequencyHz, int numChannelsPerTask, int bufferLengthInSamples, int numDataCollectionTasks)
         {
             this.netLeastAndMostCurrentCircular = new int[2];
             this.sampleFrequencyHz = sampleFrequencyHz;
@@ -35,13 +51,13 @@ namespace NeuroRighter.DataTypes
             this.startAndEndSample = new ulong[2];
             this.startAndEndSample[0] = 0;
             this.startAndEndSample[1] = 0;
-            this.rawMultiChannelBuffer = new double[numChannels*noTasks][];
-            this.leastCurrentCircularSample = new int[noTasks];
-            this.mostCurrentCircularSample = new int[noTasks]; ;
-            this.totalNumSamplesWritten = new ulong[noTasks]; ;
+            this.rawMultiChannelBuffer = new double[numChannels * numDataCollectionTasks][];
+            this.leastCurrentCircularSample = new int[numDataCollectionTasks];
+            this.mostCurrentCircularSample = new int[numDataCollectionTasks]; ;
+            this.totalNumSamplesWritten = new ulong[numDataCollectionTasks]; ;
 
             // Allocate space with zeros
-            for (int i = 0; i < numChannels * noTasks; ++i)
+            for (int i = 0; i < numChannels * numDataCollectionTasks; ++i)
             {
 
                 rawMultiChannelBuffer[i] = new double[bufferLengthInSamples];

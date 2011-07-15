@@ -48,7 +48,7 @@ namespace NeuroRighter.DatSrv
         private ulong mincurrentSample;
 
         // Internal variables
-        internal int noTasks; // number of daq data colleciton tasks
+        internal int numDataCollectionTasks; // number of daq data colleciton tasks
 
         /// <summary>
         /// Sampling frequency for data collected for this server.
@@ -69,13 +69,13 @@ namespace NeuroRighter.DatSrv
         /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
         public EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks)
         {
-            this.currentSample = new ulong[noTasks];
+            this.currentSample = new ulong[numDataCollectionTasks];
             this.mincurrentSample = 0;
             this.sampleFrequencyHz = sampleFrequencyHz;
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
-            this.noTasks = numDataCollectionTasks;
+            this.numDataCollectionTasks = numDataCollectionTasks;
         }
 
         internal void WriteToBuffer(EventBuffer<T> newData, int taskNo) 
@@ -110,7 +110,7 @@ namespace NeuroRighter.DatSrv
                 //.AddRange(newData.eventBuffer);
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
                 mincurrentSample = currentSample[0];
-                for (int i = 1; i < this.noTasks; i++)
+                for (int i = 1; i < this.numDataCollectionTasks; i++)
                 {
                     if (mincurrentSample>currentSample[i])
                         mincurrentSample = currentSample[i];
@@ -166,7 +166,7 @@ namespace NeuroRighter.DatSrv
 
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
                 mincurrentSample = currentSample[0];
-                for (int i = 1; i < this.noTasks; i++)
+                for (int i = 1; i < this.numDataCollectionTasks; i++)
                 {
                     if (mincurrentSample > currentSample[i])
                         mincurrentSample = currentSample[i];

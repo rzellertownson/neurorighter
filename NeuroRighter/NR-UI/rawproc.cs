@@ -459,25 +459,20 @@ namespace NeuroRighter
             int taskNumber = (int)e.Result;
 
             //Check whether timed recording is done or stopped
-            if ((checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime) || (!taskRunning))
+            if (checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime)
             {
                 if (taskNumber == spikeReader.Count - 1)
                 {
                     if (checkbox_repeatRecord.Checked)//make sure this is the last spike processor so that this only gets called once  -&& (((int)e.Result)==(bwSpikes.Count-1))
                     {
-
-                        //if (taskRunning) reset();
-                        buttonStop.PerformClick();
+                        buttonStop_Click(null, null);
                         reset();
-                        buttonStart.PerformClick();
-
+                        buttonStart_Click(null, null);
                     }
                     else
                     {
-
-                        //if (taskRunning) reset();
-                        buttonStop.PerformClick();
-
+                        buttonStop_Click(null, null);
+                        //buttonStop.PerformClick();
                     }
                 }
             }

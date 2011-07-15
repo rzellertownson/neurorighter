@@ -57,7 +57,15 @@ namespace NeuroRighter
             HardwareSettings nc_s = new HardwareSettings();
             nc_s.ShowDialog();
             updateSettings();
+
+            NRAcquisitionSetup();
+
             spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
+            spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
+            spikeDet.SetSpikeDetector();
+
+            
+
         }
 
         private void toolStripMenuItem_DisplaySettings_Click(object sender, EventArgs e)

@@ -55,6 +55,9 @@ namespace NeuroRighter
         //Called after data acq. is complete, resets buttons and stops tasks.
         private void reset()
         {
+            // Disable asychronous activity
+            taskRunning = false;
+
             // Start by resetting the hardware settings
             updateRecSettings();
 
@@ -68,7 +71,7 @@ namespace NeuroRighter
                 if (waveformPlotData.getGain() != null)
                     Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
             Console.WriteLine("reset: gains saved");
-            taskRunning = false;
+            
             if (triggerWriter != null)
             {
                 byte[] b_array = new byte[3] { 0, 0, 0 };

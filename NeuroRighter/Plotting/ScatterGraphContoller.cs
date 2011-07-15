@@ -57,7 +57,7 @@ namespace NeuroRighter
 
         }
 
-        internal void updateScatterGraph(RawDataSrv analogDataServer, double requestedHistorySec, double peakVoltage)
+        internal void updateScatterGraph(RawDataSrv analogDataServer, double requestedHistorySec, double peakVoltage, double shift)
         {
      
             // One over samplefreq
@@ -123,7 +123,7 @@ namespace NeuroRighter
                 lastSampleRead = analogData.startAndEndSample[1];
 
                 // Get plot range
-                Range plotYRange = new Range(-peakVoltage, peakVoltage);
+                Range plotYRange = new Range(-peakVoltage + shift, peakVoltage + shift);
                 Range plotXRange = new Range(0, xDat[xDat.Length-1]);
 
                 // Update the scatter plot

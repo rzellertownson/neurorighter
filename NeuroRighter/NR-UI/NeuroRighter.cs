@@ -189,8 +189,11 @@ namespace NeuroRighter
                 spikeDet.SetSpikeDetector();
 
             // Call the recording setup/start functions
-            updateRecSettings();
-            NRAcquisitionSetup();
+            if (!taskRunning)
+            {
+                updateRecSettings();
+                NRAcquisitionSetup();
+            }
             NRStartRecording();
 
         }
@@ -205,6 +208,9 @@ namespace NeuroRighter
                 {
                     try
                     {
+
+                        
+
                         // Modify the UI, so user doesn't try running multiple instances of tasks
                         this.Cursor = Cursors.WaitCursor;
                         comboBox_numChannels.Enabled = false;
@@ -248,7 +254,10 @@ namespace NeuroRighter
                                 filenameBase = originalNameBase + datePrefix;
                             }
 
-                            if (File.Exists(filenameBase + "*"))
+                            // Look for old files with same name
+                            string[] matchFiles = Directory.GetFiles(currentSaveDir, currentSaveFile + "*");
+
+                            if (matchFiles.Length > 0)
                             {
                                 DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
                                     "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
@@ -377,13 +386,7 @@ namespace NeuroRighter
                             // Manually allocate buffer memory
                             spikeTask[i].Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
-                        //if (Properties.Settings.Default.UseSingleChannelPlayback)
-                        //{
-                        //    spikeOutTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                        //    spikeOutTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-                        //    spikeOutTask.Timing.ConfigureSampleClock("", spikeTask[0].Timing.SampleClockRate,
-                        //        SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, spikeBufferLength);
-                        //}
+
 
                         if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         {
@@ -683,7 +686,7 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.useAuxAnalogInput)
                         {
-                            // Remov existing plots
+                            // Remove existing plots
                             for (int i = scatterGraph_AuxAnalogData.Plots.Count-1; i > 0; --i)
                             {
                                 scatterGraph_AuxAnalogData.Plots.RemoveAt(i);
@@ -800,7 +803,6 @@ namespace NeuroRighter
                         SetupFileWriting();
 
                         //Set callbacks for data acq.
-                        taskRunning = true;
                         spikeReader = new List<AnalogMultiChannelReader>(spikeTask.Count);
                         for (int i = 0; i < spikeTask.Count; ++i)
                         {
@@ -877,15 +879,7 @@ namespace NeuroRighter
 
                         this.Cursor = Cursors.Default;
 
-                        // Finally, set up the NRDataSrv object. This is an object that publishes a nice large data history
-                        // for use in closed loop control and other things
-                        if (datSrv != null)
-                            datSrv = null;
 
-                        datSrv = new NRDataSrv(
-                            Properties.Settings.Default.datSrvBufferSizeSec,
-                            checkBox_SALPA.Checked,
-                            checkBox_spikesFilter.Checked);
 
 
                     }
@@ -896,45 +890,37 @@ namespace NeuroRighter
                         MessageBox.Show(exception.Message);
                         reset();
                     }
+
+
+
+                    // Set up the NRDataSrv object. This is an object that publishes a nice large data history
+                    // for use in closed loop control and other things
+                    if (datSrv != null)
+                        datSrv = null;
+
+                    datSrv = new NRDataSrv(
+                        Properties.Settings.Default.datSrvBufferSizeSec,
+                        checkBox_SALPA.Checked,
+                        checkBox_spikesFilter.Checked);
+
+
                     Debugger = new RealTimeDebugger();
                     Debugger.GrabTimer(spikeTask[0]);
 
                     // Send debug output to the user's application data folder
                     Debugger.SetPath(Path.Combine(Properties.Settings.Default.neurorighterAppDataPath,"neurorighter-log.txt"));
+
+
+                    //Tell neuroRighter that the tasks now exist
+                    taskRunning = true;
                 }
                 else
                 {
                     Console.WriteLine("NRAcquisitionSetup was called while a task was running, and therefore setup did not execute.  Perhaps this should have thrown an error");
                 }
             }
-        }
-
-        // Method to set up the output (dig, aux, stim) side of neurorighter
-        // acquisition setup must have been called previously
-        private Task NROutputSetup()
-        {
-            if (stimSrv != null)
-                stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec*STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0],Debugger);
-            stimSrv.Setup();
-            stimSrv.StartAllTasks();
-            return stimSrv.buffLoadTask;
-        }
-        
-        private void NROutputShutdown()
-        {
-            if (stimSrv != null)
-            {
-                stimSrv.StopAllBuffers();
-                stimSrv.KillAllAODOTasks();
-                stimSrv = null;
-                //Debugger.Close();
-            }
-            else
-            {
-                Console.WriteLine("NROutputShutdown called but stimSrv does not exist");
-            }
-            Console.WriteLine("NROutputShutdown complete");
+            Console.WriteLine("NRAcquisitionSetup successfully executed");
+                
         }
 
         // Start all the tasks having to do with recording
@@ -944,6 +930,9 @@ namespace NeuroRighter
             {
                 try
                 {
+
+
+
                     // Take care of buttons
                     buttonStop.Enabled = true;
                     buttonStart.Enabled = false;
@@ -1007,6 +996,34 @@ namespace NeuroRighter
                 }
 
             }
+        }
+
+        // Method to set up the output (dig, aux, stim) side of neurorighter
+        // acquisition setup must have been called previously
+        private Task NROutputSetup()
+        {
+            if (stimSrv != null)
+                stimSrv = null;
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec * STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0], Debugger);
+            stimSrv.Setup();
+            stimSrv.StartAllTasks();
+            return stimSrv.buffLoadTask;
+        }
+
+        private void NROutputShutdown()
+        {
+            if (stimSrv != null)
+            {
+                stimSrv.StopAllBuffers();
+                stimSrv.KillAllAODOTasks();
+                stimSrv = null;
+                //Debugger.Close();
+            }
+            else
+            {
+                Console.WriteLine("NROutputShutdown called but stimSrv does not exist");
+            }
+            Console.WriteLine("NROutputShutdown complete");
         }
 
         // Instantiate the data stream writers within the recordingSettings object

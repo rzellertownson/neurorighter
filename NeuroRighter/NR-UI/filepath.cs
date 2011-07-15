@@ -29,7 +29,11 @@ namespace NeuroRighter
     ///<author>Jon Newman</author>
     sealed internal partial class NeuroRighter
     {
+        // file name and directory for saving
         string filenameOutputs;
+        string currentSaveDir;
+        string currentSaveFile;
+
         private void button_BrowseOutputFile_Click(object sender, EventArgs e)
         {
             // Set dialog's default properties
@@ -44,8 +48,9 @@ namespace NeuroRighter
             
             if (result == DialogResult.OK)
             {
-                tmp = new FileInfo(saveFileDialog_OutputFile.FileName).DirectoryName;
-                Properties.Settings.Default.savedirectory = tmp;
+                currentSaveDir = new FileInfo(saveFileDialog_OutputFile.FileName).DirectoryName;
+                currentSaveFile = new FileInfo(saveFileDialog_OutputFile.FileName).Name;
+                Properties.Settings.Default.savedirectory = currentSaveDir;
                 Properties.Settings.Default.Save();
                 filenameOutputs = saveFileDialog_OutputFile.FileName;
                 textBox_OutputFile.Text = filenameOutputs;

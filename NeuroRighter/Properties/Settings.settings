@@ -87,7 +87,7 @@
       <Value Profile="(Default)">Dev1</Value>
     </Setting>
     <Setting Name="SpikesLowCut" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">500</Value>
+      <Value Profile="(Default)">200</Value>
     </Setting>
     <Setting Name="SpikesHighCut" Type="System.Double" Scope="User">
       <Value Profile="(Default)">5000</Value>

@@ -45,7 +45,7 @@ namespace NeuroRighter.Output
 
 
 
-        protected override void writeEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
+        protected override void  WriteEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             anEventValues = null;
             digEventValues = new List<uint[]>();

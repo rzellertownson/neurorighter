@@ -81,7 +81,7 @@ namespace NeuroRighter.Output
 
 
 
-        override protected void writeEvent(StimulusOutEvent Sout, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues)
+        override protected void WriteEvent(StimulusOutEvent Sout, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             //initialize EventValues
             int stimDuration = Sout.waveform.Length + NUM_SAMPLES_BLANKING * 2;
@@ -129,7 +129,7 @@ namespace NeuroRighter.Output
 
                     
                 }
-                this.writeToBuffer(stimToPass);
+                this.WriteToBuffer(stimToPass);
             
             //  MessageBox.Show("finished Append");
        }

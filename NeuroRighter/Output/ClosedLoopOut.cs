@@ -121,7 +121,7 @@ namespace NeuroRighter.Output
             }
             catch (Exception me)
             {
-                MessageBox.Show("error while running closed loop experiment- experiment might be using depricated methods." + me.Message);
+                MessageBox.Show("***Error while running closed loop experiment.*** \r \r" + me.Message);
             }
         }
 

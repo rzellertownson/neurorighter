@@ -117,7 +117,7 @@ namespace NeuroRighter.Output
 
                 // Append the first stimuli to the stim buffer
                 Console.WriteLine("File2Aux : Only a single load is needed because there are less than " + 2 * numEventPerLoad + " aux signals");
-                auxBuff.writeToBuffer(auxDataChunk); // Append all the stimuli
+                auxBuff.WriteToBuffer(auxDataChunk); // Append all the stimuli
                 numLoadsCompleted = numAuxEvent;
                 lastLoad = true;
                 auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
@@ -128,7 +128,7 @@ namespace NeuroRighter.Output
                 LoadAuxEvent(olauxfile, (int)numEventPerLoad);
 
                 // Append the first stimuli to the stim buffer
-                auxBuff.writeToBuffer(auxDataChunk);//append first N stimuli
+                auxBuff.WriteToBuffer(auxDataChunk);//append first N stimuli
                 numLoadsCompleted++;
                 auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
 
@@ -147,7 +147,7 @@ namespace NeuroRighter.Output
             {
                 //Console.WriteLine("file2aux: loading:" + numEventPerLoad + "more aux events. " + numLoadsCompleted + " have been completed");
                 LoadAuxEvent(olauxfile, (int)numEventPerLoad);
-                auxBuff.writeToBuffer(auxDataChunk); //add N more stimuli
+                auxBuff.WriteToBuffer(auxDataChunk); //add N more stimuli
                 numLoadsCompleted++;
             }
             else
@@ -157,7 +157,7 @@ namespace NeuroRighter.Output
                     // load the last few auxevents
                     //Console.WriteLine("file2aux: last load");
                     LoadAuxEvent(olauxfile, (int)(numAuxEvent - numLoadsCompleted * numEventPerLoad));
-                    auxBuff.writeToBuffer(auxDataChunk); //add N more stimuli
+                    auxBuff.WriteToBuffer(auxDataChunk); //add N more stimuli
                     lastLoad = true;
                 }
             }

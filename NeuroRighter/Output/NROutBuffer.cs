@@ -155,7 +155,7 @@ namespace NeuroRighter.Output
         }
 
         //write this list of NREvents to the buffer.  Double checks to make sure that you haven't attempted to stimulate at some time in the past
-        public void writeToBuffer(List<T> addtobuffer)
+        public void WriteToBuffer(List<T> addtobuffer)
         {
             //error checking
             foreach (T n in addtobuffer)
@@ -219,7 +219,7 @@ namespace NeuroRighter.Output
 
 
         //method implimented in the subclass that specifies how to turn this NREvent into analog and digital streams
-        protected abstract void writeEvent(T stim, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues);
+        protected abstract void WriteEvent(T stim, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues);
 
         //event called by the buffload task
         private void TimerTick(object sender, EventArgs e)
@@ -484,7 +484,7 @@ namespace NeuroRighter.Output
                             nextStim = null;
                         }
                         //turn the new stim into something we can throw at the DAQs
-                        writeEvent(currentStim, ref  anEventValues, ref digEventValues);
+                        WriteEvent(currentStim, ref  anEventValues, ref digEventValues);
 
 
                         if (outerbuffer.Count == (queueThreshold - 1))

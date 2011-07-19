@@ -11,13 +11,30 @@ using NeuroRighter.dbg;
 
 namespace NeuroRighter.StimSrv
 {
+    /// <summary>
+    /// NeuroRighter's stimulus server. Used in open and closed loop protocols for control over all output types.
+    /// </summary>
     public class NRStimSrv
     {
-        //stim event buffers- these are what the user interfaces with directly
-
+        /// <summary>
+        /// Aux analog output buffer.
+        /// </summary>
         public AuxBuffer AuxOut;
+
+        /// <summary>
+        /// Aux digital output buffer.
+        /// </summary>
         public DigitalBuffer DigitalOut;
+
+        /// <summary>
+        /// Electical stimulus (for use with NR's stimulator) output buffer.
+        /// </summary>
         public StimBuffer StimOut;
+
+        /// <summary>
+        /// The DAC sampling frequency in Hz for all forms of output.
+        /// </summary>
+        public double sampleFrequencyHz;
         
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
@@ -31,7 +48,14 @@ namespace NeuroRighter.StimSrv
         private int INNERBUFFSIZE;
         private int STIM_SAMPLING_FREQ;
         private int buffloadcount;
-
+        
+        /// <summary>
+        /// Neurorighter's stimulus/generic output server. Used in open-loop and closed-loop experiments where just-in-time buffering of output signals is required.
+        /// </summary>
+        /// <param name="INNERBUFFSIZE"> The size of one half of the double output buffer in samples</param>
+        /// <param name="STIM_SAMPLING_FREQ">The DAC sampling frequency in Hz for all forms of output</param>
+        /// <param name="masterTask">The NI Task to which all of the output clocks are synchronized to</param>
+        /// <param name="debugger"> NR's real-time debugger</param>
         public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger)
         {
             this.masterTask = masterTask;
@@ -45,6 +69,7 @@ namespace NeuroRighter.StimSrv
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
             this.debugger = debugger;
             buffloadcount = 0;
+            this.sampleFrequencyHz = Convert.ToDouble(STIM_SAMPLING_FREQ);
             //basically, this needs to run, or at least start, the code for all the 'File2X' classes.
         }
 
@@ -187,7 +212,7 @@ namespace NeuroRighter.StimSrv
             stimTaskMaker.VerifyTasks();
         }
 
-       private void ConfigureAODO(bool digProvided, Task masterTask)
+        private void ConfigureAODO(bool digProvided, Task masterTask)
         {
             //configure stim
             // Refresh DAQ tasks as they are needed for file2stim

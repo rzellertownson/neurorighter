@@ -25,21 +25,59 @@ namespace NeuroRighter.DatSrv
 {
     public class NRDataSrv
     {
-        // Raw data buffers
+        /// <summary>
+        /// Raw electrode persistant buffer.
+        /// </summary>
         public RawDataSrv rawElectrodeSrv;
+
+        /// <summary>
+        /// SALPA filtered electrode data persistant buffer.
+        /// </summary>
         public RawDataSrv salpaElectrodeSrv;
+
+        /// <summary>
+        /// Butterworth filtered electrode data persistant buffer.
+        /// </summary>
         public RawDataSrv filteredElectrodeSrv;
+
+        /// <summary>
+        /// LFP persistant buffer.
+        /// </summary>
         public RawDataSrv lfpSrv;
+
+        /// <summary>
+        /// EEG persistant buffer.
+        /// </summary>
         public RawDataSrv eegSrv;
+
+        /// <summary>
+        /// Aux analog persistant buffer.
+        /// </summary>
         public RawDataSrv auxAnalogSrv;
 
-        // Event Data buffers
+        /// <summary>
+        /// Spike snippet persistant buffer.
+        /// </summary>
         public EventDataSrv<SpikeEvent> spikeSrv;
+
+        /// <summary>
+        /// Digital input persistant buffer.
+        /// </summary>
         public EventDataSrv<DigitalPortEvent> auxDigitalSrv;
+
+        /// <summary>
+        /// Stimulus server.
+        /// </summary>
         public EventDataSrv<ElectricalStimEvent> stimSrv;
 
-        // DAQ polling period
-        public int ADCPollingPeriodSec;
+        /// <summary>
+        /// The ADC polling periods in seconds.
+        /// </summary>
+        public double ADCPollingPeriodSec;
+
+        /// <summary>
+        /// The ADC polling periods in samples.
+        /// </summary>
         public int ADCPollingPeriodSamples;
 
         /// <summary>
@@ -51,7 +89,7 @@ namespace NeuroRighter.DatSrv
         public NRDataSrv(double bufferSizeSeconds, bool salpaAccess, bool spikeFiltAccess)
         {
             // Set the polling periods
-            ADCPollingPeriodSec = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec);
+            ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             ADCPollingPeriodSamples = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
 
             // Figure out what servers we need to start up and start them with the correct parameters

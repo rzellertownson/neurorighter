@@ -46,7 +46,7 @@ namespace NeuroRighter.Output
         }
 
         //with this version only one channel can have a non-zero voltage at a time-  eventually might want to switch to a version where keep voltages from previous
-        protected override void writeEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
+        protected override void WriteEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             // Increment the auxilary state when an event is encountered
             anEventValues = new List<double[,]>();

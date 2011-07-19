@@ -229,10 +229,10 @@ namespace NeuroRighter.DatSrv
                     }
 
                     // Instantiate the returnBuffer
-                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, (int)(absStop - absStart), numTasks);
+                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, (int)(absStop - absStart + 1), numTasks);
                     returnBuffer.startAndEndSample = new ulong[] {absStart,absStop};
 
-                    for (ulong j = absStart; j < absStop; ++j)
+                    for (ulong j = absStart; j < absStop + 1; ++j)
                     {
                         int circSample = dataBuffer.FindSampleIndex(j);
                         for (int i = 0; i < dataBuffer.numChannels; ++i)

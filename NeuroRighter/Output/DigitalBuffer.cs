@@ -20,14 +20,13 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     //internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
+    /// <summary>
+    /// NeuroRighter's standard output buffer for digital signals.
+    /// </summary>
     public class DigitalBuffer : NROutBuffer<DigitalOutEvent>
     {
         internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
-
-        // Intneral Properties
-       
-       
 
         internal void Setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
         {
@@ -43,30 +42,13 @@ namespace NeuroRighter.Output
 
         }
 
-
-
         protected override void  WriteEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             anEventValues = null;
             digEventValues = new List<uint[]>();
             digEventValues.Add(new uint[1]);
             digEventValues.ElementAt(0)[0] = stim.Byte;
-            //Console.Write(stim.Byte.ToString() + " ");
         }
-
-       
-
-       
-
-       
-
-       
-
-        
-        
-        
-
-       
     }
 
 }

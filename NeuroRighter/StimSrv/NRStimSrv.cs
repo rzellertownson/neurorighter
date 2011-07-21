@@ -247,9 +247,5 @@ namespace NeuroRighter.StimSrv
             auxTaskMaker.VerifyTasks();
         }
 
-       
-
-
-
     }
 }

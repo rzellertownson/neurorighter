@@ -1,0 +1,16 @@
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.Properties.Resources.resources
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.UI.ControlPanel.resources
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.csproj.GenerateResource.Cache
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.dll.licenses
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\simoc.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\simoc.pdb
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\NeuroRighter.exe
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\Mowog.PersistWindowState.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\AxInterop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\Interop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\NeuroRighter.pdb
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\bin\Release\NeuroRighter.xml
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\simoc\obj\Release\simoc.pdb

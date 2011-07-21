@@ -111,3 +111,4 @@ C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\csmatio
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\zlib.net.dll
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\csmatio.dll

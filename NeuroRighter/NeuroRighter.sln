@@ -10,8 +10,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csmatio", "..\csmatio\src\c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "Content\Content.contentproj", "{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProtocols", "..\TestProtocols\TestProtocols.csproj", "{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simoc", "..\simoc\simoc.csproj", "{753CB1C0-05E6-4AAF-B1D5-7692DD1E9960}"
 EndProject
 Global
@@ -75,20 +73,6 @@ Global
 		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Release|x86.Build.0 = Release|Any CPU
 		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{C2152F36-93F0-4D91-807A-DE7C44AB6AF1}.Release|Zune.ActiveCfg = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Debug|Zune.ActiveCfg = Debug|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|x86.ActiveCfg = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Xbox 360.ActiveCfg = Release|Any CPU
-		{C089ABF9-2C56-4D02-915A-CBF456E5F1D7}.Release|Zune.ActiveCfg = Release|Any CPU
 		{753CB1C0-05E6-4AAF-B1D5-7692DD1E9960}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{753CB1C0-05E6-4AAF-B1D5-7692DD1E9960}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{753CB1C0-05E6-4AAF-B1D5-7692DD1E9960}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

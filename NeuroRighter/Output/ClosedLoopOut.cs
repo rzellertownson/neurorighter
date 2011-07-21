@@ -20,10 +20,9 @@ namespace NeuroRighter.Output
         private NRStimSrv StimSrv;
         private RealTimeDebugger Debugger;
 
-            // waveform that gets ripped off NR UI
+        // waveform that gets ripped off NR UI
         bool useManStimWave;
         internal double[] guiWave;
-
 
         //private variables
         private BackgroundWorker bw;
@@ -32,9 +31,6 @@ namespace NeuroRighter.Output
         private Boolean bw_returned = false;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private Task buffLoadTask;
-        
-
-        
 
         //Event Handling
         internal delegate void ProgressChangedHandler(object sender, int percentage);
@@ -89,9 +85,6 @@ namespace NeuroRighter.Output
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (AlertAllFinished != null) AlertAllFinished(this);
-
-            // buffer.stop();
-            // pnpcl.close();
         }
 
         void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -99,8 +92,6 @@ namespace NeuroRighter.Output
             double[] state = (double[])e.UserState;
             if (AlertProgChanged != null) AlertProgChanged(this, e.ProgressPercentage);
         }
-
-
 
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
@@ -116,8 +107,6 @@ namespace NeuroRighter.Output
                 CLE.Start();//set the 'running' bool to true;
                 CLE.Run();//run the user code
                 bw_returned = true;
-                //simpleExample();
-                //spikeCounter();
             }
             catch (Exception me)
             {

@@ -9,6 +9,7 @@ using NeuroRighter.StimSrv;
 using NeuroRighter.DatSrv;
 using NationalInstruments.DAQmx;
 using NeuroRighter.dbg;
+using NeuroRighter;
 
 namespace NeuroRighter.Output
 {
@@ -31,6 +32,8 @@ namespace NeuroRighter.Output
         private Boolean bw_returned = false;
         private AutoResetEvent _blockExecution = new AutoResetEvent(false);
         private Task buffLoadTask;
+        private string NRFilePath;
+        private bool NRRecording;
 
         //Event Handling
         internal delegate void ProgressChangedHandler(object sender, int percentage);
@@ -39,7 +42,7 @@ namespace NeuroRighter.Output
         internal event AllFinishedHandler AlertAllFinished;
 
 
-        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger)
+        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording)
         {
             this.CLE = CLE;
             this.outputSampFreq = fs;
@@ -48,11 +51,13 @@ namespace NeuroRighter.Output
             this.useManStimWave = false;
             this.buffLoadTask = buffLoadTask;
             this.Debugger = Debugger;
+            this.NRFilePath = NRFilePath;
+            this.NRRecording = NRRecording;
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.BuffLoadEvent);
         }
 
-        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, double[] standardWave)
-            : this(CLE, fs, DatSrv, StimSrv, buffLoadTask,Debugger)
+        internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, double[] standardWave)
+            : this(CLE, fs, DatSrv, StimSrv, buffLoadTask,Debugger,NRFilePath, NRRecording)
         {
             this.guiWave = standardWave;
             this.useManStimWave = true;
@@ -100,7 +105,7 @@ namespace NeuroRighter.Output
             {
                 //pnpcl = new pnpClosedLoop();
                 bw_returned =false;
-                CLE.Grab(DatSrv, StimSrv,Debugger, outputSampFreq);
+                CLE.Grab(DatSrv, StimSrv, Debugger, outputSampFreq, NRFilePath, NRRecording);
                 
                 if (useManStimWave)
                     CLE.GrabWave(guiWave);

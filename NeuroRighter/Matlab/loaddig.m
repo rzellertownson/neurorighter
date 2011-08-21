@@ -1,8 +1,8 @@
 function dig = loaddig(fid)
-%LOADSTIM reads *.stim files created by the NeuroRighter software.
+%LOADDIG reads *.dig files created by the NeuroRighter software.
 %    y = LOADDIG(filename) takes as input the filename of a NeuroRighter
 %    DIG file and returns a struct containing:
-%         time          [1 N] vector of channels on which a stim pulse occured
+%         time          [1 N] vector of times of a digital event
 %                             (in seconds)
 %         state         [1 N] vector of 32-bit integers representing the 
 %                             port state at the corresponding time

@@ -189,12 +189,17 @@ namespace NeuroRighter
                 spikeDet.SetSpikeDetector();
 
             // Call the recording setup/start functions
+            recordingCancelled = false;
             if (!taskRunning)
             {
                 updateRecSettings();
                 NRAcquisitionSetup();
             }
-            NRStartRecording();
+
+            if (!recordingCancelled)
+            {
+                NRStartRecording();
+            }
 
         }
 
@@ -208,9 +213,6 @@ namespace NeuroRighter
                 {
                     try
                     {
-
-                        
-
                         // Modify the UI, so user doesn't try running multiple instances of tasks
                         this.Cursor = Cursors.WaitCursor;
                         comboBox_numChannels.Enabled = false;
@@ -265,7 +267,11 @@ namespace NeuroRighter
                                 if (dr == DialogResult.No)
                                     button_BrowseOutputFile_Click(null, null); //call file selection routine
                                 else if (dr == DialogResult.Cancel)
+                                {
+                                    recordingCancelled = true;
+                                    this.Cursor = Cursors.Default;
                                     return;
+                                }
                             }
 
                             // Set file base name + number of channels

@@ -830,11 +830,11 @@ namespace NeuroRighter
             if (checkBox_useManStimWaveformCL.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger, stimWaveform);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger,filenameBase,switch_record.Value, stimWaveform);
             }
             else
             {
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value);
             }
 
 

@@ -20,13 +20,17 @@ namespace simoc.targetfunc
         protected double standardDev;
         protected double frequency;
         protected int daqPollingPeriodSec;
+        protected ulong numTargetSamplesGenerated;
+        protected double DACPollingPeriodSec;
 
-        public TargetFunc(ControlPanel cp)
+        public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated)
         {
             // Grab parameters off the form
             this.meanValue = cp.numericEdit_TargetMean.Value;
             this.standardDev = cp.numericEdit_TargetSigma.Value;
             this.frequency = cp.numericEdit_TargetFreq.Value;
+            this.numTargetSamplesGenerated = numTargetSamplesGenerated;
+            this.DACPollingPeriodSec = DACPollingPeriodSec;
         }
 
         internal virtual void GetTargetValue(ref double currentTargetValue)
@@ -34,5 +38,6 @@ namespace simoc.targetfunc
             // Use this to send out the current target value that you want your
             // observation to match
         }
+
     }
 }

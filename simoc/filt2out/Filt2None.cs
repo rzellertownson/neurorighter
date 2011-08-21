@@ -5,6 +5,7 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.StimSrv;
 using simoc.UI;
+using simoc.persistantstate;
 
 namespace simoc.filt2out
 {
@@ -20,16 +21,17 @@ namespace simoc.filt2out
             : base(ref stimSrv, cp)
         {
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * stimPulseWidthSec);
+            numberOutStreams = 0;
 
-            cp.label_ContC0.Text = "null";
-            cp.label_ContC1.Text = "null";
-            cp.label_ContC2.Text = "null";
+            //cp.label_ContC0.Text = "null";
+            //cp.label_ContC1.Text = "null";
+            //cp.label_ContC2.Text = "null";
 
         }
 
-        internal override void SendFeedBack()
+        internal override void SendFeedBack(PersistentSimocVar simocVariableStorage)
         {
-            base.SendFeedBack();
+            base.SendFeedBack(simocVariableStorage);
 
             // Do nothing
         }

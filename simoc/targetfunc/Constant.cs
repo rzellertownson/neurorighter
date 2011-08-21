@@ -16,8 +16,8 @@ namespace simoc.targetfunc
     class Constant : TargetFunc
     {
 
-        public Constant(ControlPanel cp)
-            : base(cp)
+        public Constant(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated)
+            : base(cp, DACPollingPeriodSec,numTargetSamplesGenerated)
         {
 
         }
@@ -26,8 +26,5 @@ namespace simoc.targetfunc
         {
             currentTargetValue = meanValue;
         }
-
-
-
     }
 }

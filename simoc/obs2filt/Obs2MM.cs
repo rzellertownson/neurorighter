@@ -13,8 +13,8 @@ namespace simoc.obs2filt
     /// </summary>
     class Obs2MM : Obs2Filt
     {
-        public Obs2MM(ControlPanel cp, NRDataSrv DatSrv)
-            : base(cp, DatSrv)
+        public Obs2MM(ControlPanel cp, NRDataSrv DatSrv,bool firstLoop)
+            : base(cp, DatSrv, firstLoop)
         {
 
         }

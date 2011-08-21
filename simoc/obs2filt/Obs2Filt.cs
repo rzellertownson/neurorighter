@@ -5,6 +5,7 @@ using System.Text;
 using simoc.UI;
 using simoc.srv;
 using NeuroRighter.DatSrv;
+using simoc;
 
 namespace simoc.obs2filt
 {
@@ -20,11 +21,12 @@ namespace simoc.obs2filt
         protected double c0;
         protected double c1;
         protected double c2;
-        protected double currentFilteredValue = 0;
+        internal double currentFilteredValue = 0;
         protected double daqPollingPeriodSeconds;
         protected RawSimocBuffer obsFiltBuff;
+        protected bool firstFilt;
 
-        public Obs2Filt(ControlPanel cp, NRDataSrv DatSrv)
+        public Obs2Filt(ControlPanel cp, NRDataSrv DatSrv, bool firstLoop)
         {
             // Grab parameters off the form
             this.daqPollingPeriodSeconds = DatSrv.ADCPollingPeriodSec;
@@ -34,11 +36,12 @@ namespace simoc.obs2filt
             this.c2 = cp.numericEdit_FiltC2.Value;
             this.filterWidthSec = cp.numericEdit_FiltWidthSec.Value;
             this.filterWidth = (int)(filterWidthSec/daqPollingPeriodSeconds);
+            this.firstFilt = firstLoop;
         }
 
         internal virtual void Filter()
         {
-
+            
         }
 
         protected internal void GetObsBuffer(SIMOCRawSrv obsSrv)

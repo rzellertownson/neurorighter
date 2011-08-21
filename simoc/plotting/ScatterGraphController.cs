@@ -39,7 +39,6 @@ namespace simoc.plotting
         private double downSampleFactor;
         private bool zeroBase;
         private double minUpdateTimeSec;
-        private bool clearAllData;
 
         /// <summary>
         /// Generic controller for NI scatter graphs using a RawDataSrv object as an input.
@@ -54,7 +53,6 @@ namespace simoc.plotting
                      // Plot options
                      analogScatterGraph.Plots[i].CanScaleYAxis = false;
                      analogScatterGraph.Plots[i].CanScaleXAxis = false;
-                     analogScatterGraph.Plots[i].AntiAliased = true;
 
                      // Set capacity
                      analogScatterGraph.Plots[i].HistoryCapacity = maxNumSampToPlot;
@@ -76,9 +74,8 @@ namespace simoc.plotting
             if ((int)historySamples < maxNumSampToPlot)
             {
                 // account for when the user wants to look at less points than 500
-                maxNumSampToPlot = (int)Math.Ceiling(requestedHistorySec * dataSrv.sampleFrequencyHz);
+                maxNumSampToPlot = (int)historySamples;
                 downSampleFactor = 1;
-                clearAllData = true;
             }
             else
             {
@@ -88,8 +85,6 @@ namespace simoc.plotting
                 downSampleFactor = ((double)historySamples / (double)maxNumSampToPlot);
                 if (downSampleFactor < 1)
                     downSampleFactor = 1;
-
-                clearAllData = false;
             }
      
             // Get the sampling period for the data coming in
@@ -197,10 +192,8 @@ namespace simoc.plotting
 
                     }
 
-                    // set plot range
-                    if (clearAllData)
-                        analogScatterGraph.Plots[i].ClearData();
-                    
+
+                    analogScatterGraph.Plots[i].ClearData();
                     analogScatterGraph.Plots[i].YAxis.Range = plotYRange;
                     analogScatterGraph.Plots[i].XAxis.Range = plotXRange;
                     analogScatterGraph.Plots[i].PlotXYAppend(xDat, yDat);

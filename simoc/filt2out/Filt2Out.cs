@@ -7,6 +7,7 @@ using NeuroRighter.Output;
 using NeuroRighter.StimSrv;
 using simoc.srv;
 using simoc.UI;
+using simoc.persistantstate;
 
 namespace simoc.filt2out
 {
@@ -18,12 +19,15 @@ namespace simoc.filt2out
     {
        
         protected NRStimSrv stimSrv;
-        protected double currentError;
+        protected double currentErrorInt;
         protected ulong loadOffset;
         protected double c0;
         protected double c1;
         protected double c2;
         protected double hardwareSampFreqHz;
+        internal int numberOutStreams = 1;
+        internal double[] currentFeedbackSignals;
+        protected ulong nextAvailableSample;
 
         public Filt2Out(ref NRStimSrv stimSrv, ControlPanel cp)
         {
@@ -33,29 +37,18 @@ namespace simoc.filt2out
             this.c1 = cp.numericEdit_ContC1.Value;
             this.c2 = cp.numericEdit_ContC2.Value;
             this.hardwareSampFreqHz = stimSrv.sampleFrequencyHz;
-
         }
 
-        internal virtual void SendFeedBack()
+
+        internal virtual void SendFeedBack(PersistentSimocVar simocVariableStorage)
         {
+            // What buffer load are we currently processing?
+            ulong currentLoad = stimSrv.DigitalOut.GetNumberBuffLoadsCompleted() + 1;
+            nextAvailableSample = currentLoad * (ulong)stimSrv.GetBuffSize();
 
         }
-        internal virtual void SendFeedBack(int chanNo)
-        {
- 
-        }
-        internal virtual void SendFeedBack(int[] chanNos)
-        {
 
-        }
-        internal virtual void SendFeedBack(int chanNoDig, int chanNoAux)
-        {
-
-        }
-        internal virtual void SendFeedBack(int[] chanNosDig, int[] chanNosAux)
-        {
-
-        }
+        internal virtual void CalculateError(ref double currentError, double currentTarget, double currentFilt){}
 
         protected double GetTauSec(double tauMultiplesOfBufferPeriod)
         {
@@ -67,27 +60,19 @@ namespace simoc.filt2out
             return tauSec * ((double)stimSrv.sampleFrequencyHz/(double)stimSrv.GetBuffSize());
         }
 
-        protected internal void CalculateError(SIMOCRawSrv filtSrv)
-        {
-            // Get the error signal
-            ulong[] filterSrvTR = filtSrv.EstimateAvailableTimeRange();
-            RawSimocBuffer currentFiltSample = filtSrv.ReadFromBuffer(filterSrvTR[1], filterSrvTR[1]);
-            currentError = currentFiltSample.rawMultiChannelBuffer[2][0];
-        }
-
         protected void SendEStimOutput(List<StimulusOutEvent> stimOutBuffer)
         {
             if (stimOutBuffer.Count > 0)
                 stimSrv.StimOut.WriteToBuffer(stimOutBuffer);
         }
 
-        protected void SendAuxAnalogOuput(List<AuxOutEvent> auxOutBuffer)
+        protected void SendAuxAnalogOutput(List<AuxOutEvent> auxOutBuffer)
         {
             if (auxOutBuffer.Count > 0)
                 stimSrv.AuxOut.WriteToBuffer(auxOutBuffer);
         }
 
-        protected void SendAuxDigitalOuput(List<DigitalOutEvent> digOutBuffer)
+        protected void SendAuxDigitalOutput(List<DigitalOutEvent> digOutBuffer)
         {
             if (digOutBuffer.Count > 0)
                 stimSrv.DigitalOut.WriteToBuffer(digOutBuffer);

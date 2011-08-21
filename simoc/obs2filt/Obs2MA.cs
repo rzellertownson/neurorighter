@@ -14,8 +14,8 @@ namespace simoc.obs2filt
         /// <summary>
         /// Moving average filter of observation stream. Jon Newman.
         /// </summary>
-        public Obs2MA(ControlPanel cp, NRDataSrv DatSrv)
-            : base(cp, DatSrv)
+        public Obs2MA(ControlPanel cp, NRDataSrv DatSrv, bool firstLoop)
+            : base(cp, DatSrv, firstLoop)
         {
 
         }

@@ -35,6 +35,16 @@ namespace NeuroRighter.StimSrv
         /// The DAC sampling frequency in Hz for all forms of output.
         /// </summary>
         public double sampleFrequencyHz;
+
+        /// <summary>
+        /// The DAC polling periods in seconds.
+        /// </summary>
+        public double DACPollingPeriodSec;
+
+        /// <summary>
+        /// The DAC polling periods in samples.
+        /// </summary>
+        public int DACPollingPeriodSamples;
         
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
@@ -70,7 +80,8 @@ namespace NeuroRighter.StimSrv
             this.debugger = debugger;
             buffloadcount = 0;
             this.sampleFrequencyHz = Convert.ToDouble(STIM_SAMPLING_FREQ);
-            //basically, this needs to run, or at least start, the code for all the 'File2X' classes.
+            this.DACPollingPeriodSec = Properties.Settings.Default.DACPollingPeriodSec;
+            this.DACPollingPeriodSamples = Convert.ToInt32(DACPollingPeriodSec * STIM_SAMPLING_FREQ);
         }
 
         //this method writes the first 2 buffer loads to the daq in preparation

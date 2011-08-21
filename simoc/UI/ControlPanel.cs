@@ -9,12 +9,17 @@ using System.Windows.Forms;
 using NationalInstruments.UI;
 using simoc.plotting;
 using simoc.srv;
+using simoc.filewriting;
+using NeuroRighter.Output;
+using NeuroRighter.DataTypes;
+using NeuroRighter;
+using System.IO;
 
 namespace simoc.UI
 {
     public partial class ControlPanel : Form
     {
-
+        
         // To stop the experiment
         internal bool stopButtonPressed = false;
         internal bool startButtonPressed = false;
@@ -135,6 +140,20 @@ namespace simoc.UI
             }
         }
 
+        internal void CloseSIMOC()
+        {
+            if (this.InvokeRequired)
+            {
+                GetTextCallback d = new GetTextCallback(CloseSIMOC);
+                this.Invoke(d);
+            }
+            else
+            {
+                this.Close();
+                this.Dispose();
+            }
+        }
+
         private void SetDefaultProperties()
         {
 
@@ -172,6 +191,11 @@ namespace simoc.UI
         private void checkBox_FreezePlots_CheckedChanged(object sender, EventArgs e)
         {
             plotsFrozen = checkBox_FreezePlots.Checked;
+        }
+
+        private void pictureBox5_Click(object sender, EventArgs e)
+        {
+            checkBox_FreezePlots_CheckedChanged(null, null);
         }
 
     }

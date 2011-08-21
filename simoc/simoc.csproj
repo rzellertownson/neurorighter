@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NationalInstruments.Analysis.Enterprise, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
@@ -56,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="filt2out\Filt2Out.cs" />
-    <Compile Include="simoc.cs" />
+    <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\ControlPanel.cs">
@@ -83,26 +84,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="extension-methods\ExentensionMethods.cs" />
-    <Compile Include="filt2out\Filt2A0and1_Prop_AmpOf_C0MSec_Pulses_At_C1Hz.cs" />
+    <Compile Include="file-writing\FileWriter.cs" />
     <Compile Include="filt2out\Filt2None.cs" />
-    <Compile Include="filt2out\Filt2P0and1_Prop_FreqOf1MSecPulse.cs" />
-    <Compile Include="filt2out\Filt2P0_Prop_FreqOf1MSecPulse.cs" />
+    <Compile Include="filt2out\Filt2PropFreqFB.cs" />
+    <Compile Include="filt2out\Filt2PropPowerFB.cs" />
+    <Compile Include="obs2filt\Obs2EMA.cs" />
     <Compile Include="obs2filt\Obs2Filt.cs" />
     <Compile Include="obs2filt\Obs2MA.cs" />
     <Compile Include="obs2filt\Obs2MM.cs" />
     <Compile Include="internal-servers\SIMOCRawSrv.cs" />
     <Compile Include="internal-servers\RawSimocBuffer.cs" />
     <Compile Include="obs2filt\Obs2Obs.cs" />
+    <Compile Include="persistant-state\PersistentSimocVar.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Simoc_AuxMethods.cs" />
     <Compile Include="spk2obs\Spk2ASDR.cs" />
     <Compile Include="spk2obs\Spk2CSDR.cs" />
     <Compile Include="spk2obs\Spk2Obs.cs" />
     <Compile Include="targetfunc\Constant.cs" />
+    <Compile Include="targetfunc\SineWave.cs" />
     <Compile Include="targetfunc\TargetFunc.cs" />
+    <Compile Include="file-writing\FileSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

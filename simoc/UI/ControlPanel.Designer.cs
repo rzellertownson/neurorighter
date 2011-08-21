@@ -57,9 +57,6 @@
             this.label_FreeParameter1 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.comboBox_ObsAlg = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox_ObservationPlot = new System.Windows.Forms.GroupBox();
@@ -101,9 +98,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC0)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltWidthSec)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.groupBox_ObservationPlot.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scatterGraph_Obs)).BeginInit();
@@ -121,7 +115,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.BackColor = System.Drawing.Color.OliveDrab;
+            this.groupBox4.BackColor = System.Drawing.Color.Fuchsia;
             this.groupBox4.Controls.Add(this.numericEdit_TargetSigma);
             this.groupBox4.Controls.Add(this.label5);
             this.groupBox4.Controls.Add(this.numericEdit_TargetFreq);
@@ -208,7 +202,8 @@
             // 
             this.comboBox_Target.FormattingEnabled = true;
             this.comboBox_Target.Items.AddRange(new object[] {
-            "Constant"});
+            "Constant",
+            "Sine Wave"});
             this.comboBox_Target.Location = new System.Drawing.Point(92, 28);
             this.comboBox_Target.Name = "comboBox_Target";
             this.comboBox_Target.Size = new System.Drawing.Size(164, 21);
@@ -220,6 +215,7 @@
             this.comboBox_FiltAlg.Items.AddRange(new object[] {
             "None",
             "Moving Average",
+            "Exponential Moving Average",
             "Moving Median"});
             this.comboBox_FiltAlg.Location = new System.Drawing.Point(98, 28);
             this.comboBox_FiltAlg.Name = "comboBox_FiltAlg";
@@ -228,7 +224,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.BackColor = System.Drawing.Color.YellowGreen;
+            this.groupBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.groupBox2.Controls.Add(this.groupBox4);
             this.groupBox2.Controls.Add(this.groupBox6);
             this.groupBox2.Controls.Add(this.groupBox5);
@@ -302,7 +298,7 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.BackColor = System.Drawing.Color.GreenYellow;
+            this.groupBox5.BackColor = System.Drawing.Color.Fuchsia;
             this.groupBox5.Controls.Add(this.numericEdit_FiltC2);
             this.groupBox5.Controls.Add(this.numericEdit_FiltC0);
             this.groupBox5.Controls.Add(this.numericEdit_FiltWidthSec);
@@ -403,36 +399,6 @@
             this.label9.Size = new System.Drawing.Size(56, 13);
             this.label9.TabIndex = 3;
             this.label9.Text = "Filter Type";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(610, 275);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(68, 226);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 4;
-            this.pictureBox1.TabStop = false;
-            // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(1018, 771);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(226, 72);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox2.TabIndex = 5;
-            this.pictureBox2.TabStop = false;
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
-            this.pictureBox3.Location = new System.Drawing.Point(28, 771);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(284, 78);
-            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox3.TabIndex = 6;
-            this.pictureBox3.TabStop = false;
             // 
             // comboBox_ObsAlg
             // 
@@ -553,7 +519,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.groupBox1.Controls.Add(this.slide_PlotRange);
             this.groupBox1.Controls.Add(this.button_StartSIMOC);
             this.groupBox1.Controls.Add(this.button_StopSIMOC);
@@ -577,9 +543,9 @@
             this.button_StartSIMOC.BackColor = System.Drawing.Color.Green;
             this.button_StartSIMOC.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_StartSIMOC.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button_StartSIMOC.Location = new System.Drawing.Point(16, 52);
+            this.button_StartSIMOC.Location = new System.Drawing.Point(41, 68);
             this.button_StartSIMOC.Name = "button_StartSIMOC";
-            this.button_StartSIMOC.Size = new System.Drawing.Size(120, 57);
+            this.button_StartSIMOC.Size = new System.Drawing.Size(85, 38);
             this.button_StartSIMOC.TabIndex = 22;
             this.button_StartSIMOC.Text = "Start";
             this.button_StartSIMOC.UseVisualStyleBackColor = false;
@@ -590,9 +556,9 @@
             this.button_StopSIMOC.BackColor = System.Drawing.Color.Red;
             this.button_StopSIMOC.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_StopSIMOC.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button_StopSIMOC.Location = new System.Drawing.Point(16, 122);
+            this.button_StopSIMOC.Location = new System.Drawing.Point(41, 116);
             this.button_StopSIMOC.Name = "button_StopSIMOC";
-            this.button_StopSIMOC.Size = new System.Drawing.Size(120, 57);
+            this.button_StopSIMOC.Size = new System.Drawing.Size(85, 39);
             this.button_StopSIMOC.TabIndex = 21;
             this.button_StopSIMOC.Text = "Stop";
             this.button_StopSIMOC.UseVisualStyleBackColor = false;
@@ -608,6 +574,7 @@
             this.checkBox_FreezePlots.TabIndex = 18;
             this.checkBox_FreezePlots.Text = "Freeze Plots";
             this.checkBox_FreezePlots.UseVisualStyleBackColor = true;
+            this.checkBox_FreezePlots.Visible = false;
             this.checkBox_FreezePlots.CheckedChanged += new System.EventHandler(this.checkBox_FreezePlots_CheckedChanged);
             // 
             // pictureBox5
@@ -615,10 +582,11 @@
             this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
             this.pictureBox5.Location = new System.Drawing.Point(480, 109);
             this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(106, 36);
+            this.pictureBox5.Size = new System.Drawing.Size(106, 70);
             this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox5.TabIndex = 19;
             this.pictureBox5.TabStop = false;
+            this.pictureBox5.Click += new System.EventHandler(this.pictureBox5_Click);
             // 
             // numericEdit_ObsBuffHistorySec
             // 
@@ -642,7 +610,7 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.BackColor = System.Drawing.Color.SkyBlue;
+            this.groupBox7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.groupBox7.Controls.Add(this.numericEdit_ContC1);
             this.groupBox7.Controls.Add(this.numericEdit_ContC2);
             this.groupBox7.Controls.Add(this.numericEdit_ContC0);
@@ -651,7 +619,7 @@
             this.groupBox7.Controls.Add(this.label_ContC1);
             this.groupBox7.Controls.Add(this.label_ContC0);
             this.groupBox7.Controls.Add(this.comboBox_FBAlg);
-            this.groupBox7.Location = new System.Drawing.Point(341, 765);
+            this.groupBox7.Location = new System.Drawing.Point(344, 765);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(632, 87);
             this.groupBox7.TabIndex = 3;
@@ -660,29 +628,29 @@
             // 
             // numericEdit_ContC1
             // 
-            this.numericEdit_ContC1.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(2);
+            this.numericEdit_ContC1.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(3);
             this.numericEdit_ContC1.Location = new System.Drawing.Point(465, 30);
             this.numericEdit_ContC1.Name = "numericEdit_ContC1";
             this.numericEdit_ContC1.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC1.Size = new System.Drawing.Size(50, 20);
+            this.numericEdit_ContC1.Size = new System.Drawing.Size(62, 20);
             this.numericEdit_ContC1.TabIndex = 27;
             // 
             // numericEdit_ContC2
             // 
-            this.numericEdit_ContC2.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(2);
+            this.numericEdit_ContC2.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(3);
             this.numericEdit_ContC2.Location = new System.Drawing.Point(569, 30);
             this.numericEdit_ContC2.Name = "numericEdit_ContC2";
             this.numericEdit_ContC2.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC2.Size = new System.Drawing.Size(50, 20);
+            this.numericEdit_ContC2.Size = new System.Drawing.Size(57, 20);
             this.numericEdit_ContC2.TabIndex = 26;
             // 
             // numericEdit_ContC0
             // 
-            this.numericEdit_ContC0.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(2);
+            this.numericEdit_ContC0.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(3);
             this.numericEdit_ContC0.Location = new System.Drawing.Point(361, 30);
             this.numericEdit_ContC0.Name = "numericEdit_ContC0";
             this.numericEdit_ContC0.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC0.Size = new System.Drawing.Size(50, 20);
+            this.numericEdit_ContC0.Size = new System.Drawing.Size(58, 20);
             this.numericEdit_ContC0.TabIndex = 25;
             // 
             // label15
@@ -727,9 +695,8 @@
             this.comboBox_FBAlg.FormattingEnabled = true;
             this.comboBox_FBAlg.Items.AddRange(new object[] {
             "None",
-            "Filt2P0_Prop_FreqOf1MSecPulse",
-            "Filt2P0and1_Prop_FreqOf1MSecPulse",
-            "Filt2A0and1_Prop_AmpOf_C0MSec_Pulses_At_C1Hz"});
+            "Filt2PropFreqFB",
+            "Filt2PropPowerFB"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(62, 29);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
             this.comboBox_FBAlg.Size = new System.Drawing.Size(249, 21);
@@ -740,15 +707,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MediumPurple;
-            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1284, 864);
-            this.Controls.Add(this.pictureBox3);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.pictureBox1);
+            this.ControlBox = false;
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "ControlPanel";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "SIMOC Interface";
@@ -768,9 +733,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC0)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltWidthSec)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.groupBox_ObservationPlot.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.scatterGraph_Obs)).EndInit();
@@ -804,9 +766,6 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label_FreeParameter1;
         private System.Windows.Forms.Label label7;

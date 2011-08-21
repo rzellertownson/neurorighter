@@ -185,6 +185,7 @@ namespace NeuroRighter
         private SpikeDetSettings spikeDet;
 
         // File Writing
+        private bool recordingCancelled;
         private int[] trackingReads;
         private int[] trackingProc;
         private int trackingDigReads;

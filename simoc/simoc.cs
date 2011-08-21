@@ -19,6 +19,8 @@ using simoc.srv;
 using simoc.obs2filt;
 using simoc.filt2out;
 using simoc.extensionmethods;
+using simoc.filewriting;
+using simoc.persistantstate;
 
 namespace simoc
 {
@@ -26,25 +28,41 @@ namespace simoc
     /// <summary>
     /// Spike-input, multiple-output controller (SIMOC). Written by Jon Newman, Georgia Tech.
     /// </summary>
-    public class simoc : ClosedLoopExperiment
+    public partial class Simoc : ClosedLoopExperiment
     {
         // The GUI
         private ControlPanel controlPanel;
         private delegate void getControlPanelValue();
-
+        
         // Intially we are not done with our first run method and the actual CL protocol is not running
         private bool finishedWithRun = false;
         private bool simocStarted = false;
+        private bool firstLoop = true;
 
         // Number of observables
         private int numberOfObs = 1;
 
-        // Current target value
+        // Current state variables
         private double currentTarget;
+        private ulong numTargetSamplesGenerated = 0;
+        private double startTime;
+        private double currentTime;
+        private double currentObs;
+        private double currentFilt;
+        private double currentError;
+        private double[] currentFeedBack;
+
+        // Variables Everyone needs
+        private double DACPollingPeriodSec;
+        private double ADCPollingPeriodSec;
+        private PersistentSimocVar simocVariableStorage;
 
         // Make a raw data server for CSDR estimate and the desired ASDR
-        SIMOCRawSrv obsSrv;
-        SIMOCRawSrv filtSrv;
+        private SIMOCRawSrv obsSrv;
+        private SIMOCRawSrv filtSrv;
+
+        // File writer
+        private FileWriter simocOut;
 
         protected override void Run()
         {
@@ -57,15 +75,26 @@ namespace simoc
                 // Let it set up
                 System.Threading.Thread.Sleep(2000);
 
+                // Tell the assembly some parameters of the I/O 
+                DACPollingPeriodSec = StimSrv.DACPollingPeriodSec;
+                ADCPollingPeriodSec = DatSrv.ADCPollingPeriodSec;
+
                 // Set up servers
                 obsSrv = new SIMOCRawSrv
                     (1 / DatSrv.ADCPollingPeriodSec, numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
                 filtSrv = new SIMOCRawSrv
                     (1 / DatSrv.ADCPollingPeriodSec, 3 * numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
 
+                // Set up persistant internal varaible storage
+                simocVariableStorage = new PersistentSimocVar();
+
+                // Create file writer
+                if (NRRecording)
+                    simocOut = new FileWriter(NRFilePath + ".simoc",14,DatSrv.spikeSrv.sampleFrequencyHz);
+                
                 // Set up closed loop algorithm
-                double startTime = StimSrv.DigitalOut.GetTime();
-                Console.WriteLine("SIMOC starting out at time " + startTime.ToString());
+                startTime = StimSrv.DigitalOut.GetTime()/1000;
+                Console.WriteLine("SIMOC starting out at time " + startTime.ToString() + " seconds.");
 
                 // Tell buffer loader that we are done setting up
                 finishedWithRun = true;
@@ -78,13 +107,23 @@ namespace simoc
                 simocStarted = controlPanel.startButtonPressed;
             }
 
+            // Close the file stream
+            if (simocOut != null)
+                simocOut.Close();
+
             // Set up closed loop algorithm
-            double stopTime = StimSrv.DigitalOut.GetTime();
-            Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString());
+            double stopTime = StimSrv.DigitalOut.GetTime()/1000;
+            Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString() + " seconds.");
+
 
             // Release resources
-            //Dispose();
             Running = false;
+
+            // Allow last loop to finish
+            Thread.Sleep(100);
+
+            // Close the GUI
+            controlPanel.CloseSIMOC();
         }
 
         protected override void BuffLoadEvent(object sender, EventArgs e)
@@ -93,8 +132,11 @@ namespace simoc
             {
                 try
                 {
-                    // Inoke thread-safe access to form properties
+                    // Invoke thread-safe access to form properties
                     controlPanel.UpdateProperties();
+
+                    // Update the clock
+                    UpdateClock();
 
                     // First, we grab the new spike data and estimate the chosen observable
                     MakeObservation();
@@ -103,13 +145,19 @@ namespace simoc
                     GetTargetValue();
 
                     // Next, we filter the data
-                    FilterObservation();
+                    FilterObservation(firstLoop);
 
                     // Next, we make the feedback signal
                     CreateFeedback();
 
+                    // If the user has selected to do so, write to file
+                    Write2File();
+
                     // Finally, we update the GUI
                     UpdateGUI();
+
+                    // No longer the first loop
+                    firstLoop = false;
                 }
                 catch (Exception ex)
                 {
@@ -118,170 +166,5 @@ namespace simoc
 
             }
         }
-
-        private void MakeObservation()
-        {
-            try
-            {
-                switch (controlPanel.obsAlg)
-                {
-                    case "ASDR":
-                        {
-                            Spk2ASDR observer = new Spk2ASDR(DatSrv);
-                            numberOfObs = observer.numberOfObs;
-                            observer.GetNewSpikes(DatSrv);
-                            observer.MeasureObservable();
-                            observer.PopulateObsSrv(ref obsSrv);
-                        }
-                        break;
-                    case "CSDR":
-                        {
-                            Spk2CSDR observer = new Spk2CSDR(DatSrv);
-                            numberOfObs = observer.numberOfObs;
-                            observer.GetNewSpikes(DatSrv);
-                            observer.MeasureObservable();
-                            observer.PopulateObsSrv(ref obsSrv);
-                        }
-                        break;
-                }
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at MakeObservation(): \r\r" + sEx.Message);
-            }
-
-            
-        }
-
-        private void GetTargetValue()
-        {
-            try
-            {
-                switch (controlPanel.targetFunc)
-                {
-                    case "Constant":
-                        {
-                            Constant target = new Constant(controlPanel);
-                            target.GetTargetValue(ref currentTarget);
-                        }
-                        break;
-                }
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at GetTargetValue(): \r\r" + sEx.Message);
-            }
-
-        }
-
-        private void FilterObservation()
-        {
-            try
-            {
-                switch (controlPanel.filtAlg)
-                {
-                    case "None":
-                        {
-                            Obs2Obs filter = new Obs2Obs(controlPanel,DatSrv);
-                            filter.GetObsBuffer(obsSrv);
-                            filter.Filter();
-                            filter.PopulateFiltSrv(ref filtSrv, currentTarget);
-                        }
-                        break;
-                    case "Moving Average":
-                        {
-                            Obs2MA filter = new Obs2MA(controlPanel,DatSrv);
-                            filter.GetObsBuffer(obsSrv);
-                            filter.Filter();
-                            filter.PopulateFiltSrv(ref filtSrv, currentTarget);
-                        }
-                        break;
-                    case "Moving Median":
-                        {
-                            Obs2MM filter = new Obs2MM(controlPanel,DatSrv);
-                            filter.GetObsBuffer(obsSrv);
-                            filter.Filter();
-                            filter.PopulateFiltSrv(ref filtSrv, currentTarget);
-                        } 
-                        break;
-                     
-                }
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at FilterObservation(): \r\r" + sEx.Message);
-            }
-        }
-
-        private void CreateFeedback()
-        {
-            try
-            {
-                switch (controlPanel.contAlg)
-                {
-                    case "Filt2P0_Prop_FreqOf1MSecPulse":
-                        {
-                            Filt2P0_Prop_FreqOf1MSecPulse controller = new Filt2P0_Prop_FreqOf1MSecPulse(ref StimSrv, controlPanel);
-                            controller.CalculateError(filtSrv);
-                            controller.SendFeedBack();
-                        }
-                        break;
-                    case "Filt2P0and1_Prop_FreqOf1MSecPulse":
-                        {
-                            Filt2P0and1_Prop_FreqOf1MSecPulse controller = new Filt2P0and1_Prop_FreqOf1MSecPulse(ref StimSrv, controlPanel);
-                            controller.CalculateError(filtSrv);
-                            controller.SendFeedBack();
-                        }
-                        break;
-                    case "Filt2A0and1_Prop_AmpOf_C0MSec_Pulses_At_C1Hz":
-                        {
-                            Filt2A0and1_Prop_AmpOf_C0MSec_Pulses_At_C1Hz controller = new Filt2A0and1_Prop_AmpOf_C0MSec_Pulses_At_C1Hz(ref StimSrv, controlPanel);
-                            controller.CalculateError(filtSrv);
-                            controller.SendFeedBack();
-                        }
-                        break;
-                        
-                }
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at CreateFeedback(): \r\r" + sEx.Message);
-            }
-        }
-
-        private void UpdateGUI()
-        {
-            try
-            {
-                // Update graph controls
-                controlPanel.UpdateGraphSliders();
-                controlPanel.UpdateGraphs(obsSrv, filtSrv);
-
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at UpdateGUI(): \r\r" + sEx.Message);
-            }
-
-        }
-
-        private void StartControlPanel()
-        {
-            // Start the control panel on its own thread
-            new Thread(
-                new ThreadStart(
-                    (System.Action)delegate 
-                    { 
-                        Application.Run(controlPanel = new ControlPanel()); 
-                    }
-                   )
-            ).Start();
-        }
-
-        //private void Dispose()
-        //{
-        //    controlPanel.
-        //}
-
     }
 }

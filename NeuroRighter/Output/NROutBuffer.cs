@@ -15,8 +15,19 @@ using ExtensionMethods;
 
 namespace NeuroRighter.Output
 {
+
+    /// <summary>
+    /// NeuroRighter's abstract class for output service.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class NROutBuffer<T> where T : NREvent
     {
+
+        /// <summary>
+        ///  The mutex class for concurrent read and write access to data buffers
+        /// </summary>
+        protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+
         //events
         private int queueThreshold = 0;//how many NREvents do you want to have 'on deck' before asking for more?
         internal event QueueLessThanThresholdHandler QueueLessThanThreshold;//event thrown when there are less than that many events
@@ -28,7 +39,7 @@ namespace NeuroRighter.Output
         internal ulong numBuffLoadsCompleted = 0;
         internal uint numBuffLoadsRequired = 0;
         internal bool running = false;
-       
+
         internal bool immortal = false;//do we keep on loading the buffer forever, or do we have a finite number of loads to perform (openloop)
         internal bool done;
 
@@ -52,9 +63,7 @@ namespace NeuroRighter.Output
         private uint numSampWrittenForCurrentStim = 0;//how many samples we have written of the current stimulus
         private List<double[,]> anEventValues;//the analog values for the current stimulus (copied into abuffs)
         private List<uint[]> digEventValues;//the digital values for the current stimulus (copied into dbuffs)
-        
 
-        
         //NI DAQ properties
         //this is the DAQ task that sends the 'load buffer' signal.
         Task buffLoadTask;
@@ -64,14 +73,11 @@ namespace NeuroRighter.Output
         AnalogMultiChannelWriter[] analogWriters;
         Task[] digitalTasks;
         DigitalSingleChannelWriter[] digitalWriters;
-        
+
 
         // DEBUGGING
         // these are in place so you can watch the timing of your NROutBuffer
         RealTimeDebugger Debugger;
-        //private double startTime;
-        //private DateTime tickTime;
-        //private TimeSpan tickDiff;
 
         #region internal methods- used by NR objects
 
@@ -89,7 +95,7 @@ namespace NeuroRighter.Output
 
         //this NROutBuffer has configured the NI DAQs for use, and has written the first two buffer loads to the DAQs.  If you have any stimuli 
         //that you plan on applying within the first two buffer loads, append those before calling this method.
-        internal void Setup(AnalogMultiChannelWriter[] AnalogWriters, DigitalSingleChannelWriter[] DigitalWriters, Task[] AnalogTasks, Task[] DigitalTasks,  Task BuffLoadTask, RealTimeDebugger Debugger)
+        internal void Setup(AnalogMultiChannelWriter[] AnalogWriters, DigitalSingleChannelWriter[] DigitalWriters, Task[] AnalogTasks, Task[] DigitalTasks, Task BuffLoadTask, RealTimeDebugger Debugger)
         {
 
             this.Debugger = Debugger;
@@ -117,13 +123,13 @@ namespace NeuroRighter.Output
             this.buffLoadTask = BuffLoadTask;
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(TimerTick);
 
-           // Populate the outer-buffer twice
-            PopulateBufferAppending(true,false);
-            PopulateBufferAppending(true,false);
+            // Populate the outer-buffer twice
+            PopulateBufferAppending(true, false);
+            PopulateBufferAppending(true, false);
 
-            
+
         }
-        
+
         //this NROutBuffer is now ready to go, awaiting the green light from the master task (and the buffloadtask)
         internal void Start()
         {
@@ -141,18 +147,100 @@ namespace NeuroRighter.Output
             running = false;
         }
 
-        //write this list of NREvents to the buffer.  Double checks to make sure that you haven't attempted to stimulate at some time in the past
+        /// <summary>
+        /// Writes NeuroRighter output events to NeuroRighter's outer event buffer. Event's posted to this list contain a time of executation relative to
+        /// the current write posisition on the NI DAQ. When they are in range of the hardware buffer, they are written to the hardware and slated for
+        /// executtion. After events are written to hardware, they cannot be stopped.
+        /// </summary>
+        /// <param name="addtobuffer"> NeuroRighter ouput event type</param>
         public void WriteToBuffer(List<T> addtobuffer)
         {
-            //error checking
-            foreach (T n in addtobuffer)
+            bufferLock.EnterWriteLock();
+            try
             {
-                if (n.sampleIndex < currentSample)
-                    throw new Exception(this.ToString() + ": Attempted to stimulate in the past (sample " + n.sampleIndex + " at sample " + currentSample + ")");
-                lock(outerbuffer) outerbuffer.Add(n);
+                foreach (T n in addtobuffer)
+                {
+                    if (n.sampleIndex < currentSample)
+                        throw new Exception(this.ToString() + ": Attempted to stimulate in the past (sample " + n.sampleIndex + " at sample " + currentSample + ")");
+                    outerbuffer.Add(n);
+                }
+
+                // Sort the list
+                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
             }
-            //passed, add to buffer
-            //Append(addtobuffer);
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// This method attempts to delete events within NR's outer output buffer that are slated to be executed in the future.
+        /// </summary>
+        /// <param name="startSample"> Events greater than the start sample </param>
+        /// <param name="endSample"> Events less than the end sample</param>
+        public void DeleteSamplesFromBuffer(ulong startSample, ulong endSample)
+        {
+            bufferLock.EnterWriteLock();
+            try
+            {
+                for (int i = outerbuffer.Count() - 1; i >= 0; --i)
+                {
+                    if (outerbuffer.ElementAt(i).sampleIndex > startSample && outerbuffer.ElementAt(i).sampleIndex >= endSample)
+                        outerbuffer.RemoveAt(i);
+                }
+
+                // Sort the list
+                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
+            }
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitWriteLock();
+            }
+        }
+        /// <summary>
+        /// This method attempts to delete events within NR's outer output buffer that are slated to be executed in the future.
+        /// </summary>
+        /// <param name="startSample"> Events greater than the start sample </param>
+        public void DeleteSamplesFromBuffer(ulong startSample)
+        {
+            bufferLock.EnterWriteLock();
+            try
+            {
+                for (int i = outerbuffer.Count() - 1; i >= 0; --i)
+                {
+                    if (outerbuffer.ElementAt(i).sampleIndex > startSample)
+                        outerbuffer.RemoveAt(i);
+                }
+
+                // Sort the list
+                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
+            }
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// Get rid of all pending output events in the outer buffer.
+        /// </summary>
+        /// <param name="startSample"></param>
+        public void EmptyOuterBuffer()
+        {
+            bufferLock.EnterWriteLock();
+            try
+            {
+                outerbuffer.Clear();
+            }
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitWriteLock();
+            }
         }
 
         //inform the NROutBuffer how long it has to go for- used in open loop
@@ -172,7 +260,16 @@ namespace NeuroRighter.Output
         //used to verify how many stimuli are currently enqueued
         internal int StimuliInQueue()
         {
-            return outerbuffer.Count();
+            bufferLock.EnterUpgradeableReadLock();
+            try
+            {
+                return outerbuffer.Count();
+            }
+            finally
+            {
+                // release the write lock
+                bufferLock.ExitUpgradeableReadLock();
+            }
         }
 
         /// <summary>
@@ -189,7 +286,7 @@ namespace NeuroRighter.Output
             {
                 return (double)((digitalTasks[0].Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
             }
-            throw new Exception("GetTime() requested from " + this.ToString() + ", which has no tasks");       
+            throw new Exception("GetTime() requested from " + this.ToString() + ", which has no tasks");
         }
 
         /// <summary>
@@ -229,7 +326,7 @@ namespace NeuroRighter.Output
 
         //write a bunch of zeros to the DAQ so that we don't leave non-zero values on our outputs
         //must be called Before you clear tasks
-        
+
 
         #endregion
 
@@ -243,12 +340,12 @@ namespace NeuroRighter.Output
         private void TimerTick(object sender, EventArgs e)
         {
             //Console.Write("anda...");
-           // thrd = Thread.CurrentThread;
-          //  thrd.Priority = ThreadPriority.Highest;
+            // thrd = Thread.CurrentThread;
+            //  thrd.Priority = ThreadPriority.Highest;
             //double tickDiff = GetTime();
             if (running)
             {
-              //  Console.WriteLine(Convert.ToString(tickDiff) + ": " + this.ToString() + " DAQ half-load event.");
+                //  Console.WriteLine(Convert.ToString(tickDiff) + ": " + this.ToString() + " DAQ half-load event.");
                 WriteToDAQ();
             }
             else
@@ -258,7 +355,7 @@ namespace NeuroRighter.Output
                 // Console.WriteLine(Convert.ToString(tickDiff) + ": "+this.ToString() +" not running.");
                 FinishStimulation(e);
             }
-         //   thrd.Priority = ThreadPriority.Normal;
+            //   thrd.Priority = ThreadPriority.Normal;
         }
 
         //event raised if we are done.
@@ -271,15 +368,15 @@ namespace NeuroRighter.Output
                 {
                     t.Stop();
                     t.Dispose();
-                   
+
                 }
                 foreach (Task t in digitalTasks)
                 {
                     t.Stop();
                     t.Dispose();
-                    
+
                 }
-                
+
                 // Tell NR that stimulation has finished
                 StimulationComplete(this, e);
             }
@@ -289,16 +386,16 @@ namespace NeuroRighter.Output
         //some debugging stuff
         private void WriteToDAQ()
         {
-            
+
             done = false;
             //Console.WriteLine("Write to Buffer Started");
             //Now look in the outer buffer and grab whatever is needed for this load.
             //this operation is the most intensive the buffer needs to 
-            PopulateBufferAppending(true,false);
-            
-            
+            PopulateBufferAppending(true, false);
+
+
             done = true;
-            
+
         }
 
         //called each bufferload, that is, each time the buffload task fires off
@@ -308,7 +405,7 @@ namespace NeuroRighter.Output
         private void PopulateBufferAppending(bool firstTime, bool zeroOnly)
         {
             //create the buffers we are about to write to the DAQ
-            lock(this)
+            lock (this)
             {
                 Debugger.Write(this.ToString() + " start");
                 double start;
@@ -349,9 +446,11 @@ namespace NeuroRighter.Output
                     //if we don't have a stimulus 'on deck', look for one (needed for state change buffers).
                     if ((outerbuffer.Count > 0) & (nextStim == null))
                     {
+
                         nextStim = outerbuffer.ElementAt(0);
-                        // Console.WriteLine("n nextstim: " + nextStim.sampleIndex.ToString());
+
                     }
+
                     //are we in the middle of a stimulus?  if so, finish as much as you can
                     if (currentStim != null)
                     {
@@ -369,6 +468,7 @@ namespace NeuroRighter.Output
 
                     //for state change buffers, keep in mind that ApplyCurrentStimulus will go until the next stimulus
                     //or until the end of this particular buffer
+
                     while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
                     {
                         //is next stimulus within range of this buffload?
@@ -398,11 +498,11 @@ namespace NeuroRighter.Output
                     }
 
                     OnBufferLoad(EventArgs.Empty);
-                   
+
                     if (running)
                         bufferEvent = this.GetTime();
                 }
-                   
+
                 //write buffers
                 Debugger.Write(this.ToString() + " buffers calculated");
                 for (int i = 0; i < analogWriters.Length; i++)
@@ -412,7 +512,7 @@ namespace NeuroRighter.Output
                     else
                         analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
                     //if (analogTasks[i].IsDone)
-                      //  Console.WriteLine("analog task dead");
+                    //  Console.WriteLine("analog task dead");
                     double[,] tmp = abuffs.ElementAt(i);
                     tmp = null;
 
@@ -434,8 +534,8 @@ namespace NeuroRighter.Output
                     tmp = null;
                 }
                 Debugger.Write(this.ToString() + " digital written");
-                
-              //  Console.WriteLine(this.ToString() + " : " + currentSample + " samples have been written. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
+
+                //  Console.WriteLine(this.ToString() + " : " + currentSample + " samples have been written. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
             }
         }
 
@@ -447,11 +547,9 @@ namespace NeuroRighter.Output
 
             //how many samples should we write, including blanking?
             int samples2Finish;
-            string outst = "";
             if (currentStim.sampleDuration > 0)//this is a non-instantaneous event
                 samples2Finish = (int)currentStim.sampleDuration - (int)numSampWrittenForCurrentStim;
             else//this is an instantaneous event, ie a state change
-                
             {
                 //if we have another event on deck, and we aren't done with events
                 if ((nextStim != null) & ((numEventsWritten < totalEvents) || immortal))
@@ -463,10 +561,10 @@ namespace NeuroRighter.Output
                     samples2Finish = (int)BUFFSIZE;
                 }
             }
-            if (nextStim!=null)
-            if (currentStim.sampleIndex > nextStim.sampleIndex)
-                throw new Exception("NROutBuffer exception: trying to stimulate starting at sample " + currentStim.sampleIndex.ToString() + " and ending at sample " + nextStim.sampleIndex.ToString());
-          //  Console.WriteLine(outst+ samples2Finish.ToString());
+            if (nextStim != null)
+                if (currentStim.sampleIndex > nextStim.sampleIndex)
+                    throw new Exception("NROutBuffer exception: trying to stimulate starting at sample " + currentStim.sampleIndex.ToString() + " and ending at sample " + nextStim.sampleIndex.ToString());
+            //  Console.WriteLine(outst+ samples2Finish.ToString());
 
             //write samples to the buffer
             for (int i = 0; (i < samples2Finish) & (bufferIndex < BUFFSIZE); i++)
@@ -481,84 +579,89 @@ namespace NeuroRighter.Output
         //returns true if there is a stimulus within this bufferload
         private bool NextStimulusAppending()
         {
-            
-            lock (outerbuffer)//prevent anyone from writing to the outer buffer for this
+            try
             {
-                if (outerbuffer.Count > 0)//buffer isn't empty
-                {
-                    if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
+                lock (this)
+                    if (outerbuffer.Count > 0)//buffer isn't empty
                     {
-
-                        currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
-                      //  Console.WriteLine("currentstim = " + currentStim.sampleIndex.ToString());
-                        outerbuffer.RemoveAt(0);
-
-                        if (outerbuffer.Count > 0)
+                        if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
                         {
-                            nextStim = outerbuffer.ElementAt(0);//we don't need a copy as we don't expect this element to change.
+
+                            currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
+                            //  Console.WriteLine("currentstim = " + currentStim.sampleIndex.ToString());
+                            outerbuffer.RemoveAt(0);
+
+                            if (outerbuffer.Count > 0)
+                            {
+                                nextStim = outerbuffer.ElementAt(0);//we don't need a copy as we don't expect this element to change.
+                            }
+                            else
+                            {
+                                nextStim = null;
+                            }
+                            //turn the new stim into something we can throw at the DAQs
+                            WriteEvent(currentStim, ref  anEventValues, ref digEventValues);
+
+
+                            if (outerbuffer.Count == (queueThreshold - 1))
+                                OnThreshold(EventArgs.Empty);
+
+                            numSampWrittenForCurrentStim = 0;
+                            bufferIndex = currentStim.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
+                            if (currentStim.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                            {
+                                //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
+                            }
+
+                            return true;
                         }
                         else
                         {
-                            nextStim = null;
+
+                            currentStim = null;//we aren't currently stimulating
+
+                            numSampWrittenForCurrentStim = 0;//we haven't written anything
+                            bufferIndex = BUFFSIZE;//we are done with this buffer
+                            return false;
                         }
-                        //turn the new stim into something we can throw at the DAQs
-                        WriteEvent(currentStim, ref  anEventValues, ref digEventValues);
-
-
-                        if (outerbuffer.Count == (queueThreshold - 1))
-                            OnThreshold(EventArgs.Empty);
-
-                        numSampWrittenForCurrentStim = 0;
-                        bufferIndex = currentStim.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                        if (currentStim.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
-                        {
-                            //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                            throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE );
-                        }
-
-                        return true;
                     }
                     else
                     {
-
                         currentStim = null;//we aren't currently stimulating
 
                         numSampWrittenForCurrentStim = 0;//we haven't written anything
                         bufferIndex = BUFFSIZE;//we are done with this buffer
                         return false;
                     }
-                }
-                else
-                {
-                    currentStim = null;//we aren't currently stimulating
-
-                    numSampWrittenForCurrentStim = 0;//we haven't written anything
-                    bufferIndex = BUFFSIZE;//we are done with this buffer
-                    return false;
-                }
             }
-           // Console.WriteLine("/"+currentStim.sampleIndex.ToString() + " - " + nextStim.sampleIndex.ToString());
+            // Console.WriteLine("/"+currentStim.sampleIndex.ToString() + " - " + nextStim.sampleIndex.ToString());
             //  Console.WriteLine(outst+ samples2Finish.ToString());
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return false;
+            }
         }
 
         //called whenver we finish a particular NREvent
         private void FinishStim()
         {
             //more explicit garbage collection
-          //  Console.WriteLine("stim finished");
-            if (anEventValues!=null)
-            for (int i = 0; i < anEventValues.Count; i++)
-            {
-                double[,] tmp = anEventValues.ElementAt(i);
-                tmp = null;
-            }
-            if (digEventValues!=null)
-            for (int i = 0; i < digEventValues.Count; i++)
-            {
-                uint[] tmp = digEventValues.ElementAt(i);
-                tmp = null;
-            }
-            
+            //  Console.WriteLine("stim finished");
+            if (anEventValues != null)
+                for (int i = 0; i < anEventValues.Count; i++)
+                {
+                    double[,] tmp = anEventValues.ElementAt(i);
+                    tmp = null;
+                }
+            if (digEventValues != null)
+                for (int i = 0; i < digEventValues.Count; i++)
+                {
+                    uint[] tmp = digEventValues.ElementAt(i);
+                    tmp = null;
+                }
+
             currentStim = null;//we aren't currently stimulating
 
         }
@@ -569,7 +672,7 @@ namespace NeuroRighter.Output
             for (int i = 0; i < abuffs.Count; i++)
             {
                 for (int j = 0; j < abuffs.ElementAt(i).GetLength(0); j++)
-                    if (currentStim.sampleDuration>0)
+                    if (currentStim.sampleDuration > 0)
                         abuffs.ElementAt(i)[j, (int)bufferIndex] = anEventValues.ElementAt(i)[j, numSampWrittenForCurrentStim];
                     else//state change mode
                         abuffs.ElementAt(i)[j, (int)bufferIndex] = anEventValues.ElementAt(i)[j, 0];
@@ -578,10 +681,10 @@ namespace NeuroRighter.Output
             for (int i = 0; i < dbuffs.Count; i++)
             {
                 //for (int j = 0; j < dbuffs.ElementAt(i).GetLength(1); j++)
-                    if (currentStim.sampleDuration > 0)
-                        dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[numSampWrittenForCurrentStim];
-                    else//state change mode
-                        dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[0];
+                if (currentStim.sampleDuration > 0)
+                    dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[numSampWrittenForCurrentStim];
+                else//state change mode
+                    dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[0];
             }
 
             numSampWrittenForCurrentStim++;
@@ -607,7 +710,7 @@ namespace NeuroRighter.Output
                 DAQLoadCompleted(this, e);
         }
 
-        
+
         #endregion
     }
 }

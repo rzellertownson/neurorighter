@@ -14,15 +14,15 @@ namespace simoc.obs2filt
         /// <summary>
         /// No filtering of observation stream. Jon Newman.
         /// </summary>
-        public Obs2Obs(ControlPanel cp, NRDataSrv DatSrv)
-            : base(cp, DatSrv)
+        public Obs2Obs(ControlPanel cp, NRDataSrv DatSrv,bool firstLoop)
+            : base(cp, DatSrv,firstLoop)
         {
 
         }
 
         internal override void Filter()
         {
-            currentFilteredValue = obsFiltBuff.rawMultiChannelBuffer[0][0];
+            currentFilteredValue = obsFiltBuff.rawMultiChannelBuffer[0][obsFiltBuff.rawMultiChannelBuffer[0].Length-1];
         }
     }
 }

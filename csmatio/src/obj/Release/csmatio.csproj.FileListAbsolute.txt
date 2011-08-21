@@ -1,0 +1,114 @@
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.dll
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.xml
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\zlib.net.dll
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\John Rolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\csmatio.dll
+C:\Documents and Settings\John Rolston\My Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.dll
+C:\Documents and Settings\John Rolston\My Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.xml
+C:\Documents and Settings\John Rolston\My Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\John Rolston\My Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\John Rolston\My Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\csmatio.dll
+C:\Users\jrolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.dll
+C:\Users\jrolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.xml
+C:\Users\jrolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\zlib.net.dll
+C:\Users\jrolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\jrolston\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\csmatio.dll
+C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.dll
+C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\csmatio.xml
+C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\bin\Release\zlib.net.dll
+C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\John\Documents\Visual Studio 2008\Projects\CSMatIO\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\ANNIHILATRIX_RESEARCH_FILES\NeuroRighter_SVN\v_0_5_5\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Chad\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Jon\Desktop\NeuroRighter\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\Stable\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\Stable\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\Stable\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\Stable\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\Stable\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_neurorighters\Stable2\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable296\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable297\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable297\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable297\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable297\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable297\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Riley\Desktop\Stable303\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Riley\Desktop\Stable303\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Riley\Desktop\Stable303\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Riley\Desktop\Stable303\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Riley\Desktop\Stable303\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\bin\Release\csmatio.dll
+C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Riley\Desktop\Stable303_edit\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable305\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable306\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable306\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable306\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable306\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable306\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable307\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable307\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable307\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable307\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable307\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable3081\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable3081\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable3081\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable3081\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable3081\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable312\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable312\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable312\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable312\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable312\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable315\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable315\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable315\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable315\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable315\csmatio\src\obj\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\Stable330\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Release\csmatio.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Release\csmatio.dll

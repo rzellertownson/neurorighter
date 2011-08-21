@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="CSMatIO">
+</Property><Property Name="Solution File" Value="C:\Users\John Rolston\Desktop\CSMatIO\CSMatIO.sln">
+</Property><Property Name="Date" Value="Monday, January 12, 2009">
+</Property><Property Name="Time" Value="8:45 AM">
+</Property></Properties><Event ErrorLevel="0" Project="csmatio" Source="src\csmatio.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="csmatio" Source="src\csmatio.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="CSMatIOTest" Source="demo\CSMatIOTest.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="CSMatIOTest" Source="demo\CSMatIOTest.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="CSMatIO.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="CSMatIO.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="csmatio" Source="src\csmatio.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="CSMatIOTest" Source="demo\CSMatIOTest.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

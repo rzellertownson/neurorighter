@@ -1,0 +1,433 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BB2A4100-DBDA-4A63-8708-8A7F9F6810E0}</ProjectGuid>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputType>WinExe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>NeuroRighter</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>NeuroRighter</RootNamespace>
+    <ApplicationIcon>NeuroRighter_v04.ico</ApplicationIcon>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\NeuroRighter.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="csmatio, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\csmatio\bin\Release\csmatio.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
+    <Reference Include="Mowog.PersistWindowState, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Analysis.Professional, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.UI, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.UI.WindowsForms, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Matlab\loadraw.mexw32" />
+    <None Include="Matlab\loadspike.mexw32" />
+    <None Include="Matlab\loadstim.mexw32" />
+    <None Include="Matlab\SqueakySpk.zip" />
+    <None Include="Miscellaneous\Microsoft Permissive License.rtf" />
+    <None Include="Miscellaneous\National_Instruments_software_license_agreement.pdf" />
+    <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
+    <None Include="obj\Release\build.force" />
+    <None Include="obj\Release\NeuroRighter_05.csproj.ResolveComReference.cache" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Aquisition\AIChannelCollection.cs" />
+    <Compile Include="DataTypes\AnalogOutEvent.cs" />
+    <Compile Include="DataTypes\DigitalEventBuffer.cs" />
+    <Compile Include="DataTypes\DigitalPortEvent.cs" />
+    <Compile Include="DataTypes\ElectricalStimEvent.cs" />
+    <Compile Include="DataTypes\NREvent.cs" />
+    <Compile Include="DataTypes\RawMultiChannelBuffer.cs" />
+    <Compile Include="DataTypes\EventBuffer.cs" />
+    <Compile Include="DatSrv\NRDataSrv.cs" />
+    <Compile Include="DatSrv\DigitalEventSrv.cs" />
+    <Compile Include="DatSrv\RawDataSrv.cs" />
+    <Compile Include="DatSrv\EventDataSrv.cs" />
+    <Compile Include="dbg\ExecptDBG.cs" />
+    <Compile Include="dbg\RealTimeDebugger.cs" />
+    <Compile Include="ExtentionMethods\ExtMeth01.cs" />
+    <Compile Include="FileWriting\DigFileOutput.cs" />
+    <Compile Include="FileWriting\RawScale.cs" />
+    <Compile Include="FileWriting\RecordingSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileWriting\RecordingSetup.Designer.cs">
+      <DependentUpon>RecordingSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileWriting\StimFileOutput.cs" />
+    <Compile Include="Filters\filter.cs" />
+    <Compile Include="Filters\LocalFit.cs" />
+    <Compile Include="Filters\SALPA3.cs" />
+    <Compile Include="Note-UI\RecordingNote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Note-UI\RecordingNote.Designer.cs">
+      <DependentUpon>RecordingNote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NR-UI\diagnostics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\elesion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\formcont.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\aqset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\recordsetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\rectime.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\plotcont.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\progref.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\clnup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\spkdet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\stim.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Output\AuxBuffer.cs" />
+    <Compile Include="DataTypes\AuxOutEvent.cs" />
+    <Compile Include="Output\AODOPair\AuxOutTask.cs" />
+    <Compile Include="Output\ClosedLoopExperiment.cs" />
+    <Compile Include="Output\ClosedLoopOut.cs" />
+    <Compile Include="Output\File2Aux.cs" />
+    <Compile Include="Output\AODOPair\ContStimTask.cs" />
+    <Compile Include="Output\AODOPair\MakeAODOPair.cs" />
+    <Compile Include="Output\OpenLoopOut.cs" />
+    <Compile Include="Output\NROutBuffer.cs" />
+    <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
+    <Compile Include="Plotting\ScatterGraphContoller.cs" />
+    <Compile Include="Plotting\SpikeWaveformGraph.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Plotting\SpikeWaveformGraph.Designer.cs">
+      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings-UI\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings-UI\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Playback\ChannelOutput.cs" />
+    <Compile Include="FileWriting\FileOutputRemapped.cs" />
+    <Compile Include="FileWriting\SpikeFileOutput.cs" />
+    <Compile Include="Filters\ArtiFilt_Interpolation.cs" />
+    <Compile Include="Filters\ArtiFilt.cs" />
+    <Compile Include="Filters\ButterworthFilter.cs" />
+    <Compile Include="Settings-UI\DisplaySettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings-UI\DisplaySettings.Designer.cs">
+      <DependentUpon>DisplaySettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileWriting\FileOutput.cs" />
+    <Compile Include="Filters\CommonAverageReferencer.cs" />
+    <Compile Include="Filters\CommonMedianLocalReferencer.cs" />
+    <Compile Include="Filters\CommonMedianReferencer.cs" />
+    <Compile Include="Filters\MUAFilter.cs" />
+    <Compile Include="Filters\Referencer.cs" />
+    <Compile Include="Settings-UI\HardwareSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Settings-UI\HardwareSettings.Designer.cs">
+      <DependentUpon>HardwareSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Impedance\ImpedanceMeasurer.cs" />
+    <Compile Include="Matlab\NRLab.cs" />
+    <Compile Include="Miscellaneous\MEAChannelMappings.cs" />
+    <Compile Include="NR-UI\rawproc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\impedance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\note.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\ephysaquire.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\defs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\plotting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\filepath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\NeuroRighter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\NeuroRighter.Designer.cs">
+      <DependentUpon>NeuroRighter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plotting\GraphicsDeviceControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Plotting\GraphicsDeviceService.cs" />
+    <Compile Include="Plotting\GridGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Plotting\RowGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Plotting\ServiceContainer.cs" />
+    <Compile Include="Plotting\EventPlotData.cs" />
+    <Compile Include="Plotting\PlotData.cs" />
+    <Compile Include="Plotting\PlotDataGrid.cs" />
+    <Compile Include="Plotting\PlotDataRows.cs" />
+    <Compile Include="Plotting\PlotSpikeWaveform.cs" />
+    <Compile Include="Plotting\SnipGridGraph.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="DataTypes\DigitalOutEvent.cs" />
+    <Compile Include="Output\DigitalBuffer.cs" />
+    <Compile Include="Output\File2Dig.cs" />
+    <Compile Include="Output\File2Stim.cs" />
+    <Compile Include="Output\IISZapper.cs" />
+    <Compile Include="Output\StimBuffer.cs" />
+    <Compile Include="Output\StimPulse.cs" />
+    <Compile Include="Output\StimTrain.cs" />
+    <Compile Include="DataTypes\StimulusOutEvent.cs" />
+    <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
+    <Compile Include="SpikeDetection\LimAda.cs" />
+    <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
+    <Compile Include="SpikeDetection\SpikeDetector.cs" />
+    <Compile Include="SpikeDetection\SpikeDetSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SpikeDetection\SpikeDetSettings.Designer.cs">
+      <DependentUpon>SpikeDetSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataTypes\SpikeEvent.cs" />
+    <Compile Include="StimSrv\NRStimSrv.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FileWriting\RecordingSetup.resx">
+      <DependentUpon>RecordingSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Note-UI\RecordingNote.resx">
+      <DependentUpon>RecordingNote.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plotting\SpikeWaveformGraph.resx">
+      <DependentUpon>SpikeWaveformGraph.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Settings-UI\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Settings-UI\DisplaySettings.resx">
+      <DependentUpon>DisplaySettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Settings-UI\HardwareSettings.resx">
+      <DependentUpon>HardwareSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="licenses.licx" />
+    <EmbeddedResource Include="NR-UI\NeuroRighter.resx">
+      <DependentUpon>NeuroRighter.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SpikeDetection\SpikeDetSettings.resx">
+      <DependentUpon>SpikeDetSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ExtentionMethods\Mowog.PersistWindowState.dll" />
+    <Content Include="Matlab\makestimfile.m" />
+    <Content Include="Miscellaneous\Buttons\ZoomIn.png" />
+    <Content Include="Miscellaneous\Buttons\ZoomOut.png" />
+    <Content Include="Miscellaneous\Buttons\ZoomOutBlue.png" />
+    <Content Include="Miscellaneous\Buttons\ZoomReset.png" />
+    <Content Include="Miscellaneous\gpl.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Icon\Slide1.PNG" />
+    <Content Include="Matlab\loadraw.c" />
+    <Content Include="Matlab\loadraw.m" />
+    <Content Include="Matlab\loadspike.c" />
+    <Content Include="Matlab\loadspike.m" />
+    <Content Include="Matlab\loadstim.c" />
+    <Content Include="Matlab\loadstim.m" />
+    <Content Include="Matlab\Readme.txt" />
+    <Content Include="Miscellaneous\NeuroRighter_Disclaimer.txt" />
+    <Content Include="NeuroRighter_v04.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="obj\Release\AxInterop.CWUIControlsLib.dll" />
+    <Content Include="obj\Release\Interop.CWUIControlsLib.dll" />
+    <Content Include="obj\Release\Interop.GUSILib.dll" />
+    <Content Include="obj\Release\NeuroRighter_05.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Release\TempPE\Properties.Resources1.Designer.cs.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxCWUIControlsLib">
+      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="CWUIControlsLib">
+      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="GUSILib">
+      <Guid>{6E9D01D8-FDF2-11D6-90EF-00C0F04C1E46}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\Debug\TempPE\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

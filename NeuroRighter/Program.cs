@@ -60,6 +60,7 @@ namespace NeuroRighter
             //the TargetInvocationException exception that is thrown by MethodInfo.Invoke. -J.N.
             catch (Exception startEx)
             {
+                MessageBox.Show("error starting NeuroRighter: " + startEx, "NeuroRighter Fatal Error");
                 dbg.ExecptDBG startErrorHandler = new dbg.ExecptDBG();
                 startErrorHandler.DisplayInnerException(startEx, reflectedClass);
             }

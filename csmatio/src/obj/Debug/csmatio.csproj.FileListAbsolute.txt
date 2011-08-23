@@ -38,3 +38,10 @@ C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\bin\Debug\zlib.net.
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Debug\csmatio.dll
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\Stable-340\csmatio\src\obj\Debug\csmatio.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\bin\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\bin\Debug\csmatio.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\bin\Debug\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\bin\Debug\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\obj\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\neurorighter352\csmatio\src\obj\Debug\csmatio.pdb

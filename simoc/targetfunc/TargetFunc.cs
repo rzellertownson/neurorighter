@@ -7,6 +7,8 @@ using NeuroRighter.Output;
 using NeuroRighter.DatSrv;
 using simoc.UI;
 using System.Windows.Forms;
+using NeuroRighter.StimSrv;
+using simoc.persistantstate;
 
 namespace simoc.targetfunc
 {
@@ -22,8 +24,10 @@ namespace simoc.targetfunc
         protected int daqPollingPeriodSec;
         protected ulong numTargetSamplesGenerated;
         protected double DACPollingPeriodSec;
+        protected ulong currentOutputSample;
+        protected double outputSampleRateHz;
 
-        public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated)
+        public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
         {
             // Grab parameters off the form
             this.meanValue = cp.numericEdit_TargetMean.Value;
@@ -31,9 +35,11 @@ namespace simoc.targetfunc
             this.frequency = cp.numericEdit_TargetFreq.Value;
             this.numTargetSamplesGenerated = numTargetSamplesGenerated;
             this.DACPollingPeriodSec = DACPollingPeriodSec;
+            this.currentOutputSample = stimSrv.DigitalOut.GetCurrentSample();
+            this.outputSampleRateHz = stimSrv.sampleFrequencyHz;
         }
 
-        internal virtual void GetTargetValue(ref double currentTargetValue)
+        internal virtual void GetTargetValue(ref double currentTargetValue, PersistentSimocVar simocVariableStorage)
         {
             // Use this to send out the current target value that you want your
             // observation to match

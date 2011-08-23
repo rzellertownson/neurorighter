@@ -334,9 +334,6 @@ namespace NeuroRighter
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
                 newWaveforms.eventBuffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i,startTime));
             
-            // Send waveform data to datSrv
-           
-            
             //Extract waveforms
             //toRawsrv: 0 index, includes timing offsets, channel remapping
             //saved: 1 index
@@ -362,8 +359,6 @@ namespace NeuroRighter
                     {
                         lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
-                            //short ch = CHAN_INDEX_START;
-                        
                             recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);
                         }
@@ -409,6 +404,8 @@ namespace NeuroRighter
                     #endregion
                 }
             }
+
+            // Provide new spike data to persistent buffer
             datSrv.spikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
             //Post to PlotData
@@ -445,7 +442,7 @@ namespace NeuroRighter
                 muaPlotData.write(muaData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
             #endregion
-            Debugger.Write(taskNumber.ToString() + ": multi unit activity done/ processing done");
+            Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
             bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;
         }

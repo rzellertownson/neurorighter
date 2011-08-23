@@ -34,7 +34,6 @@ namespace NeuroRighter.DataTypes
     [Serializable]
     public sealed class SpikeEvent : NREvent
     {
-        //internal ulong sampleIndex;
 
         /// <summary>
         /// HW Channel that the spike occured on

@@ -24,6 +24,9 @@ namespace simoc.filt2out
         protected double c0;
         protected double c1;
         protected double c2;
+        protected double c3;
+        protected double c4;
+        protected double c5;
         protected double hardwareSampFreqHz;
         internal int numberOutStreams = 1;
         internal double[] currentFeedbackSignals;
@@ -32,13 +35,15 @@ namespace simoc.filt2out
         public Filt2Out(ref NRStimSrv stimSrv, ControlPanel cp)
         {
             this.stimSrv = stimSrv;
-            this.loadOffset = (ulong)stimSrv.GetBuffSize()*2;
+            this.loadOffset = 0;//(ulong)stimSrv.GetBuffSize()*2;
             this.c0 = cp.numericEdit_ContC0.Value;
             this.c1 = cp.numericEdit_ContC1.Value;
             this.c2 = cp.numericEdit_ContC2.Value;
+            this.c3 = cp.numericEdit_ContC3.Value;
+            this.c4 = cp.numericEdit_ContC3.Value;
+            this.c5 = cp.numericEdit_ContC4.Value;
             this.hardwareSampFreqHz = stimSrv.sampleFrequencyHz;
         }
-
 
         internal virtual void SendFeedBack(PersistentSimocVar simocVariableStorage)
         {
@@ -77,10 +82,5 @@ namespace simoc.filt2out
             if (digOutBuffer.Count > 0)
                 stimSrv.DigitalOut.WriteToBuffer(digOutBuffer);
         }
-
-
-
-
-
     }
 }

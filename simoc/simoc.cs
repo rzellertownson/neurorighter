@@ -38,6 +38,7 @@ namespace simoc
         private bool finishedWithRun = false;
         private bool simocStarted = false;
         private bool firstLoop = true;
+        private bool startTimeSet = false;
 
         // Number of observables
         private int numberOfObs = 1;
@@ -105,6 +106,11 @@ namespace simoc
             {
                 System.Threading.Thread.Sleep(1000);
                 simocStarted = controlPanel.startButtonPressed;
+                if (simocStarted && !startTimeSet)
+                {
+                    startTimeSet = true;
+                    simocVariableStorage.SimocStartSample = StimSrv.DigitalOut.GetCurrentSample();
+                }
             }
 
             // Close the file stream

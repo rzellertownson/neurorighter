@@ -5,6 +5,7 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 
 namespace simoc.spk2obs
 {
@@ -14,8 +15,8 @@ namespace simoc.spk2obs
     class Spk2CSDR : Spk2Obs
     {
 
-        public Spk2CSDR(NRDataSrv DatSrv) 
-            : base(DatSrv)
+        public Spk2CSDR(NRStimSrv stimSrv) 
+            : base(stimSrv)
         {
             numberOfObs = 1;
         }
@@ -23,7 +24,7 @@ namespace simoc.spk2obs
         internal override void MeasureObservable()
         {
             // Estimate the ASDR
-            currentObservation = (((double)newSpikes.eventBuffer.Count() - 1) / daqPollingPeriodSec / (double)channelCount);
+            currentObservation = (((double)newSpikes.eventBuffer.Count()) / daqPollingPeriodSec / (double)channelCount);
         }
 
 

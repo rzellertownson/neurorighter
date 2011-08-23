@@ -55,7 +55,6 @@ namespace NeuroRighter.DatSrv
         /// </summary>
         public double sampleFrequencyHz;
 
-
         /// <summary>
         /// Generic event-type data server (e.g. spikes). The main data buffer that this class updates
         /// 'dataBuffer', is itself a EventBuffer object. The  method ReadFromBuffer accepts a time range (in seconds referenced to the start of the recording)
@@ -90,29 +89,33 @@ namespace NeuroRighter.DatSrv
                 int rem = 0;
                 for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
                 {
-                    // Remove expired data
-                    if (mincurrentSample > bufferSizeInSamples)
-                        if (dataBuffer.eventBuffer[i].sampleIndex < (mincurrentSample - bufferSizeInSamples))
+                    // Remove expired data. This minCurrentSample is the mimimum of the most current sample
+                    // between the N tasks responsible for spike collection
+                    if (dataBuffer.eventBuffer[i].sampleIndex < (mincurrentSample - bufferSizeInSamples))
                     {
                         dataBuffer.eventBuffer.RemoveAt(i);
                         rem++;
                     }
+   
                 }
 
                 // Add new data
                 int added = 0;
-                foreach (T stim in newData.eventBuffer)
+                foreach (T ev in newData.eventBuffer)
                 {
-                    dataBuffer.eventBuffer.Add((T)stim.DeepClone());
+                    dataBuffer.eventBuffer.Add((T)ev.DeepClone());
                     added++;
                 }
-                //Console.WriteLine(this.ToString() + " added " + added+ " removed " +rem+ " at sample " + currentSample);
-                //.AddRange(newData.eventBuffer);
+
+
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
+
+                // Find the mimimum of the most current sample
+                // between the N tasks responsible for spike collection
                 mincurrentSample = currentSample[0];
                 for (int i = 1; i < this.numDataCollectionTasks; i++)
                 {
-                    if (mincurrentSample>currentSample[i])
+                    if (mincurrentSample < currentSample[i])
                         mincurrentSample = currentSample[i];
                 }
             }
@@ -189,26 +192,13 @@ namespace NeuroRighter.DatSrv
         public ulong[] EstimateAvailableTimeRange()
         {
             ulong[] timeRange = new ulong[2];
-            timeRange[0] = ulong.MaxValue;
-            timeRange[1] = ulong.MinValue;
 
             // Enforce a read lock
             bufferLock.EnterReadLock();
             try
             {
-
-                for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
-                {
-                    if (timeRange[0] > dataBuffer.eventBuffer[i].sampleIndex)
-                    {
-                        timeRange[0] = dataBuffer.eventBuffer[i].sampleIndex;
-                    }
-
-                    if (timeRange[1] < dataBuffer.eventBuffer[i].sampleIndex)
-                    {
-                        timeRange[1] = dataBuffer.eventBuffer[i].sampleIndex;
-                    }
-                }
+                timeRange[0] = mincurrentSample- bufferSizeInSamples;
+                timeRange[1] = mincurrentSample;
             }
             finally
             {
@@ -230,7 +220,7 @@ namespace NeuroRighter.DatSrv
         /// <returns>EventBuffer<T></returns>
         public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
         {
-            EventBuffer<T> returnBuffer = new EventBuffer<T>(dataBuffer.sampleFrequencyHz);
+            EventBuffer<T> returnBuffer = new EventBuffer<T>(sampleFrequencyHz);
 
             // Enforce a read lock
             bufferLock.EnterReadLock();

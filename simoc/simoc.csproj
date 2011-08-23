@@ -106,6 +106,7 @@
     <Compile Include="spk2obs\Spk2CSDR.cs" />
     <Compile Include="spk2obs\Spk2Obs.cs" />
     <Compile Include="targetfunc\Constant.cs" />
+    <Compile Include="targetfunc\CustomTarget1.cs" />
     <Compile Include="targetfunc\SineWave.cs" />
     <Compile Include="targetfunc\TargetFunc.cs" />
     <Compile Include="file-writing\FileSetup.cs" />

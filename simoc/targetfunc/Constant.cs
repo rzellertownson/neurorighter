@@ -5,7 +5,10 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 using simoc.UI;
+using simoc.persistantstate;
+
 namespace simoc.targetfunc
 {
 
@@ -16,13 +19,13 @@ namespace simoc.targetfunc
     class Constant : TargetFunc
     {
 
-        public Constant(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated)
-            : base(cp, DACPollingPeriodSec,numTargetSamplesGenerated)
+        public Constant(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
+            : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref stimSrv)
         {
 
         }
 
-        internal override void GetTargetValue(ref double currentTargetValue)
+        internal override void GetTargetValue(ref double currentTargetValue, PersistentSimocVar simocVariableStorage)
         {
             currentTargetValue = meanValue;
         }

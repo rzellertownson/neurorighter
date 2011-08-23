@@ -5,6 +5,7 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 using simoc.srv;
 
 namespace simoc.spk2obs
@@ -22,11 +23,10 @@ namespace simoc.spk2obs
         internal double currentObservation;
         internal int numberOfObs;
 
-        public Spk2Obs(NRDataSrv DatSrv)
+        public Spk2Obs(NRStimSrv stimSrv)
         {
-            this.daqPollingPeriodSamples = DatSrv.ADCPollingPeriodSamples;
-            this.daqPollingPeriodSec = DatSrv.ADCPollingPeriodSec;
-            this.channelCount = DatSrv.rawElectrodeSrv.channelCount;
+            this.daqPollingPeriodSec = stimSrv.DACPollingPeriodSec;
+            
         }
 
         /// <summary>
@@ -34,10 +34,15 @@ namespace simoc.spk2obs
         /// </summary>
         internal void GetNewSpikes(NRDataSrv DatSrv)
         {
+
+            channelCount = DatSrv.rawElectrodeSrv.channelCount;
+            daqPollingPeriodSamples = (int)(daqPollingPeriodSec * (double)DatSrv.spikeSrv.sampleFrequencyHz);
+
             // First, figure out what history of spikes we have
             ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvailableTimeRange();
 
             // Try to get the number of spikes within the available time range
+            // Translate the  
             ulong[] dataRange = new ulong[2] { spikeTimeRange[1] - (ulong)daqPollingPeriodSamples, spikeTimeRange[1] };
             newSpikes = DatSrv.spikeSrv.ReadFromBuffer(dataRange[0], dataRange[1]);
         }

@@ -86,11 +86,14 @@ namespace NeuroRighter.DatSrv
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
         /// <param name="salpaAccess"> Using SALPA? </param>
         /// <param name="spikeFiltAccess"> Using spike filters? </param>
-        public NRDataSrv(double bufferSizeSeconds, bool salpaAccess, bool spikeFiltAccess)
+        public NRDataSrv(double bufferSizeSeconds, bool salpaAccess,int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
         {
             // Set the polling periods
             ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             ADCPollingPeriodSamples = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
+
+            // Set the spike server lag
+            int spikeLag = spikeDetlag;
 
             // Figure out what servers we need to start up and start them with the correct parameters
 
@@ -111,6 +114,8 @@ namespace NeuroRighter.DatSrv
                     bufferSizeSeconds,
                     ADCPollingPeriodSamples,
                     2);
+
+                spikeLag += salpaWidth;
             }
 
             //3. Spike Filter data
@@ -161,7 +166,7 @@ namespace NeuroRighter.DatSrv
             spikeSrv = new EventDataSrv<SpikeEvent>(
                 Properties.Settings.Default.RawSampleFrequency,bufferSizeSeconds,
                 ADCPollingPeriodSamples,
-                2);
+                2, spikeDetlag);
 
             //8. Auxiliary Digital data
             if (Properties.Settings.Default.useAuxDigitalInput)
@@ -169,7 +174,7 @@ namespace NeuroRighter.DatSrv
                 auxDigitalSrv = new EventDataSrv<DigitalPortEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    1);
+                    1,0);
             }
 
             //9. Stimulus data
@@ -178,8 +183,7 @@ namespace NeuroRighter.DatSrv
                 stimSrv = new EventDataSrv<ElectricalStimEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    2
-                );
+                    2,0);
             }
 
         }

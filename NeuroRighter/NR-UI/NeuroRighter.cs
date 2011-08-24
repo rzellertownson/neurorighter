@@ -907,7 +907,10 @@ namespace NeuroRighter
                     datSrv = new NRDataSrv(
                         Properties.Settings.Default.datSrvBufferSizeSec,
                         checkBox_SALPA.Checked,
-                        checkBox_spikesFilter.Checked);
+                        SALPA_WIDTH,
+                        checkBox_spikesFilter.Checked,
+                        spikeDet.spikeDetectionLag
+                        );
 
 
                     Debugger = new RealTimeDebugger();

@@ -43,7 +43,7 @@ namespace NeuroRighter.SpikeDetection
         protected int numPre;
         protected double currentThreshold;
         protected double[][] detectionCarryOverBuffer;
-        protected int carryOverLength;
+        internal protected int carryOverLength;
         protected double[,] threshold;
         protected double _thresholdMultiplier;
         protected float[][] returnThresh;

@@ -24,6 +24,7 @@ namespace NeuroRighter.SpikeDetection
         internal SpikeDetector spikeDetector;
         internal int numPre; // num smaples to save pre-spike
         internal int numPost; // num samples to save post-spike
+        internal int spikeDetectionLag; // number of samples that spike detector will cause buffers to lag
 
         // Delegates for informing mainform of settings change
         internal delegate void resetSpkDetSettingsHandler(object sender, EventArgs e);
@@ -93,6 +94,8 @@ namespace NeuroRighter.SpikeDetection
                 default:
                     break;
             }
+
+            spikeDetectionLag = spikeDetector.carryOverLength;
         }
 
         private void button_ForceDetectTrain_Click(object sender, EventArgs e)

@@ -16,16 +16,16 @@ namespace simoc.spk2obs
     class Spk2ASDR : Spk2Obs
     {
 
-        public Spk2ASDR(NRStimSrv stimSrv)
-            : base(stimSrv)
+        public Spk2ASDR(NRStimSrv stimSrv, NRDataSrv datSrv)
+            : base(stimSrv,datSrv)
         {
             numberOfObs = 1;
         }
 
         internal override void MeasureObservable()
         {
-            // Estimate the ASDR
-            currentObservation = (((double)newSpikes.eventBuffer.Count()) /daqPollingPeriodSec); 
+            // Estimate the CSDR
+            currentObservation = (double)newSpikes.eventBuffer.Count(); 
         }
 
 

@@ -83,7 +83,7 @@ namespace NeuroRighter.DatSrv
                 while (i < dataBuffer.sampleBuffer.Count)
                 {
                     // Remove expired data
-                    if (dataBuffer.sampleBuffer.ElementAt(i) < currentSample - (ulong)bufferSizeInSamples)
+                    if (dataBuffer.sampleBuffer.ElementAt(i) + (ulong)bufferSizeInSamples < currentSample)
                     {
                         dataBuffer.sampleBuffer.RemoveAt(i);
                         dataBuffer.portStateBuffer.RemoveAt(i);

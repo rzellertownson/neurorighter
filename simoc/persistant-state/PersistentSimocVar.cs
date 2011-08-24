@@ -10,6 +10,7 @@ namespace simoc.persistantstate
     /// </summary>
     class PersistentSimocVar
     {
+        // Output
         private ulong simocStartSample = 0;
         private ulong lastStimSample = 0;
         private ulong nextStimSample = 0;
@@ -18,6 +19,10 @@ namespace simoc.persistantstate
         private ulong lastAuxEventSample = 0;
         private ulong nextAuxEventSample = 0;
 
+        // Input
+        private ulong lastSampleRead = 0;
+
+        // Generic storage
         private double genericDouble1 = 0;
         private double genericDouble2 = 0;
         private double genericDouble3 = 0;
@@ -137,6 +142,21 @@ namespace simoc.persistantstate
             set
             {
                 nextAuxEventSample = value;
+            }
+        }
+
+        /// <summary>
+        /// The next last input sample retrieved.
+        /// </summary>
+        public ulong LastSampleRead
+        {
+            get
+            {
+                return lastSampleRead;
+            }
+            set
+            {
+                lastSampleRead = value;
             }
         }
 

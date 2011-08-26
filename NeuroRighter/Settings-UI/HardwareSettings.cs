@@ -235,10 +235,10 @@ namespace NeuroRighter
             radioButton_32bit.Enabled = checkBox_useStimulator.Checked;
             radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
             radioButton_8Mux.Enabled = checkBox_useStimulator.Checked;
-            textBox_ADCPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.ADCPollingPeriodSec);
-            textBox_DACPollingPeriodSec.Text = Convert.ToString(Properties.Settings.Default.DACPollingPeriodSec);
-            textBox_datSrvBufferSizeSec.Text = Convert.ToString(Properties.Settings.Default.datSrvBufferSizeSec);
-            textBox_PreAmpGain.Text = Convert.ToString(Properties.Settings.Default.PreAmpGain);
+            numericUpDown_ADCPollingPeriodSec.Value = (decimal)Properties.Settings.Default.ADCPollingPeriodSec;
+            numericUpDown_DACPollingPeriodSec.Value = (decimal)Properties.Settings.Default.DACPollingPeriodSec;
+            numericUpDown_datSrvBufferSizeSec.Value = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
+            numericUpDown_PreAmpGain.Value = (decimal)Properties.Settings.Default.PreAmpGain;
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
             checkBox_useStimulator.Checked = Properties.Settings.Default.UseStimulator;
             checkBox_RecStimTimes.Checked = Properties.Settings.Default.RecordStimTimes;
@@ -290,14 +290,14 @@ namespace NeuroRighter
         private void button_accept_Click(object sender, EventArgs e)
         {
             // Recording selections
-            Properties.Settings.Default.datSrvBufferSizeSec = Convert.ToDouble(textBox_datSrvBufferSizeSec.Text);
-            Properties.Settings.Default.DACPollingPeriodSec = Convert.ToDouble(textBox_DACPollingPeriodSec.Text);
-            Properties.Settings.Default.ADCPollingPeriodSec = Convert.ToDouble(textBox_ADCPollingPeriodSec.Text);
+            Properties.Settings.Default.datSrvBufferSizeSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
+            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
+            Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
             Properties.Settings.Default.AnalogInDevice = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.AnalogInDevice.Clear();
             Properties.Settings.Default.auxAnalogInChan = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.auxAnalogInChan.Clear();
-            Properties.Settings.Default.PreAmpGain = Convert.ToDouble(textBox_PreAmpGain.Text);
+            Properties.Settings.Default.PreAmpGain = (double)numericUpDown_PreAmpGain.Value;
             Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice1.SelectedItem));
             Properties.Settings.Default.UseCineplex = checkBox_useCineplex.Checked;
             Properties.Settings.Default.UseStimulator = checkBox_useStimulator.Checked;

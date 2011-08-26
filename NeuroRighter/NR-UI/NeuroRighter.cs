@@ -192,13 +192,17 @@ namespace NeuroRighter
             recordingCancelled = false;
             if (!taskRunning)
             {
-                updateRecSettings();
+                UpdateRecordingSettings();
                 NRAcquisitionSetup();
             }
 
             if (!recordingCancelled)
             {
                 NRStartRecording();
+            }
+            else
+            {
+                buttonStop_Click(null, null);
             }
 
         }
@@ -245,6 +249,8 @@ namespace NeuroRighter
                             if (filenameBase == null) //this happens if the user pressed cancel for the dialog
                             {
                                 MessageBox.Show("An output file must be selected before recording."); //display an error message
+                                recordingCancelled = true;
+                                this.Cursor = Cursors.Default;
                                 return;
                             }
 
@@ -1091,9 +1097,8 @@ namespace NeuroRighter
         private void buttonStop_Click(object sender, EventArgs e)
         {
             Thread.Sleep(200); // Let file writing etc. finish
-            if (taskRunning)
-                reset();
-            updateRecSettings();
+            reset();
+            UpdateRecordingSettings();
         }
 
     }

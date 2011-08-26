@@ -58,7 +58,7 @@ namespace NeuroRighter
             nc_s.ShowDialog();
             updateSettings();
 
-            NRAcquisitionSetup();
+            //NRAcquisitionSetup();
 
             spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
             spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);

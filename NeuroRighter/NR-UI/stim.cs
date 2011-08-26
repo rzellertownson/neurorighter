@@ -293,7 +293,7 @@ namespace NeuroRighter
         private void openLoopStart_Click(object sender, EventArgs e)
         {
             // Update stim hardware settings
-            updateStimSettings();
+            UpdateStimulationSettings();
 
             //Check that at least one channel is selected
             if (listBox_stimChannels.SelectedIndices.Count > 0)
@@ -390,7 +390,7 @@ namespace NeuroRighter
             stimDigitalTask.WaitUntilDone();
             stimDigitalTask.Stop();
 
-            updateStimSettings();
+            UpdateStimulationSettings();
 
             button_stim.Enabled = true;
             button_stimExpt.Enabled = true;
@@ -915,7 +915,7 @@ namespace NeuroRighter
             else
             {
 
-                updateStimSettings();
+                UpdateStimulationSettings();
 
                 //Take care of buttons
                 button_stim.Enabled = false;

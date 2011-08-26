@@ -59,7 +59,7 @@ namespace NeuroRighter
             taskRunning = false;
 
             // Start by resetting the hardware settings
-            updateRecSettings();
+            UpdateRecordingSettings();
 
             //Grab display gains for later use
             if (spikePlotData != null)
@@ -214,7 +214,7 @@ namespace NeuroRighter
         }
 
         // Look at the recording hardware settings and create NI Tasks that reflect the user's choices
-        private void updateRecSettings()
+        private void UpdateRecordingSettings()
         {
 
             // update the recordingSettings object
@@ -295,7 +295,7 @@ namespace NeuroRighter
                 Properties.Settings.Default.RawSampleFrequency = Convert.ToDouble(textBox_spikeSamplingRate.Text);
                 Properties.Settings.Default.LFPSampleFrequency = Convert.ToDouble(textBox_lfpSamplingRate.Text);
                 Properties.Settings.Default.MUASampleFrequency = Convert.ToDouble(textBox_MUASamplingRate.Text);
-                Console.WriteLine("updateRecSettings finished");
+                Console.WriteLine("UpdateRecordingSettings finished");
             }
             catch (DaqException exception)
             {
@@ -305,7 +305,7 @@ namespace NeuroRighter
         }
 
         // Look at the stimulation hardware settings and create NI Tasks that reflect the user's choices
-        private void updateStimSettings()
+        private void UpdateStimulationSettings()
         {
             try
             {
@@ -417,7 +417,7 @@ namespace NeuroRighter
                     radioButton_stimVoltageControlled.Enabled = false;
                     button_impedanceTest.Enabled = false;
                 }
-                Console.WriteLine("updateStimSettings completed");
+                Console.WriteLine("UpdateStimulationSettings completed");
             }
             catch (DaqException exception)
             {
@@ -429,8 +429,8 @@ namespace NeuroRighter
         // Update all Settings
         private void updateSettings()
         {
-            updateStimSettings();
-            updateRecSettings();
+            UpdateStimulationSettings();
+            UpdateRecordingSettings();
         }
 
         //call this method after changing stimulation settings, or finishing a stimulation experiment

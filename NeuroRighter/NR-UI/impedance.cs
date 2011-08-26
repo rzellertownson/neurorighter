@@ -123,9 +123,13 @@ namespace NeuroRighter
                 scatterGraph_impedance.Plots[channelIndex].PlotXY(freqs, impedance[channelIndex]);
                 scatterGraph_impedance.Refresh();
 
+
                 textBox_impedanceResults.Text += "Channel " + channel.ToString() + "\r\n\tFrequency (Hz)\tImpedance (Ohms)\r\n";
                 for (int f = 0; f < freqs.GetLength(0); ++f)
-                    textBox_impedanceResults.Text += "\t" + freqs[f].ToString() + "\t" + string.Format("{0:0.000}", impedance[channelIndex][f]) + "\r\n";
+                {
+                    int intFreq = (int)Math.Round(freqs[f]);
+                    textBox_impedanceResults.Text += "\t" + intFreq.ToString() + "\t\t" + string.Format("{0:0.00}", impedance[channelIndex][f]) + "\r\n";
+                }
                 textBox_impedanceResults.Text += "\r\n";
             }
         }

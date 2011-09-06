@@ -25,7 +25,7 @@ namespace simoc.spk2obs
         internal override void MeasureObservable()
         {
             // Estimate the CSDR
-            currentObservation = (double)newSpikes.eventBuffer.Count(); 
+            currentObservation = (double)newSpikes.eventBuffer.Count() / numSecondInCurrentRead; 
         }
 
 

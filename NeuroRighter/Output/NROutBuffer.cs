@@ -42,6 +42,7 @@ namespace NeuroRighter.Output
 
         internal bool immortal = false;//do we keep on loading the buffer forever, or do we have a finite number of loads to perform (openloop)
         internal bool done;
+        internal bool robust = true;
 
         // Private Properties
         private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
@@ -507,12 +508,31 @@ namespace NeuroRighter.Output
                 Debugger.Write(this.ToString() + " buffers calculated");
                 for (int i = 0; i < analogWriters.Length; i++)
                 {
-                    if (firstTime)
-                        analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
-                    else
-                        analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
-                    //if (analogTasks[i].IsDone)
-                    //  Console.WriteLine("analog task dead");
+                    try
+                    {
+                        if (firstTime)
+                            analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
+                        else
+                            analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
+                        //if (analogTasks[i].IsDone)
+                        //  Console.WriteLine("analog task dead");
+                    }
+                    catch (DaqException de)
+                    {
+                        if (robust)
+                        {
+                            Debugger.Write("restarting analog task " + i + " after error");
+                            //analogTasks[i]. Stop();
+                            analogTasks[i].Control(TaskAction.Abort);
+                            analogWriters[i].WriteMultiSample(false, new double[abuffs.ElementAt(i).GetLength(0), abuffs.ElementAt(i).GetLength(1)]);
+                            analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
+                            analogTasks[i].Start();
+                        }
+                        else
+                        {
+                            BufferFailure(de.Message);
+                        }
+                    }
                     double[,] tmp = abuffs.ElementAt(i);
                     tmp = null;
 
@@ -523,11 +543,28 @@ namespace NeuroRighter.Output
                     analogbu = this.GetTime();
                 for (int i = 0; i < digitalWriters.Length; i++)
                 {
-                    if (firstTime)
-                        digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
-                    else
-                        digitalWriters[i].BeginWriteMultiSamplePort(false, dbuffs.ElementAt(i), null, null);// WriteMultiSamplePort(false, dbuffs.ElementAt(i));
-
+                    try
+                    {
+                        if (firstTime)
+                            digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                        else
+                            digitalWriters[i].BeginWriteMultiSamplePort(false, dbuffs.ElementAt(i), null, null);// WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                    }
+                    catch (DaqException de)//if we have a daq buffer underflow, try restarting that task
+                    {
+                        if (robust)
+                        {
+                            Debugger.Write("restarting digital task " + i + " after error");
+                            digitalTasks[i].Control(TaskAction.Abort);
+                            digitalWriters[i].WriteMultiSamplePort(false, new uint[dbuffs.ElementAt(i).GetLength(0)]);
+                            digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                            digitalTasks[i].Start();
+                        }
+                        else
+                        {
+                            BufferFailure(de.Message);
+                        }
+                    }
 
 
                     uint[] tmp = dbuffs.ElementAt(i);
@@ -708,6 +745,14 @@ namespace NeuroRighter.Output
         {
             if (DAQLoadCompleted != null)
                 DAQLoadCompleted(this, e);
+        }
+        private void BufferFailure(string message)
+        {
+            running = false;
+            immortal = false;//if we aren't doing this in a robust manner, then we should just stop now.
+            Debugger.Write(this.ToString() + " FAIL " + message);
+            MessageBox.Show("unhandled daq exception on " + this.ToString() +
+                ": " + message + ".  Check log to figure out why.");
         }
 
 

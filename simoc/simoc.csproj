@@ -33,12 +33,13 @@
   <ItemGroup>
     <Reference Include="NationalInstruments.Analysis.Enterprise, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.32, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a" />
-    <Reference Include="NeuroRighter, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NeuroRighter, Version=0.6.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\NeuroRighter\bin\Debug\NeuroRighter.exe</HintPath>
+      <ExecutableExtension>.exe</ExecutableExtension>
+      <HintPath>..\NeuroRighter\bin\Release\NeuroRighter.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

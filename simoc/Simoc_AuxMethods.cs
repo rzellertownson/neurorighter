@@ -171,7 +171,7 @@ namespace simoc
                             Filt2PropFreqFB controller = new Filt2PropFreqFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 1; i < controller.numberOutStreams; ++i)
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                         }
                         break;
@@ -180,7 +180,7 @@ namespace simoc
                             Filt2PropPowerFB controller = new Filt2PropPowerFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 1; i < controller.numberOutStreams; ++i)
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                         }
                         break;
@@ -205,7 +205,7 @@ namespace simoc
                 datum[1] = currentFilt;
                 datum[2] = currentTarget;
                 datum[3] = currentError;
-                for (int i = 4; i < currentFeedBack.Length - 4; ++i)
+                for (int i = 4; i < currentFeedBack.Length + 4; ++i)
                 {
                     datum[i] = currentFeedBack[i - 4];
                 }

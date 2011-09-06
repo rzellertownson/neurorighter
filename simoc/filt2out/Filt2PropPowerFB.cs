@@ -27,7 +27,10 @@ namespace simoc.filt2out
         internal override void CalculateError(ref double currentError, double currentTarget, double currentFilt)
         {
             base.CalculateError(ref currentError, currentTarget, currentFilt);
-            currentError = currentTarget - currentFilt;
+            //if (currentTarget != 0)
+                currentError = (currentTarget - currentFilt);  // currentTarget;
+            //else
+            //    currentError = 0;
             currentErrorInt = currentError;
         }
 
@@ -50,7 +53,7 @@ namespace simoc.filt2out
             currentFeedbackSignals = new double[numberOutStreams];
             currentFeedbackSignals[0] = simocVariableStorage.GenericDouble1;
 
-            // Get the pulse width
+            // Get the pulse width (msec)
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * c2 / 1000);
 
             // Create the output buffer

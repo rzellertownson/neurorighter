@@ -29,3 +29,6 @@ C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\obj\Release\simoc.cspro
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\obj\Release\simoc.dll.licenses
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\obj\Release\simoc.dll
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\obj\Release\simoc.pdb
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\bin\Release\csmatio.xml
+C:\Users\Jon\Desktop\WORK_IN_PROGRESS\neurorighter\simoc\bin\Release\NeuroRighter.xml

@@ -74,7 +74,7 @@ namespace NeuroRighter.SpikeDetection
         protected int[] deadWidth;
         protected bool inBounds;
 
-        public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, 
+        public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
             int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,
             int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp, double minSpikeSlope)
         {
@@ -94,7 +94,7 @@ namespace NeuroRighter.SpikeDetection
             this.minSpikeSlope = minSpikeSlope;
 
             if (deadTime != 0)
-                this.carryOverLength = numPre + 2*maxSpikeWidth + deadTime + numPost;
+                this.carryOverLength = numPre + 2 * maxSpikeWidth + deadTime + numPost;
             else
                 this.carryOverLength = numPre + maxSpikeWidth + numPost;
 
@@ -117,27 +117,27 @@ namespace NeuroRighter.SpikeDetection
         internal virtual float[][] GetCurrentThresholds()
         {
 
-                returnThresh = new float[2][];
+            returnThresh = new float[2][];
 
-                for (int i = 0; i < 2; ++i)
-                {
-                    returnThresh[i] = new float[numChannels];
-                }
+            for (int i = 0; i < 2; ++i)
+            {
+                returnThresh[i] = new float[numChannels];
+            }
 
-                for (int i = 0; i < numChannels; ++i)
-                {
-                    returnThresh[0][i] = (float)(threshold[0, i]);
-                    returnThresh[1][i] = (float)(-threshold[0, i]);
-                }
- 
+            for (int i = 0; i < numChannels; ++i)
+            {
+                returnThresh[0][i] = (float)(threshold[0, i]);
+                returnThresh[1][i] = (float)(-threshold[0, i]);
+            }
+
 
             return returnThresh;
         }
 
-        // Spike detection method that all data goes through at some point
+        // Smart Spike detection method that all data goes through at some point
         internal virtual List<SpikeEvent> DetectSpikes(double[] data, int channel, ulong bufferOffset)
         {
-            if (bufferOffset==0)
+            if (bufferOffset == 0)
                 for (int i = 0; i < numChannels; ++i)
                 {
                     this.detectionCarryOverBuffer[i] = new double[carryOverLength];
@@ -151,7 +151,7 @@ namespace NeuroRighter.SpikeDetection
 
                 // Define position in current data buffer
                 int i = numPre + initialSamplesToSkip[channel];
-                
+
                 // Reset the skip value to 0
                 initialSamplesToSkip[channel] = 0;
 
@@ -184,7 +184,7 @@ namespace NeuroRighter.SpikeDetection
                 //Detect spikes, append to waveforms list
                 int indiciesToSearchForCross = spikeDetectionBuffer.Count - carryOverLength + numPre;
                 int indiciesToSearchForReturn = spikeDetectionBuffer.Count - carryOverLength + numPre + maxSpikeWidth;
-                
+
                 // For fixed and adaptive, the current threshold is not a function of i
                 currentThreshold = threshold[0, channel];
                 for (; i < indiciesToSearchForReturn; ++i)
@@ -207,8 +207,8 @@ namespace NeuroRighter.SpikeDetection
                             posCross = FindSpikePolarityBySlopeOfCrossing();
                         }
                     }
-                        //exiting a spike- requires + maxspikewidth (to find peak), -pre and +post (to find waveform)
-                    else if (inASpike[channel] && 
+                    //exiting a spike- requires + maxspikewidth (to find peak), -pre and +post (to find waveform)
+                    else if (inASpike[channel] &&
                             ((posCross && spikeDetectionBuffer[i] < currentThreshold) ||
                              (!posCross && spikeDetectionBuffer[i] > -currentThreshold))
                             )
@@ -220,7 +220,7 @@ namespace NeuroRighter.SpikeDetection
 
                         // Calculate Spike width
                         spikeWidth = exitSpikeIndex - enterSpikeIndex;
-       
+
                         // Find the index + value of the spike maximum
                         int spikeMaxIndex = FindMaxDeflection(posCross, enterSpikeIndex, spikeWidth);
                         double spikeMax = spikeDetectionBuffer[spikeMaxIndex];
@@ -230,7 +230,6 @@ namespace NeuroRighter.SpikeDetection
 
                         // Check if the spike is any good
                         bool goodSpike = CheckSpike(spikeWidth, waveform);
-                        
 
                         if (!goodSpike)
                         {
@@ -295,17 +294,17 @@ namespace NeuroRighter.SpikeDetection
                                     }
                                 }
                             }
-                        
+
                         ProcessSpike:
                             // Record the waveform
                             ulong tmpindex = ((ulong)(spikeMaxIndex) + bufferOffset) - (ulong)(recIndexOffset);
-                   
+
                             waveforms.Add(new SpikeEvent(channel,
                                 tmpindex, currentThreshold, waveform));
 
                             // Calculate dead-time
                             int dt;
-                            if (!inflectionWithinDead && deadWidth !=null)
+                            if (!inflectionWithinDead && deadWidth != null)
                                 dt = deadWidth[0] - 1;
                             else
                                 dt = deadTime;
@@ -351,6 +350,115 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
+        // Simple Spike detection method
+        internal virtual List<SpikeEvent> DetectSpikesSimple(double[] data, int channel, ulong bufferOffset)
+        {
+            if (bufferOffset == 0)
+                for (int i = 0; i < numChannels; ++i)
+                {
+                    this.detectionCarryOverBuffer[i] = new double[carryOverLength];
+                }
+            List<SpikeEvent> waveforms = new List<SpikeEvent>();
+
+            lock (this)
+            {
+                // Update threshold
+                updateThreshold(data, channel);
+
+                // Define position in current data buffer
+                int i = numPre + initialSamplesToSkip[channel];
+
+                // Reset the skip value to 0
+                initialSamplesToSkip[channel] = 0;
+
+                // Create the current data buffer
+                if (!regularDetect[channel])
+                {
+                    // First fill, cannot get the first samples because
+                    // the number of "pre" samples will be too low
+                    regularDetect[channel] = true; // no longer the first detection
+                    spikeDetectionBuffer = new List<double>();
+                    spikeDetectionBuffer.AddRange(data);
+                    recIndexOffset = 0;
+                }
+                else
+                {
+                    // Create buffer that is used for spike detection
+                    spikeDetectionBuffer = new List<double>();
+
+                    // Data from last buffer that we could not detect on because of edge effects
+                    spikeDetectionBuffer.AddRange(detectionCarryOverBuffer[channel]);
+
+                    // Data from this buffer
+                    spikeDetectionBuffer.AddRange(data);
+
+                    // Need to account for the fact that we our new spike detection buffer will have
+                    // a starting index that does not start with new data
+                    recIndexOffset = carryOverLength;
+                }
+
+                //Detect spikes, append to waveforms list
+                int indiciesToSearchForCross = spikeDetectionBuffer.Count - carryOverLength + numPre;
+                int indiciesToSearchForReturn = spikeDetectionBuffer.Count - carryOverLength + numPre + maxSpikeWidth;
+
+                // For fixed and adaptive, the current threshold is not a function of i
+                currentThreshold = threshold[0, channel];
+                for (; i < indiciesToSearchForCross; ++i)
+                {
+                    if (spikeDetectionBuffer[i] < currentThreshold &&
+                        spikeDetectionBuffer[i] > -currentThreshold)
+                    {
+                        continue; // not above threshold, next point please
+                    }
+                    else
+                    {
+                        // We are entering a spike
+                        enterSpikeIndex = i;
+
+                        // We just hit a thresh cross
+                        inASpike[channel] = false;
+
+                        // Define spike waveform without attempting align
+                        double[] waveform = CreateWaveform(enterSpikeIndex);
+                        bool goodSpike = CheckSpikeSimple(waveform);
+                        if (!goodSpike)
+                        {
+                            // If the spike is no good
+                            continue;
+                        }
+
+                        // Record the waveform
+                        ulong tmpindex = ((ulong)(enterSpikeIndex) + bufferOffset) - (ulong)(recIndexOffset);
+
+                        waveforms.Add(new SpikeEvent(channel,
+                            tmpindex, currentThreshold, waveform));
+
+                        // Carry-over dead time if we are at the end of the buffer
+                        if (i >= indiciesToSearchForCross)
+                            initialSamplesToSkip[channel] = deadTime + enterSpikeIndex - indiciesToSearchForCross;
+                        else
+                            initialSamplesToSkip[channel] = 0;
+
+                        // Move forward by deadtime
+                        i = enterSpikeIndex + deadTime;
+                    }
+                }
+
+                // Create carry-over buffer from last samples of this buffer
+                int idx = 0;
+                for (i = spikeDetectionBuffer.Count - carryOverLength; i < spikeDetectionBuffer.Count; ++i)
+                {
+                    detectionCarryOverBuffer[channel][idx] = spikeDetectionBuffer[i];
+                    idx++;
+                }
+            }
+
+
+
+            // pass the waveforms to further processes
+            return waveforms;
+        }
+
         // Check spike based on spike detection settings
         protected bool CheckSpike(int spikeWidth, double[] waveform)
         {
@@ -363,16 +471,56 @@ namespace NeuroRighter.SpikeDetection
             double[] absWave = new double[waveform.Length];
             for (int i = 0; i < waveform.Length; ++i)
                 absWave[i] = Math.Abs(waveform[i]);
- 
+
             bool spikeMaxGood = absWave.Max() < maxSpikeAmp;
-            if (!spikeWidthGood)
+            if (!spikeMaxGood)
                 return spikeMaxGood;
 
             // Check spike slope
             bool spikeSlopeGood = GetSpikeSlope(absWave) > minSpikeSlope;
             if (!spikeSlopeGood)
                 return spikeSlopeGood;
-                
+
+            //Ensure that part of the spike is not blanked
+            double VOLTAGE_EPSILON = 0.0000005; // 1 uV
+            double numBlanked = 0;
+            for (int i = 0; i < absWave.Length; ++i)
+            {
+                if (absWave[i] < VOLTAGE_EPSILON)
+                {
+                    numBlanked++;
+                }
+                else
+                {
+                    numBlanked = 0;
+                }
+
+                if (numBlanked > 5)
+                    return false;
+            }
+
+            // Made it through validation, return true
+            return true;
+        }
+
+        // Simple check spike
+        protected bool CheckSpikeSimple(double[] waveform)
+        {
+
+            // Check spike amplitude
+            double[] absWave = new double[waveform.Length];
+            for (int i = 0; i < waveform.Length; ++i)
+                absWave[i] = Math.Abs(waveform[i]);
+
+            bool spikeMaxGood = absWave.Max() < maxSpikeAmp;
+            if (!spikeMaxGood)
+                return spikeMaxGood;
+
+            // Check spike slope
+            bool spikeSlopeGood = GetSpikeSlope(absWave) > minSpikeSlope;
+            if (!spikeSlopeGood)
+                return spikeSlopeGood;
+
             //Ensure that part of the spike is not blanked
             double VOLTAGE_EPSILON = 0.0000005; // 1 uV
             double numBlanked = 0;
@@ -428,7 +576,7 @@ namespace NeuroRighter.SpikeDetection
             int diffWidth;
 
             if (spikeWidth + 2 <= numPre)
-                diffWidth = spikeWidth+2;
+                diffWidth = spikeWidth + 2;
             else
                 diffWidth = numPre;
 
@@ -436,7 +584,7 @@ namespace NeuroRighter.SpikeDetection
             {
                 spikeSlopeEstimate += Math.Abs(absWave[i + 1] - absWave[i]);
             }
-            
+
             return spikeSlopeEstimate / (double)(2 * diffWidth);
 
         }

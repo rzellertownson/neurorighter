@@ -25,6 +25,7 @@ namespace NeuroRighter.SpikeDetection
         internal int numPre; // num smaples to save pre-spike
         internal int numPost; // num samples to save post-spike
         internal int spikeDetectionLag; // number of samples that spike detector will cause buffers to lag
+        internal int detectorType = 0;
 
         // Delegates for informing mainform of settings change
         internal delegate void resetSpkDetSettingsHandler(object sender, EventArgs e);
@@ -40,6 +41,7 @@ namespace NeuroRighter.SpikeDetection
             InitializeComponent();
 
             //Default spike det. algorithm is fixed RMS
+            this.comboBox_noiseEstAlg.SelectedIndex = 0;
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
             this.numPre = (int)numPreSamples.Value;
             this.numPost = (int)numPostSamples.Value;
@@ -70,11 +72,10 @@ namespace NeuroRighter.SpikeDetection
             label_MinWidthSamp.Text = minSpikeWidth + " sample(s)";
             label_MaxWidthSamp.Text = maxSpikeWidth + " sample(s)";
 
-            
             // Half a millisecond to determine spike polarity
             int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate)/1000);
 
-            switch (comboBox_spikeDetAlg.SelectedIndex)
+            switch (comboBox_noiseEstAlg.SelectedIndex)
             {
                 case 0:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
@@ -90,6 +91,22 @@ namespace NeuroRighter.SpikeDetection
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime,minSpikeWidth,maxSpikeWidth,
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(sampleRate));
+                    break;
+                default:
+                    break;
+            }
+
+            switch (comboBox_spikeDetAlg.SelectedIndex)
+            {
+                case 0:  //auto-aligner
+                    numericUpDown_MaxSpikeWidth.Enabled = true;
+                    numericUpDown_MinSpikeWidth.Enabled = true;
+                    detectorType = 0;
+                    break;
+                case 1:  //simple
+                    numericUpDown_MaxSpikeWidth.Enabled = false;
+                    numericUpDown_MinSpikeWidth.Enabled = false;
+                    detectorType = 1;
                     break;
                 default:
                     break;
@@ -165,8 +182,21 @@ namespace NeuroRighter.SpikeDetection
             this.Hide();
         }
 
+        private void comboBox_spikeDetAlg_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SettingsHaveChanged != null)
+            {
+                SettingsHaveChanged(this, e);
+            }
+        }
 
-
+        private void comboBox_noiseEstAlg_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SettingsHaveChanged !=null)
+            {
+                SettingsHaveChanged(this, e);
+            }
+        }
 
     }
 }

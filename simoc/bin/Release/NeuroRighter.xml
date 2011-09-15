@@ -4,11 +4,309 @@
         <name>NeuroRighter</name>
     </assembly>
     <members>
-        <member name="T:NeuroRighter.SnipGridGraph">
+        <member name="F:NeuroRighter.DataTypes.NREvent.sampleIndex">
             <summary>
-            <author> Jon Newman</author>
-            This Class is an extension of the gridgraph class for plotting a grid of data.
+            Specifys when event occured relative to recording start
             </summary>
+        </member>
+        <member name="M:NeuroRighter.DataTypes.AuxOutEvent.#ctor(System.UInt64,System.UInt16,System.Double)">
+            <summary>
+            NeuroRighters auxiliary analog out event data type.
+            </summary>
+            <param name="time">auxiliary event time (in 100ths of ms)</param>
+            <param name="channel">the analog channel (0-3), corresponding to the event time</param>
+            <param name="voltage">analog voltage state, -10 to 10 volts, corresponding to the event time</param>
+        </member>
+        <member name="T:NeuroRighter.FileOutput">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.DatSrv.DigitalEventSrv">
+            <summary>
+            Data server for digital data. That is, data tyoes that consist of a discrete time and port state.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.DigitalEventSrv.bufferLock">
+            <summary>
+             The mutex class for concurrent read and write access to data buffers
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.DigitalEventSrv.sampleFrequencyHz">
+            <summary>
+            Sampling frequency for data collected for this server.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.#ctor(System.Double,System.Double,System.Int32)">
+            <summary>
+            Generic digital data server for a given 32 bit port. The main data buffer that this class updates
+            'dataBuffer', itself a DigitalEventBuffer object.This method accepts a time range (in seconds referenced to the start of the recording)
+            as input and will copy the portion of the current data buffer that is within that range to the user as a 
+            DigitalEventBuffer object. The EstimateAvailableTimeRange method can be used to get an estimate of a valide range
+            to enter for a Read operation. If there is no data in the time range provided, the method returns a null object.
+            </summary>
+            <param name="sampleFrequencyHz"> Sampling frequency of the DAQ that is feeding this server</param>
+            <param name="bufferSizeSec">The requested history of the buffer in seconds</param>
+            <param name="numSamplesPerWrite"> How many samples will the DAQ provide when a Write is called?</param>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.EstimateAvailableTimeRange">
+            <summary>
+            Estimate the avialable samples in the buffer. This can be used to inform
+            the user of good arguments for the ReadFromBuffer method.
+            </summary>
+            <returns>timeRange</returns>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.ReadFromBuffer(System.UInt64,System.UInt64)">
+            <summary>
+            Read data from buffer. This method will attempt to retrieve samples within the range
+            specified by the input arguements. The object that is returned
+            will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
+            method to get a (time-sensitive) estimate for good-arguments for this method.
+            </summary>
+            <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
+            <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
+            <returns>DigitalEventBuffer</returns>
+        </member>
+        <member name="T:NeuroRighter.DataTypes.RawMultiChannelBuffer">
+            <summary>
+            This class is the standard NR buffer class for raw analog data coming from
+            multiple input channels. It has a startAndEndSample property that specifies
+            the start and end sample indicies, relative to the start of data collection
+            contained in the data buffer corresponding to the first and last positions
+            of the rawMultichannelBuffer array (one channel's worth of data along each row).
+            The samplePeriodSecond property allows client classes to determine the absolute
+            time stamp of each sample in seconds.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:NeuroRighter.DataTypes.RawMultiChannelBuffer.#ctor(System.Double,System.Int32,System.Int32,System.Int32)" -->
+        <member name="T:NeuroRighter.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.GraphicsDeviceService">
+            <summary>
+            Helper class responsible for creating and managing the GraphicsDevice.
+            All GraphicsDeviceControl instances share the same GraphicsDeviceService,
+            so even though there can be many controls, there will only ever be a single
+            underlying GraphicsDevice. This implements the standard IGraphicsDeviceService
+            interface, which provides notification events for when the device is reset
+            or disposed.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.#ctor(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Constructor is private, because this is a singleton class:
+            client controls should use the public AddRef method instead.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.AddRef(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Gets a reference to the singleton instance.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.Release(System.Boolean)">
+            <summary>
+            Releases a reference to the singleton instance.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.GraphicsDeviceService.ResetDevice(System.Int32,System.Int32)">
+            <summary>
+            Resets the graphics device to whichever is bigger out of the specified
+            resolution or its current size. This behavior means the device will
+            demand-grow to the largest of all its GraphicsDeviceControl clients.
+            </summary>
+        </member>
+        <member name="P:NeuroRighter.GraphicsDeviceService.GraphicsDevice">
+            <summary>
+            Gets the current graphics device.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.SpikeWaveformGraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.SpikeWaveformGraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.SpikeWaveformGraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.Output.MakeAODOPair">
+            <summary>
+            Base class for creating a pair of AO and DO tasks within NR. Contains methods
+            for synchronizing those tasks to a master clock (usually this would be the AI
+            task), and for synchronizing the task starts to a master digital edge.
+            <author> Jon Newman </author>
+            </summary>
+        </member>
+        <member name="T:ExtensionMethods.NRExtensionMethods">
+            <summary>
+            Extension Methods for NeuroRighter
+            </summary>
+            <author> Jon Newman</author>
+        </member>
+        <member name="M:ExtensionMethods.NRExtensionMethods.MaxIndex``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Method for getting index of max value of 
+            a generic collection
+            </summary>
+            <typeparam name="T">Generic collection</typeparam>
+            <param name="sequence"></param>
+            <returns>Max of genertic collection</returns>
+        </member>
+        <member name="M:ExtensionMethods.NRExtensionMethods.MinIndex``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Method for getting index of min value of 
+            a generic collection
+            </summary>
+            <typeparam name="T">Generic collection</typeparam>
+            <param name="sequence"></param>
+            <returns>Min of genertic collection</returns>
+        </member>
+        <member name="M:ExtensionMethods.NRExtensionMethods.DeepClone``1(``0)">
+            <summary>
+            Method for creating deep copies of objects
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ExtensionMethods.NRExtensionMethods.GenerateBrainbow(System.Int32)">
+            <summary>
+            Method for geneating the default color map for NR plotting
+            </summary>
+            <param name="numChannels">int number of channels</param>
+            <returns>List of color objects</returns>
+        </member>
+        <member name="M:NeuroRighter.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.EventPlotData">
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.Output.ContStimTask">
+            <summary>
+            Ihnerited frm MakeAODOPair, specialized for stimulation output.
+            <author> Jon Newman </author>
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.rawElectrodeSrv">
+            <summary>
+            Raw electrode persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.salpaElectrodeSrv">
+            <summary>
+            SALPA filtered electrode data persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.filteredElectrodeSrv">
+            <summary>
+            Butterworth filtered electrode data persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.lfpSrv">
+            <summary>
+            LFP persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.eegSrv">
+            <summary>
+            EEG persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.auxAnalogSrv">
+            <summary>
+            Aux analog persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.spikeSrv">
+            <summary>
+            Spike snippet persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.auxDigitalSrv">
+            <summary>
+            Digital input persistant buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.stimSrv">
+            <summary>
+            Stimulus server.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.ADCPollingPeriodSec">
+            <summary>
+            The ADC polling periods in seconds.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.NRDataSrv.ADCPollingPeriodSamples">
+            <summary>
+            The ADC polling periods in samples.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.NRDataSrv.#ctor(System.Double,System.Boolean,System.Int32,System.Boolean,System.Int32)">
+            <summary>
+            NeuroRighter's Persistant Data Server
+            </summary>
+            <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
+            <param name="salpaAccess"> Using SALPA? </param>
+            <param name="spikeFiltAccess"> Using spike filters? </param>
+        </member>
+        <member name="T:NeuroRighter.Aquisition.NRAIChannelCollection">
+            <summary>
+            This class contains methods for creating and returning the tasks needed to create data streams for spike aquisition
+            and aux analog data in NR.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.SpikeDetection.SpikeDetSettings.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.SpikeDetection.SpikeDetSettings.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.SpikeDetection.SpikeDetSettings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetection.LimAda">
+            <author>Jon Newman and John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetection.SpikeDetector">
+            <summary>
+            Base clase for spike detection. All spike detectors should inherit this
+            virtual class. 
+            <author> Jon Newman</author>
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.GridGraph">
+            <author>John Rolston</author>
         </member>
         <member name="T:NeuroRighter.GraphicsDeviceControl">
             <summary>
@@ -92,74 +390,49 @@
             which use this service to look up the GraphicsDevice.
             </summary>
         </member>
-        <member name="T:NeuroRighter.HardwareSettings">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="M:NeuroRighter.HardwareSettings.#ctor">
-            <summary>
-            NeuroRighter hardware settings.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.HardwareSettings.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.HardwareSettings.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:NeuroRighter.HardwareSettings.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
         <member name="T:NeuroRighter.NeuroRighter">
             <summary>Methods controlling stimulation through NeuroRighter.</summary>
             <author>John Rolston</author>
-            <summary>Declarations for the NeuroRighter UI.</summary>
-            <author>Jon Newman</author>
             <summary>Main Form for NeuroRighter application.</summary>
             <author>John Rolston</author>
-            <summary>Methods for cleaning up NI Tasks and UI when stop button is pressed.</summary>
+            <summary>misc. methods for the NeuroRighter mainform.</summary>
             <author>John Rolston</author>
-            <summary>Methods for setting up filtering, gain settings, digital referencing etc.</summary>
+            <summary>Declarations for the NeuroRighter UI.</summary>
+            <author>Jon Newman</author>
+            <summary>Methods for plotting spike traces and waveforms.</summary>
             <author>John Rolston</author>
             <summary> Create/edit log file during an experiement.</summary>
             <author>Jon Newman</author>
             <summary>Methods that invoke and inform the file writing classes
             of settings changes and data aquisision.</summary>
             <author>Jon Newman</author>
-            <summary>Methods relating to impedance measurement.</summary>
+            <summary>Methods for cleaning up NI Tasks and UI when stop button is pressed.</summary>
             <author>John Rolston</author>
-            <summary>Methods that control spike detection filter selection and parameters via the NR mainform. </summary>
-            <author>John Rolston</author>
-            <summary>Methods for using programmable referencing.</summary>
-            <author>John Rolston</author>
-            <summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG) 
-            and calls the methods that write these data to file. This class is also responsible for writting to the datSrv object,
-            NR's data server. </summary>
-            <author>Jon Newman</author>
-            <summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams
-            and, if appropriate, sending those raw streams to file.</summary>
-            <author>John Rolston</author>
-            <summary>Methods for plotting spike traces and waveforms.</summary>
-            <author>John Rolston</author>
-            <summary>Declarations for the NeuroRighter UI.</summary>
-            <author>Jon Newman</author>
-            <summary>Declarations for the NeuroRighter UI.</summary>
-            <author>Jon Newman</author>
             <summary>Methods for the control of the plots shown in the NR mainform. For instance zooming, freezing and replay methods. </summary>
+            <author>John Rolston</author>
+            <summary>Methods for setting up filtering, gain settings, digital referencing etc.</summary>
             <author>John Rolston</author>
             <summary>Methods for dealing with menus and tabs in NR mainform. Also deals with closing the mainform.</summary>
             <author>John Rolston</author>
             <summary>Set file path for NR recordings.</summary>
             <author>Jon Newman</author>
-            <summary>misc. methods for the NeuroRighter mainform.</summary>
+            <summary> This porition of the NeuroRighter class handles all the setup of all e-phys recording (spikes, LFP and EEG) 
+            and calls the methods that write these data to file. This class is also responsible for writting to the datSrv object,
+            NR's data server. </summary>
+            <author>Jon Newman</author>
+            <summary>Methods that control spike detection filter selection and parameters via the NR mainform. </summary>
             <author>John Rolston</author>
+            <summary>Methods relating to impedance measurement.</summary>
+            <author>John Rolston</author>
+            <summary>Declarations for the NeuroRighter UI.</summary>
+            <author>Jon Newman</author>
+            <summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams
+            and, if appropriate, sending those raw streams to file.</summary>
+            <author>John Rolston</author>
+            <summary>Methods for using programmable referencing.</summary>
+            <author>John Rolston</author>
+            <summary>Declarations for the NeuroRighter UI.</summary>
+            <author>Jon Newman</author>
         </member>
         <member name="F:NeuroRighter.NeuroRighter.components">
             <summary>
@@ -183,53 +456,121 @@
             Keeps track of when a stimulus pulse occurred
             </summary>
         </member>
-        <member name="T:NeuroRighter.FileWriting.RawScale">
-            <summary>
-            Class for manipulation of analog raw input in order to make it fit for file writing
-            <author> Jon Newman</author>
-            </summary>
-            
+        <member name="T:NeuroRighter.SpikeDetection.AdaptiveRMSThreshold">
+            <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
         </member>
-        <member name="T:NeuroRighter.DataTypes.ElectricalStimEvent">
+        <member name="T:NeuroRighter.Output.IISZapper">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.MEAChannelMappings">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="M:NeuroRighter.MEAChannelMappings.channel2LinearCR(System.Int32)">
             <summary>
-            Generic class for holding mixed digital/analog events corresponding to electrical
-            stimulation recordings in NR. These are defined by a time sample, a channel, a amplitude 
-            value and an optional a list of auxiliary doubles that can be inserted by the user.
+            Takes the hardware channel and outputs the display channel number ((row-1)*8+col)
+            </summary>
+            <param name="index">0-based channel number to map</param>
+            <returns>0-based mapped channel number</returns>
+        </member>
+        <member name="T:NeuroRighter.ButterworthFilter">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.FileWriting.SpikeFileOutput">
+            <author>John Rolston (rolston2@gmail.com)</author>
+        </member>
+        <member name="T:NeuroRighter.Output.ZeroOutput">
+            <summary>
+            <title> ZeroOutputs</title>
+            Class for zeroing the outputs of the NI cards in a given system. This class
+            has methods for zeroing analog outputs and digital output ports.
+            This class should  generally should be usedfollowing any type of
+            stimulation method or experiment involving output so that the user is sure the
+            system is "shut down".
             <author> Jon Newman </author>
             </summary>
         </member>
-        <member name="F:NeuroRighter.DataTypes.NREvent.sampleIndex">
+        <member name="F:NeuroRighter.RecordingNote.TS">
             <summary>
-            Specifys when event occured relative to recording start
+            This form allows the user to enter information about the current recording as ascii text. 
+            When the information is logged it is stored as a *.log file with the same basefile name as the 
+            current recording. Each time a note is entered, it is prefaced by the time-stamp at which the note
+            form was opened.
             </summary>
+            
         </member>
-        <member name="T:NeuroRighter.Output.StimTrain">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="M:NeuroRighter.DataTypes.AuxOutEvent.#ctor(System.UInt64,System.UInt16,System.Double)">
-            <summary>
-            NeuroRighters auxiliary analog out event data type.
-            </summary>
-            <param name="time">auxiliary event time (in 100ths of ms)</param>
-            <param name="channel">the analog channel (0-3), corresponding to the event time</param>
-            <param name="voltage">analog voltage state, -10 to 10 volts, corresponding to the event time</param>
-        </member>
-        <member name="F:NeuroRighter.FileWriting.RecordingSetup.components">
+        <member name="F:NeuroRighter.RecordingNote.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:NeuroRighter.FileWriting.RecordingSetup.Dispose(System.Boolean)">
+        <member name="M:NeuroRighter.RecordingNote.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:NeuroRighter.FileWriting.RecordingSetup.InitializeComponent">
+        <member name="M:NeuroRighter.RecordingNote.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
+        </member>
+        <member name="T:NeuroRighter.ChannelOutput">
+            <summary>
+            Class to handle playback of one channel to BNC or other output (useful for audio playback)
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.ChannelOutput.Dispose">
+            <summary>
+            Dispose of tasks within object.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.DatSrv.RawDataSrv">
+            <summary>
+            Server for raw data.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.RawDataSrv.sampleFrequencyHz">
+            <summary>
+            Sampling frequency for data collected for this server.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DatSrv.RawDataSrv.channelCount">
+            <summary>
+             Number of channels belonging to this server
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.RawDataSrv.#ctor(System.Double,System.Int32,System.Double,System.Int32,System.Int32)">
+            <summary>
+            Generic raw data server for multichannel data streams. The main data buffer that this class updates i
+            'dataBuffer', itself a RawMultiChannelBuffer object. The class has one method that the user should worry about
+            called, ReadFromDataBuffer. This method accepts a time range (in seconds referenced to the start of the recording)
+            as input and will copy the portion of the current data buffer that is within that range to the user as a 
+            RawMultiChannelBuffer object. If there is no data in the time range provided, the method returns a null object.
+            </summary>
+            <param name="numChannels"> Number of channels in the raw data stream</param>
+            <param name="bufferSizeSec"> The history of the channels that should be kept, in seconds</param>
+            <param name="sampleFrequencyHz"> The sampling frequency of an individual channel in the stream</param>
+            <param name="numSamplesPerWrite"> The number of samples to be written each time the DAQ is polled and the dataBuffer is updated.</param>
+            <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.RawDataSrv.EstimateAvailableTimeRange">
+            <summary>
+            Estimate the avialable samples in the buffer. This can be used to inform
+            the user of good arguments for the ReadFromBuffer method.
+            </summary>
+            <returns>timeRange</returns>
+        </member>
+        <member name="M:NeuroRighter.DatSrv.RawDataSrv.ReadFromBuffer(System.UInt64,System.UInt64)">
+            <summary>
+            Read data from buffer. This method will attempt to retrieve samples within the range
+            specified by the input arguements. The object that is returned
+            will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
+            method to get a (time-sensitive) estimate for good-arguments for this method.
+            </summary>
+            <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
+            <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
+            <returns>RawMultiChannelBuffer</returns>
         </member>
         <member name="T:NeuroRighter.DataTypes.AnalogOutEvent">
             <summary>
@@ -238,54 +579,66 @@
             <author> Riley Zeller-Townson </author>
             </summary>
         </member>
-        <member name="T:NeuroRighter.DataTypes.SpikeEvent">
-            <summary>
-            Generic class for holding spike events. That is, those that are defined
-            by a discrete point in time, but also can have a channel, a snip of analog data
-            and,  a threshold value associated with them.
-            <author> Jon Newman </author>
-            </summary>
+        <member name="T:NeuroRighter.HardwareSettings">
+            <author>John Rolston (rolston2@gmail.com)</author>
         </member>
-        <member name="F:NeuroRighter.DataTypes.SpikeEvent.channel">
+        <member name="F:NeuroRighter.HardwareSettings.components">
             <summary>
-            HW Channel that the spike occured on
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DataTypes.SpikeEvent.threshold">
-            <summary>
-            The voltage threshold at which the spike was detected
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DataTypes.SpikeEvent.waveform">
-            <summary>
-            A voltage vector specifying a spike snippet
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.DataTypes.SpikeEvent.#ctor(System.Int32,System.UInt64,System.Double,System.Double[])">
-            <summary>
-            Generic class for holding spike events generated within NR.
-            </summary>
-            <param name="channel">HW Channel that the spike occured on</param>
-            <param name="sampleIndex"> The sample index, relative to recording start, in which the peak of the spike occured.</param>
-            <param name="threshold"> The voltage threshold at which the spike was detected</param>
-            <param name="waveform">A voltage vector specifying a spike snippet</param>
-        </member>
-        <member name="F:NeuroRighter.SpikeWaveformGraph.components">
-            <summary> 
             Required designer variable.
             </summary>
         </member>
-        <member name="M:NeuroRighter.SpikeWaveformGraph.Dispose(System.Boolean)">
-            <summary> 
+        <member name="M:NeuroRighter.HardwareSettings.Dispose(System.Boolean)">
+            <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:NeuroRighter.SpikeWaveformGraph.InitializeComponent">
-            <summary> 
-            Required method for Designer support - do not modify 
+        <member name="M:NeuroRighter.HardwareSettings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
+        </member>
+        <member name="M:NeuroRighter.HardwareSettings.#ctor">
+            <summary>
+            NeuroRighter hardware settings.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.DataTypes.DigitalEventBuffer">
+            <summary>
+            This class is the standard NR buffer class for digital event type data. 
+            Properties are the timeSample which specifies the time, in samples, that
+            the digital event occured and portState, which is the integer
+            state of the digital port at the time of the event.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:NeuroRighter.DataTypes.DigitalEventBuffer.sampleFrequencyHz" -->
+        <member name="F:NeuroRighter.DataTypes.DigitalEventBuffer.sampleBuffer">
+            <summary>
+            The time stamp buffer.
+            </summary>
+        </member>
+        <member name="F:NeuroRighter.DataTypes.DigitalEventBuffer.portStateBuffer">
+            <summary>
+            The port state buffer.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DataTypes.DigitalEventBuffer.#ctor(System.Double)">
+            <summary>
+            Standard NR buffer class for digital event type data
+            </summary>
+            <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
+        </member>
+        <member name="T:NeuroRighter.SpikeDetection.RMSThresholdFixed">
+            <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
+        </member>
+        <member name="T:NeuroRighter.PlotDataRows">
+            <summary>PlotDataRows for data like LFPs</summary>
+            <author>John Rolston</author>
+        </member>
+        <member name="T:NeuroRighter.PlotData">
+            <summary>PlotData: Stores a portion of data, posting to plots when appropriate</summary>
+            <author>John Rolston</author>
         </member>
         <member name="T:NeuroRighter.Output.NROutBuffer`1">
             <summary>
@@ -344,108 +697,96 @@
             </summary>
             <returns>numBuffLoadsCompleted</returns>
         </member>
-        <member name="T:NeuroRighter.DatSrv.EventDataSrv`1">
+        <member name="F:NeuroRighter.FileWriting.RecordingSetup.components">
             <summary>
-            Data server for event-type data.
+            Required designer variable.
             </summary>
         </member>
-        <member name="F:NeuroRighter.DatSrv.EventDataSrv`1.bufferLock">
+        <member name="M:NeuroRighter.FileWriting.RecordingSetup.Dispose(System.Boolean)">
             <summary>
-             The mutex class for concurrent read and write access to data buffers
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NeuroRighter.FileWriting.RecordingSetup.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="F:NeuroRighter.DatSrv.EventDataSrv`1.sampleFrequencyHz">
+        <member name="T:NeuroRighter.FileWriting.RawScale">
             <summary>
-            Sampling frequency for data collected for this server.
+            Class for manipulation of analog raw input in order to make it fit for file writing
+            <author> Jon Newman</author>
+            </summary>
+            
+        </member>
+        <member name="T:NeuroRighter.DataTypes.ElectricalStimEvent">
+            <summary>
+            Generic class for holding mixed digital/analog events corresponding to electrical
+            stimulation recordings in NR. These are defined by a time sample, a channel, a amplitude 
+            value and an optional a list of auxiliary doubles that can be inserted by the user.
+            <author> Jon Newman </author>
             </summary>
         </member>
-        <member name="M:NeuroRighter.DatSrv.EventDataSrv`1.#ctor(System.Double,System.Double,System.Int32,System.Int32,System.Int32)">
+        <member name="T:NeuroRighter.DataTypes.SpikeEvent">
             <summary>
-            Generic event-type data server (e.g. spikes). The main data buffer that this class updates
-            'dataBuffer', is itself a EventBuffer object. The  method ReadFromBuffer accepts a time range (in seconds referenced to the start of the recording)
-            as input and will copy the portion of the current data buffer that is within that range to the user as a 
-            EventBuffer object. The EstimateAvailableTimeRange method can be used to get an estimate of a valide range
-            to enter for a Read operation. If there is no data in the time range provided, the method returns a null object.
-            </summary>
-            <param name="sampleFrequencyHz"> Sampling frequency of the DAQ that is feeding this server</param>
-            <param name="bufferSizeSec">The requested history of the buffer in seconds</param>
-            <param name="numSamplesPerWrite"> How many samples will the DAQ provide when a Write is called?</param>
-            <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
-            <param name="serverLag"> If there is some lag in the process producing the samples, e.g. a filter like SALPA or spike detection, this is the total number of samples
-            behind that this event process is compared to the raw process that produced it.</param>
-        </member>
-        <member name="M:NeuroRighter.DatSrv.EventDataSrv`1.EstimateAvailableTimeRange">
-            <summary>
-            Estimate the avialable samples in the buffer. This can be used to inform
-            the user of good arguments for the ReadFromBuffer method.
-            </summary>
-            <returns>timeRange</returns>
-        </member>
-        <!-- Badly formed XML comment ignored for member "M:NeuroRighter.DatSrv.EventDataSrv`1.ReadFromBuffer(System.UInt64,System.UInt64)" -->
-        <member name="T:NeuroRighter.DatSrv.RawDataSrv">
-            <summary>
-            Server for raw data.
+            Generic class for holding spike events. That is, those that are defined
+            by a discrete point in time, but also can have a channel, a snip of analog data
+            and,  a threshold value associated with them.
+            <author> Jon Newman </author>
             </summary>
         </member>
-        <member name="F:NeuroRighter.DatSrv.RawDataSrv.sampleFrequencyHz">
+        <member name="F:NeuroRighter.DataTypes.SpikeEvent.channel">
             <summary>
-            Sampling frequency for data collected for this server.
+            HW Channel that the spike occured on
             </summary>
         </member>
-        <member name="F:NeuroRighter.DatSrv.RawDataSrv.channelCount">
+        <member name="F:NeuroRighter.DataTypes.SpikeEvent.threshold">
             <summary>
-             Number of channels belonging to this server
+            The voltage threshold at which the spike was detected
             </summary>
         </member>
-        <member name="M:NeuroRighter.DatSrv.RawDataSrv.#ctor(System.Double,System.Int32,System.Double,System.Int32,System.Int32)">
+        <member name="F:NeuroRighter.DataTypes.SpikeEvent.waveform">
             <summary>
-            Generic raw data server for multichannel data streams. The main data buffer that this class updates i
-            'dataBuffer', itself a RawMultiChannelBuffer object. The class has one method that the user should worry about
-            called, ReadFromDataBuffer. This method accepts a time range (in seconds referenced to the start of the recording)
-            as input and will copy the portion of the current data buffer that is within that range to the user as a 
-            RawMultiChannelBuffer object. If there is no data in the time range provided, the method returns a null object.
+            A voltage vector specifying a spike snippet
             </summary>
-            <param name="numChannels"> Number of channels in the raw data stream</param>
-            <param name="bufferSizeSec"> The history of the channels that should be kept, in seconds</param>
-            <param name="sampleFrequencyHz"> The sampling frequency of an individual channel in the stream</param>
-            <param name="numSamplesPerWrite"> The number of samples to be written each time the DAQ is polled and the dataBuffer is updated.</param>
-            <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
         </member>
-        <member name="M:NeuroRighter.DatSrv.RawDataSrv.EstimateAvailableTimeRange">
+        <member name="M:NeuroRighter.DataTypes.SpikeEvent.#ctor(System.Int32,System.UInt64,System.Double,System.Double[])">
             <summary>
-            Estimate the avialable samples in the buffer. This can be used to inform
-            the user of good arguments for the ReadFromBuffer method.
+            Generic class for holding spike events generated within NR.
             </summary>
-            <returns>timeRange</returns>
+            <param name="channel">HW Channel that the spike occured on</param>
+            <param name="sampleIndex"> The sample index, relative to recording start, in which the peak of the spike occured.</param>
+            <param name="threshold"> The voltage threshold at which the spike was detected</param>
+            <param name="waveform">A voltage vector specifying a spike snippet</param>
         </member>
-        <member name="M:NeuroRighter.DatSrv.RawDataSrv.ReadFromBuffer(System.UInt64,System.UInt64)">
-            <summary>
-            Read data from buffer. This method will attempt to retrieve samples within the range
-            specified by the input arguements. The object that is returned
-            will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
-            method to get a (time-sensitive) estimate for good-arguments for this method.
-            </summary>
-            <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
-            <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
-            <returns>RawMultiChannelBuffer</returns>
-        </member>
-        <member name="T:NeuroRighter.Output.StimPulse">
+        <member name="T:NeuroRighter.Output.StimTrain">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
-        <member name="M:NeuroRighter.Output.StimPulse.#ctor(System.Int32,System.Int32,System.Double,System.Double,System.Int32,System.Double,System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="T:NeuroRighter.Output.AuxOutTask">
             <summary>
-            
+            Ihnerited frm MakeAODOPair, specialized for auxilary AO/DO.
+            <author> Jon Newman </author>
             </summary>
-            <param name="width1">First phase duration (microseconds)</param>
-            <param name="width2">Second phase duration (microseconds)</param>
-            <param name="amp1">First phase amplitude (Volts)</param>
-            <param name="amp2">Second phase amplitude (Volts)</param>
-            <param name="ch">Channel to stimulate</param>
-            <param name="offsetVoltage">Offset voltage for entire waveform (volts)</param>
-            <param name="interphaseLength">Duration between phase 1 and phase 2, equal to offset voltage (microseconds)</param>
-            <param name="prePadding">Duration before phase 1, set to offset voltage (microseconds)</param>
-            <param name="postPadding">Duration after phase 2, set to offset voltage (microseconds)</param>
-            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
+        </member>
+        <member name="T:NeuroRighter.DataTypes.EventBuffer`1">
+            <summary>
+            This class is the standard NR buffer class for event type data. 
+            The eventBuffer property contains generic events of a user defined type.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:NeuroRighter.DataTypes.EventBuffer`1.sampleFrequencyHz" -->
+        <member name="F:NeuroRighter.DataTypes.EventBuffer`1.eventBuffer">
+            <summary>
+            The event buffer.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.DataTypes.EventBuffer`1.#ctor(System.Double)">
+            <summary>
+            Standard NR buffer class for generic event data
+            </summary>
+            <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
         </member>
         <member name="T:NeuroRighter.AboutBox">
             <summary>
@@ -482,49 +823,23 @@
             </summary>
             <param name="analogScatterGraph"></param>
         </member>
-        <member name="F:NeuroRighter.RecordingNote.components">
-            <summary>
-            Required designer variable.
-            </summary>
+        <member name="T:NeuroRighter.Output.StimPulse">
+            <author>John Rolston (rolston2@gmail.com)</author>
         </member>
-        <member name="M:NeuroRighter.RecordingNote.Dispose(System.Boolean)">
+        <member name="M:NeuroRighter.Output.StimPulse.#ctor(System.Int32,System.Int32,System.Double,System.Double,System.Int32,System.Double,System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:NeuroRighter.RecordingNote.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.RecordingNote.TS">
-            <summary>
-            This form allows the user to enter information about the current recording as ascii text. 
-            When the information is logged it is stored as a *.log file with the same basefile name as the 
-            current recording. Each time a note is entered, it is prefaced by the time-stamp at which the note
-            form was opened.
-            </summary>
             
-        </member>
-        <member name="T:NeuroRighter.DataTypes.DigitalPortEvent">
-            <summary>
-            Generic class for holding digial events. That is, those that are defined
-            by a discrete point in time, but also can have a port state, represented
-            by an 32 bit integer, associated with them.
-            <author> Jon Newman </author>
             </summary>
-        </member>
-        <member name="T:NeuroRighter.SpikeDetection.LimAda">
-            <author>Jon Newman and John Rolston</author>
-        </member>
-        <member name="T:NeuroRighter.SpikeDetection.SpikeDetector">
-            <summary>
-            Base clase for spike detection. All spike detectors should inherit this
-            virtual class. 
-            <author> Jon Newman</author>
-            </summary>
+            <param name="width1">First phase duration (microseconds)</param>
+            <param name="width2">Second phase duration (microseconds)</param>
+            <param name="amp1">First phase amplitude (Volts)</param>
+            <param name="amp2">Second phase amplitude (Volts)</param>
+            <param name="ch">Channel to stimulate</param>
+            <param name="offsetVoltage">Offset voltage for entire waveform (volts)</param>
+            <param name="interphaseLength">Duration between phase 1 and phase 2, equal to offset voltage (microseconds)</param>
+            <param name="prePadding">Duration before phase 1, set to offset voltage (microseconds)</param>
+            <param name="postPadding">Duration after phase 2, set to offset voltage (microseconds)</param>
+            <param name="generateData">Populate waveform (needs to be done at some point, but takes memory)</param>
         </member>
         <member name="M:NeuroRighter.DataTypes.DigitalOutEvent.#ctor(System.UInt64,System.UInt32)">
             <summary>
@@ -532,6 +847,12 @@
             </summary>
             <param name="EventTime"> Sample of digital event</param>
             <param name="Byte">The port state of the event, 32 bit unsigned integer</param>
+        </member>
+        <member name="T:NeuroRighter.SnipGridGraph">
+            <summary>
+            <author> Jon Newman</author>
+            This Class is an extension of the gridgraph class for plotting a grid of data.
+            </summary>
         </member>
         <member name="T:NeuroRighter.ServiceContainer">
             <summary>
@@ -575,11 +896,6 @@
         <member name="T:NeuroRighter.DisplaySettings">
             <author>John Rolston (rolston2@gmail.com)</author>
         </member>
-        <member name="M:NeuroRighter.DisplaySettings.#ctor">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="F:NeuroRighter.DisplaySettings.components">
             <summary>
             Required designer variable.
@@ -597,22 +913,10 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="T:NeuroRighter.Output.MakeAODOPair">
+        <member name="M:NeuroRighter.DisplaySettings.#ctor">
             <summary>
-            Base class for creating a pair of AO and DO tasks within NR. Contains methods
-            for synchronizing those tasks to a master clock (usually this would be the AI
-            task), and for synchronizing the task starts to a master digital edge.
-            <author> Jon Newman </author>
+            
             </summary>
-        </member>
-        <member name="T:NeuroRighter.Output.ContStimTask">
-            <summary>
-            Ihnerited frm MakeAODOPair, specialized for stimulation output.
-            <author> Jon Newman </author>
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.FileOutput">
-            <author>John Rolston (rolston2@gmail.com)</author>
         </member>
         <member name="T:NeuroRighter.Filters.ArtiFilt">
             <summary>
@@ -629,219 +933,54 @@
             <param name="samplingRate">Sampling frequency (in Hz)</param>
             <param name="numChannels">Number of channels</param>
         </member>
-        <member name="T:ExtensionMethods.NRExtensionMethods">
+        <member name="T:NeuroRighter.DatSrv.EventDataSrv`1">
             <summary>
-            Extension Methods for NeuroRighter
-            </summary>
-            <author> Jon Newman</author>
-        </member>
-        <member name="M:ExtensionMethods.NRExtensionMethods.MaxIndex``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Method for getting index of max value of 
-            a generic collection
-            </summary>
-            <typeparam name="T">Generic collection</typeparam>
-            <param name="sequence"></param>
-            <returns>Max of genertic collection</returns>
-        </member>
-        <member name="M:ExtensionMethods.NRExtensionMethods.MinIndex``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Method for getting index of min value of 
-            a generic collection
-            </summary>
-            <typeparam name="T">Generic collection</typeparam>
-            <param name="sequence"></param>
-            <returns>Min of genertic collection</returns>
-        </member>
-        <member name="M:ExtensionMethods.NRExtensionMethods.DeepClone``1(``0)">
-            <summary>
-            Method for creating deep copies of objects
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:ExtensionMethods.NRExtensionMethods.GenerateBrainbow(System.Int32)">
-            <summary>
-            Method for geneating the default color map for NR plotting
-            </summary>
-            <param name="numChannels">int number of channels</param>
-            <returns>List of color objects</returns>
-        </member>
-        <member name="T:NeuroRighter.Output.ZeroOutput">
-            <summary>
-            <title> ZeroOutputs</title>
-            Class for zeroing the outputs of the NI cards in a given system. This class
-            has methods for zeroing analog outputs and digital output ports.
-            This class should  generally should be usedfollowing any type of
-            stimulation method or experiment involving output so that the user is sure the
-            system is "shut down".
-            <author> Jon Newman </author>
+            Data server for event-type data.
             </summary>
         </member>
-        <member name="T:NeuroRighter.Output.ClosedLoopExperiment">
-            <summary>
-            NeuroRighter's abstract class for user defined closed loop experiments.
-            <author> Riley Zeller-Townson</author>
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.Output.ClosedLoopExperiment.Run">
-            <summary>
-            This method must be overriden in a derived closed-loop class.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.Output.ClosedLoopExperiment.BuffLoadEvent(System.Object,System.EventArgs)">
-            <summary>
-            This method must be overriden in a derived closed-loop class.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.Output.AuxBuffer">
-            <summary>
-            General class for continuously regenerable NR output of auxiliary, analog signals. Used by open-loop stimulation
-            from file as well as closed loop protocols.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.FileWriting.DigFileOutput">
-            <summary>Class for logging digital events to file.</summary>
-            <author>Jon Newman</author>
-        </member>
-        <member name="T:NeuroRighter.DataTypes.RawMultiChannelBuffer">
-            <summary>
-            This class is the standard NR buffer class for raw analog data coming from
-            multiple input channels. It has a startAndEndSample property that specifies
-            the start and end sample indicies, relative to the start of data collection
-            contained in the data buffer corresponding to the first and last positions
-            of the rawMultichannelBuffer array (one channel's worth of data along each row).
-            The samplePeriodSecond property allows client classes to determine the absolute
-            time stamp of each sample in seconds.
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "M:NeuroRighter.DataTypes.RawMultiChannelBuffer.#ctor(System.Double,System.Int32,System.Int32,System.Int32)" -->
-        <member name="M:NeuroRighter.Program.Main">
-            <summary>
-            The main entry point for the application.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.DatSrv.DigitalEventSrv">
-            <summary>
-            Data server for digital data. That is, data tyoes that consist of a discrete time and port state.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.DigitalEventSrv.bufferLock">
+        <member name="F:NeuroRighter.DatSrv.EventDataSrv`1.bufferLock">
             <summary>
              The mutex class for concurrent read and write access to data buffers
             </summary>
         </member>
-        <member name="F:NeuroRighter.DatSrv.DigitalEventSrv.sampleFrequencyHz">
+        <member name="F:NeuroRighter.DatSrv.EventDataSrv`1.sampleFrequencyHz">
             <summary>
             Sampling frequency for data collected for this server.
             </summary>
         </member>
-        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.#ctor(System.Double,System.Double,System.Int32)">
+        <member name="M:NeuroRighter.DatSrv.EventDataSrv`1.#ctor(System.Double,System.Double,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Generic digital data server for a given 32 bit port. The main data buffer that this class updates
-            'dataBuffer', itself a DigitalEventBuffer object.This method accepts a time range (in seconds referenced to the start of the recording)
+            Generic event-type data server (e.g. spikes). The main data buffer that this class updates
+            'dataBuffer', is itself a EventBuffer object. The  method ReadFromBuffer accepts a time range (in seconds referenced to the start of the recording)
             as input and will copy the portion of the current data buffer that is within that range to the user as a 
-            DigitalEventBuffer object. The EstimateAvailableTimeRange method can be used to get an estimate of a valide range
+            EventBuffer object. The EstimateAvailableTimeRange method can be used to get an estimate of a valide range
             to enter for a Read operation. If there is no data in the time range provided, the method returns a null object.
             </summary>
             <param name="sampleFrequencyHz"> Sampling frequency of the DAQ that is feeding this server</param>
             <param name="bufferSizeSec">The requested history of the buffer in seconds</param>
             <param name="numSamplesPerWrite"> How many samples will the DAQ provide when a Write is called?</param>
+            <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
+            <param name="serverLag"> If there is some lag in the process producing the samples, e.g. a filter like SALPA or spike detection, this is the total number of samples
+            behind that this event process is compared to the raw process that produced it.</param>
         </member>
-        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.EstimateAvailableTimeRange">
+        <member name="M:NeuroRighter.DatSrv.EventDataSrv`1.EstimateAvailableTimeRange">
             <summary>
             Estimate the avialable samples in the buffer. This can be used to inform
             the user of good arguments for the ReadFromBuffer method.
             </summary>
             <returns>timeRange</returns>
         </member>
-        <member name="M:NeuroRighter.DatSrv.DigitalEventSrv.ReadFromBuffer(System.UInt64,System.UInt64)">
+        <!-- Badly formed XML comment ignored for member "M:NeuroRighter.DatSrv.EventDataSrv`1.ReadFromBuffer(System.UInt64,System.UInt64)" -->
+        <member name="T:NeuroRighter.PlotSpikeWaveform">
             <summary>
-            Read data from buffer. This method will attempt to retrieve samples within the range
-            specified by the input arguements. The object that is returned
-            will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
-            method to get a (time-sensitive) estimate for good-arguments for this method.
+            
             </summary>
-            <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
-            <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
-            <returns>DigitalEventBuffer</returns>
+            <author>John Rolston (rolston2@gmail.com)</author>
+            
         </member>
-        <member name="T:NeuroRighter.PlotDataRows">
-            <summary>PlotDataRows for data like LFPs</summary>
-            <author>John Rolston</author>
-        </member>
-        <member name="T:NeuroRighter.PlotData">
-            <summary>PlotData: Stores a portion of data, posting to plots when appropriate</summary>
-            <author>John Rolston</author>
-        </member>
-        <member name="T:NeuroRighter.DataTypes.EventBuffer`1">
-            <summary>
-            This class is the standard NR buffer class for event type data. 
-            The eventBuffer property contains generic events of a user defined type.
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "F:NeuroRighter.DataTypes.EventBuffer`1.sampleFrequencyHz" -->
-        <member name="F:NeuroRighter.DataTypes.EventBuffer`1.eventBuffer">
-            <summary>
-            The event buffer.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.DataTypes.EventBuffer`1.#ctor(System.Double)">
-            <summary>
-            Standard NR buffer class for generic event data
-            </summary>
-            <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
-        </member>
-        <member name="T:NeuroRighter.DataTypes.DigitalEventBuffer">
-            <summary>
-            This class is the standard NR buffer class for digital event type data. 
-            Properties are the timeSample which specifies the time, in samples, that
-            the digital event occured and portState, which is the integer
-            state of the digital port at the time of the event.
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "F:NeuroRighter.DataTypes.DigitalEventBuffer.sampleFrequencyHz" -->
-        <member name="F:NeuroRighter.DataTypes.DigitalEventBuffer.sampleBuffer">
-            <summary>
-            The time stamp buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DataTypes.DigitalEventBuffer.portStateBuffer">
-            <summary>
-            The port state buffer.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.DataTypes.DigitalEventBuffer.#ctor(System.Double)">
-            <summary>
-            Standard NR buffer class for digital event type data
-            </summary>
-            <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
-        </member>
-        <member name="F:NeuroRighter.SpikeDetection.SpikeDetSettings.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.SpikeDetection.SpikeDetSettings.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:NeuroRighter.SpikeDetection.SpikeDetSettings.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.Output.DigitalBuffer">
-            <summary>
-            NeuroRighter's standard output buffer for digital signals.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.EventPlotData">
-            <author>John Rolston</author>
+        <member name="T:NeuroRighter.FileWriting.DigFileOutput">
+            <summary>Class for logging digital events to file.</summary>
+            <author>Jon Newman</author>
         </member>
         <member name="T:NeuroRighter.Output.OpenLoopOut">
             <summary>
@@ -859,9 +998,11 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:NeuroRighter.dbg.ExecptDBG">
-            <summary>Class for housing debugGing methods and other stuffs like that.</summary>
-            <author>Jon Newman</author>
+        <member name="T:NeuroRighter.Output.AuxBuffer">
+            <summary>
+            General class for continuously regenerable NR output of auxiliary, analog signals. Used by open-loop stimulation
+            from file as well as closed loop protocols.
+            </summary>
         </member>
         <member name="T:NeuroRighter.StimSrv.NRStimSrv">
             <summary>
@@ -907,183 +1048,42 @@
             <param name="masterTask">The NI Task to which all of the output clocks are synchronized to</param>
             <param name="debugger"> NR's real-time debugger</param>
         </member>
-        <member name="T:NeuroRighter.GraphicsDeviceService">
-            <summary>
-            Helper class responsible for creating and managing the GraphicsDevice.
-            All GraphicsDeviceControl instances share the same GraphicsDeviceService,
-            so even though there can be many controls, there will only ever be a single
-            underlying GraphicsDevice. This implements the standard IGraphicsDeviceService
-            interface, which provides notification events for when the device is reset
-            or disposed.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.GraphicsDeviceService.#ctor(System.IntPtr,System.Int32,System.Int32)">
-            <summary>
-            Constructor is private, because this is a singleton class:
-            client controls should use the public AddRef method instead.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.GraphicsDeviceService.AddRef(System.IntPtr,System.Int32,System.Int32)">
-            <summary>
-            Gets a reference to the singleton instance.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.GraphicsDeviceService.Release(System.Boolean)">
-            <summary>
-            Releases a reference to the singleton instance.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.GraphicsDeviceService.ResetDevice(System.Int32,System.Int32)">
-            <summary>
-            Resets the graphics device to whichever is bigger out of the specified
-            resolution or its current size. This behavior means the device will
-            demand-grow to the largest of all its GraphicsDeviceControl clients.
-            </summary>
-        </member>
-        <member name="P:NeuroRighter.GraphicsDeviceService.GraphicsDevice">
-            <summary>
-            Gets the current graphics device.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.FileWriting.SpikeFileOutput">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="T:NeuroRighter.ChannelOutput">
-            <summary>
-            Class to handle playback of one channel to BNC or other output (useful for audio playback)
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.ChannelOutput.Dispose">
-            <summary>
-            Dispose of tasks within object.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.Output.AuxOutTask">
-            <summary>
-            Ihnerited frm MakeAODOPair, specialized for auxilary AO/DO.
-            <author> Jon Newman </author>
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.rawElectrodeSrv">
-            <summary>
-            Raw electrode persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.salpaElectrodeSrv">
-            <summary>
-            SALPA filtered electrode data persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.filteredElectrodeSrv">
-            <summary>
-            Butterworth filtered electrode data persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.lfpSrv">
-            <summary>
-            LFP persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.eegSrv">
-            <summary>
-            EEG persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.auxAnalogSrv">
-            <summary>
-            Aux analog persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.spikeSrv">
-            <summary>
-            Spike snippet persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.auxDigitalSrv">
-            <summary>
-            Digital input persistant buffer.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.stimSrv">
-            <summary>
-            Stimulus server.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.ADCPollingPeriodSec">
-            <summary>
-            The ADC polling periods in seconds.
-            </summary>
-        </member>
-        <member name="F:NeuroRighter.DatSrv.NRDataSrv.ADCPollingPeriodSamples">
-            <summary>
-            The ADC polling periods in samples.
-            </summary>
-        </member>
-        <member name="M:NeuroRighter.DatSrv.NRDataSrv.#ctor(System.Double,System.Boolean,System.Int32,System.Boolean,System.Int32)">
-            <summary>
-            NeuroRighter's Persistant Data Server
-            </summary>
-            <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
-            <param name="salpaAccess"> Using SALPA? </param>
-            <param name="spikeFiltAccess"> Using spike filters? </param>
-        </member>
-        <member name="T:NeuroRighter.Properties.Resources">
-            <summary>
-              A strongly-typed resource class, for looking up localized strings, etc.
-            </summary>
-        </member>
-        <member name="P:NeuroRighter.Properties.Resources.ResourceManager">
-            <summary>
-              Returns the cached ResourceManager instance used by this class.
-            </summary>
-        </member>
-        <member name="P:NeuroRighter.Properties.Resources.Culture">
-            <summary>
-              Overrides the current thread's CurrentUICulture property for all
-              resource lookups using this strongly typed resource class.
-            </summary>
-        </member>
-        <member name="T:NeuroRighter.SpikeDetection.AdaptiveRMSThreshold">
-            <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
-        </member>
-        <member name="T:NeuroRighter.Output.IISZapper">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="T:NeuroRighter.MEAChannelMappings">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="M:NeuroRighter.MEAChannelMappings.channel2LinearCR(System.Int32)">
-            <summary>
-            Takes the hardware channel and outputs the display channel number ((row-1)*8+col)
-            </summary>
-            <param name="index">0-based channel number to map</param>
-            <returns>0-based mapped channel number</returns>
-        </member>
-        <member name="T:NeuroRighter.Aquisition.NRAIChannelCollection">
-            <summary>
-            This class contains methods for creating and returning the tasks needed to create data streams for spike aquisition
-            and aux analog data in NR.
-            </summary>
-        </member>
         <member name="T:NeuroRighter.PlotDataGrid">
             <summary>PlotDataGrid is for grid displayed data</summary>
             <author>John Rolston</author>
         </member>
-        <member name="T:NeuroRighter.ButterworthFilter">
-            <author>John Rolston (rolston2@gmail.com)</author>
-        </member>
-        <member name="T:NeuroRighter.SpikeDetection.RMSThresholdFixed">
-            <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
-        </member>
-        <member name="T:NeuroRighter.PlotSpikeWaveform">
+        <member name="T:NeuroRighter.Output.ClosedLoopExperiment">
             <summary>
-            
+            NeuroRighter's abstract class for user defined closed loop experiments.
+            <author> Riley Zeller-Townson</author>
             </summary>
-            <author>John Rolston (rolston2@gmail.com)</author>
-            
         </member>
-        <member name="T:NeuroRighter.GridGraph">
-            <author>John Rolston</author>
+        <member name="M:NeuroRighter.Output.ClosedLoopExperiment.Run">
+            <summary>
+            This method must be overriden in a derived closed-loop class.
+            </summary>
+        </member>
+        <member name="M:NeuroRighter.Output.ClosedLoopExperiment.BuffLoadEvent(System.Object,System.EventArgs)">
+            <summary>
+            This method must be overriden in a derived closed-loop class.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.Output.DigitalBuffer">
+            <summary>
+            NeuroRighter's standard output buffer for digital signals.
+            </summary>
+        </member>
+        <member name="T:NeuroRighter.dbg.ExecptDBG">
+            <summary>Class for housing debugGing methods and other stuffs like that.</summary>
+            <author>Jon Newman</author>
+        </member>
+        <member name="T:NeuroRighter.DataTypes.DigitalPortEvent">
+            <summary>
+            Generic class for holding digial events. That is, those that are defined
+            by a discrete point in time, but also can have a port state, represented
+            by an 32 bit integer, associated with them.
+            <author> Jon Newman </author>
+            </summary>
         </member>
     </members>
 </doc>

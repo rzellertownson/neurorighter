@@ -15,6 +15,7 @@ namespace simoc.filt2out
         double offVoltage = -0.5;
         double K;
         double Ti;
+        bool targetZero = false;
 
         public Filt2PropPowerFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
@@ -27,11 +28,11 @@ namespace simoc.filt2out
         internal override void CalculateError(ref double currentError, double currentTarget, double currentFilt)
         {
             base.CalculateError(ref currentError, currentTarget, currentFilt);
-            //if (currentTarget != 0)
-                currentError = (currentTarget - currentFilt);  // currentTarget;
-            //else
-            //    currentError = 0;
+            currentError = (currentTarget - currentFilt);  // currentTarget;
             currentErrorInt = currentError;
+
+            if (currentTarget == 0)
+                targetZero = true;
         }
 
 
@@ -41,7 +42,10 @@ namespace simoc.filt2out
 
             // Generate output frequency\
             simocVariableStorage.GenericDouble2 += currentErrorInt;
-            simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorInt;
+            if (targetZero)
+                simocVariableStorage.GenericDouble1 = 0;
+            else
+                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorInt;
 
             // Set upper and lower bounds
             if (simocVariableStorage.GenericDouble1 < 0)

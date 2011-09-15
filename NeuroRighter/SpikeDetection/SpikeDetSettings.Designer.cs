@@ -37,7 +37,7 @@
             this.button_ForceDetectTrain = new System.Windows.Forms.Button();
             this.label92 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
+            this.comboBox_noiseEstAlg = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.numPostSamples = new System.Windows.Forms.NumericUpDown();
@@ -65,6 +65,9 @@
             this.label8 = new System.Windows.Forms.Label();
             this.button_SaveAndClose = new System.Windows.Forms.Button();
             this.spkDetpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
+            this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DeadTime)).BeginInit();
@@ -76,6 +79,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.thresholdMultiplier)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeSlope)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // numericUpDown_MinSpikeWidth
@@ -112,7 +116,7 @@
             0,
             0,
             0});
-            this.numericUpDown_MaxSpikeWidth.Location = new System.Drawing.Point(162, 336);
+            this.numericUpDown_MaxSpikeWidth.Location = new System.Drawing.Point(162, 413);
             this.numericUpDown_MaxSpikeWidth.Maximum = new decimal(new int[] {
             1500,
             0,
@@ -137,7 +141,7 @@
             // label71
             // 
             this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(18, 306);
+            this.label71.Location = new System.Drawing.Point(18, 383);
             this.label71.Name = "label71";
             this.label71.Size = new System.Drawing.Size(117, 13);
             this.label71.TabIndex = 52;
@@ -151,7 +155,7 @@
             0,
             0,
             0});
-            this.numericUpDown_DeadTime.Location = new System.Drawing.Point(162, 268);
+            this.numericUpDown_DeadTime.Location = new System.Drawing.Point(162, 345);
             this.numericUpDown_DeadTime.Maximum = new decimal(new int[] {
             3000,
             0,
@@ -170,7 +174,7 @@
             // 
             // button_ForceDetectTrain
             // 
-            this.button_ForceDetectTrain.Location = new System.Drawing.Point(270, 17);
+            this.button_ForceDetectTrain.Location = new System.Drawing.Point(270, 23);
             this.button_ForceDetectTrain.Name = "button_ForceDetectTrain";
             this.button_ForceDetectTrain.Size = new System.Drawing.Size(57, 23);
             this.button_ForceDetectTrain.TabIndex = 49;
@@ -181,7 +185,7 @@
             // label92
             // 
             this.label92.AutoSize = true;
-            this.label92.Location = new System.Drawing.Point(18, 374);
+            this.label92.Location = new System.Drawing.Point(18, 451);
             this.label92.Name = "label92";
             this.label92.Size = new System.Drawing.Size(128, 13);
             this.label92.TabIndex = 48;
@@ -192,22 +196,23 @@
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(6, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(98, 13);
+            this.label12.Size = new System.Drawing.Size(131, 13);
             this.label12.TabIndex = 41;
-            this.label12.Text = "Detection algorithm";
+            this.label12.Text = "Noise Estimation Algorithm";
             // 
-            // comboBox_spikeDetAlg
+            // comboBox_noiseEstAlg
             // 
-            this.comboBox_spikeDetAlg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox_spikeDetAlg.FormattingEnabled = true;
-            this.comboBox_spikeDetAlg.Items.AddRange(new object[] {
+            this.comboBox_noiseEstAlg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_noiseEstAlg.FormattingEnabled = true;
+            this.comboBox_noiseEstAlg.Items.AddRange(new object[] {
             "Fixed RMS",
             "Adaptive RMS",
             "LimAda (Wagenaar)"});
-            this.comboBox_spikeDetAlg.Location = new System.Drawing.Point(6, 19);
-            this.comboBox_spikeDetAlg.Name = "comboBox_spikeDetAlg";
-            this.comboBox_spikeDetAlg.Size = new System.Drawing.Size(258, 21);
-            this.comboBox_spikeDetAlg.TabIndex = 45;
+            this.comboBox_noiseEstAlg.Location = new System.Drawing.Point(6, 24);
+            this.comboBox_noiseEstAlg.Name = "comboBox_noiseEstAlg";
+            this.comboBox_noiseEstAlg.Size = new System.Drawing.Size(258, 21);
+            this.comboBox_noiseEstAlg.TabIndex = 45;
+            this.comboBox_noiseEstAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_noiseEstAlg_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -275,7 +280,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 340);
+            this.label1.Location = new System.Drawing.Point(18, 417);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 55;
@@ -289,7 +294,7 @@
             0,
             0,
             0});
-            this.numericUpDown_MaxSpkAmp.Location = new System.Drawing.Point(162, 370);
+            this.numericUpDown_MaxSpkAmp.Location = new System.Drawing.Point(162, 447);
             this.numericUpDown_MaxSpkAmp.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -308,12 +313,12 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.comboBox_spikeDetAlg);
+            this.groupBox1.Controls.Add(this.comboBox_noiseEstAlg);
             this.groupBox1.Controls.Add(this.button_ForceDetectTrain);
             this.groupBox1.Controls.Add(this.label12);
             this.groupBox1.Location = new System.Drawing.Point(11, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(342, 53);
+            this.groupBox1.Size = new System.Drawing.Size(342, 64);
             this.groupBox1.TabIndex = 57;
             this.groupBox1.TabStop = false;
             // 
@@ -326,9 +331,9 @@
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.numPreSamples);
             this.groupBox3.Controls.Add(this.numPostSamples);
-            this.groupBox3.Location = new System.Drawing.Point(12, 109);
+            this.groupBox3.Location = new System.Drawing.Point(12, 186);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(341, 85);
+            this.groupBox3.Size = new System.Drawing.Size(342, 85);
             this.groupBox3.TabIndex = 58;
             this.groupBox3.TabStop = false;
             // 
@@ -480,7 +485,7 @@
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.thresholdMultiplier);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(11, 209);
+            this.groupBox2.Location = new System.Drawing.Point(11, 286);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(342, 226);
             this.groupBox2.TabIndex = 58;
@@ -489,7 +494,7 @@
             // label5
             // 
             this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label5.Location = new System.Drawing.Point(11, 93);
+            this.label5.Location = new System.Drawing.Point(13, 170);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(342, 2);
             this.label5.TabIndex = 71;
@@ -498,7 +503,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(267, 72);
+            this.label16.Location = new System.Drawing.Point(267, 149);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(76, 16);
             this.label16.TabIndex = 70;
@@ -508,7 +513,7 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(159, 72);
+            this.label15.Location = new System.Drawing.Point(159, 149);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(43, 16);
             this.label15.TabIndex = 69;
@@ -518,7 +523,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(18, 72);
+            this.label8.Location = new System.Drawing.Point(18, 149);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(71, 16);
             this.label8.TabIndex = 68;
@@ -526,11 +531,11 @@
             // 
             // button_SaveAndClose
             // 
-            this.button_SaveAndClose.Location = new System.Drawing.Point(249, 441);
+            this.button_SaveAndClose.Location = new System.Drawing.Point(249, 521);
             this.button_SaveAndClose.Name = "button_SaveAndClose";
             this.button_SaveAndClose.Size = new System.Drawing.Size(104, 23);
             this.button_SaveAndClose.TabIndex = 59;
-            this.button_SaveAndClose.Text = "Close and save";
+            this.button_SaveAndClose.Text = "Close and Save";
             this.button_SaveAndClose.UseVisualStyleBackColor = true;
             this.button_SaveAndClose.Click += new System.EventHandler(this.button_SaveAndClose_Click);
             // 
@@ -539,11 +544,44 @@
             this.spkDetpersistWindowComponent.Form = this;
             this.spkDetpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
+            // comboBox_spikeDetAlg
+            // 
+            this.comboBox_spikeDetAlg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_spikeDetAlg.FormattingEnabled = true;
+            this.comboBox_spikeDetAlg.Items.AddRange(new object[] {
+            "Auto-Aligner",
+            "Simple Threshold"});
+            this.comboBox_spikeDetAlg.Location = new System.Drawing.Point(6, 25);
+            this.comboBox_spikeDetAlg.Name = "comboBox_spikeDetAlg";
+            this.comboBox_spikeDetAlg.Size = new System.Drawing.Size(321, 21);
+            this.comboBox_spikeDetAlg.TabIndex = 52;
+            this.comboBox_spikeDetAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_spikeDetAlg_SelectedIndexChanged);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.comboBox_spikeDetAlg);
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Location = new System.Drawing.Point(11, 77);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(342, 64);
+            this.groupBox4.TabIndex = 58;
+            this.groupBox4.TabStop = false;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(99, 13);
+            this.label17.TabIndex = 41;
+            this.label17.Text = "Detection Algorithm";
+            // 
             // SpikeDetSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(365, 479);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(365, 560);
             this.ControlBox = false;
             this.Controls.Add(this.label5);
             this.Controls.Add(this.numericUpDown_MaxSpkAmp);
@@ -559,6 +597,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.groupBox4);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.Name = "SpikeDetSettings";
@@ -577,6 +616,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeSlope)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -591,7 +632,6 @@
         private System.Windows.Forms.Button button_ForceDetectTrain;
         private System.Windows.Forms.Label label92;
         private System.Windows.Forms.Label label12;
-        protected System.Windows.Forms.ComboBox comboBox_spikeDetAlg;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label1;
@@ -619,6 +659,10 @@
         private System.Windows.Forms.Label label_PreSampConv;
         private System.Windows.Forms.Label label_PostSampConv;
         private Mowog.PersistWindowComponent spkDetpersistWindowComponent;
+        protected System.Windows.Forms.ComboBox comboBox_spikeDetAlg;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Label label17;
+        protected System.Windows.Forms.ComboBox comboBox_noiseEstAlg;
 
     }
 }

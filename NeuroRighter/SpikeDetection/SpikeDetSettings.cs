@@ -48,9 +48,9 @@ namespace NeuroRighter.SpikeDetection
 
             // Set the pre/post sample coversion label
             label_PreSampConv.Text =
-                Convert.ToDouble(sampleRate) * (double)numPre / 1000.0 + " msec";
+                1000 * ((double)numPre / Convert.ToDouble(sampleRate))+ " msec";
             label_PostSampConv.Text =
-                Convert.ToDouble(sampleRate) * (double)numPost / 1000.0 + " msec";
+                1000 * ((double)numPost / Convert.ToDouble(sampleRate)) + " msec";
 
             // Set min of numPost = numPre
             numPostSamples.Minimum = numPreSamples.Value;
@@ -136,8 +136,8 @@ namespace NeuroRighter.SpikeDetection
             numPost = (int)numPostSamples.Value;
 
             // Update label
-            label_PreSampConv.Text = 
-                Convert.ToDouble(sampleRate) * (double)numPreSamples.Value / 1000.0 + " msec";
+            label_PreSampConv.Text =
+                1000.0 * (double)numPreSamples.Value / Convert.ToDouble(sampleRate) + " msec";
         }
 
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
@@ -149,7 +149,7 @@ namespace NeuroRighter.SpikeDetection
 
             // Update label
             label_PostSampConv.Text =
-                Convert.ToDouble(sampleRate) * (double)numPostSamples.Value / 1000.0 + " msec";
+                1000.0 * (double)numPostSamples.Value / Convert.ToDouble(sampleRate) + " msec";
         }
 
         private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)

@@ -393,7 +393,7 @@
             // persistWindowComponent_ForRecSet
             // 
             this.persistWindowComponent_ForRecSet.Form = this;
-            this.persistWindowComponent_ForRecSet.XMLFilePath = "WindowState.xml";
+            this.persistWindowComponent_ForRecSet.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
             // checkBox_RecordSALPA
             // 

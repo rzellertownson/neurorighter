@@ -46,6 +46,11 @@ namespace NeuroRighter.DataTypes
         public double threshold;
 
         /// <summary>
+        /// The unit number of the spikes.
+        /// </summary>
+        public int unit;
+
+        /// <summary>
         /// A voltage vector specifying a spike snippet
         /// </summary>
         public double[] waveform;
@@ -63,7 +68,11 @@ namespace NeuroRighter.DataTypes
             this.sampleIndex = sampleIndex;
             this.threshold = threshold;
             this.waveform = waveform;
-            
+        }
+
+        public void SetUnit(int unit)
+        {
+            this.unit = unit;
         }
     }
 }

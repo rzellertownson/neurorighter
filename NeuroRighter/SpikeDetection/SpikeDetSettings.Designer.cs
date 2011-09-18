@@ -36,7 +36,6 @@
             this.numericUpDown_DeadTime = new System.Windows.Forms.NumericUpDown();
             this.button_ForceDetectTrain = new System.Windows.Forms.Button();
             this.label92 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.comboBox_noiseEstAlg = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -48,12 +47,10 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label_PreSampConv = new System.Windows.Forms.Label();
             this.label_PostSampConv = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.thresholdMultiplier = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.label63 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown_MinSpikeSlope = new System.Windows.Forms.NumericUpDown();
             this.label_MinWidthSamp = new System.Windows.Forms.Label();
             this.label_MaxWidthSamp = new System.Windows.Forms.Label();
@@ -67,7 +64,31 @@
             this.spkDetpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
             this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label17 = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown_maxK = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ = new System.Windows.Forms.NumericUpDown();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DeadTime)).BeginInit();
@@ -80,6 +101,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeSlope)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_maxK)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_)).BeginInit();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // numericUpDown_MinSpikeWidth
@@ -90,7 +122,7 @@
             0,
             0,
             0});
-            this.numericUpDown_MinSpikeWidth.Location = new System.Drawing.Point(151, 93);
+            this.numericUpDown_MinSpikeWidth.Location = new System.Drawing.Point(151, 100);
             this.numericUpDown_MinSpikeWidth.Maximum = new decimal(new int[] {
             250,
             0,
@@ -116,7 +148,7 @@
             0,
             0,
             0});
-            this.numericUpDown_MaxSpikeWidth.Location = new System.Drawing.Point(162, 413);
+            this.numericUpDown_MaxSpikeWidth.Location = new System.Drawing.Point(151, 132);
             this.numericUpDown_MaxSpikeWidth.Maximum = new decimal(new int[] {
             1500,
             0,
@@ -141,7 +173,7 @@
             // label71
             // 
             this.label71.AutoSize = true;
-            this.label71.Location = new System.Drawing.Point(18, 383);
+            this.label71.Location = new System.Drawing.Point(7, 102);
             this.label71.Name = "label71";
             this.label71.Size = new System.Drawing.Size(117, 13);
             this.label71.TabIndex = 52;
@@ -155,7 +187,7 @@
             0,
             0,
             0});
-            this.numericUpDown_DeadTime.Location = new System.Drawing.Point(162, 345);
+            this.numericUpDown_DeadTime.Location = new System.Drawing.Point(151, 64);
             this.numericUpDown_DeadTime.Maximum = new decimal(new int[] {
             3000,
             0,
@@ -185,20 +217,11 @@
             // label92
             // 
             this.label92.AutoSize = true;
-            this.label92.Location = new System.Drawing.Point(18, 451);
+            this.label92.Location = new System.Drawing.Point(7, 170);
             this.label92.Name = "label92";
             this.label92.Size = new System.Drawing.Size(128, 13);
             this.label92.TabIndex = 48;
             this.label92.Text = "Max spike amplitude (uV):";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 0);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(131, 13);
-            this.label12.TabIndex = 41;
-            this.label12.Text = "Noise Estimation Algorithm";
             // 
             // comboBox_noiseEstAlg
             // 
@@ -280,7 +303,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 417);
+            this.label1.Location = new System.Drawing.Point(7, 136);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 55;
@@ -294,7 +317,7 @@
             0,
             0,
             0});
-            this.numericUpDown_MaxSpkAmp.Location = new System.Drawing.Point(162, 447);
+            this.numericUpDown_MaxSpkAmp.Location = new System.Drawing.Point(151, 166);
             this.numericUpDown_MaxSpkAmp.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -315,27 +338,27 @@
             // 
             this.groupBox1.Controls.Add(this.comboBox_noiseEstAlg);
             this.groupBox1.Controls.Add(this.button_ForceDetectTrain);
-            this.groupBox1.Controls.Add(this.label12);
-            this.groupBox1.Location = new System.Drawing.Point(11, 12);
+            this.groupBox1.Location = new System.Drawing.Point(6, 6);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(342, 64);
             this.groupBox1.TabIndex = 57;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Noise Estimation Algorithm";
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.label_PreSampConv);
             this.groupBox3.Controls.Add(this.label_PostSampConv);
-            this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.label11);
             this.groupBox3.Controls.Add(this.label10);
             this.groupBox3.Controls.Add(this.numPreSamples);
             this.groupBox3.Controls.Add(this.numPostSamples);
-            this.groupBox3.Location = new System.Drawing.Point(12, 186);
+            this.groupBox3.Location = new System.Drawing.Point(6, 191);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(342, 85);
             this.groupBox3.TabIndex = 58;
             this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Spike-snippet parameters";
             // 
             // label_PreSampConv
             // 
@@ -355,15 +378,6 @@
             this.label_PostSampConv.TabIndex = 65;
             this.label_PostSampConv.Text = "xx";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(126, 13);
-            this.label3.TabIndex = 41;
-            this.label3.Text = "Spike-snippet parameters";
-            // 
             // thresholdMultiplier
             // 
             this.thresholdMultiplier.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
@@ -373,7 +387,7 @@
             0,
             0,
             65536});
-            this.thresholdMultiplier.Location = new System.Drawing.Point(151, 23);
+            this.thresholdMultiplier.Location = new System.Drawing.Point(151, 30);
             this.thresholdMultiplier.Minimum = new decimal(new int[] {
             1,
             0,
@@ -393,7 +407,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(7, 25);
+            this.label9.Location = new System.Drawing.Point(7, 32);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(144, 13);
             this.label9.TabIndex = 38;
@@ -402,7 +416,7 @@
             // label63
             // 
             this.label63.AutoSize = true;
-            this.label63.Location = new System.Drawing.Point(7, 61);
+            this.label63.Location = new System.Drawing.Point(7, 68);
             this.label63.Name = "label63";
             this.label63.Size = new System.Drawing.Size(139, 13);
             this.label63.TabIndex = 50;
@@ -411,25 +425,16 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 199);
+            this.label4.Location = new System.Drawing.Point(7, 206);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(123, 13);
             this.label4.TabIndex = 60;
             this.label4.Text = "Min spike slope (uV/ms):";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(108, 13);
-            this.label2.TabIndex = 41;
-            this.label2.Text = "Detection parameters";
-            // 
             // numericUpDown_MinSpikeSlope
             // 
             this.numericUpDown_MinSpikeSlope.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.numericUpDown_MinSpikeSlope.Location = new System.Drawing.Point(151, 195);
+            this.numericUpDown_MinSpikeSlope.Location = new System.Drawing.Point(151, 202);
             this.numericUpDown_MinSpikeSlope.Maximum = new decimal(new int[] {
             20,
             0,
@@ -449,7 +454,7 @@
             // label_MinWidthSamp
             // 
             this.label_MinWidthSamp.AutoSize = true;
-            this.label_MinWidthSamp.Location = new System.Drawing.Point(256, 97);
+            this.label_MinWidthSamp.Location = new System.Drawing.Point(256, 104);
             this.label_MinWidthSamp.Name = "label_MinWidthSamp";
             this.label_MinWidthSamp.Size = new System.Drawing.Size(17, 13);
             this.label_MinWidthSamp.TabIndex = 62;
@@ -458,7 +463,7 @@
             // label_MaxWidthSamp
             // 
             this.label_MaxWidthSamp.AutoSize = true;
-            this.label_MaxWidthSamp.Location = new System.Drawing.Point(256, 129);
+            this.label_MaxWidthSamp.Location = new System.Drawing.Point(256, 136);
             this.label_MaxWidthSamp.Name = "label_MaxWidthSamp";
             this.label_MaxWidthSamp.Size = new System.Drawing.Size(17, 13);
             this.label_MaxWidthSamp.TabIndex = 63;
@@ -467,7 +472,7 @@
             // label_deadTimeSamp
             // 
             this.label_deadTimeSamp.AutoSize = true;
-            this.label_deadTimeSamp.Location = new System.Drawing.Point(256, 66);
+            this.label_deadTimeSamp.Location = new System.Drawing.Point(256, 73);
             this.label_deadTimeSamp.Name = "label_deadTimeSamp";
             this.label_deadTimeSamp.Size = new System.Drawing.Size(17, 13);
             this.label_deadTimeSamp.TabIndex = 64;
@@ -476,25 +481,31 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label_deadTimeSamp);
+            this.groupBox2.Controls.Add(this.numericUpDown_MaxSpkAmp);
             this.groupBox2.Controls.Add(this.numericUpDown_MinSpikeWidth);
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.numericUpDown_MaxSpikeWidth);
             this.groupBox2.Controls.Add(this.label_MaxWidthSamp);
+            this.groupBox2.Controls.Add(this.label71);
             this.groupBox2.Controls.Add(this.label_MinWidthSamp);
+            this.groupBox2.Controls.Add(this.numericUpDown_DeadTime);
             this.groupBox2.Controls.Add(this.numericUpDown_MinSpikeSlope);
+            this.groupBox2.Controls.Add(this.label92);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label63);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.thresholdMultiplier);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(11, 286);
+            this.groupBox2.Location = new System.Drawing.Point(6, 289);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(342, 226);
+            this.groupBox2.Size = new System.Drawing.Size(342, 241);
             this.groupBox2.TabIndex = 58;
             this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Detection parameters";
             // 
             // label5
             // 
             this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label5.Location = new System.Drawing.Point(13, 170);
+            this.label5.Location = new System.Drawing.Point(8, 175);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(342, 2);
             this.label5.TabIndex = 71;
@@ -503,7 +514,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(267, 149);
+            this.label16.Location = new System.Drawing.Point(255, 152);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(76, 16);
             this.label16.TabIndex = 70;
@@ -513,7 +524,7 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(159, 149);
+            this.label15.Location = new System.Drawing.Point(161, 152);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(43, 16);
             this.label15.TabIndex = 69;
@@ -523,7 +534,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(18, 149);
+            this.label8.Location = new System.Drawing.Point(18, 152);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(71, 16);
             this.label8.TabIndex = 68;
@@ -531,7 +542,7 @@
             // 
             // button_SaveAndClose
             // 
-            this.button_SaveAndClose.Location = new System.Drawing.Point(249, 521);
+            this.button_SaveAndClose.Location = new System.Drawing.Point(267, 576);
             this.button_SaveAndClose.Name = "button_SaveAndClose";
             this.button_SaveAndClose.Size = new System.Drawing.Size(104, 23);
             this.button_SaveAndClose.TabIndex = 59;
@@ -560,44 +571,340 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.comboBox_spikeDetAlg);
-            this.groupBox4.Controls.Add(this.label17);
-            this.groupBox4.Location = new System.Drawing.Point(11, 77);
+            this.groupBox4.Location = new System.Drawing.Point(6, 76);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(342, 64);
             this.groupBox4.TabIndex = 58;
             this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Detection Algorithm";
             // 
-            // label17
+            // tabControl1
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(99, 13);
-            this.label17.TabIndex = 41;
-            this.label17.Text = "Detection Algorithm";
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(2, 1);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(369, 569);
+            this.tabControl1.TabIndex = 72;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.groupBox4);
+            this.tabPage1.Controls.Add(this.label8);
+            this.tabPage1.Controls.Add(this.label15);
+            this.tabPage1.Controls.Add(this.label16);
+            this.tabPage1.Controls.Add(this.groupBox3);
+            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(361, 543);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Detection";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.label12);
+            this.tabPage2.Controls.Add(this.button6);
+            this.tabPage2.Controls.Add(this.groupBox6);
+            this.tabPage2.Controls.Add(this.groupBox5);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(361, 543);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Sorting";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.button5);
+            this.groupBox6.Controls.Add(this.button4);
+            this.groupBox6.Controls.Add(this.textBox2);
+            this.groupBox6.Location = new System.Drawing.Point(7, 448);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(348, 53);
+            this.groupBox6.TabIndex = 73;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Load Spike Sorter";
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(12, 19);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(87, 20);
+            this.button5.TabIndex = 73;
+            this.button5.Text = "Load";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(318, 19);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(24, 20);
+            this.button4.TabIndex = 72;
+            this.button4.Text = "...";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(119, 19);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(193, 20);
+            this.textBox2.TabIndex = 0;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.groupBox8);
+            this.groupBox5.Controls.Add(this.label7);
+            this.groupBox5.Controls.Add(this.numericUpDown3);
+            this.groupBox5.Controls.Add(this.label3);
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.numericUpDown4);
+            this.groupBox5.Controls.Add(this.label2);
+            this.groupBox5.Controls.Add(this.numericUpDown_maxK);
+            this.groupBox5.Controls.Add(this.numericUpDown_);
+            this.groupBox5.Controls.Add(this.groupBox7);
+            this.groupBox5.Location = new System.Drawing.Point(7, 7);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(348, 435);
+            this.groupBox5.TabIndex = 72;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "New Spike Sorter";
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.textBox1);
+            this.groupBox8.Controls.Add(this.button3);
+            this.groupBox8.Controls.Add(this.button2);
+            this.groupBox8.Location = new System.Drawing.Point(6, 203);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(336, 226);
+            this.groupBox8.TabIndex = 76;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "2. Train Classifier";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(6, 19);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox1.Size = new System.Drawing.Size(324, 172);
+            this.textBox1.TabIndex = 72;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(6, 197);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(73, 23);
+            this.button3.TabIndex = 71;
+            this.button3.Text = "Train";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(215, 197);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(115, 23);
+            this.button2.TabIndex = 71;
+            this.button2.Text = "Save Spike Sorter";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(9, 91);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(172, 13);
+            this.label7.TabIndex = 68;
+            this.label7.Text = "Minimum # of Spikes to Train With:";
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.BackColor = System.Drawing.Color.Cyan;
+            this.numericUpDown3.Increment = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Location = new System.Drawing.Point(247, 120);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            1800,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown3.TabIndex = 73;
+            this.numericUpDown3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown3.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(9, 60);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(163, 13);
+            this.label3.TabIndex = 64;
+            this.label3.Text = "Dimension of Spectral Projection:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 122);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(228, 13);
+            this.label6.TabIndex = 72;
+            this.label6.Text = "Seconds of Hoarding to Create Training Buffer:";
+            // 
+            // numericUpDown4
+            // 
+            this.numericUpDown4.BackColor = System.Drawing.Color.Yellow;
+            this.numericUpDown4.Location = new System.Drawing.Point(247, 89);
+            this.numericUpDown4.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDown4.Name = "numericUpDown4";
+            this.numericUpDown4.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown4.TabIndex = 69;
+            this.numericUpDown4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown4.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 29);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(124, 13);
+            this.label2.TabIndex = 62;
+            this.label2.Text = "Max # units per channel:";
+            // 
+            // numericUpDown_maxK
+            // 
+            this.numericUpDown_maxK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.numericUpDown_maxK.Location = new System.Drawing.Point(247, 27);
+            this.numericUpDown_maxK.Maximum = new decimal(new int[] {
+            7,
+            0,
+            0,
+            0});
+            this.numericUpDown_maxK.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDown_maxK.Name = "numericUpDown_maxK";
+            this.numericUpDown_maxK.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_maxK.TabIndex = 63;
+            this.numericUpDown_maxK.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown_maxK.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDown_
+            // 
+            this.numericUpDown_.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.numericUpDown_.Location = new System.Drawing.Point(247, 58);
+            this.numericUpDown_.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numericUpDown_.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown_.Name = "numericUpDown_";
+            this.numericUpDown_.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_.TabIndex = 65;
+            this.numericUpDown_.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown_.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.progressBar1);
+            this.groupBox7.Controls.Add(this.button1);
+            this.groupBox7.Location = new System.Drawing.Point(6, 148);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(336, 52);
+            this.groupBox7.TabIndex = 75;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "1. Hoard Training Data";
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(85, 19);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(245, 23);
+            this.progressBar1.TabIndex = 74;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 19);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(73, 23);
+            this.button1.TabIndex = 71;
+            this.button1.Text = "Hoard";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(35, 507);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(130, 23);
+            this.button6.TabIndex = 73;
+            this.button6.Text = "Engage Spike Sorter";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.ForeColor = System.Drawing.Color.Red;
+            this.label12.Location = new System.Drawing.Point(180, 512);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(139, 13);
+            this.label12.TabIndex = 74;
+            this.label12.Text = "Spike sorter is not engaged.";
             // 
             // SpikeDetSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(365, 560);
+            this.ClientSize = new System.Drawing.Size(379, 611);
             this.ControlBox = false;
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.numericUpDown_MaxSpkAmp);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.label16);
-            this.Controls.Add(this.numericUpDown_MaxSpikeWidth);
-            this.Controls.Add(this.label71);
-            this.Controls.Add(this.label15);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.numericUpDown_DeadTime);
-            this.Controls.Add(this.label92);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.button_SaveAndClose);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox4);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.Name = "SpikeDetSettings";
@@ -609,7 +916,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numPreSamples)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpkAmp)).EndInit();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.thresholdMultiplier)).EndInit();
@@ -617,9 +923,23 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_maxK)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_)).EndInit();
+            this.groupBox7.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -631,7 +951,6 @@
         private System.Windows.Forms.NumericUpDown numericUpDown_DeadTime;
         private System.Windows.Forms.Button button_ForceDetectTrain;
         private System.Windows.Forms.Label label92;
-        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label1;
@@ -640,12 +959,10 @@
         internal System.Windows.Forms.NumericUpDown numPostSamples;
         internal System.Windows.Forms.NumericUpDown numPreSamples;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown thresholdMultiplier;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label63;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numericUpDown_MinSpikeSlope;
         private System.Windows.Forms.Label label_MinWidthSamp;
         private System.Windows.Forms.Label label_MaxWidthSamp;
@@ -661,8 +978,32 @@
         private Mowog.PersistWindowComponent spkDetpersistWindowComponent;
         protected System.Windows.Forms.ComboBox comboBox_spikeDetAlg;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Label label17;
         protected System.Windows.Forms.ComboBox comboBox_noiseEstAlg;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.NumericUpDown numericUpDown4;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDown_maxK;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.NumericUpDown numericUpDown_;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Label label12;
 
     }
 }

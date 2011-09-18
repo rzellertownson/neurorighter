@@ -221,5 +221,8 @@
     <Setting Name="persistWindowPath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="electrodesToRecord" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -30,6 +30,9 @@ namespace NeuroRighter.FileWriting
         internal bool recordAuxDig;
         internal bool recordAuxAnalog;
 
+        // List of electrodes to write to file
+        internal List<int> electrodesToRecord;
+
         // The file writers
         internal SpikeFileOutput spkOut;
         internal FileOutput rawOut;
@@ -57,6 +60,9 @@ namespace NeuroRighter.FileWriting
 
             // Set recording parameters
             ResetStreams2Record();
+
+            // Reset the electrodes to match number of channels
+            ResetElectrodeCheckBox();
         }
 
         internal void Refresh()
@@ -91,13 +97,14 @@ namespace NeuroRighter.FileWriting
         internal void SetNumElectrodes(int numElectrodes)
         {
             this.numElectrodes = numElectrodes;
+            ResetElectrodeCheckBox();
         }
 
         // For spike-type streams
         internal void Setup(string dataType, Task dataTask, int numPreSamp, int numPostSamp)
         {
             //Create the nessesary file writers
-            switch(dataType)
+            switch (dataType)
             {
                 case "spk":
                     // Check if we need to create this stream
@@ -213,7 +220,7 @@ namespace NeuroRighter.FileWriting
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                             spkFiltOut = new FileOutput(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate,1, dataTask,
+                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -221,7 +228,7 @@ namespace NeuroRighter.FileWriting
                     // Check if we need to create this stream
                     if (recordStim)
                     {
-                        stimOut = new StimFileOutput(fid,(int)dataTask.Timing.SampleClockRate,
+                        stimOut = new StimFileOutput(fid, (int)dataTask.Timing.SampleClockRate,
                             "." + dataType);
                     }
                     break;
@@ -249,7 +256,7 @@ namespace NeuroRighter.FileWriting
                     Console.WriteLine("Unknown data type specified during RecordingSetup.Setup()");
                     break;
             }
-        } 
+        }
 
         // Cleanup
         internal void Flush()
@@ -257,9 +264,9 @@ namespace NeuroRighter.FileWriting
             if (spkOut != null) { spkOut.flush(); spkOut = null; }
             if (rawOut != null) { rawOut.flush(); rawOut = null; }
             if (salpaOut != null) { salpaOut.flush(); salpaOut = null; }
-            if (spkFiltOut != null) { spkFiltOut.flush(); spkFiltOut = null;} 
-            if (lfpOut != null) { lfpOut.flush(); lfpOut = null;};
-            if (stimOut != null) {stimOut.flush(); stimOut = null;}
+            if (spkFiltOut != null) { spkFiltOut.flush(); spkFiltOut = null; }
+            if (lfpOut != null) { lfpOut.flush(); lfpOut = null; };
+            if (stimOut != null) { stimOut.flush(); stimOut = null; }
             if (auxAnalogOut != null) { auxAnalogOut.flush(); auxAnalogOut = null; };
             if (auxDigitalOut != null) { auxDigitalOut.flush(); auxDigitalOut = null; }
 
@@ -305,13 +312,25 @@ namespace NeuroRighter.FileWriting
             if (checkBox_RecordAuxDig.Enabled)
                 checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
+            //Recall default electrode settings
+            ResetElectrodeCheckBox();
+            int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
+            electrodesToRecord = e2R.ToList();
+            if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
+            {
+                foreach (int e in electrodesToRecord)
+                {
+                    checkedListBox_Electrodes.SetItemChecked(e - 1, true);
+                }
+            }
+
         }
 
         internal void MoveToDefaultLocation()
         {
             this.Location = Properties.Settings.Default.recSetFormLoc;
         }
-      
+
         private void checkBox_RecordRaw_CheckedChanged(object sender, EventArgs e)
         {
             // Set recording parameters
@@ -397,8 +416,41 @@ namespace NeuroRighter.FileWriting
             recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
         }
 
+        private void ResetElectrodeCheckBox()
+        {
+            // On electrodes tab, enable the checkboxes that correspond to the given
+            // number of electrodes
+            checkedListBox_Electrodes.Items.Clear();
+            for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+            {
+                checkedListBox_Electrodes.Items.Add(i + 1, false);
+            }
+        }
+
+        private void SelectAllElectrodes()
+        {
+            // On electrodes tab, enable the checkboxes that correspond to the given
+            // number of electrodes
+            checkedListBox_Electrodes.Items.Clear();
+            for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+            {
+                checkedListBox_Electrodes.Items.Add(i + 1, true);
+            }
+        }
+
+        private void SetElectrodes()
+        {
+            // Recall default electrode settings
+            electrodesToRecord.Clear();
+            foreach (int ce in checkedListBox_Electrodes.CheckedIndices)
+            {
+                electrodesToRecord.Add(ce+1);
+            }
+        }
+
         private void button_MakeRawSelections_Click(object sender, EventArgs e)
         {
+            // Streams
             Properties.Settings.Default.recordSpikes = checkBox_RecordSpikes.Checked;
             Properties.Settings.Default.recordSalpa = checkBox_RecordSALPA.Checked;
             Properties.Settings.Default.recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
@@ -408,6 +460,12 @@ namespace NeuroRighter.FileWriting
             Properties.Settings.Default.recordStim = checkBox_RecordStim.Checked;
             Properties.Settings.Default.recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
             Properties.Settings.Default.recordAuxDigital = checkBox_RecordAuxDig.Checked;
+
+            // Electrodes
+            SetElectrodes();
+            int[] e2R = electrodesToRecord.ToArray();
+            string e2RString = String.Join(",", e2R.Select(i => i.ToString()).ToArray());
+            Properties.Settings.Default.electrodesToRecord = e2RString;
             Properties.Settings.Default.Save();
 
             // Save form location
@@ -429,14 +487,34 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
             checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
+            //Recall default electrode settings
+            ResetElectrodeCheckBox();
+            int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
+            electrodesToRecord = e2R.ToList();
+            if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
+            {
+                foreach (int elec in electrodesToRecord)
+                {
+                    checkedListBox_Electrodes.SetItemChecked(elec - 1, true);
+                }
+            }
+
             // Save form location
             Properties.Settings.Default.recSetFormLoc = this.Location;
-            
+
             this.Hide();
 
         }
 
-        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ResetElectrodeCheckBox();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SelectAllElectrodes();
+        }
 
     }
 }

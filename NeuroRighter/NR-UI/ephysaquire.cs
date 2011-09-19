@@ -353,7 +353,7 @@ namespace NeuroRighter
                             filtEEGData[i] = eegFilter[i].FilterData(filtEEGData[i]);
 
                     // Send to datSrv
-                    datSrv.eegSrv.WriteToBuffer(filtEEGData,0,numChannels);
+                    datSrv.eegSrv.WriteToBuffer(filtEEGData, 0, Properties.Settings.Default.EEGNumChannels);
 
                     //Stacked plot (if the LFP tab is selected)
                     int jMax = eegPlotData.GetLength(1) - eegBufferLength / eegDownsample;

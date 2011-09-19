@@ -747,6 +747,11 @@
             The voltage threshold at which the spike was detected
             </summary>
         </member>
+        <member name="F:NeuroRighter.DataTypes.SpikeEvent.unit">
+            <summary>
+            The unit number of the spikes.
+            </summary>
+        </member>
         <member name="F:NeuroRighter.DataTypes.SpikeEvent.waveform">
             <summary>
             A voltage vector specifying a spike snippet

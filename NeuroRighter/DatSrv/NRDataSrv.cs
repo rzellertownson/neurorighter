@@ -136,7 +136,8 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    ADCPollingPeriodSamples,
+                    Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency * 
+                    (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
                     1);
             }
 
@@ -145,9 +146,10 @@ namespace NeuroRighter.DatSrv
             {
                 eegSrv = new RawDataSrv(
                     Properties.Settings.Default.RawSampleFrequency,
-                    Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
+                    Properties.Settings.Default.EEGNumChannels,
                     bufferSizeSeconds,
-                    ADCPollingPeriodSamples,
+                    Convert.ToInt32(Properties.Settings.Default.EEGSamplingRate * 
+                    (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
                     1);
             }
 

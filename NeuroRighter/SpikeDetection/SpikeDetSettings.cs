@@ -291,6 +291,7 @@ namespace NeuroRighter.SpikeDetection
                 hasData = true;
                 button_TrainSorter.Enabled = true;
                 button_HoardSpikes.Text = "Hoard";
+                button_SaveSpikeSorter.Enabled = true;
             }
         }
 
@@ -313,8 +314,8 @@ namespace NeuroRighter.SpikeDetection
             label_Trained.ForeColor = Color.Green;
             // Enable Saving and sorting
             button_EngageSpikeSorter.Enabled = true;
-            button_SaveSpikeSorter.Enabled = true;
 
+            // Print detector stats to textbox
             ReportTrainingResults();
 
         }

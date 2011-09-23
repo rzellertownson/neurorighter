@@ -12,3 +12,12 @@ C:\Users\Jon\Desktop\neurorighter-369\NRSpikeSort\Accord.Statistics\bin\Debug\Ac
 C:\Users\Jon\Desktop\neurorighter-369\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-369\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
 C:\Users\Jon\Desktop\neurorighter-369\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb

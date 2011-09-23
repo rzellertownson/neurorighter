@@ -26,6 +26,7 @@ namespace NeuroRighter.DataTypes
     /// This class is the standard NR buffer class for event type data. 
     /// The eventBuffer property contains generic events of a user defined type.
     /// </summary>
+    [Serializable]
     public class EventBuffer<T> where T : NREvent
     {
         /// <summary>

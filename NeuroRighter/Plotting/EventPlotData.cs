@@ -17,6 +17,7 @@
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ using System.Threading;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.DataTypes;
 using ExtensionMethods;
+
 
 namespace NeuroRighter
 {
@@ -44,6 +46,7 @@ namespace NeuroRighter
         private const Int32 REFRESH = 100; //Time between callbacks, in ms
         private Int32[] numWfmsStored;
         private String channelMapping;
+        private List<int> units;
 
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
@@ -85,8 +88,13 @@ namespace NeuroRighter
                 {
                     if (waveforms.Count > 0)
                     {
-                        if (dataAcquired != null) dataAcquired(this);
-                        else skipRead(); //No subscribers
+                        // Trigger off event
+                        if (dataAcquired != null)
+                        {
+                            dataAcquired(this);
+                        }
+                        else
+                            skipRead(); //No subscribers
                     }
 
                     Thread.Sleep(REFRESH);
@@ -104,7 +112,7 @@ namespace NeuroRighter
         internal void stop() { bgWorker.CancelAsync(); }
 
         //Would benefit from not doing graphic alignment in 'write', but rather 'read'
-        internal void write(List<SpikeEvent> newWaveforms)
+        internal void write(List<SpikeEvent> newWaveforms, Hashtable unitMap)
         {
             //Only read first maxWaveforms for each channel
             lock (waveforms)
@@ -116,7 +124,7 @@ namespace NeuroRighter
                         float[] wfmDataOffset = new float[waveformLength];
                         float offset;
                         if (numRows == 8 && channelMapping == "invitro")
-                            offset = -(MEAChannelMappings.ch2rc[newWaveforms[i].channel, 0] - 1) * boxHeight;
+                            offset = -(MEAChannelMappings.ch2rcPreMapped[newWaveforms[i].channel, 0] - 1) * boxHeight;
                         else
                             offset = -(newWaveforms[i].channel / numRows) * boxHeight;
                         for (int k = 0; k < waveformLength; ++k)
@@ -127,7 +135,16 @@ namespace NeuroRighter
 
                             wfmDataOffset[k] = temp + offset;
                         }
-                        waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel, wfmDataOffset));
+
+                        // Create data to plot
+                        if (unitMap == null)
+                        {
+                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel, wfmDataOffset, null));
+                        }
+                        else
+                        {
+                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].channel, wfmDataOffset, (int)unitMap[newWaveforms[i].unit]));
+                        }
                         ++numWfmsStored[newWaveforms[i].channel];
                     }
                 }

@@ -358,8 +358,6 @@ namespace NeuroRighter
                         else
                             continue; //skip that one
 
-
-
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
                     rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
@@ -387,7 +385,6 @@ namespace NeuroRighter
                         else
                             continue; //skip that one
 
-
                     tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel);
                     toRawsrv.eventBuffer.Add(tmp);
                     #region WriteSpikeWfmsToFile
@@ -413,12 +410,32 @@ namespace NeuroRighter
                 }
             }
 
+            // Spike Detection - Hoarding
+            if (spikeDet.isHoarding)
+            {
+                // Send spikes to the sorter's internal buffer
+                spikeDet.spikeSorter.HoardSpikes(toRawsrv);
+                spikeDet.UpdateCollectionBar();
+            }
+
+            // Spike Detection - Classification
+            if (spikeDet.isEngaged)
+            {
+                spikeDet.spikeSorter.Classify(ref toRawsrv);
+            }
+
             // Provide new spike data to persistent buffer
             datSrv.spikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
             //Post to PlotData
-            waveformPlotData.write(newWaveforms.eventBuffer);
-
+            if (spikeDet.isEngaged)
+            {
+                waveformPlotData.write(toRawsrv.eventBuffer, spikeDet.spikeSorter.unitDictionary);
+            }
+            else
+            {
+                waveformPlotData.write(toRawsrv.eventBuffer, null);
+            }
             //Clear new ones, since we're done with them.
             newWaveforms.eventBuffer.Clear();
             #endregion

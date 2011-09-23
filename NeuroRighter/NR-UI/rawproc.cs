@@ -327,6 +327,7 @@ namespace NeuroRighter
 
             ulong startTime = (ulong)(numSpikeReads[taskNumber] - 1) * (ulong)spikeBufferLength; //Used to mark spike time for *.spk file
 
+
             //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
             EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
             switch (spikeDet.detectorType)
@@ -400,6 +401,8 @@ namespace NeuroRighter
                         {
                             lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                             {
+
+
                                 //
                                 recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
                                     tmp.threshold, tmp.waveform);
@@ -410,33 +413,11 @@ namespace NeuroRighter
                 }
             }
 
-            // Spike Detection - Hoarding
-            if (spikeDet.isHoarding)
-            {
-                // Send spikes to the sorter's internal buffer
-                spikeDet.spikeSorter.HoardSpikes(toRawsrv);
-                spikeDet.UpdateCollectionBar();
-            }
-
-            // Spike Detection - Classification
-            if (spikeDet.isEngaged)
-            {
-                spikeDet.spikeSorter.Classify(ref toRawsrv);
-            }
-
             // Provide new spike data to persistent buffer
             datSrv.spikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
             //Post to PlotData
-            if (spikeDet.isEngaged)
-            {
-                waveformPlotData.write(toRawsrv.eventBuffer, spikeDet.spikeSorter.unitDictionary);
-            }
-            else
-            {
-                waveformPlotData.write(toRawsrv.eventBuffer, null);
-            }
-
+            waveformPlotData.write(newWaveforms.eventBuffer);
 
             //Clear new ones, since we're done with them.
             newWaveforms.eventBuffer.Clear();

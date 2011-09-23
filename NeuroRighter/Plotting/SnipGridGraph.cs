@@ -136,22 +136,12 @@ namespace NeuroRighter
             }
         }
 
-        // General Cause for no sorting
         internal void plotY(float[] data, float firstX, float incrementX, List<Color> colorWave, int chan,
             int plotNumber)
         {
             for (int i = 0; i < data.GetLength(0); ++i)
                 lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
                     yScale * ((float)data[i] - maxY), 0), colorWave[chan]);
-        }
-
-        // Case where you have sorted and color is based on unit number
-        internal void plotY(float[] data, float firstX, float incrementX, Color colorWave, int chan,
-            int plotNumber)
-        {
-            for (int i = 0; i < data.GetLength(0); ++i)
-                lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                    yScale * ((float)data[i] - maxY), 0), colorWave);
         }
 
         protected override void Draw()

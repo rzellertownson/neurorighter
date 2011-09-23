@@ -1,5 +1,0 @@
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb

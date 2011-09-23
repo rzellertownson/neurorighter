@@ -1,5 +1,0 @@
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.dll
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.pdb
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
-C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

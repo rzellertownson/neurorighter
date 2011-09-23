@@ -170,7 +170,6 @@ namespace NeuroRighter
 
         //Plots
         private List<Microsoft.Xna.Framework.Graphics.Color> NRBrainbow;
-        private List<Microsoft.Xna.Framework.Graphics.Color> NRUnitBrainbow;
         private GridGraph spikeGraph;
         private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;

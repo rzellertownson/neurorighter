@@ -1067,7 +1067,10 @@ namespace NeuroRighter
                         }
 
                         // 1. spk stream
-                        recordingSettings.Setup("spk", spikeTask[0], numPre, numPost);
+                        if (spikeDet.spikeSorter != null && spikeDet.isEngaged)
+                            recordingSettings.Setup("spk", spikeTask[0], numPre, numPost, true);
+                        else
+                            recordingSettings.Setup("spk", spikeTask[0], numPre, numPost, false);
 
                         // 2. raw streams
                         recordingSettings.Setup("raw", spikeTask[0]);

@@ -213,7 +213,7 @@ namespace NRSpikeSort
                 // Update the newSpikes buffer 
                 for (int j = 0; j < spikesOnChan.Count; ++j)
                 {
-                    spikesOnChan[j].SetUnit(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1);
+                    spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
                 }
 
             }

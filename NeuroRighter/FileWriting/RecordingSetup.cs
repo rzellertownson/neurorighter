@@ -101,7 +101,7 @@ namespace NeuroRighter.FileWriting
         }
 
         // For spike-type streams
-        internal void Setup(string dataType, Task dataTask, int numPreSamp, int numPostSamp)
+        internal void Setup(string dataType, Task dataTask, int numPreSamp, int numPostSamp, bool recordingUnits)
         {
             //Create the nessesary file writers
             switch (dataType)
@@ -113,7 +113,7 @@ namespace NeuroRighter.FileWriting
                         spkOut = new SpikeFileOutput(fid, numElectrodes,
                             (int)dataTask.Timing.SampleClockRate,
                             Convert.ToInt32(numPreSamp + numPostSamp) + 1,
-                            dataTask, "." + dataType);
+                            dataTask, "." + dataType, recordingUnits);
                     }
                     break;
                 default:

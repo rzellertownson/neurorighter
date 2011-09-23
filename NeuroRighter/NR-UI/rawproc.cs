@@ -359,17 +359,6 @@ namespace NeuroRighter
                             continue; //skip that one
 
                     toRawsrv.eventBuffer.Add(tmp);
-                    #region WriteSpikeWfmsToFile
-                    rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
-                    if (switch_record.Value)
-                    {
-                        lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
-                        {
-                            recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
-                                    tmp.threshold, tmp.waveform);
-                        }
-                    }
-                    #endregion
                 }
             }
             else //in vitro mappings
@@ -387,26 +376,6 @@ namespace NeuroRighter
 
                     tmp.channel = MEAChannelMappings.channel2LinearCR(tmp.channel);
                     toRawsrv.eventBuffer.Add(tmp);
-                    #region WriteSpikeWfmsToFile
-
-
-                    rawType[] waveformData = newWaveforms.eventBuffer[j].waveform;
-                    if (switch_record.Value)
-                    {
-                        test = Properties.Settings.Default.recordSpikes;
-                        if (test)
-                        {
-                            lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
-                            {
-
-
-                                //
-                                recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
-                                    tmp.threshold, tmp.waveform);
-                            }
-                        }
-                    }
-                    #endregion
                 }
             }
 
@@ -426,6 +395,22 @@ namespace NeuroRighter
 
             // Provide new spike data to persistent buffer
             datSrv.spikeSrv.WriteToBuffer(toRawsrv, taskNumber);
+
+            // Record spike waveforms 
+            if (switch_record.Value && Properties.Settings.Default.recordSpikes)
+            {
+                for (int j = 0; j < newWaveforms.eventBuffer.Count; ++j) //For each threshold crossing
+                {
+                    SpikeEvent tmp = toRawsrv.eventBuffer[j];
+
+                    lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
+                    {
+                        recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.channel + (int)CHAN_INDEX_START), (int)tmp.sampleIndex,
+                            tmp.threshold, tmp.waveform, tmp.unit);
+                    }
+                }
+            }
+
 
             //Post to PlotData
             if (spikeDet.isEngaged)

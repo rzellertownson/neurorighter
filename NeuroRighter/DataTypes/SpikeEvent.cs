@@ -48,7 +48,7 @@ namespace NeuroRighter.DataTypes
         /// <summary>
         /// The unit number of the spikes.
         /// </summary>
-        public int unit;
+        public Int16 unit;
 
         /// <summary>
         /// A voltage vector specifying a spike snippet
@@ -68,11 +68,26 @@ namespace NeuroRighter.DataTypes
             this.sampleIndex = sampleIndex;
             this.threshold = threshold;
             this.waveform = waveform;
+            this.unit = 0;
         }
 
-        public void SetUnit(int unit)
+
+        /// <summary>
+        /// Set the unit number of waveform after sorting
+        /// </summary>
+        /// <param name="unit">The spike's unit number</param>
+        public void SetUnit(Int16 unit)
         {
             this.unit = unit;
+        }
+
+        /// <summary>
+        /// Set the unit number of waveform after sorting
+        /// </summary>
+        /// <param name="unit">The spike's unit number</param>
+        public void SetUnit(int unit)
+        {
+            this.unit = (short)unit;
         }
     }
 }

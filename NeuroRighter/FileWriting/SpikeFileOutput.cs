@@ -35,15 +35,16 @@ namespace NeuroRighter.FileWriting
         private int numChannels;
         private int numSamplesPerWaveform;
         private Stream outStream;
+        private bool recordingUnits;
 
-        private const int VERSION = 2;
+        private const int VERSION = 3;
 
         internal SpikeFileOutput(string filenameBase, int numChannels, int samplingRate,
-            int numSamplesPerWaveform, Task recordingTask, string extension)
+            int numSamplesPerWaveform, Task recordingTask, string extension, bool recordingUnits)
         {
             this.numChannels = numChannels;
             this.numSamplesPerWaveform = numSamplesPerWaveform;
-
+            this.recordingUnits = recordingUnits;
             //Create output file
             outStream = createStream(filenameBase + extension, 256 * 1024);
 
@@ -66,6 +67,8 @@ namespace NeuroRighter.FileWriting
             outStream.Write(BitConverter.GetBytes(Convert.ToInt32(samplingRate)), 0, 4); //Int: Sampling rate
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(numSamplesPerWaveform)), 0, 2); //Int: Num samples per waveform
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / recordingTask.AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
+            outStream.Write(BitConverter.GetBytes(Properties.Settings.Default.ADCPollingPeriodSec), 0, 8); // DAC polling period
+
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day
@@ -73,6 +76,10 @@ namespace NeuroRighter.FileWriting
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Minute)), 0, 2); //Int: Minute
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Second)), 0, 2); //Int: Second
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Millisecond)), 0, 2); //Int: Millisecond
+            
+
+            // Is the user recording unit information?
+            outStream.Write(BitConverter.GetBytes(recordingUnits), 0, 1); //Int: Millisecond
 
             //Now we list the fields that each spike will have
             ASCIIEncoding encoder = new ASCIIEncoding();
@@ -90,6 +97,12 @@ namespace NeuroRighter.FileWriting
             outStream.Write(BitConverter.GetBytes(Convert.ToInt32(32)), 0, 4); //Num bits for this field
             outStream.Write(BitConverter.GetBytes('I'), 0, 1); //type: i for int, f for float
 
+            const string UnitField = "unit";
+            outStream.Write(encoder.GetBytes(UnitField), 0, encoder.GetByteCount(UnitField));
+            outStream.Write(encoder.GetBytes(DELIMITER), 0, encoder.GetByteCount(DELIMITER));
+            outStream.Write(BitConverter.GetBytes(Convert.ToInt32(16)), 0, 4); //Num bits for this field
+            outStream.Write(BitConverter.GetBytes('I'), 0, 1); //type: i for int, f for float
+
             const string ThresholdField = "threshold";
             outStream.Write(encoder.GetBytes(ThresholdField), 0, encoder.GetByteCount(ThresholdField));
             outStream.Write(encoder.GetBytes(DELIMITER), 0, encoder.GetByteCount(DELIMITER));
@@ -97,15 +110,17 @@ namespace NeuroRighter.FileWriting
             outStream.Write(BitConverter.GetBytes('F'), 0, 1); //type: i for int, f for float
 
             outStream.Write(encoder.GetBytes(DELIMITER), 0, encoder.GetByteCount(DELIMITER)); //Terminal delimiter means we're done defining fields
-
             //Everything else is assumed to be the waveform samples
+            
         }
 
-        internal void WriteSpikeToFile(Int16 channel, Int32 timeIndex, double threshold, double[] waveform)
+        internal void WriteSpikeToFile(Int16 channel, Int32 timeIndex, double threshold, double[] waveform, Int16 unit)
         {
             outStream.Write(BitConverter.GetBytes(channel), 0, 2);
             outStream.Write(BitConverter.GetBytes(timeIndex), 0, 4);
             outStream.Write(BitConverter.GetBytes(threshold), 0, 8);
+            if (recordingUnits)
+                outStream.Write(BitConverter.GetBytes(unit), 0, 2);
             for (int s = 0; s < numSamplesPerWaveform; ++s)
                 outStream.Write(BitConverter.GetBytes(waveform[s]), 0, 8); //Write value as double -- much easier than writing raw value, but takes more space
         }

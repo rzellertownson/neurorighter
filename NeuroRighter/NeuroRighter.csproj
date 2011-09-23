@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -21,6 +22,11 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -172,6 +178,7 @@
     <Compile Include="Output\NROutBuffer.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
     <Compile Include="Plotting\ScatterGraphContoller.cs" />
+    <Compile Include="Plotting\SnipPlotEventArgs.cs" />
     <Compile Include="Plotting\SpikeWaveformGraph.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -361,6 +368,11 @@
     <Content Include="obj\Release\TempPE\Properties.Resources1.Designer.cs.dll" />
   </ItemGroup>
   <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
       <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
@@ -375,6 +387,11 @@
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
@@ -423,6 +440,10 @@
     <ProjectReference Include="..\csmatio\csmatio.csproj">
       <Project>{D6EB17BF-9074-484F-9950-E06169A3C39D}</Project>
       <Name>csmatio</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NRSpikeSort\NRSpikeSort\NRSpikeSort.csproj">
+      <Project>{DB1F126A-30AB-4530-B328-1987DEB4AA52}</Project>
+      <Name>NRSpikeSort</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

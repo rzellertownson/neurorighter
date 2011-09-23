@@ -8,6 +8,7 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using rawType = System.Double;
+using NRSpikeSort;
 
 namespace NeuroRighter.SpikeDetection
 {
@@ -19,17 +20,26 @@ namespace NeuroRighter.SpikeDetection
         private int sampleRate;
         private int spikeBufferLength;
         private int numChannels;
-        //private double Properties.Settings.Default.ADCPollingPeriodSec;
 
+        // Detector
         internal SpikeDetector spikeDetector;
         internal int numPre; // num smaples to save pre-spike
         internal int numPost; // num samples to save post-spike
         internal int spikeDetectionLag; // number of samples that spike detector will cause buffers to lag
         internal int detectorType = 0;
 
+        // Spike sorter
+        internal SpikeSorter spikeSorter;
+        internal bool isHoarding = false;
+        internal bool isTrained = false;
+        internal bool isEngaged = false;
+        internal bool hasData;
+        private BackgroundWorker sorterTrainer;
+
         // Delegates for informing mainform of settings change
         internal delegate void resetSpkDetSettingsHandler(object sender, EventArgs e);
         internal event resetSpkDetSettingsHandler SettingsHaveChanged;
+        private delegate void SetTextCallback();
 
         public SpikeDetSettings(int spikeBufferLength, int numChannels, int sampleRate)
         {
@@ -48,18 +58,25 @@ namespace NeuroRighter.SpikeDetection
 
             // Set the pre/post sample coversion label
             label_PreSampConv.Text =
-                1000 * ((double)numPre / Convert.ToDouble(sampleRate))+ " msec";
+                1000 * ((double)numPre / Convert.ToDouble(sampleRate)) + " msec";
             label_PostSampConv.Text =
                 1000 * ((double)numPost / Convert.ToDouble(sampleRate)) + " msec";
 
             // Set min of numPost = numPre
             numPostSamples.Minimum = numPreSamples.Value;
+
+            // Set up the spike sorter's BW
+            sorterTrainer = new BackgroundWorker();
+            sorterTrainer.DoWork +=
+                new DoWorkEventHandler(sorterTrainer_trainSS);
+            sorterTrainer.RunWorkerCompleted +=
+                new RunWorkerCompletedEventHandler(sorterTrainer_DoneTraining);
         }
 
         internal void SetSpikeDetector()
         {
-            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(sampleRate)*
-                (double)numericUpDown_DeadTime.Value/1.0e6);
+            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(sampleRate) *
+                (double)numericUpDown_DeadTime.Value / 1.0e6);
             int minSpikeWidth = (int)Math.Floor(Convert.ToDouble(sampleRate) *
                 (double)numericUpDown_MinSpikeWidth.Value / 1.0e6);
             int maxSpikeWidth = (int)Math.Round(Convert.ToDouble(sampleRate) *
@@ -73,13 +90,13 @@ namespace NeuroRighter.SpikeDetection
             label_MaxWidthSamp.Text = maxSpikeWidth + " sample(s)";
 
             // Half a millisecond to determine spike polarity
-            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate)/1000);
+            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate) / 1000);
 
             switch (comboBox_noiseEstAlg.SelectedIndex)
             {
                 case 0:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value),detectionDeadTime,minSpikeWidth,maxSpikeWidth,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
                     break;
                 case 1:  //RMS Adaptive
@@ -89,7 +106,7 @@ namespace NeuroRighter.SpikeDetection
                     break;
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime,minSpikeWidth,maxSpikeWidth,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(sampleRate));
                     break;
                 default:
@@ -113,6 +130,30 @@ namespace NeuroRighter.SpikeDetection
             }
 
             spikeDetectionLag = spikeDetector.carryOverLength;
+        }
+
+        internal void UpdateCollectionBar()
+        {
+            if (this.textBox_Results.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(UpdateCollectionBar);
+                this.Invoke(d);
+            }
+            else
+            {
+                int spikesCollected = spikeSorter.trainingSpikes.eventBuffer.Count;
+                this.label_NumSpikesCollected.Text = spikesCollected.ToString();
+
+                if (spikesCollected / numChannels > 37)
+                {
+                    this.label_NumSpikesCollected.ForeColor = Color.Green;
+                }
+                else
+                {
+                    this.label_NumSpikesCollected.ForeColor = Color.Black;
+                }
+               
+            }
         }
 
         private void button_ForceDetectTrain_Click(object sender, EventArgs e)
@@ -192,25 +233,236 @@ namespace NeuroRighter.SpikeDetection
 
         private void comboBox_noiseEstAlg_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (SettingsHaveChanged !=null)
+            if (SettingsHaveChanged != null)
             {
                 SettingsHaveChanged(this, e);
             }
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
+        private void button_HoardSpikes_Click(object sender, EventArgs e)
         {
+            if (!isHoarding)
+            {
+                // Make sure they want to kill the current sorter
+                if (spikeSorter != null)
+                {
+                    if (MessageBox.Show("Do you want to overwrite the current spike sorter?", "Overwrite?", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+
+                // Reset the sorter completely
+                isTrained = false;
+                isEngaged = false;
+                hasData = false;
+                isHoarding = true;
+                spikeSorter = new SpikeSorter(
+                    numChannels,
+                    Convert.ToInt32(numericUpDown_maxK.Value),
+                    Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+
+                // Update the UI to reflect the state of things
+                button_TrainSorter.Enabled = false;
+                button_SaveSpikeSorter.Enabled = false;
+                button_EngageSpikeSorter.Enabled = false;
+                label_SorterEngaged.Text = "Sorter is not engaged";
+                label_SorterEngaged.ForeColor = Color.Red;
+                label_Trained.Text = "Spike sorter is not trained.";
+                label_Trained.ForeColor = Color.Red;
+                button_HoardSpikes.Text = "Stop";
+                button_SaveSpikeSorter.Enabled = false;
+            }
+            else
+            {
+                isHoarding = false;
+                hasData = true;
+                button_TrainSorter.Enabled = true;
+                button_HoardSpikes.Text = "Hoard";
+            }
 
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void button_TrainSorter_Click(object sender, EventArgs e)
         {
+            // Train the sorter on a separate thread
+            sorterTrainer.RunWorkerAsync();
+        }
+
+        private void sorterTrainer_trainSS(object sender, DoWorkEventArgs e)
+        {
+            // Actual training method
+            spikeSorter.Train(numPre);
+        }
+
+        private void sorterTrainer_DoneTraining(object sender, RunWorkerCompletedEventArgs e)
+        {
+            // Tell the user the the sorter is trained
+            label_Trained.Text = "Spike sorter is trained.";
+            label_Trained.ForeColor = Color.Green;
+            // Enable Saving and sorting
+            button_EngageSpikeSorter.Enabled = true;
+            button_SaveSpikeSorter.Enabled = true;
+
+            ReportTrainingResults();
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button_EngageSpikeSorter_Click(object sender, EventArgs e)
         {
+            if (isEngaged)
+            {
+                isEngaged = false;
+                button_EngageSpikeSorter.Text = "Engage Spike Sorter";
+                label_SorterEngaged.Text = "Sorter is not engaged";
+                label_SorterEngaged.ForeColor = Color.Red;
+            }
+            else if (!isEngaged)
+            {
+                isEngaged = true;
+                button_EngageSpikeSorter.Text = "Disengage Spike Sorter";
+                label_SorterEngaged.Text = "Sorter is engaged";
+                label_SorterEngaged.ForeColor = Color.Green;
+            }
 
+
+        }
+
+        private void button_SaveSpikeSorter_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveSSDialog = new SaveFileDialog();
+            saveSSDialog.DefaultExt = "*.nrss";
+            saveSSDialog.Filter = "NeuroRighter Spike Sorter|*.nrss";
+            saveSSDialog.Title = "Save Spike Sorter";
+
+            if (saveSSDialog.ShowDialog() == DialogResult.OK && saveSSDialog.FileName != "")
+            {
+                try
+                {
+                    SorterSerializer spikeSorterSerializer = new SorterSerializer();
+                    spikeSorterSerializer.SerializeObject(saveSSDialog.FileName, spikeSorter);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not write file to disk. Original error: " + ex.Message);
+                }
+            }
+
+        }
+
+        private void button_LoadSpikeSorter_Click(object sender, EventArgs e)
+        {
+            // Make sure they want to kill the current sorter
+            if (spikeSorter != null)
+            {
+                if (MessageBox.Show("Do you want to overwrite the current spike sorter?", "Overwrite?", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            // Disengage any current sorter
+            isEngaged = false;
+            label_SorterEngaged.Text = "Sorter is not engaged";
+            label_SorterEngaged.ForeColor = Color.Red;
+
+            // Deserialize your saved sorter
+            OpenFileDialog openSSDialog = new OpenFileDialog();
+            openSSDialog.InitialDirectory = "c:\\";
+            openSSDialog.Filter = "NeuroRighter Spike Sorter|*.nrss";
+            openSSDialog.FilterIndex = 2;
+            openSSDialog.RestoreDirectory = true;
+
+            if (openSSDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    textBox_SorterLocation.Text = openSSDialog.FileName;
+                    SorterSerializer spikeSorterSerializer = new SorterSerializer();
+                    spikeSorter = spikeSorterSerializer.DeSerializeObject(openSSDialog.FileName);
+
+                    // Update the number of spikes you have trained with
+                    UpdateCollectionBar();
+
+                    // Update UI to reflect the state of things
+                    if (spikeSorter.trained)
+                    {
+                        // Tell the user the the sorter is trained
+                        label_Trained.Text = "Spike sorter is trained.";
+                        label_Trained.ForeColor = Color.Green;
+                        button_EngageSpikeSorter.Enabled = true;
+                    }
+                    else
+                    {
+                        label_Trained.Text = "Spike sorter is not trained.";
+                        label_Trained.ForeColor = Color.Red;
+                        button_EngageSpikeSorter.Enabled = false;
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+
+        }
+
+        private void numericUpDown_maxK_ValueChanged(object sender, EventArgs e)
+        {
+            if (spikeSorter != null)
+                spikeSorter.maxK = (int)(numericUpDown_maxK.Value);
+        }
+
+        private void numericUpDown_MinSpikesToTrain_ValueChanged(object sender, EventArgs e)
+        {
+            if (spikeSorter != null)
+                spikeSorter.minSpikes = (int)(numericUpDown_MinSpikesToTrain.Value);
+        }
+
+        private void ReportTrainingResults()
+        {
+            this.UseWaitCursor = true;
+            this.Cursor = Cursors.WaitCursor;
+
+            textBox_Results.Clear();
+            textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
+            textBox_Results.Text += "------------------------------------------\r\n";
+            textBox_Results.Text += "# channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
+            textBox_Results.Text += "# of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
+
+
+            for (int i = 0; i < numChannels; ++i)
+            {
+                List<ChannelModel> tmpCM = spikeSorter.channelModels.Where(x => x.channelNumber == i).ToList();
+
+                if (tmpCM.Count > 0)
+                {
+                    textBox_Results.Text += "CHANNEL " + (tmpCM[0].channelNumber + 1).ToString() + "\r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber+1].ToString() + " / 50 \r\n";
+                    textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
+                    textBox_Results.Text += " Clustering Results:\r\n";
+
+                    for (int k = 0; k < spikeSorter.maxK; ++k)
+                    {
+                        textBox_Results.Text += "  K=" + tmpCM[0].kVals[k].ToString() + "\r\n";
+                        textBox_Results.Text += "   Log-likelihood:" + tmpCM[0].logLike[k].ToString() + "\r\n";
+                        textBox_Results.Text += "   Rissanen:" + tmpCM[0].mdl[k].ToString() + "\r\n";
+                    }
+
+                    textBox_Results.Text += "\r\n\r\n";
+                }
+                else
+                {
+                    textBox_Results.Text += "CHANNEL " + (i + 1).ToString() + "\r\n";
+                    textBox_Results.Text += " No Sorting" + "\r\n\r\n";
+                }
+
+            }
+
+            this.UseWaitCursor = false;
+            this.Cursor = Cursors.Default;
         }
 
     }

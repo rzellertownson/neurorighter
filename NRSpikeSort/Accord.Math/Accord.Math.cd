@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Accord.Math.Decompositions.CholeskyDecomposition">
+    <Position X="6.75" Y="8.75" Width="3" />
+    <Members>
+      <Method Name="LDLt" Hidden="true" />
+      <Method Name="LLt" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAEAQAEAAAAAAAAAEIAAAYIIgAAACBAkAEABIRAADA=</HashCode>
+      <FileName>Decompositions\CholeskyDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Decompositions.EigenvalueDecomposition">
+    <Position X="9.75" Y="1" Width="3" />
+    <Members>
+      <Method Name="cdiv" Hidden="true" />
+      <Method Name="hqr2" Hidden="true" />
+      <Method Name="orthes" Hidden="true" />
+      <Method Name="tql2" Hidden="true" />
+      <Method Name="tred2" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ICAgAAAAAAAAAAAAAAAAAAQAACIAAAAGEAAAAMBQBDA=</HashCode>
+      <FileName>Decompositions\EigenvalueDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Decompositions.LuDecomposition">
+    <Position X="7" Y="4.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEgEAoAAAAAAACAAAAJAAAAIIACAQCAgAAAAAABAADA=</HashCode>
+      <FileName>Decompositions\LuDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Decompositions.QrDecomposition">
+    <Position X="7" Y="1" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAAgAAAAAAAAAAAEIAAAAIMACQAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Decompositions\QrDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Decompositions.SingularValueDecomposition">
+    <Position X="10" Y="4" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAgBAAAAAACAAAQgAEKAAAQIEAAAAgAAEpIgAAAAABA=</HashCode>
+      <FileName>Decompositions\SingularValueDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Distance">
+    <Position X="14" Y="9" Width="2.5" />
+    <Members>
+      <Method Name="cov" Hidden="true" />
+      <Method Name="mean" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAECAABAAAAAQCgAAQAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Distance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.HilbertTransform">
+    <Position X="14.25" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HilbertTransform.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Matrix">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <Members>
+      <Method Name="convertToDouble" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>QYYi0gACiVCAyAwEkcIXBCIICARIDPAVCFABQEpBEQY=</HashCode>
+      <FileName>Matrix\Matrix.Algebra.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Special">
+    <Position X="3.5" Y="5.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>BwAAAEAADQkAAFAEIABACGgOwATIJgiEgkUCkAAhAAQ=</HashCode>
+      <FileName>Special.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Tools">
+    <Position X="3.5" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAEQCIAAAAAAAYABABAAUQAUAAAACQ=</HashCode>
+      <FileName>Tools.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.GeneralComparer" BaseTypeListCollapsed="true">
+    <Position X="16.5" Y="13.25" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAIABAAAAAAAA=</HashCode>
+      <FileName>Tools.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Decompositions.GeneralizedEigenvalueDecomposition">
+    <Position X="10.25" Y="8.75" Width="3" />
+    <Members>
+      <Method Name="qzhes" Hidden="true" />
+      <Method Name="qzit" Hidden="true" />
+      <Method Name="qzval" Hidden="true" />
+      <Method Name="qzvec" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>KCAACAAAAAAhAAgAAAAQBgQAgAAAAAAAUAAAAABAAB0=</HashCode>
+      <FileName>Decompositions\GeneralizedEigenvalueDecomposition.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Formats.MatrixFormatProviderBase" Collapsed="true">
+    <Position X="18.75" Y="1" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACAAADAAAAAAACAAAgACAAAIAgAABAAAQVCAgEEAAAA=</HashCode>
+      <FileName>Formats\Base\MatrixFormatProviderBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Formats.MatrixFormatter">
+    <Position X="25.5" Y="1.75" Width="2" />
+    <Members>
+      <Method Name="handleOtherFormats" Hidden="true" />
+      <Method Name="parseOptions" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgEACAAAAAAAAEAEAA=</HashCode>
+      <FileName>Formats\Base\MatrixFormatter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Formats.CSharpJaggedMatrixFormatProvider">
+    <Position X="14.5" Y="2.5" Width="2.75" />
+    <Members>
+      <Field Name="currentCulture" Hidden="true" />
+      <Field Name="invariantCulture" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAIA=</HashCode>
+      <FileName>Formats\CSharpJaggedMatrixFormatProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Formats.CSharpMatrixFormatProvider">
+    <Position X="20" Y="2.5" Width="2.25" />
+    <Members>
+      <Field Name="currentCulture" Hidden="true" />
+      <Field Name="invariantCulture" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAIA=</HashCode>
+      <FileName>Formats\CSharpMatrixFormatProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Formats.DefaultMatrixFormatProvider">
+    <Position X="22.5" Y="2.5" Width="2.25" />
+    <Members>
+      <Field Name="currentCulture" Hidden="true" />
+      <Field Name="invariantCulture" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAIA=</HashCode>
+      <FileName>Formats\DefaultMatrixFormatProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Formats.OctaveMatrixFormatProvider">
+    <Position X="17.5" Y="2.5" Width="2.25" />
+    <Members>
+      <Field Name="currentCulture" Hidden="true" />
+      <Field Name="invariantCulture" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAIA=</HashCode>
+      <FileName>Formats\OctaveMatrixFormatProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Norm">
+    <Position X="14" Y="6.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAIEAEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Norm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Decompositions.NonnegativeFactorization">
+    <Position X="10.25" Y="12.75" Width="3" />
+    <Members>
+      <Method Name="init" Hidden="true" />
+      <Method Name="makepositive" Hidden="true" />
+      <Method Name="maxabs" Hidden="true" />
+      <Method Name="maxdiff" Hidden="true" />
+      <Method Name="nnmf" Hidden="true" />
+      <Method Name="normdiff" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAEAAAABACAAAAAAAAAAAAAABDAAAIAkgEAAEAIIBA=</HashCode>
+      <FileName>Decompositions\NonnegativeFactorization.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Optimization.LbfgsOptimizer" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="7.75" Width="2.5" />
+    <Members>
+      <Method Name="createWorkVector" Hidden="true" />
+      <Method Name="daxpy" Hidden="true" />
+      <Method Name="ddot" Hidden="true" />
+      <Method Name="getDiagonal" Hidden="true" />
+      <Method Name="getFunction" Hidden="true" />
+      <Method Name="getGradient" Hidden="true" />
+      <Method Name="max3" Hidden="true" />
+      <Method Name="mcsrch" Hidden="true" />
+      <Method Name="mcstep" Hidden="true" />
+      <Method Name="sqr" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAJIBIMABBCqABAAkAIBEIgAAAAAAAcRIpEAASCGAA=</HashCode>
+      <FileName>Optimization\LbfgsOptimizer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Optimization.LineSearchFailedException">
+    <Position X="21" Y="6.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAgAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Optimization\LineSearchFailedException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Optimization.OptimizationProgressEventArgs">
+    <Position X="21.25" Y="8.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAABAAAQAAAQAAAAAAAAAAAAAJAAgAQAAAAA=</HashCode>
+      <FileName>Optimization\OptimizationProgressEventHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Geometry.ConvexHullDefects">
+    <Position X="26.25" Y="7" Width="1.75" />
+    <Members>
+      <Method Name="extractDefect" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAAAAAAAAAAAAAACAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Geometry\ConvexHullDefects.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Geometry.ConvexityDefect">
+    <Position X="28.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAACAAgAAAAAAAAAAAAAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Geometry\ConvexityDefect.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Geometry.KCurvature">
+    <Position X="27.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAIAA=</HashCode>
+      <FileName>Geometry\KCurvature.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.Math.Wavelets.CDF97" BaseTypeListCollapsed="true">
+    <Position X="29.75" Y="2.5" Width="2" />
+    <Members>
+      <Method Name="fwt2d" Hidden="true" />
+      <Method Name="iwt2d" Hidden="true" />
+      <Field Name="levels" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ABAAAACAAAAAQAAAAAAIAAAAAIEAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Wavelets\CDF97.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.Math.Wavelets.Haar" BaseTypeListCollapsed="true">
+    <Position X="32" Y="2.5" Width="2" />
+    <Members>
+      <Field Name="levels" Hidden="true" />
+      <Field Name="s0" Hidden="true" />
+      <Field Name="s1" Hidden="true" />
+      <Field Name="SQRT2" Hidden="true" />
+      <Field Name="w0" Hidden="true" />
+      <Field Name="w1" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAEAAI0IAAAAQAQAAAAAAAI=</HashCode>
+      <FileName>Wavelets\Haar.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Accord.Math.Formats.IMatrixFormatProvider" Collapsed="true">
+    <Position X="22.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACAAADAAAAAAACAAAgACAAAIAAAABAAAQVCAgEEAAAA=</HashCode>
+      <FileName>Formats\Base\IMatrixFormatProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Accord.Math.Optimization.IOptimizer">
+    <Position X="18.5" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Optimization\IOptimizer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Accord.Math.Wavelets.IWavelet">
+    <Position X="30.75" Y="0.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Wavelets\IWavelet.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Accord.Math.ComparerDirection">
+    <Position X="19.5" Y="13.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tools.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Accord.Math.Decompositions.NonnegativeFactorizationAlgorithm">
+    <Position X="7" Y="13.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Decompositions\NonnegativeFactorization.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

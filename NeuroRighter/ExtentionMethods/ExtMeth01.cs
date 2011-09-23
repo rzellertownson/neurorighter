@@ -171,5 +171,31 @@ namespace ExtensionMethods
             return NRColorMap;
         }
 
+        /// <summary>
+        /// Method for geneating the default color map for NR plotting for sorted units.
+        /// </summary>
+        /// <param name="numChannels">int number of channels</param>
+        /// <returns>List of color objects</returns>
+        public static List<Color> GenerateUnitBrainbow(this int numChannels)
+        {
+            // This is generated code
+            byte[,] cmap = new byte[6, 3]  {{120,120,120},
+                                            {255,24,0},
+                                            {255,240,0},
+                                            {0,208,255},
+                                            {32,255,0},
+                                            {255,0,240}};
+
+            // Create color list from RGB map above
+            List<Color> NRColorMap = new List<Color>();
+            for (int i = 0; i < cmap.GetLength(0); ++i)
+            {
+                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2]);
+                NRColorMap.Add(colTemp);
+            }
+
+            return NRColorMap;
+        }
+
     }
 }

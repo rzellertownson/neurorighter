@@ -313,16 +313,22 @@ namespace NeuroRighter.FileWriting
                 checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
             //Recall default electrode settings
-            ResetElectrodeCheckBox();
-            int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
-            electrodesToRecord = e2R.ToList();
-            if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
-            {
-                foreach (int e in electrodesToRecord)
-                {
-                    checkedListBox_Electrodes.SetItemChecked(e - 1, true);
-                }
-            }
+            //ResetElectrodeCheckBox();
+            //string[] e2RString = Properties.Settings.Default.electrodesToRecord.Split(',');
+            //int[] e2R = new int[e2RString.Length];
+            //for (int i = 0; i < e2RString.Length; ++i)
+            //{
+            //    e2R[i] = Convert.ToInt32(e2RString);
+            //}
+            ////int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Convert.ToInt32(s)).ToArray();
+            //electrodesToRecord = e2R.ToList();
+            //if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
+            //{
+            //    foreach (int e in electrodesToRecord)
+            //    {
+            //        checkedListBox_Electrodes.SetItemChecked(e - 1, true);
+            //    }
+            //}
 
         }
 

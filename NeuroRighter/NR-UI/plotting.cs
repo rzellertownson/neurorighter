@@ -49,6 +49,7 @@ namespace NeuroRighter
     ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
+
         private void spikePlotData_dataAcquired(object sender)
         {
             PlotData pd = (PlotData)sender;
@@ -95,11 +96,26 @@ namespace NeuroRighter
                 List<PlotSpikeWaveform> wfms = pd.read();
                 for (int i = 0; i < wfms.Count; ++i)
                 {
+                    // What channel are we on
                     int channel = wfms[i].channel;
+                    
+                    // Correct channel mappings
                     if (Properties.Settings.Default.ChannelMapping == "invitro")
-                        channel = (MEAChannelMappings.ch2rc[channel, 0] - 1) * 8 + MEAChannelMappings.ch2rc[channel, 1] - 1;
-                    spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
-                        numSpkWfms[channel]++ + channel * maxWaveforms);
+                        channel = (MEAChannelMappings.ch2rcPreMapped[channel, 0] - 1) * 8 + MEAChannelMappings.ch2rcPreMapped[channel, 1] - 1;
+                    
+                    // Plot the spikes
+                    if (wfms[0].unit == null)
+                    {
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
+                            numSpkWfms[channel]++ + channel * maxWaveforms);
+                    }
+                    else
+                    {
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRUnitBrainbow[(int)wfms[i].unit], channel,
+                           numSpkWfms[channel]++ + channel * maxWaveforms);
+                    }
+
+                    
                     numSpkWfms[channel] %= maxWaveforms;
                 }
                 spkWfmGraph.Invalidate();

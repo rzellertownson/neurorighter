@@ -24,20 +24,20 @@ using System.Text;
 namespace NeuroRighter
 {
     /// <summary>
-    /// 
+    /// Data type for plotting spike snippets.
     /// </summary>
-    /// <author>John Rolston (rolston2@gmail.com)</author>
-    /// 
     [Serializable]
     internal sealed class PlotSpikeWaveform
     {
         public Int16 channel;
         public float[] waveform;
+        public int? unit;
 
-        public PlotSpikeWaveform(int channel, float[] waveform)
+        public PlotSpikeWaveform(int channel, float[] waveform, int? unit)
         {
             this.channel = (short)channel;
             this.waveform = waveform;
+            this.unit = unit;
         }
     }
 }

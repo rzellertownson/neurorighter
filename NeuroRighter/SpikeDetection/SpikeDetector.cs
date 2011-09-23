@@ -476,6 +476,11 @@ namespace NeuroRighter.SpikeDetection
             if (!spikeMaxGood)
                 return spikeMaxGood;
 
+            // Check to make sure this is not the tail end of another spike
+            bool notTailend = Math.Abs(waveform[0]) < Math.Abs(waveform[numPre]);
+            if (!notTailend)
+                return notTailend;
+
             // Check spike slope
             bool spikeSlopeGood = GetSpikeSlope(absWave) > minSpikeSlope;
             if (!spikeSlopeGood)

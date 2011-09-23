@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Currently, Multiclass Support Vector Machines are limited only to Kernel machines. This may change in future versions.">
+    <Position X="19.187" Y="5.146" Height="0.651" Width="2.832" />
+  </Comment>
+  <Class Name="Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine" Collapsed="true">
+    <Position X="15.5" Y="6.25" Width="2.25" />
+    <Members>
+      <Field Name="kernel" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAI=</HashCode>
+      <FileName>VectorMachines\KernelSupportVectorMachine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Kernel" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Accord.MachineLearning.VectorMachines.SupportVectorMachine" Collapsed="true">
+    <Position X="15.5" Y="5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAgAAAEIAAAAAAAAAAEAAAQCAAAEAgAAAAAAA=</HashCode>
+      <FileName>VectorMachines\SupportVectorMachine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="3" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAQAAAIAAQACEAEAAAEABBAAAAAQABCABAQQAARAAMI=</HashCode>
+      <FileName>VectorMachines\Learning\SequentialMinimalOptimization.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.MachineLearning.RANSAC&lt;TModel&gt;" Collapsed="true">
+    <Position X="1.5" Y="1" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEIAAAAAAAAAAAAAgAAAAIAAAEAAACBgBJQgAAQSAAA=</HashCode>
+      <FileName>Ransac.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.Crossvalidation&lt;TModel&gt;" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="2.25" />
+    <Members>
+      <Field Name="folds" Hidden="true" />
+      <Field Name="models" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEIAEAAAAIAAQAAAAAAAAAAAAAAAAAAAAAgAAIAIABA=</HashCode>
+      <FileName>Crossvalidation.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Models" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Accord.MachineLearning.CrossvalidationInfo&lt;TModel&gt;" Collapsed="true">
+    <Position X="9" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAgQAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Crossvalidation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine" Collapsed="true">
+    <Position X="18.75" Y="6.25" Width="3.25" />
+    <Members>
+      <Field Name="machines" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAACAAAAEgAAgACAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>VectorMachines\MulticlassSupportVectorMachine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Machines" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning" Collapsed="true">
+    <Position X="16.5" Y="3" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAQgAAI=</HashCode>
+      <FileName>VectorMachines\Learning\MulticlassSupportVectorLearning.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Accord.MachineLearning.GridSearch&lt;TModel&gt;" Collapsed="true">
+    <Position X="1.75" Y="3.75" Width="1.75" />
+    <Members>
+      <Field Name="fitting" Hidden="true" />
+      <Field Name="ranges" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEIAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgCAAA=</HashCode>
+      <FileName>Gridsearch.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ParameterRanges" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Accord.MachineLearning.GridSearchRange" Collapsed="true">
+    <Position X="5.25" Y="3.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAggAAAAAA=</HashCode>
+      <FileName>Gridsearch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.KMeans" Collapsed="true">
+    <Position X="2" Y="6.75" Width="2" />
+    <Members>
+      <Field Name="centroids" Hidden="true" />
+      <Field Name="clusters" Hidden="true" />
+      <Method Name="converged" Hidden="true" />
+      <Field Name="covariances" Hidden="true" />
+      <Field Name="distance" Hidden="true" />
+      <Field Name="proportions" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Clusters" Type="Accord.MachineLearning.KMeansCluster">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.162" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEAAEAACAABAAQAAAACAAACAAEAAYABAACAAAIAAAAA=</HashCode>
+      <FileName>KMeans.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Clusters" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Accord.MachineLearning.KMeansCluster" Collapsed="true">
+    <Position X="5" Y="6.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAIAAAAAAAAAAEAAEAAEAAAABAAA=</HashCode>
+      <FileName>KMeans.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.KMeansClusterCollection" Collapsed="true">
+    <Position X="2.5" Y="7.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgIAAAAAAAAAAgAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>KMeans.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.GaussianMixtureModel" Collapsed="true">
+    <Position X="7.25" Y="8.25" Width="2" />
+    <Members>
+      <Field Name="clusters" Hidden="true" />
+      <Field Name="model" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Internal" Collapsed="true" />
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEAAAAIAAAAAAQAAAAAAAAAAAEAAIAAAACAAAAAIAAA=</HashCode>
+      <FileName>GaussianMixtureModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Gaussians" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Accord.MachineLearning.GaussianCluster" Collapsed="true">
+    <Position X="10.5" Y="8.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAgAAAAIAAAIAAAAAAEAAEAAEAAAABAAA=</HashCode>
+      <FileName>GaussianMixtureModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.GaussianClusterCollection" Collapsed="true">
+    <Position X="10" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GaussianMixtureModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Accord.MachineLearning.GaussianMixtureModelOptions" Collapsed="true">
+    <Position X="7" Y="9.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>GaussianMixtureModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Accord.MachineLearning.GridSearchParameter" Collapsed="true">
+    <Position X="5.5" Y="4.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Private" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAQAAAAEAKAAAAAgAAAAAiA=</HashCode>
+      <FileName>Gridsearch.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning" Collapsed="true">
+    <Position X="15" Y="1.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>VectorMachines\Learning\ISupportVectorMachineLearning.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Accord.MachineLearning.VectorMachines.ISupportVectorMachine" Collapsed="true">
+    <Position X="18.25" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>VectorMachines\ISupportVectorMachine.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Accord.Statistics.Kernels.IKernel" Collapsed="true">
+    <Position X="13.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Delegate Name="Accord.MachineLearning.GridSearchFittingFunction&lt;TModel&gt;">
+    <Position X="2" Y="4.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAABAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Gridsearch.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="Accord.MachineLearning.CrossvalidationFittingFunction&lt;TModel&gt;" Collapsed="true">
+    <Position X="7" Y="0.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Crossvalidation.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

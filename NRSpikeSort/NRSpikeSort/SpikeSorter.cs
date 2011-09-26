@@ -120,13 +120,6 @@ namespace NRSpikeSort
             // Set the inflection sample
             inflectionSample = peakSample;
 
-            //// Clear the spikesPerChannel hash
-            //spikesCollectedPerChannel.Clear();
-            //for (int i = 0; i < numberChannels; ++i)
-            //{
-            //    spikesCollectedPerChannel.Add(i, 0);
-            //}
-
             // Make sure we have something in the training matrix
             if (trainingSpikes.eventBuffer.Count == 0)
             {
@@ -193,7 +186,7 @@ namespace NRSpikeSort
                 // Current channel
                 int currentChannel = channelsToSort[i];
 
-                // Get the spikes that belong to this channel ///////TODO: will we maintain the reference through this??
+                // Get the spikes that belong to this channel 
                 List<SpikeEvent> spikesOnChan = newSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
 
                 // If there are no spikes on this channel

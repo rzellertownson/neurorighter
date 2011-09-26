@@ -608,8 +608,8 @@ namespace NeuroRighter
                         }
 
                         //Create plot colormap
-                        NRBrainbow = numChannels.GenerateBrainbow();
-                        NRUnitBrainbow = numChannels.GenerateUnitBrainbow();
+                        NRBrainbow = (64).GenerateBrainbow();
+                        NRUnitBrainbow = (64).GenerateUnitBrainbow();
 
                         //Initialize graphs
                         if (spikeGraph != null) { spikeGraph.Dispose(); spikeGraph = null; }

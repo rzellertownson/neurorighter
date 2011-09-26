@@ -61,6 +61,7 @@ namespace NRSpikeSort
         public double[][] currentProjection;
         private int maxK; // maximum possible number of units
         private GaussianMixtureModel gmm;
+        private bool[] kVar;
         
 
         public ChannelModel(int channel, int maxK, int unitStartIndex)
@@ -99,6 +100,7 @@ namespace NRSpikeSort
             logLike = new double[maxK]; // Log-likelihood estimate for a given model and training set
             rissanen = new double[maxK]; // Rissanen estimate for a given model and training set
             mdl = new double[maxK]; // Minimum description length for a given model and training set
+            kVar = new bool[maxK];
             for (int i = 0; i < maxK; ++i)
             {
                 // Step 1: Make a GMM with K subclasses
@@ -107,7 +109,10 @@ namespace NRSpikeSort
                 // Step 2: fit the gmm to the projection data
                 logLike[i] = gmm.Compute(currentProjection, 1e-3, 1.0);
 
-                // Step3: Calculate the MDL for this K
+                // Step 3: perform a classification to detect spurious classification
+                kVar[i] = (kVals[i] == gmm.Classify(currentProjection).Distinct().ToArray().Length);
+
+                // Step 4: Calculate the MDL for this K
                 double L = (double)(kVals[i] * 3 - 1);
                 rissanen[i] = 0.5 * L * Math.Log(currentProjection.Length);
                 mdl[i] = -logLike[i] + rissanen[i];
@@ -115,12 +120,21 @@ namespace NRSpikeSort
 
             // Which value of K supported the MDL:
             int ind = Array.IndexOf(mdl, mdl.Min());
+
+            // Find the value of K that supports the lowest mdl and is verified 
             K = kVals[ind];
+            while(!kVar[ind])
+            {
+                K = kVals[ind];
+                --ind;
+            } 
 
             // Recreate the gmm with the trained value of K
             gmm = new GaussianMixtureModel(K);
             double LL = gmm.Compute(currentProjection, 1e-3, 1.0);
         }
+
+
 
         #region Serialization Constructors/Deconstructors
         public ChannelModel(SerializationInfo info, StreamingContext ctxt)

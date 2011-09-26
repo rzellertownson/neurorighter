@@ -71,6 +71,13 @@ namespace NeuroRighter.SpikeDetection
                 new DoWorkEventHandler(sorterTrainer_trainSS);
             sorterTrainer.RunWorkerCompleted +=
                 new RunWorkerCompletedEventHandler(sorterTrainer_DoneTraining);
+
+            // Flush Component
+            spikeSorter = new SpikeSorter(
+                    numChannels,
+                    Convert.ToInt32(numericUpDown_maxK.Value),
+                    Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+            Flush();
         }
 
         internal void SetSpikeDetector()
@@ -269,21 +276,14 @@ namespace NeuroRighter.SpikeDetection
                 isEngaged = false;
                 hasData = false;
                 isHoarding = true;
+                spikeSorter = null;
                 spikeSorter = new SpikeSorter(
                     numChannels,
                     Convert.ToInt32(numericUpDown_maxK.Value),
                     Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
 
                 // Update the UI to reflect the state of things
-                button_TrainSorter.Enabled = false;
-                button_SaveSpikeSorter.Enabled = false;
-                button_EngageSpikeSorter.Enabled = false;
-                label_SorterEngaged.Text = "Sorter is not engaged";
-                label_SorterEngaged.ForeColor = Color.Red;
-                label_Trained.Text = "Spike sorter is not trained.";
-                label_Trained.ForeColor = Color.Red;
-                button_HoardSpikes.Text = "Stop";
-                button_SaveSpikeSorter.Enabled = false;
+                Flush();
             }
             else
             {
@@ -467,6 +467,21 @@ namespace NeuroRighter.SpikeDetection
 
             this.UseWaitCursor = false;
             this.Cursor = Cursors.Default;
+        }
+
+        private void Flush()
+        {
+            // Update the UI to reflect the state of things
+            button_TrainSorter.Enabled = false;
+            button_SaveSpikeSorter.Enabled = false;
+            button_EngageSpikeSorter.Enabled = false;
+            label_SorterEngaged.Text = "Sorter is not engaged";
+            label_SorterEngaged.ForeColor = Color.Red;
+            label_Trained.Text = "Spike sorter is not trained.";
+            label_Trained.ForeColor = Color.Red;
+            button_HoardSpikes.Text = "Hoard";
+            button_SaveSpikeSorter.Enabled = false;
+            UpdateCollectionBar();
         }
 
     }

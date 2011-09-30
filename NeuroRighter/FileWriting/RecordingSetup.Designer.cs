@@ -570,7 +570,6 @@
             this.button2.TabIndex = 112;
             this.button2.Text = "Select All";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -580,7 +579,6 @@
             this.button1.TabIndex = 111;
             this.button1.Text = "Select None";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // RecordingSetup
             // 

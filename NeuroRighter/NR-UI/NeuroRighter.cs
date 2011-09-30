@@ -267,7 +267,7 @@ namespace NeuroRighter
 
                             if (matchFiles.Length > 0)
                             {
-                                DialogResult dr = MessageBox.Show("File " + filenameOutput + " exists. Overwrite?",
+                                DialogResult dr = MessageBox.Show("File " + filenameBase + " exists. Overwrite?",
                                     "NeuroRighter Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
                                 if (dr == DialogResult.No)
@@ -282,10 +282,8 @@ namespace NeuroRighter
 
                             // Set file base name + number of channels
                             recordingSettings.SetFID(filenameBase);
-                            recordingSettings.SetNumElectrodes(numChannels);
+                            //recordingSettings.SetNumElectrodes(numChannels);
                         }
-                        //set device refresh rate
-                        //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
 
                         // Find out how many devs and channels/dev we are going to need
                         int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);

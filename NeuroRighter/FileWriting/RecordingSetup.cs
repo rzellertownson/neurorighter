@@ -55,6 +55,9 @@ namespace NeuroRighter.FileWriting
             InitializeComponent();
             Refresh();
 
+            // Disable the electrodes tab since its non-functional right now
+            (this.tabControl1.TabPages[1] as Control).Enabled = false;
+
             // Set SALPA access to false since the user has not trained yet
             SetSalpaAccess(false);
 
@@ -62,7 +65,7 @@ namespace NeuroRighter.FileWriting
             ResetStreams2Record();
 
             // Reset the electrodes to match number of channels
-            ResetElectrodeCheckBox();
+            //ResetElectrodeCheckBox();
         }
 
         internal void Refresh()
@@ -94,11 +97,11 @@ namespace NeuroRighter.FileWriting
             this.fid = fid;
         }
 
-        internal void SetNumElectrodes(int numElectrodes)
-        {
-            this.numElectrodes = numElectrodes;
-            ResetElectrodeCheckBox();
-        }
+        //internal void SetNumElectrodes(int numElectrodes)
+        //{
+        //    this.numElectrodes = numElectrodes;
+        //    ResetElectrodeCheckBox();
+        //}
 
         // For spike-type streams
         internal void Setup(string dataType, Task dataTask, int numPreSamp, int numPostSamp, bool recordingUnits)
@@ -313,16 +316,16 @@ namespace NeuroRighter.FileWriting
                 checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
             //Recall default electrode settings
-            ResetElectrodeCheckBox();
-            int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
-            electrodesToRecord = e2R.ToList();
-            if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
-            {
-                foreach (int e in electrodesToRecord)
-                {
-                    checkedListBox_Electrodes.SetItemChecked(e - 1, true);
-                }
-            }
+            //ResetElectrodeCheckBox();
+            //int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
+            //electrodesToRecord = e2R.ToList();
+            //if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
+            //{
+            //    foreach (int e in electrodesToRecord)
+            //    {
+            //        checkedListBox_Electrodes.SetItemChecked(e - 1, true);
+            //    }
+            //}
 
         }
 
@@ -416,37 +419,37 @@ namespace NeuroRighter.FileWriting
             recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
         }
 
-        private void ResetElectrodeCheckBox()
-        {
-            // On electrodes tab, enable the checkboxes that correspond to the given
-            // number of electrodes
-            checkedListBox_Electrodes.Items.Clear();
-            for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
-            {
-                checkedListBox_Electrodes.Items.Add(i + 1, false);
-            }
-        }
+        //private void ResetElectrodeCheckBox()
+        //{
+        //    // On electrodes tab, enable the checkboxes that correspond to the given
+        //    // number of electrodes
+        //    checkedListBox_Electrodes.Items.Clear();
+        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+        //    {
+        //        checkedListBox_Electrodes.Items.Add(i + 1, false);
+        //    }
+        //}
 
-        private void SelectAllElectrodes()
-        {
-            // On electrodes tab, enable the checkboxes that correspond to the given
-            // number of electrodes
-            checkedListBox_Electrodes.Items.Clear();
-            for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
-            {
-                checkedListBox_Electrodes.Items.Add(i + 1, true);
-            }
-        }
+        //private void SelectAllElectrodes()
+        //{
+        //    // On electrodes tab, enable the checkboxes that correspond to the given
+        //    // number of electrodes
+        //    checkedListBox_Electrodes.Items.Clear();
+        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+        //    {
+        //        checkedListBox_Electrodes.Items.Add(i + 1, true);
+        //    }
+        //}
 
-        private void SetElectrodes()
-        {
-            // Recall default electrode settings
-            electrodesToRecord.Clear();
-            foreach (int ce in checkedListBox_Electrodes.CheckedIndices)
-            {
-                electrodesToRecord.Add(ce+1);
-            }
-        }
+        //private void SetElectrodes()
+        //{
+        //    // Recall default electrode settings
+        //    electrodesToRecord.Clear();
+        //    foreach (int ce in checkedListBox_Electrodes.CheckedIndices)
+        //    {
+        //        electrodesToRecord.Add(ce+1);
+        //    }
+        //}
 
         private void button_MakeRawSelections_Click(object sender, EventArgs e)
         {
@@ -462,14 +465,14 @@ namespace NeuroRighter.FileWriting
             Properties.Settings.Default.recordAuxDigital = checkBox_RecordAuxDig.Checked;
 
             // Electrodes
-            SetElectrodes();
-            int[] e2R = electrodesToRecord.ToArray();
-            string e2RString = String.Join(",", e2R.Select(i => i.ToString()).ToArray());
-            Properties.Settings.Default.electrodesToRecord = e2RString;
-            Properties.Settings.Default.Save();
+            //SetElectrodes();
+            //int[] e2R = electrodesToRecord.ToArray();
+            //string e2RString = String.Join(",", e2R.Select(i => i.ToString()).ToArray());
+            //Properties.Settings.Default.electrodesToRecord = e2RString;
+            //Properties.Settings.Default.Save();
 
-            // Save form location
-            Properties.Settings.Default.recSetFormLoc = this.Location;
+            //// Save form location
+            //Properties.Settings.Default.recSetFormLoc = this.Location;
 
             this.Hide();
         }
@@ -488,16 +491,16 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
             //Recall default electrode settings
-            ResetElectrodeCheckBox();
-            int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
-            electrodesToRecord = e2R.ToList();
-            if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
-            {
-                foreach (int elec in electrodesToRecord)
-                {
-                    checkedListBox_Electrodes.SetItemChecked(elec - 1, true);
-                }
-            }
+            //ResetElectrodeCheckBox();
+            //int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
+            //electrodesToRecord = e2R.ToList();
+            //if (electrodesToRecord.Max() <= Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels))
+            //{
+            //    foreach (int elec in electrodesToRecord)
+            //    {
+            //        checkedListBox_Electrodes.SetItemChecked(elec - 1, true);
+            //    }
+            //}
 
             // Save form location
             Properties.Settings.Default.recSetFormLoc = this.Location;
@@ -506,15 +509,15 @@ namespace NeuroRighter.FileWriting
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ResetElectrodeCheckBox();
-        }
+        //private void button1_Click(object sender, EventArgs e)
+        //{
+        //    ResetElectrodeCheckBox();
+        //}
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            SelectAllElectrodes();
-        }
+        //private void button2_Click(object sender, EventArgs e)
+        //{
+        //    SelectAllElectrodes();
+        //}
 
     }
 }

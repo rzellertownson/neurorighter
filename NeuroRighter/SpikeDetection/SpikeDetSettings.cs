@@ -262,6 +262,9 @@ namespace NeuroRighter.SpikeDetection
         {
             if (!isHoarding)
             {
+                // Update the UI to reflect the state of things
+                Flush();
+
                 // Make sure they want to kill the current sorter
                 if (spikeSorter != null)
                 {
@@ -282,8 +285,8 @@ namespace NeuroRighter.SpikeDetection
                     Convert.ToInt32(numericUpDown_maxK.Value),
                     Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
 
-                // Update the UI to reflect the state of things
-                Flush();
+                // Update hoard button
+                button_HoardSpikes.Text = "Stop";
             }
             else
             {

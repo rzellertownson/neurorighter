@@ -76,20 +76,20 @@
             this.numericEdit_ObsBuffHistorySec = new NationalInstruments.UI.WindowsForms.NumericEdit();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.numericEdit_ContC4 = new NationalInstruments.UI.WindowsForms.NumericEdit();
-            this.numericEdit_ContC5 = new NationalInstruments.UI.WindowsForms.NumericEdit();
-            this.numericEdit_ContC3 = new NationalInstruments.UI.WindowsForms.NumericEdit();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.numericEdit_ContC1 = new NationalInstruments.UI.WindowsForms.NumericEdit();
-            this.numericEdit_ContC2 = new NationalInstruments.UI.WindowsForms.NumericEdit();
-            this.numericEdit_ContC0 = new NationalInstruments.UI.WindowsForms.NumericEdit();
             this.label15 = new System.Windows.Forms.Label();
             this.label_ContC2 = new System.Windows.Forms.Label();
             this.label_ContC1 = new System.Windows.Forms.Label();
             this.label_ContC0 = new System.Windows.Forms.Label();
             this.comboBox_FBAlg = new System.Windows.Forms.ComboBox();
+            this.numericUpDown_ContC0 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ContC5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ContC4 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ContC3 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ContC2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_ContC1 = new System.Windows.Forms.NumericUpDown();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_TargetSigma)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_TargetFreq)).BeginInit();
@@ -114,12 +114,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ObsBuffHistorySec)).BeginInit();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC0)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox4
@@ -621,58 +621,31 @@
             // groupBox7
             // 
             this.groupBox7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.groupBox7.Controls.Add(this.numericEdit_ContC4);
-            this.groupBox7.Controls.Add(this.numericEdit_ContC5);
-            this.groupBox7.Controls.Add(this.numericEdit_ContC3);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC3);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC4);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC1);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC5);
             this.groupBox7.Controls.Add(this.label11);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC2);
             this.groupBox7.Controls.Add(this.label12);
             this.groupBox7.Controls.Add(this.label13);
-            this.groupBox7.Controls.Add(this.numericEdit_ContC1);
-            this.groupBox7.Controls.Add(this.numericEdit_ContC2);
-            this.groupBox7.Controls.Add(this.numericEdit_ContC0);
             this.groupBox7.Controls.Add(this.label15);
             this.groupBox7.Controls.Add(this.label_ContC2);
+            this.groupBox7.Controls.Add(this.numericUpDown_ContC0);
             this.groupBox7.Controls.Add(this.label_ContC1);
             this.groupBox7.Controls.Add(this.label_ContC0);
             this.groupBox7.Controls.Add(this.comboBox_FBAlg);
             this.groupBox7.Location = new System.Drawing.Point(344, 765);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(632, 87);
+            this.groupBox7.Size = new System.Drawing.Size(650, 87);
             this.groupBox7.TabIndex = 3;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Controller";
             // 
-            // numericEdit_ContC4
-            // 
-            this.numericEdit_ContC4.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC4.Location = new System.Drawing.Point(465, 48);
-            this.numericEdit_ContC4.Name = "numericEdit_ContC4";
-            this.numericEdit_ContC4.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC4.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC4.TabIndex = 33;
-            // 
-            // numericEdit_ContC5
-            // 
-            this.numericEdit_ContC5.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC5.Location = new System.Drawing.Point(569, 48);
-            this.numericEdit_ContC5.Name = "numericEdit_ContC5";
-            this.numericEdit_ContC5.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC5.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC5.TabIndex = 32;
-            // 
-            // numericEdit_ContC3
-            // 
-            this.numericEdit_ContC3.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC3.Location = new System.Drawing.Point(361, 48);
-            this.numericEdit_ContC3.Name = "numericEdit_ContC3";
-            this.numericEdit_ContC3.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC3.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC3.TabIndex = 31;
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(525, 51);
+            this.label11.Location = new System.Drawing.Point(524, 51);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(44, 13);
             this.label11.TabIndex = 30;
@@ -682,7 +655,7 @@
             // 
             this.label12.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(421, 51);
+            this.label12.Location = new System.Drawing.Point(402, 50);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(44, 13);
             this.label12.TabIndex = 29;
@@ -691,38 +664,11 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(317, 51);
+            this.label13.Location = new System.Drawing.Point(280, 50);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(44, 13);
             this.label13.TabIndex = 28;
             this.label13.Text = "Coeff. 4";
-            // 
-            // numericEdit_ContC1
-            // 
-            this.numericEdit_ContC1.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC1.Location = new System.Drawing.Point(465, 16);
-            this.numericEdit_ContC1.Name = "numericEdit_ContC1";
-            this.numericEdit_ContC1.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC1.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC1.TabIndex = 27;
-            // 
-            // numericEdit_ContC2
-            // 
-            this.numericEdit_ContC2.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC2.Location = new System.Drawing.Point(569, 16);
-            this.numericEdit_ContC2.Name = "numericEdit_ContC2";
-            this.numericEdit_ContC2.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC2.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC2.TabIndex = 26;
-            // 
-            // numericEdit_ContC0
-            // 
-            this.numericEdit_ContC0.FormatMode = NationalInstruments.UI.NumericFormatMode.CreateSimpleDoubleMode(5);
-            this.numericEdit_ContC0.Location = new System.Drawing.Point(361, 16);
-            this.numericEdit_ContC0.Name = "numericEdit_ContC0";
-            this.numericEdit_ContC0.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ContC0.Size = new System.Drawing.Size(58, 20);
-            this.numericEdit_ContC0.TabIndex = 25;
             // 
             // label15
             // 
@@ -736,7 +682,7 @@
             // label_ContC2
             // 
             this.label_ContC2.AutoSize = true;
-            this.label_ContC2.Location = new System.Drawing.Point(525, 19);
+            this.label_ContC2.Location = new System.Drawing.Point(524, 19);
             this.label_ContC2.Name = "label_ContC2";
             this.label_ContC2.Size = new System.Drawing.Size(44, 13);
             this.label_ContC2.TabIndex = 21;
@@ -746,7 +692,7 @@
             // 
             this.label_ContC1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.label_ContC1.AutoSize = true;
-            this.label_ContC1.Location = new System.Drawing.Point(421, 19);
+            this.label_ContC1.Location = new System.Drawing.Point(402, 18);
             this.label_ContC1.Name = "label_ContC1";
             this.label_ContC1.Size = new System.Drawing.Size(44, 13);
             this.label_ContC1.TabIndex = 19;
@@ -755,7 +701,7 @@
             // label_ContC0
             // 
             this.label_ContC0.AutoSize = true;
-            this.label_ContC0.Location = new System.Drawing.Point(317, 19);
+            this.label_ContC0.Location = new System.Drawing.Point(280, 18);
             this.label_ContC0.Name = "label_ContC0";
             this.label_ContC0.Size = new System.Drawing.Size(44, 13);
             this.label_ContC0.TabIndex = 17;
@@ -767,11 +713,85 @@
             this.comboBox_FBAlg.Items.AddRange(new object[] {
             "None",
             "Filt2PropFreqFB",
-            "Filt2PropPowerFB"});
+            "Filt2PropPowerFB",
+            "Filt2PIDPowerFB"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(62, 29);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
-            this.comboBox_FBAlg.Size = new System.Drawing.Size(249, 21);
+            this.comboBox_FBAlg.Size = new System.Drawing.Size(184, 21);
             this.comboBox_FBAlg.TabIndex = 0;
+            // 
+            // numericUpDown_ContC0
+            // 
+            this.numericUpDown_ContC0.DecimalPlaces = 6;
+            this.numericUpDown_ContC0.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_ContC0.Location = new System.Drawing.Point(327, 16);
+            this.numericUpDown_ContC0.Name = "numericUpDown_ContC0";
+            this.numericUpDown_ContC0.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC0.TabIndex = 4;
+            // 
+            // numericUpDown_ContC5
+            // 
+            this.numericUpDown_ContC5.DecimalPlaces = 6;
+            this.numericUpDown_ContC5.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_ContC5.Location = new System.Drawing.Point(573, 48);
+            this.numericUpDown_ContC5.Name = "numericUpDown_ContC5";
+            this.numericUpDown_ContC5.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC5.TabIndex = 5;
+            // 
+            // numericUpDown_ContC4
+            // 
+            this.numericUpDown_ContC4.DecimalPlaces = 6;
+            this.numericUpDown_ContC4.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            131072});
+            this.numericUpDown_ContC4.Location = new System.Drawing.Point(450, 48);
+            this.numericUpDown_ContC4.Name = "numericUpDown_ContC4";
+            this.numericUpDown_ContC4.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC4.TabIndex = 6;
+            // 
+            // numericUpDown_ContC3
+            // 
+            this.numericUpDown_ContC3.DecimalPlaces = 6;
+            this.numericUpDown_ContC3.Location = new System.Drawing.Point(327, 48);
+            this.numericUpDown_ContC3.Name = "numericUpDown_ContC3";
+            this.numericUpDown_ContC3.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC3.TabIndex = 7;
+            // 
+            // numericUpDown_ContC2
+            // 
+            this.numericUpDown_ContC2.DecimalPlaces = 6;
+            this.numericUpDown_ContC2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_ContC2.Location = new System.Drawing.Point(573, 16);
+            this.numericUpDown_ContC2.Name = "numericUpDown_ContC2";
+            this.numericUpDown_ContC2.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC2.TabIndex = 8;
+            // 
+            // numericUpDown_ContC1
+            // 
+            this.numericUpDown_ContC1.DecimalPlaces = 6;
+            this.numericUpDown_ContC1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_ContC1.Location = new System.Drawing.Point(450, 16);
+            this.numericUpDown_ContC1.Name = "numericUpDown_ContC1";
+            this.numericUpDown_ContC1.Size = new System.Drawing.Size(69, 20);
+            this.numericUpDown_ContC1.TabIndex = 9;
             // 
             // ControlPanel
             // 
@@ -816,12 +836,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ObsBuffHistorySec)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ContC0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC0)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -876,18 +896,18 @@
         internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_FiltC0;
         internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_FiltWidthSec;
         internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_FiltC1;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC1;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC2;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC0;
         private System.Windows.Forms.Button button_StartSIMOC;
         internal System.Windows.Forms.Label label_ContC2;
         internal System.Windows.Forms.Label label_ContC1;
         internal System.Windows.Forms.Label label_ContC0;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC4;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC5;
-        internal NationalInstruments.UI.WindowsForms.NumericEdit numericEdit_ContC3;
         internal System.Windows.Forms.Label label11;
         internal System.Windows.Forms.Label label12;
         internal System.Windows.Forms.Label label13;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC0;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC5;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC4;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC3;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC2;
+        public System.Windows.Forms.NumericUpDown numericUpDown_ContC1;
     }
 }

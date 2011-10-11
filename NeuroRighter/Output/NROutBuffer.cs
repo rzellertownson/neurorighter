@@ -29,6 +29,7 @@ namespace NeuroRighter.Output
         protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
 
         //events
+        private bool recoveryFlag = false;
         private int queueThreshold = 0;//how many NREvents do you want to have 'on deck' before asking for more?
         internal event QueueLessThanThresholdHandler QueueLessThanThreshold;//event thrown when there are less than that many events
         internal event StimulationCompleteHandler StimulationComplete;
@@ -37,11 +38,11 @@ namespace NeuroRighter.Output
         // Internal Properties
         internal bool StillWritting = false;
         internal ulong numBuffLoadsCompleted = 0;
+        internal ulong numBuffLoadsThisRun = 0;
         internal uint numBuffLoadsRequired = 0;
         internal bool running = false;
 
         internal bool immortal = false;//do we keep on loading the buffer forever, or do we have a finite number of loads to perform (openloop)
-        internal bool done;
         internal bool robust = true;
 
         // Private Properties
@@ -50,11 +51,11 @@ namespace NeuroRighter.Output
         private ulong currentSample;
 
         //properties of the buffer being written to the DAQ
-        private uint BUFFSIZE;//how long is the DAQ half buffer (ie, how many samples get loaded into the DAQ per bufferload?
+        protected uint BUFFSIZE;//how long is the DAQ half buffer (ie, how many samples get loaded into the DAQ per bufferload?
         private ulong bufferIndex = 0;//where are we in the buffer we are writing?
         private ulong numEventsWritten = 0;//how many NREvents have we loaded?
         private ulong totalEvents;//what is the total number of events we need to load?  0 means we will load eternally
-        private uint STIM_SAMPLING_FREQ;
+        protected uint STIM_SAMPLING_FREQ;
         private List<double[,]> abuffs;//the analog buffers that are going to be written to the DAQ
         private List<uint[]> dbuffs;//the digital buffers that are going to be written to the DAQ
 
@@ -68,6 +69,7 @@ namespace NeuroRighter.Output
         //NI DAQ properties
         //this is the DAQ task that sends the 'load buffer' signal.
         Task buffLoadTask;
+        protected Task masterTask;
 
         //these are the DAQ tasks that take the loaded buffer and turn it into stuff in the real world
         Task[] analogTasks;
@@ -75,10 +77,16 @@ namespace NeuroRighter.Output
         Task[] digitalTasks;
         DigitalSingleChannelWriter[] digitalWriters;
 
+        private BackgroundWorker bw;
+        internal int safecount;
+
+        Queue<int> names;
+        string masterLoad;
+        private object taskLock;
 
         // DEBUGGING
         // these are in place so you can watch the timing of your NROutBuffer
-        RealTimeDebugger Debugger;
+        protected RealTimeDebugger Debugger;
 
         #region internal methods- used by NR objects
 
@@ -93,45 +101,106 @@ namespace NeuroRighter.Output
             anEventValues = new List<double[,]>();//the analog values for the current stimulus (copied into abuffs)
             digEventValues = new List<uint[]>();
         }
-
+       
         //this NROutBuffer has configured the NI DAQs for use, and has written the first two buffer loads to the DAQs.  If you have any stimuli 
         //that you plan on applying within the first two buffer loads, append those before calling this method.
-        internal void Setup(AnalogMultiChannelWriter[] AnalogWriters, DigitalSingleChannelWriter[] DigitalWriters, Task[] AnalogTasks, Task[] DigitalTasks, Task BuffLoadTask, RealTimeDebugger Debugger)
+        internal void Setup(Task buffLoadTask, RealTimeDebugger debugger, Task masterTask)
         {
+            //grab the debugger and the counter
+            this.Debugger = debugger;
+            this.buffLoadTask = buffLoadTask;
+            this.masterTask = masterTask;
+            this.masterLoad = buffLoadTask.COChannels[0].PulseTerminal;
 
-            this.Debugger = Debugger;
-            this.analogWriters = new AnalogMultiChannelWriter[AnalogWriters.Length];
-            this.analogTasks = new Task[AnalogTasks.Length];
-            for (int i = 0; i < AnalogWriters.Length; i++)
-            {
-                this.analogWriters[i] = AnalogWriters[i];
-                this.analogTasks[i] = AnalogTasks[i];
-                this.analogTasks[i].Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-                this.analogTasks[i].Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            }
-
-            this.digitalWriters = new DigitalSingleChannelWriter[DigitalWriters.Length];
-            this.digitalTasks = new Task[DigitalTasks.Length];
-            for (int i = 0; i < DigitalWriters.Length; i++)
-            {
-                this.digitalWriters[i] = DigitalWriters[i];
-                this.digitalTasks[i] = DigitalTasks[i];
-                this.digitalTasks[i].Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
-                this.digitalTasks[i].Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
-            }
-
-            // Add reload method to the Counter output event
-            this.buffLoadTask = BuffLoadTask;
+            //initialize buffer counting mechanisms
+            safecount = 0;//this is the number of times the counter has gone off.
+            currentCount = 0;//this is the current counter tick we are working on.
+            sem = new Semaphore(0, 16);
+           
+            names = new Queue<int>();
+            taskLock = new object();
+            //initialize background worker to run responses to counter ticks
+            bw = new BackgroundWorker();
+            first = true;
+            bw.DoWork += new DoWorkEventHandler(ProcessTickThread);
+            bw.RunWorkerAsync();
             buffLoadTask.CounterOutput += new CounterOutputEventHandler(TimerTick);
 
-            // Populate the outer-buffer twice
-            PopulateBufferAppending(true, false);
-            PopulateBufferAppending(true, false);
+            //clear tasks and writers if they still exist
+            clearTasks();
 
+            //configure the task arrays
+            SetupTasks();
 
+            //load up the first two buffers
+            numBuffLoadsCompleted++;
+            PopulateBufferAppending(true, false);
+            numBuffLoadsCompleted++;
+            PopulateBufferAppending(true, false);
+            
+           
         }
 
-        //this NROutBuffer is now ready to go, awaiting the green light from the master task (and the buffloadtask)
+        //parts of setup that are specific to clearing and configuring tasks
+        private void SetupTasks()//Task[] analogTasks, AnalogMultiChannelWriter[] analogWriters, Task[] digitalTasks, DigitalSingleChannelWriter[] digitalWriters)
+        {
+            
+
+            //do outputbuffer-specific task configuration (which device/channels, ranges)
+            SetupTasksSpecific(ref analogTasks, ref digitalTasks);
+
+
+            //do general configuration stuff (clocks, starts, writemodes, buffer sizes)
+
+            //analog
+            analogWriters = new AnalogMultiChannelWriter[analogTasks.Length];
+            for (int i = 0; i < analogTasks.Length; i++)
+            {
+                //set timing off of the master task
+                analogTasks[i].Timing.ReferenceClockSource =
+                        masterTask.Timing.ReferenceClockSource;
+                analogTasks[i].Timing.ReferenceClockRate =
+                    masterTask.Timing.ReferenceClockRate;
+
+                //set start triggers off of the buffer loading (counter) task
+                analogTasks[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
+                    masterLoad, DigitalEdgeStartTriggerEdge.Rising);
+
+                //configure the on board (hardware) buffer
+                analogTasks[i].Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
+                analogTasks[i].Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
+                
+                //create a writer for this task
+                analogWriters[i] = new AnalogMultiChannelWriter(analogTasks[i].Stream);
+
+                //now that we've created a potential task configuration, check to make sure everything is kosher
+                analogTasks[i].Control(TaskAction.Verify);
+                //actually set the hardware to these settings
+                analogTasks[i].Control(TaskAction.Reserve);
+            }
+
+            digitalWriters = new DigitalSingleChannelWriter[digitalTasks.Length];
+            for (int i = 0; i < digitalTasks.Length; i++)
+            {
+                //configure the on board (hardware) buffer
+                digitalTasks[i].Stream.Buffer.OutputBufferSize = 2 * BUFFSIZE;
+                digitalTasks[i].Stream.WriteRegenerationMode = WriteRegenerationMode.DoNotAllowRegeneration;
+
+                //create a writer for this task
+                digitalWriters[i] = new DigitalSingleChannelWriter(digitalTasks[i].Stream);
+
+                //now that we've created a potential task configuration, check to make sure everything is kosher
+                digitalTasks[i].Control(TaskAction.Verify);
+                //actually set the hardware to these settings
+                digitalTasks[i].Control(TaskAction.Reserve);
+            }
+        }
+
+        //parts of task setup that are specific to this particular type of NROutBuffer
+        protected abstract void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks);
+
+        
+        //starts all the analog and digital output tasks for this buffer.  generation will begin once the master task and buffer loading task start as well.
         internal void Start()
         {
             running = true;
@@ -142,11 +211,38 @@ namespace NeuroRighter.Output
                 digitalTasks[i].Start();
         }
 
-        //this NROutBuffer will no longer load data into the DAQs, and instead will stop and dispose those NI tasks
+        //prevents this NROutBuffer from loadind data into the DAQs
         internal void Stop()
         {
+           // Debugger.Write("nroutbuffer attempted stop");
             running = false;
         }
+
+        //stops output generation as soon as possible
+        internal void Kill()
+        {
+          //  Debugger.Write("nroutbuffer attemped kill");
+            running = false;
+            clearTasks();
+        }
+
+        //inform the NROutBuffer how long it has to go for- used in open loop
+        internal void CalculateLoadsRequired(double finalStimTime)
+        {
+            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
+            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
+            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalStimTime / (double)BUFFSIZE));
+        }
+
+        //inform the NROutBuffer how many events it has to deal with
+        internal void SetNumberofEvents(ulong totalNumberOfEvents)
+        {
+            totalEvents = totalNumberOfEvents;
+        }
+
+        #endregion
+
+        #region public methods
 
         /// <summary>
         /// Writes NeuroRighter output events to NeuroRighter's outer event buffer. Event's posted to this list contain a time of executation relative to
@@ -173,7 +269,7 @@ namespace NeuroRighter.Output
             {
                 // release the write lock
                 bufferLock.ExitWriteLock();
-            }
+            } 
         }
 
         /// <summary>
@@ -244,22 +340,11 @@ namespace NeuroRighter.Output
             }
         }
 
-        //inform the NROutBuffer how long it has to go for- used in open loop
-        internal void CalculateLoadsRequired(double finalStimTime)
-        {
-            //How many buffer loads will this stimulus task take? 3 extra are for (1) Account for delay in start that might push
-            //last stimulus overtime by a bit and 2 loads to zero out the double buffer.
-            numBuffLoadsRequired = 4 + (uint)Math.Ceiling((double)(STIM_SAMPLING_FREQ * finalStimTime / (double)BUFFSIZE));
-        }
-
-        //inform the NROutBuffer how many events it has to deal with
-        internal void SetNumberofEvents(ulong totalNumberOfEvents)
-        {
-            totalEvents = totalNumberOfEvents;
-        }
-
-        //used to verify how many stimuli are currently enqueued
-        internal int StimuliInQueue()
+        ///<summary>
+        ///returns the number of stimuli that are enqueued on this buffer, but have yet to be written out to hardware.
+        /// </summary>
+        ///<returns>Number of stimuli enqueued.</returns>
+        public int StimuliInQueue()
         {
             bufferLock.EnterUpgradeableReadLock();
             try
@@ -272,6 +357,7 @@ namespace NeuroRighter.Output
                 bufferLock.ExitUpgradeableReadLock();
             }
         }
+       
 
         /// <summary>
         /// Get the current time in miliseconds, as measured by the number of samples generated by this NROutBuffer.
@@ -296,15 +382,28 @@ namespace NeuroRighter.Output
         /// <returns> Current output buffer time in millieseconds</returns>
         public ulong GetCurrentSample()
         {
-            if (analogTasks.Length > 0)
+            try
             {
-                return (ulong)analogTasks[0].Stream.TotalSamplesGeneratedPerChannel;
+                if (analogTasks.Length > 0)
+                {
+                    //if (!analogTasks[0].IsDone)
+                        return (ulong)analogTasks[0].Stream.TotalSamplesGeneratedPerChannel;
+                    //else return 0;
+                }
+                else if (digitalTasks.Length > 0)
+                {
+                    //digitalTasks[0].
+                    //if (!digitalTasks[0].IsDone)
+                        return (ulong)digitalTasks[0].Stream.TotalSamplesGeneratedPerChannel;
+                    //else return 0;
+                }
+                
             }
-            else if (digitalTasks.Length > 0)
+            catch (Exception me)
             {
-                return (ulong)digitalTasks[0].Stream.TotalSamplesGeneratedPerChannel;
+                return 0;//if we have task arrays but no tasks, that means we are in the middle of a restart and therefore our ouput is zero
             }
-            throw new Exception("GetTime() requested from " + this.ToString() + ", which has no tasks");
+            throw new Exception("GetCurrentSample() requested from " + this.ToString() + ", which has no tasks");
         }
 
         /// <summary>
@@ -317,6 +416,30 @@ namespace NeuroRighter.Output
             return numBuffLoadsCompleted;
         }
 
+        /// <summary>
+        /// Returns boolean value indicating whether or not output samples are being generated by the buffer output tasks
+        /// </summary>
+        /// <returns>Task.isDone</returns>
+        public bool IsDone()
+        {
+            try
+            {
+                if (analogTasks.Length > 0)
+                {
+
+                    return analogTasks[0].IsDone;
+                }
+                else if (digitalTasks.Length > 0)
+                {
+                    return digitalTasks[0].IsDone;
+                }
+            }
+            catch (DaqException de)
+            {
+                return false;
+            }
+            throw new Exception("IsDone() requested from " + this.ToString() + ", which has no tasks");
+        }
 
         internal uint GetBufferSize()
         {
@@ -325,257 +448,413 @@ namespace NeuroRighter.Output
 
 
 
-        //write a bunch of zeros to the DAQ so that we don't leave non-zero values on our outputs
-        //must be called Before you clear tasks
-
-
         #endregion
 
         #region private methods
 
-
-        //method implimented in the subclass that specifies how to turn this NREvent into analog and digital streams
+        
+        
+        //method implemented in the subclass that specifies how to turn this NREvent into analog and digital streams
         protected abstract void WriteEvent(T stim, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues);
 
         //event called by the buffload task
+        private object obj = new object();
         private void TimerTick(object sender, EventArgs e)
         {
-            //Console.Write("anda...");
-            // thrd = Thread.CurrentThread;
-            //  thrd.Priority = ThreadPriority.Highest;
-            //double tickDiff = GetTime();
+            
+            //if the buffer is stopped but the counter is still going, we can skip this
             if (running)
             {
+                {
+                    lock (obj)
+                    {
+                        //the number of times the counter has gone off
+                        ++safecount;
+                        //for each counter tick, enqueue that tick as a name to be executed
+                        names.Enqueue(safecount);
+                        //for each of these name on deck, release a semaphore
+                        sem.Release(1);
+                    }
+                }
+                
+            }
+           
+            
+        }
+
+        
+        private Semaphore sem;
+        private int currentCount;
+
+        //this is the code executed by the thread that actually does the processing
+        private void ProcessTickThread(object sender, DoWorkEventArgs e)
+        {
+            Debugger.Write("starting processing thread for "+ this.ToString());
+            
+
+            //the "infinite" loop- 
+            while (running||first)
+            {
+                sem.WaitOne();//wait for a semaphore to become available
+                lock (obj)
+                {
+                    currentCount = names.Dequeue();//figure out what name needs to be executed
+                }
+                Debugger.Write(this.ToString()+ " tick " + currentCount + " passed semaphore");
+                AttemptLoad(currentCount);//execute the current name
+            }
+
+            //we are no longer trying to load to the DAQ.  Wait for output generation to finish, and then clear everything.
+            Debugger.Write("ending buffer calculation processing queue thread for " + this.ToString());
+            
+            try
+            {
+                if (analogTasks != null)
+                    if (analogTasks[0]!=null)
+                        analogTasks[0].WaitUntilDone();
+                else
+                {
+                    if (digitalTasks != null)
+                        if (digitalTasks[0]!=null)
+                            digitalTasks[0].WaitUntilDone();
+                }
+            }
+            catch (Exception me) { }
+            FinishStimulation(new DoWorkEventArgs(null));
+            
+        }
+        
+        //disposes all output tasks
+       protected void clearTasks()
+        {
+            if (analogTasks != null)
+                for (int i = 0; i < analogTasks.Length; i++)
+                {
+                    if (analogTasks[i] != null)
+                    {
+                        analogTasks[i].Dispose();
+                        analogTasks[i] = null;
+                        analogWriters[i] = null;
+                    }
+                }
+            if (digitalTasks != null)
+                for (int i = 0; i < digitalTasks.Length; i++)
+                {
+                    if (digitalTasks[i] != null)
+                    {
+                        digitalTasks[i].Dispose();
+                        digitalTasks[i] = null;
+                        digitalWriters[i] = null;
+                    }
+                }
+
+        }
+
+        //populates the buffers with commands based on the named buffer load, but only if we are generating output
+        private void AttemptLoad(int name)
+        {
+            //check to see if our output tasks are generating anything
+            if (GetCurrentSample() == 0)
+            {
+                Debugger.Write(this.ToString() + " looks like we haven't output anything yet");
+                return;//in case we accidentally start this before generation is go
+            }
+            
+            //as we always assume 2 buffer loads of zeros have gone out before we started generating outputs:
+            numBuffLoadsCompleted = (ulong)(name + 2);
+
+            
+            if (recoveryFlag)//flag is high if we are coming off of a restart
+            {
+                double stamp = Debugger.GetTimeMS();
+                double till = (double)(name* 100);
+                Debugger.Write("recovery flag was high: till " + (till) + " stamp: " +stamp + " running: " +running);
+                if ( till< stamp)
+                {
+                    Debugger.Write(numBuffLoadsCompleted.ToString() + " was recovering with offset.");
+                    return;//dont do anything, this is the wrong start point
+                }
+                recoveryFlag = false;
+            }
+            if ((numBuffLoadsCompleted > numBuffLoadsRequired)&!immortal)
+                running = false;
+            Debugger.Write("tick " + name + " nblc " + numBuffLoadsCompleted);
+
+            //
+            if (running)//if we haven't finished the necessary buffer loads
+            {  
+                Debugger.Write("trying " + name);
                 //  Console.WriteLine(Convert.ToString(tickDiff) + ": " + this.ToString() + " DAQ half-load event.");
-                WriteToDAQ();
+                PopulateBufferAppending(true, false);
             }
             else
             {
-                //if the buffer is not longer running, then write out a bunch of zeros
+                Debugger.Write("zeroing " + name);
+                //if the buffer is no longer running, then write out a bunch of zeros
                 ZeroOut();
-                // Console.WriteLine(Convert.ToString(tickDiff) + ": "+this.ToString() +" not running.");
-                FinishStimulation(e);
+               
+                
             }
-            //   thrd.Priority = ThreadPriority.Normal;
+            
+            
         }
 
+        //clear, reconfigure buffers, fill buffers with zeros, start tasks for triggering upon the next buff load task tick
+        internal void restartBuffer()
+        {
+            lock (taskLock)
+            {
+                //clears, reconfigures tasks
+                clearTasks();
+                SetupTasks();
+
+                //write out empty buffers and start each task for generation
+                for (int i = 0; i < analogWriters.Length; i++)
+                {
+
+                    //analogTasks[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(analogTasks[i].Timing.ReferenceClockSource, DigitalEdgeStartTriggerEdge.Rising);
+                    analogWriters[i].WriteMultiSample(false, new double[abuffs.ElementAt(i).GetLength(0), abuffs.ElementAt(i).GetLength(1)]);
+                    analogWriters[i].WriteMultiSample(false, new double[abuffs.ElementAt(i).GetLength(0), abuffs.ElementAt(i).GetLength(1)]);
+
+                    analogTasks[i].Control(TaskAction.Start);
+                    //analogTasks[i].Start();
+
+
+                }
+                for (int i = 0; i < digitalWriters.Length; i++)
+                {
+
+                    digitalWriters[i].WriteMultiSamplePort(false, new uint[dbuffs.ElementAt(i).GetLength(0)]);
+                    digitalWriters[i].WriteMultiSamplePort(false, new uint[dbuffs.ElementAt(i).GetLength(0)]);
+
+                    //digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                    digitalTasks[i].Start();
+                }
+                numBuffLoadsThisRun = numBuffLoadsCompleted;
+                Debugger.Write("restart");
+            }
+        }
+
+        
         //event raised if we are done.
         private void FinishStimulation(EventArgs e)
         {
             if (StimulationComplete != null)
             {
                 // Stop the tasks and dispose of them
-                foreach (Task t in analogTasks)
-                {
-                    t.Stop();
-                    t.Dispose();
-
-                }
-                foreach (Task t in digitalTasks)
-                {
-                    t.Stop();
-                    t.Dispose();
-
-                }
+                clearTasks();
 
                 // Tell NR that stimulation has finished
                 StimulationComplete(this, e);
             }
         }
 
-        //wrapper method for PopulateBufferAppending that also handles
-        //some debugging stuff
-        private void WriteToDAQ()
-        {
-
-            done = false;
-            //Console.WriteLine("Write to Buffer Started");
-            //Now look in the outer buffer and grab whatever is needed for this load.
-            //this operation is the most intensive the buffer needs to 
-            PopulateBufferAppending(true, false);
-
-
-            done = true;
-
-        }
+       
 
         //called each bufferload, that is, each time the buffload task fires off
         //creates a set of empty buffers (arrays) for each task, and then goes through
         //the outerbuffer (list) and looks for events that need to be applied during 
         //this particular load.  Those events are then written to the buffer
+        private bool first;
+        private double[,] areserve;
+        
         private void PopulateBufferAppending(bool firstTime, bool zeroOnly)
         {
-            //create the buffers we are about to write to the DAQ
-            lock (this)
+            
+            //done = false;//flag to say that we are inside the populate buffer appending code
+            
+            //reliability testing:
+            //Debugger.Write(this.ToString() + " pre-start");
+            System.Threading.Thread.Sleep(90);
+            
+            try//main try block
             {
+                
+                try
+                {
+                    
+                    Debugger.Write("samples out: " + GetCurrentSample());
+                    
+                }
+                catch (Exception me)
+                { }
                 Debugger.Write(this.ToString() + " start");
+                
                 double start;
                 if (running)
-                    start = this.GetTime();
+                    start = GetTime();
                 else
                     start = 0;
-
-                abuffs = new List<double[,]>();
-                dbuffs = new List<uint[]>();
-
-                foreach (Task n in analogTasks)
+                lock (taskLock)
                 {
-                    double[,] abuff = new double[n.AOChannels.ICollection_Count, BUFFSIZE];
-                    abuffs.Add(abuff);
+                    #region buffer calculation
+                    abuffs = new List<double[,]>();
+                    dbuffs = new List<uint[]>();
 
-                }
-                foreach (Task n in digitalTasks)
-                {
-                    uint[] dbuff = new uint[BUFFSIZE];
-                    dbuffs.Add(dbuff);
-
-                }
-                //timing/debugging stuff
-                double bufferEvent = 0;
-                double loadBuffers = 0;
-                double analogbu = 0;
-
-                if (!zeroOnly)
-                {
-
-                    bufferIndex = 0;
-                    //double clearBuffers = 0;
-                    //if (running)
-                    //    clearBuffers = this.GetTime(); 
-
-
-                    //if we don't have a stimulus 'on deck', look for one (needed for state change buffers).
-                    if ((outerbuffer.Count > 0) & (nextStim == null))
+                    foreach (Task n in analogTasks)
                     {
-
-                        nextStim = outerbuffer.ElementAt(0);
+                        double[,] abuff = new double[n.AOChannels.ICollection_Count, BUFFSIZE];
+                        abuffs.Add(abuff);
 
                     }
-
-                    //are we in the middle of a stimulus?  if so, finish as much as you can
-                    if (currentStim != null)
+                    foreach (Task n in digitalTasks)
                     {
-                        //   MessageBox.Show("examining first stim");
-                        bool finished = ApplyCurrentStimulus();
-                        if (finished)
+                        uint[] dbuff = new uint[BUFFSIZE];
+                        dbuffs.Add(dbuff);
+
+                    }
+                    //timing/debugging stuff
+                    double bufferEvent = 0;
+                    double loadBuffers = 0;
+                    double analogbu = 0;
+
+                    if (!zeroOnly)
+                    {
+
+                        bufferIndex = 0;
+                        //double clearBuffers = 0;
+                        //if (running)
+                        //    clearBuffers = this.GetTime(); 
+
+
+                        //if we don't have a stimulus 'on deck', look for one (needed for state change buffers).
+                        if ((outerbuffer.Count > 0) & (nextStim == null))
                         {
-                            FinishStim();
+
+                            nextStim = outerbuffer.ElementAt(0);
+
                         }
 
-                    }
-
-                    //at this point, we have either finished a stimulus, or finished the buffer.
-                    //therefore, if there is room left in this buffer, find the next stimulus and move to it.
-
-                    //for state change buffers, keep in mind that ApplyCurrentStimulus will go until the next stimulus
-                    //or until the end of this particular buffer
-
-                    while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
-                    {
-                        //is next stimulus within range of this buffload?
-                        bool ready = NextStimulusAppending();
-
-                        if (ready)
+                        //are we in the middle of a stimulus?  if so, finish as much as you can
+                        if (currentStim != null)
                         {
+                            //   MessageBox.Show("examining first stim");
                             bool finished = ApplyCurrentStimulus();
                             if (finished)
                             {
                                 FinishStim();
                             }
+
                         }
+
+                        //at this point, we have either finished a stimulus, or finished the buffer.
+                        //therefore, if there is room left in this buffer, find the next stimulus and move to it.
+
+                        //for state change buffers, keep in mind that ApplyCurrentStimulus will go until the next stimulus
+                        //or until the end of this particular buffer
+
+                        while (bufferIndex < BUFFSIZE & outerbuffer.Count > 0)
+                        {
+                            //is next stimulus within range of this buffload?
+                            bool ready = NextStimulusAppending();
+
+                            if (ready)
+                            {
+                                bool finished = ApplyCurrentStimulus();
+                                if (finished)
+                                {
+                                    FinishStim();
+                                }
+                            }
+                        }
+
+                        //
+                        //if (running)
+                        //    loadBuffers = this.GetTime(); 
+
+                        //congratulations!  we finished the buffer!
+                        //numBuffLoadsCompleted++;
+                        currentSample = numBuffLoadsCompleted * BUFFSIZE;
+                        // Check if protocol is completed
+
+
+                        OnBufferLoad(EventArgs.Empty);
+
+                        if (running)
+                            bufferEvent = this.GetTime();
                     }
-
-                    //
-                    //if (running)
-                    //    loadBuffers = this.GetTime(); 
-
-                    //congratulations!  we finished the buffer!
-                    numBuffLoadsCompleted++;
-                    currentSample = numBuffLoadsCompleted * BUFFSIZE;
-                    // Check if protocol is completed
-                    if ((numBuffLoadsCompleted >= numBuffLoadsRequired) & (!immortal))
+                    if (first)
                     {
-                        Stop(); // Start clean up cascade
+                        first = false;
+                        //areserve = new double[abuffs.ElementAt(0).GetLength(0), abuffs.ElementAt(0).GetLength(1)];
+                        //for (int i = 0; i < abuffs.ElementAt(0).GetLength(0); i++)
+                        //    for (int j = 0; j < abuffs.ElementAt(0).GetLength(1); j++)
+                        //    {
+                        //        areserve[i, j] = abuffs.ElementAt(0)[i, j];
+                        //    }
                     }
+                    //write buffers
+                //    if (!buffLoadTask.IsDone)
+                  //      Debugger.Write(this.ToString() + " buffers calculated for load " + numBuffLoadsCompleted + " via internal count ");//+ Convert.ToDouble(buffLoadTask.COChannels[0].Count) + " via counter"
+                    #endregion
 
-                    OnBufferLoad(EventArgs.Empty);
-
-                    if (running)
-                        bufferEvent = this.GetTime();
-                }
-
-                //write buffers
-                Debugger.Write(this.ToString() + " buffers calculated");
-                for (int i = 0; i < analogWriters.Length; i++)
-                {
-                    try
+                    #region buffer writing
+                    for (int i = 0; i < analogWriters.Length; i++)
                     {
                         if (firstTime)
                             analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
                         else
                             analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
-                        //if (analogTasks[i].IsDone)
-                        //  Console.WriteLine("analog task dead");
                     }
-                    catch (DaqException de)
-                    {
-                        if (robust)
-                        {
-                            Debugger.Write("restarting analog task " + i + " after error");
-                            //analogTasks[i]. Stop();
-                            analogTasks[i].Control(TaskAction.Abort);
-                            analogWriters[i].WriteMultiSample(false, new double[abuffs.ElementAt(i).GetLength(0), abuffs.ElementAt(i).GetLength(1)]);
-                            analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
-                            analogTasks[i].Start();
-                        }
-                        else
-                        {
-                            BufferFailure(de.Message);
-                        }
-                    }
-                    double[,] tmp = abuffs.ElementAt(i);
-                    tmp = null;
+                    Debugger.Write(this.ToString() + " analog written");
 
-                }
-
-                Debugger.Write(this.ToString() + " analog written");
-                if (running)
-                    analogbu = this.GetTime();
-                for (int i = 0; i < digitalWriters.Length; i++)
-                {
-                    try
+                    for (int i = 0; i < digitalWriters.Length; i++)
                     {
                         if (firstTime)
                             digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
                         else
                             digitalWriters[i].BeginWriteMultiSamplePort(false, dbuffs.ElementAt(i), null, null);// WriteMultiSamplePort(false, dbuffs.ElementAt(i));
                     }
-                    catch (DaqException de)//if we have a daq buffer underflow, try restarting that task
-                    {
-                        if (robust)
-                        {
-                            Debugger.Write("restarting digital task " + i + " after error");
-                            digitalTasks[i].Control(TaskAction.Abort);
-                            digitalWriters[i].WriteMultiSamplePort(false, new uint[dbuffs.ElementAt(i).GetLength(0)]);
-                            digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
-                            digitalTasks[i].Start();
-                        }
-                        else
-                        {
-                            BufferFailure(de.Message);
-                        }
-                    }
-
-
-                    uint[] tmp = dbuffs.ElementAt(i);
-                    tmp = null;
+                    Debugger.Write(this.ToString() + " digital written");
+                    #endregion
                 }
-                Debugger.Write(this.ToString() + " digital written");
+                //if (!IsDone())
+                //{
+                //    int buff = (int)(((int)((numBuffLoadsCompleted -numBuffLoadsThisRun)* BUFFSIZE) - (int)GetCurrentSample()));
+                //    //
+                //    Debugger.Write("buffer level: " + buff);
+                //}
+                
+            }
+            catch (DaqException de)//for some reason this most recent buffer load caused a hardware error.
+            {
+                
+                if (robust&running)
+                {
+                    
+                    Debugger.Write(this.ToString()+ "restarting output after error: " + de.Message);
+                    Recover();
+                    recoveryFlag = true;
+                    Debugger.Write("tasks reset, waiting on start");
+                    
+                }
+                else
+                {
+                    BufferFailure(de.Message);
+                }
+            }
 
-                //  Console.WriteLine(this.ToString() + " : " + currentSample + " samples have been written. pre-write: " + (bufferEvent - start) + " ms.  analog: " + (analogbu - bufferEvent) + " ms.  digital: " + (stop - analogbu) + " ms.  total: " + (stop - start) + " ms. running: "+running.ToString());
+        }
+
+
+        protected virtual void Recover()
+        {
+             ClearQueue();
+             restartBuffer();
+        }
+
+        internal void ClearQueue()
+        {
+            lock (obj)
+            {
+                
+                names.Clear();
+                sem = new Semaphore(0, 16);
+                
             }
         }
 
+        //bool OMGhack;
         //write as much of the current stimulus as possible
         //agnostic as to whether or not you've finished this stimulus or not.
         //returns if finished the stimulus or not
@@ -616,61 +895,73 @@ namespace NeuroRighter.Output
         //returns true if there is a stimulus within this bufferload
         private bool NextStimulusAppending()
         {
+            
+            bufferLock.EnterWriteLock();
             try
             {
-                lock (this)
-                    if (outerbuffer.Count > 0)//buffer isn't empty
+                //lock (this)
+
+                while (outerbuffer.Count > 0)//buffer isn't empty
+                {
+                    //if we have a stimulus within range
+                    if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted) * BUFFSIZE)
                     {
-                        if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted + 1) * BUFFSIZE)
+
+                        currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
+                        Debugger.Write("grabbed stim at " + currentStim.sampleIndex.ToString() + " for NBLC " + numBuffLoadsCompleted);
+                        outerbuffer.RemoveAt(0);
+
+                        if (outerbuffer.Count > 0)
                         {
-
-                            currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
-                            //  Console.WriteLine("currentstim = " + currentStim.sampleIndex.ToString());
-                            outerbuffer.RemoveAt(0);
-
-                            if (outerbuffer.Count > 0)
-                            {
-                                nextStim = outerbuffer.ElementAt(0);//we don't need a copy as we don't expect this element to change.
-                            }
-                            else
-                            {
-                                nextStim = null;
-                            }
-                            //turn the new stim into something we can throw at the DAQs
-                            WriteEvent(currentStim, ref  anEventValues, ref digEventValues);
-
-
-                            if (outerbuffer.Count == (queueThreshold - 1))
-                                OnThreshold(EventArgs.Empty);
-
-                            numSampWrittenForCurrentStim = 0;
-                            bufferIndex = currentStim.sampleIndex - numBuffLoadsCompleted * BUFFSIZE;//move to beginning of this stimulus
-                            if (currentStim.sampleIndex < numBuffLoadsCompleted * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
-                            {
-                                //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
-                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
-                            }
-
-                            return true;
+                            nextStim = outerbuffer.ElementAt(0);//we don't need a copy as we don't expect this element to change.
                         }
                         else
                         {
-
-                            currentStim = null;//we aren't currently stimulating
-
-                            numSampWrittenForCurrentStim = 0;//we haven't written anything
-                            bufferIndex = BUFFSIZE;//we are done with this buffer
-                            return false;
+                            nextStim = null;
                         }
+                        //turn the new stim into something we can throw at the DAQs
+                        WriteEvent(currentStim, ref  anEventValues, ref digEventValues);
+
+
+                        if (outerbuffer.Count == (queueThreshold - 1))
+                            OnThreshold(EventArgs.Empty);
+
+                        numSampWrittenForCurrentStim = 0;
+                        bufferIndex = currentStim.sampleIndex - (numBuffLoadsCompleted - 1) * BUFFSIZE;//move to beginning of this stimulus
+                        if (currentStim.sampleIndex < (numBuffLoadsCompleted - 1) * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                        {
+                            //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
+                            if (robust)
+                            {
+                                Debugger.Write("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
+                                continue;//try and see if the next stimulus is any good.
+                            }
+                            else
+                            {
+                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
+                            }
+                        }
+
+                        return true;
                     }
                     else
                     {
+
                         currentStim = null;//we aren't currently stimulating
 
                         numSampWrittenForCurrentStim = 0;//we haven't written anything
                         bufferIndex = BUFFSIZE;//we are done with this buffer
                         return false;
                     }
+                }
+                //buffer is empty
+
+                currentStim = null;//we aren't currently stimulating
+
+                numSampWrittenForCurrentStim = 0;//we haven't written anything
+                bufferIndex = BUFFSIZE;//we are done with this buffer
+                return false;
+
             }
             // Console.WriteLine("/"+currentStim.sampleIndex.ToString() + " - " + nextStim.sampleIndex.ToString());
             //  Console.WriteLine(outst+ samples2Finish.ToString());
@@ -678,6 +969,10 @@ namespace NeuroRighter.Output
             {
                 MessageBox.Show(e.Message);
                 return false;
+            }
+            finally
+            {
+                bufferLock.ExitWriteLock();
             }
         }
 
@@ -698,7 +993,7 @@ namespace NeuroRighter.Output
                     uint[] tmp = digEventValues.ElementAt(i);
                     tmp = null;
                 }
-
+            Debugger.Write("finished a stim  at time " + (double)currentStim.sampleIndex / 100000);
             currentStim = null;//we aren't currently stimulating
 
         }
@@ -748,14 +1043,31 @@ namespace NeuroRighter.Output
         }
         private void BufferFailure(string message)
         {
-            running = false;
-            immortal = false;//if we aren't doing this in a robust manner, then we should just stop now.
-            Debugger.Write(this.ToString() + " FAIL " + message);
-            MessageBox.Show("unhandled daq exception on " + this.ToString() +
-                ": " + message + ".  Check log to figure out why.");
+            if (running)
+            {
+                running = false;
+                immortal = false;//if we aren't doing this in a robust manner, then we should just stop now.
+                Debugger.Write(this.ToString() + " FAIL " + message);
+                MessageBox.Show("unhandled daq exception on " + this.ToString() +
+                    ": " + message + ".  Check log to figure out why.");
+            }
+            else
+            {
+                Debugger.Write(this.ToString() + " FAIL " + message);
+            }
         }
 
 
         #endregion
+    }
+    class testObject
+    {
+        internal int ind;
+        internal bool flag;
+        internal testObject(int ind, bool flag)
+        {
+            this.ind = ind;
+            this.flag = flag;
+        }
     }
 }

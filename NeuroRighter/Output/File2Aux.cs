@@ -46,30 +46,45 @@ namespace NeuroRighter.Output
         internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
-
-        internal File2Aux(string auxfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task auxOutputTask,
-            Task buffLoadTask, AnalogMultiChannelWriter auxOutputWriter, ulong numEventPerLoad, bool auxFileExists, RealTimeDebugger debugger)
+        Task masterTask;
+        string masterLoad;
+        internal File2Aux(string auxfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE,
+            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad,
+            bool auxFileExists, RealTimeDebugger debugger)
         {
             this.auxfile = auxfile;
             this.BUFFSIZE = BUFFSIZE;
-            this.auxOutputTask = auxOutputTask;
             this.buffLoadTask = buffLoadTask;
-            this.auxOutputWriter = auxOutputWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.numEventPerLoad = numEventPerLoad;
             this.auxFileExists = auxFileExists;
             this.debugger = debugger;
-
+            this.masterLoad = masterLoad;
+            this.masterTask = masterTask;
             // Instatiate a DigitalBuffer object
             auxBuff = new AuxBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
+            //ab = auxBuff;
 
+        }
+
+        internal void connectBuffer(DigitalBuffer diggy)
+        {
+            auxBuff.grabPartner(diggy);
+        }
+
+        internal AuxBuffer refBuffer()
+        {
+            return auxBuff;
         }
 
         internal void Stop()
         {
             auxBuff.Stop();
         }
-
+        internal void Kill()
+        {
+            auxBuff.Kill();
+        }
         internal void Setup()
         {
             
@@ -120,7 +135,7 @@ namespace NeuroRighter.Output
                 auxBuff.WriteToBuffer(auxDataChunk); // Append all the stimuli
                 numLoadsCompleted = numAuxEvent;
                 lastLoad = true;
-                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
+                // (auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
             }
             else
             {
@@ -130,10 +145,10 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 auxBuff.WriteToBuffer(auxDataChunk);//append first N stimuli
                 numLoadsCompleted++;
-                auxBuff.Setup(auxOutputWriter, auxOutputTask, buffLoadTask, debugger);
+                
 
             }
-
+            auxBuff.Setup(buffLoadTask, debugger, masterTask);
         }
 
         internal void Start()

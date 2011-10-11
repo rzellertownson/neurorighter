@@ -29,21 +29,115 @@ namespace NeuroRighter.Output
     {
         double[,] lastAuxOutState = new double[4, 1]; // Holds the place of the auxiliary analog ouputs so they are not reset everytime an 
                                                       // new event is written.
-
+        DigitalBuffer digBuffer;
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
-            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) { }
-
-        internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
-        {
-            AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
-            analogWriters[0] = auxOutputWriter;
-
-            Task[] analogTasks = new Task[1];
-            analogTasks[0] = auxOutputTask;
-
-            base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask,Debugger);
-
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) {
+               // this.digBuffer = digBuffer;
+            recoveryInProgress = new object();
+            digBuffer = null;
         }
+        internal object recoveryInProgress;
+        internal void grabPartner(DigitalBuffer digBuffer)
+    {
+        this.digBuffer = digBuffer;
+    }
+        
+        //internal bool recoveryInProgress = false;
+        protected override void Recover()
+        {
+            //if we have a digital buffer running simultaneously, we need to recover that one as well (as it is timed off of us)
+            lock (recoveryInProgress)//if someone is already trying to recovery, skip this to avoid deadlock
+            {
+                if (digBuffer != null)
+                {
+                    Debugger.Write(" analog buffer attempted recover: with digital buffer");
+                    digBuffer.recoveryInProgress = true;
+                    lock (digBuffer)// wait until digbuffer is not in the middle of a populate buffer appending
+                    {
+                        ClearQueue();
+                        digBuffer.ClearQueue();
+                        //clearTasks();
+                        //Debugger.Write(" analog buffer attempted recover: analog cleared");
+                        //digBuffer.clearTasks();
+                        //Debugger.Write(" analog buffer attempted recover: digital cleared");
+                        restartBuffer();
+                        Debugger.Write(" analog buffer attempted recover: analog restarted");
+                        digBuffer.restartBuffer();
+                        Debugger.Write(" analog buffer attempted recover: digital restarted");
+                        digBuffer.recoveryInProgress = false;
+                    }
+
+                }
+                else
+                {
+                    ClearQueue();
+                    Debugger.Write(" analog buffer attempted recover: no digital buffer");
+                    clearTasks();
+                    Debugger.Write(" analog buffer attempted recover: analog cleared");
+                    restartBuffer();
+                    Debugger.Write(" analog buffer attempted recover: analog restarted");
+                }
+            }
+            
+        }
+
+        protected override void SetupTasksSpecific(ref Task[] analogTasks,ref  Task[] digitalTasks)
+        {
+
+
+            if (analogTasks != null)
+                clearTasks();
+
+            string dev = Properties.Settings.Default.SigOutDev;
+            int bufferSize = (int)BUFFSIZE;
+            string auxTaskName = "auxOut";
+            int sampRate =(int)STIM_SAMPLING_FREQ;
+            
+
+
+            Task analogTask = new Task("analog" + auxTaskName);
+            analogTask.AOChannels.CreateVoltageChannel("/" + dev + "/ao0", "",
+                -10, 10, AOVoltageUnits.Volts);
+            analogTask.AOChannels.CreateVoltageChannel("/" + dev + "/ao1", "",
+                -10, 10, AOVoltageUnits.Volts);
+            analogTask.AOChannels.CreateVoltageChannel("/" + dev + "/ao2", "",
+                -10, 10, AOVoltageUnits.Volts);
+            analogTask.AOChannels.CreateVoltageChannel("/" + dev + "/ao3", "",
+                -10, 10, AOVoltageUnits.Volts);
+
+            analogTask.Timing.ConfigureSampleClock("100KHzTimeBase",
+                sampRate, SampleClockActiveEdge.Rising,
+                SampleQuantityMode.ContinuousSamples,
+                bufferSize);
+
+            analogTask.SynchronizeCallbacks = false;
+
+            analogTask.Control(TaskAction.Verify);
+
+
+
+
+
+
+            // Sync DO start to AO start
+            //if (digProvided)
+                //auxTaskMaker.SyncDOStartToAOStart();
+
+            analogTasks = new Task[1];
+            analogTasks[0] = analogTask;
+            digitalTasks = new Task[0];
+        }
+        //internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
+        //{
+        //    AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
+        //    analogWriters[0] = auxOutputWriter;
+
+        //    Task[] analogTasks = new Task[1];
+        //    analogTasks[0] = auxOutputTask;
+
+        //    base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask,Debugger);
+
+        //}
 
         //with this version only one channel can have a non-zero voltage at a time-  eventually might want to switch to a version where keep voltages from previous
         protected override void WriteEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)

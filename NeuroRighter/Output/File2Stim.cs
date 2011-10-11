@@ -32,9 +32,11 @@ namespace NeuroRighter.Output
 
         internal StimBuffer stimbuff;
         private BackgroundWorker bw;//loads stimuli into the buffer when needed
-        private Task stimDigitalTask, stimAnalogTask, buffLoadTask;
-        private DigitalSingleChannelWriter stimDigitalWriter;
-        private AnalogMultiChannelWriter stimAnalogWriter;
+        private Task buffLoadTask;//stimDigitalTask, stimAnalogTask,
+        string masterLoad;
+        private Task masterTask;
+        //private DigitalSingleChannelWriter stimDigitalWriter;
+        //private AnalogMultiChannelWriter stimAnalogWriter;
 
         // Stimulation Constants
         internal Int32 BUFFSIZE; // Number of samples delivered to DAQ per buffer load
@@ -46,40 +48,37 @@ namespace NeuroRighter.Output
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
 
-        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
-            Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
-            AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger)
-        {
+        //internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
+        //    Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
+        //    AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger)
+        //{
 
-            this.stimfile = stimfile;
+        //    this.stimfile = stimfile;
             
-            //Get references to tasks
-            this.BUFFSIZE = BUFFSIZE;
-            this.stimDigitalTask = stimDigitalTask;
-            this.stimAnalogTask = stimAnalogTask;
-            this.buffLoadTask = buffLoadTask;
-            this.stimDigitalWriter = stimDigitalWriter;
-            this.stimAnalogWriter = stimAnalogWriter;
-            this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
-            this.debugger = debugger;
+        //    //Get references to tasks
+        //    this.BUFFSIZE = BUFFSIZE;
+        //    this.stimDigitalTask = stimDigitalTask;
+        //    this.stimAnalogTask = stimAnalogTask;
+        //    this.buffLoadTask = buffLoadTask;
+        //    this.stimDigitalWriter = stimDigitalWriter;
+        //    this.stimAnalogWriter = stimAnalogWriter;
+        //    this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
+        //    this.debugger = debugger;
 
-            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
-        }
+        //    stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
+        //}
 
-        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
-            Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
-            AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger, double[] cannedWave)
+        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task buffLoadTask, Task masterTask, string masterLoad, RealTimeDebugger debugger, double[] cannedWave)
         {
 
             this.stimfile = stimfile;
 
             //Get references to tasks
             this.BUFFSIZE = BUFFSIZE;
-            this.stimDigitalTask = stimDigitalTask;
-            this.stimAnalogTask = stimAnalogTask;
+            
             this.buffLoadTask = buffLoadTask;
-            this.stimDigitalWriter = stimDigitalWriter;
-            this.stimAnalogWriter = stimAnalogWriter;
+            this.masterTask = masterTask;
+            this.masterLoad = masterLoad;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.cannedWaveform = cannedWave;
             this.debugger = debugger;
@@ -160,7 +159,7 @@ namespace NeuroRighter.Output
                 stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted = numstim;
                 lastLoad = true;
-                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
+                stimbuff.Setup(buffLoadTask,debugger,masterTask);// (stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
 
             }
             else
@@ -177,7 +176,8 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 stimbuff.Append(TimeVector, ChannelVector, WaveMatrix);//append first N stimuli
                 numLoadsCompleted++;
-                stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
+                stimbuff.Setup(buffLoadTask, debugger, masterTask);
+                //stimbuff.Setup(stimAnalogWriter, stimDigitalWriter, stimDigitalTask, stimAnalogTask, buffLoadTask, debugger);
 
             }
 
@@ -187,6 +187,11 @@ namespace NeuroRighter.Output
         internal void Start()
         {
             stimbuff.Start();
+        }
+
+        internal void Kill()
+        {
+            stimbuff.Kill();
         }
 
         internal void AppendStimBufferAtThresh(object sender, EventArgs e)

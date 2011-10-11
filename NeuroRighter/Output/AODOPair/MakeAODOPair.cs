@@ -94,10 +94,10 @@ namespace NeuroRighter.Output
         }
 
         // Sync both AO and DO to main AI start
-        internal void SyncTasksToMasterStart(Task masterTask)
+        internal void SyncTasksToMasterStart(string term)
         {
             analogTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
-                    masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeStartTriggerEdge.Rising);
+                    term, DigitalEdgeStartTriggerEdge.Rising);
         }
 
         internal void MakeWriters()

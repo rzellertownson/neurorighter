@@ -36,19 +36,19 @@ namespace simoc.filt2out
         {
             this.stimSrv = stimSrv;
             this.loadOffset = 0;//(ulong)stimSrv.GetBuffSize()*2;
-            this.c0 = cp.numericEdit_ContC0.Value;
-            this.c1 = cp.numericEdit_ContC1.Value;
-            this.c2 = cp.numericEdit_ContC2.Value;
-            this.c3 = cp.numericEdit_ContC3.Value;
-            this.c4 = cp.numericEdit_ContC3.Value;
-            this.c5 = cp.numericEdit_ContC4.Value;
+            this.c0 = (double)cp.numericUpDown_ContC0.Value;
+            this.c1 = (double)cp.numericUpDown_ContC1.Value;
+            this.c2 = (double)cp.numericUpDown_ContC2.Value;
+            this.c3 = (double)cp.numericUpDown_ContC3.Value;
+            this.c4 = (double)cp.numericUpDown_ContC4.Value;
+            this.c5 = (double)cp.numericUpDown_ContC5.Value;
             this.hardwareSampFreqHz = stimSrv.sampleFrequencyHz;
         }
 
         internal virtual void SendFeedBack(PersistentSimocVar simocVariableStorage)
         {
             // What buffer load are we currently processing?
-            ulong currentLoad = stimSrv.DigitalOut.GetNumberBuffLoadsCompleted() + 1;
+            ulong currentLoad = stimSrv.AuxOut.GetNumberBuffLoadsCompleted() + 1;
             nextAvailableSample = currentLoad * (ulong)stimSrv.GetBuffSize();
 
         }

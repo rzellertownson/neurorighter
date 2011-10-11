@@ -39,3 +39,9 @@ C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.pdb
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.xml
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.dll
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.pdb
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

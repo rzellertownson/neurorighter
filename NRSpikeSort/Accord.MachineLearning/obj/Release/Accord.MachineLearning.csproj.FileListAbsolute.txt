@@ -40,3 +40,9 @@ C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.MachineLearning\obj\Rel
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
 C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.MachineLearning.XML
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.MachineLearning.XML
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb

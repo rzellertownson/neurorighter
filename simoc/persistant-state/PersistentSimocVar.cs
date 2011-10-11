@@ -21,6 +21,7 @@ namespace simoc.persistantstate
 
         // Input
         private ulong lastSampleRead = 0;
+        private double lastFilteredObs = 0;
 
         // Generic storage
         private double genericDouble1 = 0;
@@ -157,6 +158,22 @@ namespace simoc.persistantstate
             set
             {
                 lastSampleRead = value;
+            }
+        }
+
+
+        /// <summary>
+        /// The next last input sample retrieved.
+        /// </summary>
+        public double LastFilteredObs
+        {
+            get
+            {
+                return lastFilteredObs;
+            }
+            set
+            {
+                lastFilteredObs = value;
             }
         }
 

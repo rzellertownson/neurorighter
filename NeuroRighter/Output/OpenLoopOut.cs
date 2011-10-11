@@ -105,7 +105,6 @@ namespace NeuroRighter.Output
         internal bool Start() //object sender, EventArgs e
         {
             bool stimSetupFail = false;
-
             try
             {
                 bool stimFileProvided = stimFid.Length > 0;
@@ -151,7 +150,8 @@ namespace NeuroRighter.Output
                 // This task will govern the periodicity of DAQ circular-buffer loading so that
                 // all digital and stimulus output from the system is hardware timed
                 ConfigureCounter();
-
+                string masterLoad = buffLoadTask.COChannels[0].PulseTerminal;//"/"+Properties.Settings.Default.SigOutDev + "/ctr1";
+            
                 // Set up stimulus output support
                 if (stimFileProvided)
                 {
@@ -165,7 +165,7 @@ namespace NeuroRighter.Output
                     }
 
                     // Call configuration method
-                    ConfigureStim(masterTask);
+                    //ConfigureStim(masterTask);
 
                     // Create a File2Stim object and start to run the protocol via its methods
                     if (useManStimWave)
@@ -173,13 +173,13 @@ namespace NeuroRighter.Output
                         stimProtocol = new File2Stim(stimFid,
                             outputSampFreq,
                             OUTPUT_BUFFER_SIZE,
-                            stimTaskMaker.digitalTask,
-                            stimTaskMaker.analogTask,
                             buffLoadTask,
-                            stimTaskMaker.digitalWriter,
-                            stimTaskMaker.analogWriter,
+                            masterTask,
+                            masterLoad,
                             debugger,
                             guiWave);
+                            
+                            
 
                         stimProtocol.AlertAllFinished +=
                             new File2Stim.AllFinishedHandler(SetStimDone);
@@ -191,12 +191,12 @@ namespace NeuroRighter.Output
                         stimProtocol = new File2Stim(stimFid,
                             outputSampFreq,
                             OUTPUT_BUFFER_SIZE,
-                            stimTaskMaker.digitalTask,
-                            stimTaskMaker.analogTask,
                             buffLoadTask,
-                            stimTaskMaker.digitalWriter,
-                            stimTaskMaker.analogWriter,
-                            debugger);
+                            masterTask,
+                            masterLoad,
+                            debugger,
+                            null);
+                            
 
                         stimProtocol.AlertAllFinished +=
                             new File2Stim.AllFinishedHandler(SetStimDone);
@@ -242,14 +242,17 @@ namespace NeuroRighter.Output
                         auxDone = true;
                     }
 
-                    ConfigureAODO(digFileProvided, masterTask);
+                    //ConfigureAODO(digFileProvided, masterTask);
+                    //AuxBuffer ab = null;
+                    //DigitalBuffer db = null;
+                    //because both buffers need to know about eachother (for restarts), we need to build the pointers here and pass them down the procotols
 
                     auxProtocol = new File2Aux(auxFid,
                         outputSampFreq,
                         OUTPUT_BUFFER_SIZE,
-                        auxTaskMaker.analogTask,
                         buffLoadTask,
-                        auxTaskMaker.analogWriter,
+                        masterTask,
+                        masterLoad,
                         EVENTS_PER_BUFFER_LOAD,
                         auxFileProvided,
                         debugger);
@@ -259,20 +262,25 @@ namespace NeuroRighter.Output
                     auxProtocol.AlertAllFinished +=
                         new File2Aux.AllFinishedHandler(StopOpenLoopOut);
 
-                    digProtocol = new File2Dig(digFid,
-                        outputSampFreq,
-                        OUTPUT_BUFFER_SIZE,
-                        auxTaskMaker.digitalTask,
-                        buffLoadTask,
-                        auxTaskMaker.digitalWriter,
-                        EVENTS_PER_BUFFER_LOAD,
-                        debugger);
+                    if (digFileProvided)
+                    {
+                        digProtocol = new File2Dig(digFid,
+                            outputSampFreq,
+                            OUTPUT_BUFFER_SIZE,
+                            buffLoadTask,
+                            masterTask,
+                            masterLoad,
+                            EVENTS_PER_BUFFER_LOAD,
+                            debugger
+                            );
 
-                    digProtocol.AlertAllFinished +=
-                        new File2Dig.AllFinishedHandler(SetDigDone);
-                    digProtocol.AlertAllFinished +=
-                        new File2Dig.AllFinishedHandler(StopOpenLoopOut);
-
+                        digProtocol.connectBuffer(auxProtocol.refBuffer());
+                        auxProtocol.connectBuffer(digProtocol.refBuffer());
+                        digProtocol.AlertAllFinished +=
+                            new File2Dig.AllFinishedHandler(SetDigDone);
+                        digProtocol.AlertAllFinished +=
+                            new File2Dig.AllFinishedHandler(StopOpenLoopOut);
+                    }
                     auxProtocol.Setup();
                     auxProtocol.Start();
 
@@ -301,7 +309,25 @@ namespace NeuroRighter.Output
             }
             catch(Exception e)
             {
-                KillAllAODOTasks();
+                KillTasks();
+                try
+                {
+                    digProtocol.Kill();
+                }
+                catch (Exception me)
+                { }
+                try
+                {
+                auxProtocol.Kill();
+                }
+                catch (Exception me)
+                { }
+                try
+                {
+                stimProtocol.Kill();
+                 }
+                catch (Exception me)
+                { }
                 MessageBox.Show("Could not make it through OpenLoopOut.Start(): \n" + e.Message);
                 stimSetupFail = true;
                 return stimSetupFail; 
@@ -323,7 +349,7 @@ namespace NeuroRighter.Output
             buffLoadTask = new Task("stimBufferTask");
 
             // Trigger a buffer load event off every edge of this channel
-            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.SigOutDev + "/ctr1",
+            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.AnalogInDevice[0] + "/ctr1",
                 "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)outputSampFreq / (double)OUTPUT_BUFFER_SIZE) / 2.0, 0.5);
             buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
             buffLoadTask.SynchronizeCallbacks = false;
@@ -333,82 +359,90 @@ namespace NeuroRighter.Output
             // Syncronize the start to the master recording task
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
+
+           // buffLoadTask.CounterOutput+=new CounterOutputEventHandler(delegate
+            //    {
+                    
+            //        debugger.Write("output counter tick " );
+                    
+             //   }
+           // );
         }
 
-        internal void ConfigureStim(Task masterTask)
-        {
+        //internal void ConfigureStim(Task masterTask)
+        //{
 
-            //configure stim
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
+        //    //configure stim
+        //    // Refresh DAQ tasks as they are needed for file2stim
+        //    if (stimTaskMaker != null)
+        //    {
+        //        stimTaskMaker.Dispose();
+        //        stimTaskMaker = null;
+        //    }
 
-            // Create new DAQ tasks and corresponding writers
-            stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice, 
-                OUTPUT_BUFFER_SIZE);
-            stimTaskMaker.MakeAODOTasks("NeuralStim",
-                Properties.Settings.Default.StimPortBandwidth,
-                outputSampFreq);
+        //    // Create new DAQ tasks and corresponding writers
+        //    stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice, 
+        //        OUTPUT_BUFFER_SIZE);
+        //    stimTaskMaker.MakeAODOTasks("NeuralStim",
+        //        Properties.Settings.Default.StimPortBandwidth,
+        //        outputSampFreq);
 
-            // Verify
-            stimTaskMaker.VerifyTasks();
+        //    // Verify
+        //    stimTaskMaker.VerifyTasks();
 
-            // Sync DO start to AO start
-            stimTaskMaker.SyncDOStartToAOStart();
+        //    // Sync DO start to AO start
+        //    stimTaskMaker.SyncDOStartToAOStart();
 
-            // Syncronize stimulation with the master task
-            stimTaskMaker.SyncTasksToMasterClock(masterTask);
-            stimTaskMaker.SyncTasksToMasterStart(masterTask);
+        //    // Syncronize stimulation with the master task
+        //    stimTaskMaker.SyncTasksToMasterClock(masterTask);
+        //    stimTaskMaker.SyncTasksToMasterStart(buffLoadTask.COChannels[0].PulseTerminal);
 
-            // Create buffer writters
-            stimTaskMaker.MakeWriters();
+        //    // Create buffer writters
+        //    stimTaskMaker.MakeWriters();
 
-            // Verify
-            stimTaskMaker.VerifyTasks();
-        }
+        //    // Verify
+        //    stimTaskMaker.VerifyTasks();
+        //}
 
-        internal void ConfigureAODO(bool digProvided, Task masterTask)
-        {
-            //configure stim
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (auxTaskMaker != null)
-            {
-                auxTaskMaker.Dispose();
-                auxTaskMaker = null;
-            }
+        //internal void ConfigureAODO(bool digProvided, Task masterTask)
+        //{
+        //    //configure stim
+        //    // Refresh DAQ tasks as they are needed for file2stim
+        //    if (auxTaskMaker != null)
+        //    {
+        //        auxTaskMaker.Dispose();
+        //        auxTaskMaker = null;
+        //    }
 
-            // Create new DAQ tasks and corresponding writers
-            auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev, 
-                OUTPUT_BUFFER_SIZE);
-            auxTaskMaker.MakeAODOTasks("auxOut", 
-                outputSampFreq, 
-                digProvided);
+        //    // Create new DAQ tasks and corresponding writers
+        //    auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev, 
+        //        OUTPUT_BUFFER_SIZE);
+        //    auxTaskMaker.MakeAODOTasks("auxOut", 
+        //        outputSampFreq, 
+        //        digProvided);
 
-            // Verify
-            auxTaskMaker.VerifyTasks();
+        //    // Verify
+        //    auxTaskMaker.VerifyTasks();
 
-            // Sync DO start to AO start
-            if (digProvided)
-                auxTaskMaker.SyncDOStartToAOStart();
+        //    // Sync DO start to AO start
+        //    if (digProvided)
+        //        auxTaskMaker.SyncDOStartToAOStart();
 
-            // Syncronize stimulation with the master task
-            auxTaskMaker.SyncTasksToMasterClock(masterTask);
-            auxTaskMaker.SyncTasksToMasterStart(masterTask);
+        //    // Syncronize stimulation with the master task
+        //    auxTaskMaker.SyncTasksToMasterClock(masterTask);
+        //    auxTaskMaker.SyncTasksToMasterStart(buffLoadTask.COChannels[0].PulseTerminal);
 
-            //// Pipe the master clock to PFI1 on this board (for use with zeroing)
-            auxTaskMaker.PipeReferenceClockToPFI(masterTask, "PFI2");
+        //    //// Pipe the master clock to PFI1 on this board (for use with zeroing)
+        //    auxTaskMaker.PipeReferenceClockToPFI(masterTask, "PFI2");
 
-            // Create buffer writters
-            auxTaskMaker.MakeWriters();
+        //    // Create buffer writters
+        //    auxTaskMaker.MakeWriters();
 
-            // Verify
-            auxTaskMaker.VerifyTasks();
-        }
+        //    // Verify
+        //    auxTaskMaker.VerifyTasks();
+        //}
 
-        internal void KillAllAODOTasks()
+        internal void KillTasks()
         {
             if (buffLoadTask != null)
             {
@@ -416,17 +450,20 @@ namespace NeuroRighter.Output
                 buffLoadTask = null;
             }
 
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
+            //if (digProtocol != null)
+            //{
+            //    digProtocol.Stop();
+            //}
 
-            if (auxTaskMaker != null)
-            {
-                auxTaskMaker.Dispose();
-                auxTaskMaker = null;
-            }
+            //if (stimProtocol != null)
+            //{
+            //    stimProtocol.Stop();
+            //}
+
+            // if (auxProtocol != null)
+            //{
+            //    auxProtocol.Stop();
+            //}
 
         }
 
@@ -436,6 +473,7 @@ namespace NeuroRighter.Output
             // Tell NR that the OpenLoopOut protocol is done
             if (stimDone && auxDone && digDone)
             {
+                KillTasks();
                 OpenLoopOutFinishedEventHandler temp = OpenLoopOutIsFinished;
                 if (temp != null)
                     temp(this, e);

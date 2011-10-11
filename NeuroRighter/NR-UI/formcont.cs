@@ -202,7 +202,7 @@ namespace NeuroRighter
             if (spkWfmGraph != null) { spkWfmGraph.Dispose(); spkWfmGraph = null; }
             if (openLoopSynchronizedOutput != null)
             {
-                openLoopSynchronizedOutput.KillAllAODOTasks();
+                openLoopSynchronizedOutput.KillTasks();
             }
 
             // Close the recording and spike detection forms

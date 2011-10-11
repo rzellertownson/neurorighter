@@ -37,13 +37,31 @@ namespace NeuroRighter.dbg
 
         public void Write(string input)
         {
+//#ifdef debug
+            if(false)
             lock (debuggerlock)
             {
-                long time = timekeeper.Stream.TotalSamplesAcquiredPerChannel - reference;
+                long time = 0;
+                try
+                {
+                    time = timekeeper.Stream.TotalSamplesAcquiredPerChannel - reference;
+                }
+                catch (Exception me)
+                { }
                 byte[] bytedata = Encoding.ASCII.GetBytes(((double)(time) / 25).ToString() + " : " + input + "\r\n");
-                debugOut.Write(bytedata, 0, bytedata.Length);
+                try
+                {
+                    debugOut.Write(bytedata, 0, bytedata.Length);
+                }
+                catch (Exception me)
+                { }
                 //index += bytedata.Length;
             }
+        }
+
+        internal double GetTimeMS()
+        {
+            return (timekeeper.Stream.TotalSamplesAcquiredPerChannel - reference) / 25;
         }
 
         internal void WriteReference(string input)

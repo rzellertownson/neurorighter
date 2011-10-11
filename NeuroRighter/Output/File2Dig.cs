@@ -42,30 +42,46 @@ namespace NeuroRighter.Output
         //internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
-
-        internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task digitalOutputTask,
-            Task buffLoadTask, DigitalSingleChannelWriter digitalOutputWriter, ulong numEventPerLoad, RealTimeDebugger debugger)
+        internal Task masterTask;
+        internal string masterLoad;
+        internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, 
+            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad, RealTimeDebugger debugger)
         {
             this.digfile = digfile;
             this.BUFFSIZE = BUFFSIZE;
-            this.digitalOutputTask = digitalOutputTask;
+            //this.digitalOutputTask = digitalOutputTask;
             this.buffLoadTask = buffLoadTask;
-            this.digitalOutputWriter = digitalOutputWriter;
+            //this.digitalOutputWriter = digitalOutputWriter;
             this.STIM_SAMPLING_FREQ = STIM_SAMPLING_FREQ;
             this.numEventPerLoad = numEventPerLoad;
             this.lastLoad = false;
             this.debugger = debugger;
-
+            this.masterTask = masterTask;
+            this.masterLoad = masterLoad;
             // Instatiate a DigitalBuffer object
             digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
+            
 
+        }
+
+        internal void connectBuffer(AuxBuffer anny)
+        {
+            digbuff.grabPartner(anny);
+        }
+
+        internal DigitalBuffer refBuffer()
+        {
+            return digbuff;
         }
 
         internal void Stop()
         {
             digbuff.Stop();
         }
-
+        internal void Kill()
+        {
+            digbuff.Kill();
+        }
         internal void Setup()
         {
             // Load the stimulus buffer
@@ -104,7 +120,7 @@ namespace NeuroRighter.Output
                 digbuff.WriteToBuffer(DigitalDataChunk); // Append all the stimuli
                 numLoadsCompleted = numDigEvent;
                 lastLoad = true;
-                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask, debugger);
+                
 
             }
             else
@@ -115,9 +131,10 @@ namespace NeuroRighter.Output
                 // Append the first stimuli to the stim buffer
                 digbuff.WriteToBuffer(DigitalDataChunk); //append first N stimuli
                 numLoadsCompleted++;
-                digbuff.Setup(digitalOutputWriter, digitalOutputTask, buffLoadTask,debugger);
+                
 
             }
+            digbuff.Setup(buffLoadTask, debugger, masterTask);
 
         }
 

@@ -60,23 +60,79 @@ namespace NeuroRighter.Output
 
             
             }
-
-        internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask, RealTimeDebugger Debugger)//, ulong starttime)
+        
+        protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {
-            AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
-            analogWriters[0] = stimAnalogWriter;
 
-            Task[] analogTasks = new Task[1];
-            analogTasks[0] = stimAnalogTask;
+            ContStimTask stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice,
+                (int)BUFFSIZE);
 
-            DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
-            digitalWriters[0] = stimDigitalWriter;
+            stimTaskMaker.MakeAODOTasks("NeuralStim",
+                Properties.Settings.Default.StimPortBandwidth,
+                (int)STIM_SAMPLING_FREQ);
 
-            Task[] digitalTasks = new Task[1];
-            digitalTasks[0] = stimDigitalTask;
+            // Verify
+            stimTaskMaker.VerifyTasks();
 
-            base.Setup(analogWriters, digitalWriters, analogTasks, digitalTasks, buffLoadTask,Debugger);
+            // Sync DO start to AO start
+            stimTaskMaker.SyncDOStartToAOStart();
+
+            analogTasks = new Task[1];
+            analogTasks[0] = stimTaskMaker.analogTask;
+            digitalTasks = new Task[1];
+            digitalTasks[0] = stimTaskMaker.digitalTask;
+
+
+            //    //configure stim
+            //    // Refresh DAQ tasks as they are needed for file2stim
+            //    if (stimTaskMaker != null)
+            //    {
+            //        stimTaskMaker.Dispose();
+            //        stimTaskMaker = null;
+            //    }
+
+            //    // Create new DAQ tasks and corresponding writers
+            //    stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice, 
+            //        OUTPUT_BUFFER_SIZE);
+            //    stimTaskMaker.MakeAODOTasks("NeuralStim",
+            //        Properties.Settings.Default.StimPortBandwidth,
+            //        outputSampFreq);
+
+            //    // Verify
+            //    stimTaskMaker.VerifyTasks();
+
+            //    // Sync DO start to AO start
+            //    stimTaskMaker.SyncDOStartToAOStart();
+
+            //    // Syncronize stimulation with the master task
+            //    stimTaskMaker.SyncTasksToMasterClock(masterTask);
+            //    stimTaskMaker.SyncTasksToMasterStart(buffLoadTask.COChannels[0].PulseTerminal);
+
+            //    // Create buffer writters
+            //    stimTaskMaker.MakeWriters();
+
+            //    // Verify
+            //    stimTaskMaker.VerifyTasks();
+
         }
+
+
+        //internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask, RealTimeDebugger Debugger)//, ulong starttime)
+        //{
+        //    AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
+        //    analogWriters[0] = stimAnalogWriter;
+
+        //    Task[] analogTasks = new Task[1];
+        //    analogTasks[0] = stimAnalogTask;
+
+        //    DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
+        //    digitalWriters[0] = stimDigitalWriter;
+
+        //    Task[] digitalTasks = new Task[1];
+        //    digitalTasks[0] = stimDigitalTask;
+
+        //    base.Setup(analogWriters, digitalWriters, analogTasks, digitalTasks, buffLoadTask,Debugger);
+        //}
 
 
 

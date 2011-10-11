@@ -26,7 +26,6 @@ namespace simoc
     /// </summary>
     public partial class Simoc : ClosedLoopExperiment
     {
-        // current data points
 
         private void UpdateClock()
         {
@@ -182,6 +181,16 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                        }
+                        break;
+                    case "Filt2PIDPowerFB":
+                        {
+                            Filt2PIDPowerFB controller = new Filt2PIDPowerFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            controller.UpdateLastObservation(simocVariableStorage, currentFilt);
                         }
                         break;
                 }

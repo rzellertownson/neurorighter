@@ -60,13 +60,13 @@ namespace NeuroRighter
             bool test = Properties.Settings.Default.recordSpikes;
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
-            Debugger.Write(taskNumber.ToString() + ": dowork begin");
+            //Debugger.Write(taskNumber.ToString() + ": dowork begin");
             trackingProc[taskNumber]++;
             //double[][] filtSpikeData;
             //Copy data into a new buffer
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
-            Debugger.Write(taskNumber.ToString() + ": raw data read");
+            //Debugger.Write(taskNumber.ToString() + ": raw data read");
             //Account for Pre-amp gain
             double ampdec = (1 / Properties.Settings.Default.PreAmpGain);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
@@ -75,7 +75,7 @@ namespace NeuroRighter
 
             // Send filtSpikeData to datSrv
             datSrv.rawElectrodeSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
-            Debugger.Write(taskNumber.ToString() + ": raw data sent to rawsrv");
+          //  Debugger.Write(taskNumber.ToString() + ": raw data sent to rawsrv");
             #region Write RAW data
             //Write data to file
 
@@ -104,7 +104,7 @@ namespace NeuroRighter
 
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": raw written");
+           // Debugger.Write(taskNumber.ToString() + ": raw written");
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -184,7 +184,7 @@ namespace NeuroRighter
             }
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": lfp filtered");
+           // Debugger.Write(taskNumber.ToString() + ": lfp filtered");
 
             #region SALPA Filtering
             lock (stimIndices)
@@ -241,7 +241,7 @@ namespace NeuroRighter
 
             #endregion SALPA Filtering
 
-            Debugger.Write(taskNumber.ToString() + ": salpa filtered");
+          //  Debugger.Write(taskNumber.ToString() + ": salpa filtered");
 
             #region SpikeFiltering
             //Filter spike data
@@ -294,7 +294,7 @@ namespace NeuroRighter
             }
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": spike filtered");
+          //  Debugger.Write(taskNumber.ToString() + ": spike filtered");
 
             //NEED TO FIX FOR MULTI DEVS
             #region Digital_Referencing_Spikes
@@ -318,7 +318,7 @@ namespace NeuroRighter
             }
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": digital referencing spikes");
+         //   Debugger.Write(taskNumber.ToString() + ": digital referencing spikes");
 
             #region SpikeDetection
             ++(numSpikeReads[taskNumber]);
@@ -425,7 +425,7 @@ namespace NeuroRighter
             newWaveforms.eventBuffer.Clear();
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": spikes detected");
+          //  Debugger.Write(taskNumber.ToString() + ": spikes detected");
 
             #region BNC_Output
             //Send selected channel to BNC
@@ -439,10 +439,10 @@ namespace NeuroRighter
             }
             #endregion
 
-            Debugger.Write(taskNumber.ToString() + ": bnc output");
+         //   Debugger.Write(taskNumber.ToString() + ": bnc output");
             //Write to PlotData buffer
             spikePlotData.write(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev);
-            Debugger.Write(taskNumber.ToString() + ": spikes plotted");
+         //   Debugger.Write(taskNumber.ToString() + ": spikes plotted");
             #region MUA
             if (Properties.Settings.Default.ProcessMUA)
             {
@@ -452,7 +452,7 @@ namespace NeuroRighter
                 muaPlotData.write(muaData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
             #endregion
-            Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
+        //    Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
             bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;
         }

@@ -708,7 +708,7 @@ namespace NeuroRighter
                 if (openLoopSynchronizedOutput != null)
                 {
                     openLoopSynchronizedOutput.StopAllBuffers();
-                    openLoopSynchronizedOutput.KillAllAODOTasks();
+                    //openLoopSynchronizedOutput.KillAllAODOTasks();
                     
                 }
 
@@ -737,7 +737,12 @@ namespace NeuroRighter
         }
 
         internal void button_stopStimFromFile_Click(object sender, EventArgs e)
-        {            
+        {
+            if (repeatOpenLoopProtocol)
+            {
+                numOpenLoopRepeats = -1;
+            }
+
             lock (this)
             {
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread

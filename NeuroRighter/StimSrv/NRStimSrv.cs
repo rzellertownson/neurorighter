@@ -76,6 +76,8 @@ namespace NeuroRighter.StimSrv
             //create buffers
             AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
             DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
+            AuxOut.grabPartner(DigitalOut);
+            DigitalOut.grabPartner(AuxOut);
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
             this.debugger = debugger;
             buffloadcount = 0;
@@ -84,29 +86,36 @@ namespace NeuroRighter.StimSrv
             this.DACPollingPeriodSamples = Convert.ToInt32(DACPollingPeriodSec * STIM_SAMPLING_FREQ);
         }
 
-        //this method writes the first 2 buffer loads to the daq in preparation
+        
+        
+        //create the counter, and set up the buffers based on the hardware configuration
         internal void Setup()
         {
             ConfigureCounter();
-            
+            //masterLoad = buffLoadTask.COChannels[0].PulseTerminal;
             //assign tasks to buffers
             if (Properties.Settings.Default.UseAODO)
             {
-                ConfigureAODO(true, masterTask);
+                //ConfigureAODO(true, masterTask);
                 AuxOut.immortal = true;
                 DigitalOut.immortal = true;
-                DigitalOut.Setup(auxTaskMaker.digitalWriter, auxTaskMaker.digitalTask, buffLoadTask, debugger);
-                AuxOut.Setup(auxTaskMaker.analogWriter, auxTaskMaker.analogTask, buffLoadTask, debugger);
-                AuxOut.Start();
+
                 
+
+                DigitalOut.Setup(buffLoadTask,  debugger, masterTask);
+                AuxOut.Setup(buffLoadTask, debugger, masterTask);
+
+                AuxOut.grabPartner(DigitalOut);
+                DigitalOut.grabPartner(AuxOut);
+                AuxOut.Start();
                 DigitalOut.Start();
             }
 
             if (Properties.Settings.Default.UseStimulator)
             {
-                ConfigureStim(masterTask);
+                //ConfigureStim(masterTask);
                 StimOut.immortal = true;
-                StimOut.Setup(stimTaskMaker.analogWriter, stimTaskMaker.digitalWriter, stimTaskMaker.digitalTask, stimTaskMaker.analogTask, buffLoadTask, debugger);
+                StimOut.Setup(buffLoadTask, debugger, masterTask);
                 StimOut.Start();
             }
         }
@@ -138,19 +147,14 @@ namespace NeuroRighter.StimSrv
             } 
             Console.WriteLine("NRStimSrv: buffLoadTask is no more");
             lock(AuxOut)
-                lock(DigitalOut)
-                    if (auxTaskMaker != null)
-                    {
-                        auxTaskMaker.Dispose();
-                        auxTaskMaker = null;
-                    }
-            Console.WriteLine("NRStimSrv: auxTasks are no more");
-            lock(StimOut)
-                if (stimTaskMaker != null)
+                lock (DigitalOut)
                 {
-                    stimTaskMaker.Dispose();
-                    stimTaskMaker = null;
+                    AuxOut.Stop();// Kill();
+                    DigitalOut.Stop();//Kill();
                 }
+            Console.WriteLine("NRStimSrv: auxTasks are no more");
+            lock (StimOut)
+                StimOut.Kill();
             Console.WriteLine("NRStimSrv: stimTasks are no more");
 
         }
@@ -160,6 +164,10 @@ namespace NeuroRighter.StimSrv
             return INNERBUFFSIZE;
         }
 
+        //the counter is a timing signal that goes off once per daq loading period.  It is used to time the start of different tasks, as well as the time
+        // that the hardware buffers are filled with user commands. Lastly, the counter serves to trigger events created by the user for closed loop stuff.
+        // the counter pumps out it's signal on the 'main' device (the same device that spikes are recorded on), and it in turn started by the main
+        //recording task (ie, it starts when you start recording)
         private void ConfigureCounter()
         {
             //configure counter
@@ -168,95 +176,95 @@ namespace NeuroRighter.StimSrv
             buffLoadTask = new Task("stimBufferTask");
 
             // Trigger a buffer load event off every edge of this channel
-            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.SigOutDev + "/ctr1",
+            buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.AnalogInDevice[0] + "/ctr1",
                 "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)INNERBUFFSIZE) / 2.0, 0.5);
             buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
             buffLoadTask.SynchronizeCallbacks = false;
             buffLoadTask.Timing.ReferenceClockSource = "OnboardClock";
             buffLoadTask.Control(TaskAction.Verify);
-
+            
             // Syncronize the start to the master recording task
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
-                {
-                    Thread thrd = Thread.CurrentThread;
-                    thrd.Priority = ThreadPriority.Highest;
-                    debugger.Write("output counter tick " +buffloadcount.ToString());
-                    buffloadcount++;
-                }
-            );
+            //buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
+            //    {
+            //        Thread thrd = Thread.CurrentThread;
+            //        thrd.Priority = ThreadPriority.Highest;
+            //        debugger.Write("output counter tick " + buffloadcount.ToString());
+            //        buffloadcount++;
+            //    }
+            //);
         }
 
-        private void ConfigureStim(Task masterTask)
-        {
+        //private void ConfigureStim(Task masterTask)
+        //{
 
-            //configure stim
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (stimTaskMaker != null)
-            {
-                stimTaskMaker.Dispose();
-                stimTaskMaker = null;
-            }
+        //    //configure stim
+        //    // Refresh DAQ tasks as they are needed for file2stim
+        //    if (stimTaskMaker != null)
+        //    {
+        //        stimTaskMaker.Dispose();
+        //        stimTaskMaker = null;
+        //    }
 
-            // Create new DAQ tasks and corresponding writers
-            stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice,
-                INNERBUFFSIZE);
-            stimTaskMaker.MakeAODOTasks("NeuralStim",
-                Properties.Settings.Default.StimPortBandwidth,
-                STIM_SAMPLING_FREQ);
+        //    // Create new DAQ tasks and corresponding writers
+        //    stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice,
+        //        INNERBUFFSIZE);
+        //    stimTaskMaker.MakeAODOTasks("NeuralStim",
+        //        Properties.Settings.Default.StimPortBandwidth,
+        //        STIM_SAMPLING_FREQ);
 
-            // Verify
-            stimTaskMaker.VerifyTasks();
+        //    // Verify
+        //    stimTaskMaker.VerifyTasks();
 
-            // Sync DO start to AO start
-            stimTaskMaker.SyncDOStartToAOStart();
+        //    // Sync DO start to AO start
+        //    stimTaskMaker.SyncDOStartToAOStart();
 
-            // Syncronize stimulation with the master task
-            stimTaskMaker.SyncTasksToMasterClock(masterTask);
-            stimTaskMaker.SyncTasksToMasterStart(masterTask);
+        //    // Syncronize stimulation with the master task
+        //    //stimTaskMaker.SyncTasksToMasterClock(masterTask);
+        //    //stimTaskMaker.SyncTasksToMasterStart(Properties.Settings.Default.SigOutDev + "/ctr1");
+        //    //buffLoadTask.Timing.ReferenceClockSource);//
+        //    // Create buffer writters
+        //    //stimTaskMaker.MakeWriters();
 
-            // Create buffer writters
-            stimTaskMaker.MakeWriters();
+        //    // Verify
+        //    //stimTaskMaker.VerifyTasks();
+        //}
 
-            // Verify
-            stimTaskMaker.VerifyTasks();
-        }
+        //private void ConfigureAODO(bool digProvided, Task masterTask)
+        //{
+        //    //configure stim
+        //    // Refresh DAQ tasks as they are needed for file2stim
+        //    if (auxTaskMaker != null)
+        //    {
+        //        auxTaskMaker.Dispose();
+        //        auxTaskMaker = null;
+        //    }
 
-        private void ConfigureAODO(bool digProvided, Task masterTask)
-        {
-            //configure stim
-            // Refresh DAQ tasks as they are needed for file2stim
-            if (auxTaskMaker != null)
-            {
-                auxTaskMaker.Dispose();
-                auxTaskMaker = null;
-            }
+        //    // Create new DAQ tasks and corresponding writers
+        //    auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev,
+        //        INNERBUFFSIZE);
+        //    auxTaskMaker.MakeAODOTasks("auxOut",
+        //        STIM_SAMPLING_FREQ,
+        //        digProvided);
 
-            // Create new DAQ tasks and corresponding writers
-            auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev,
-                INNERBUFFSIZE);
-            auxTaskMaker.MakeAODOTasks("auxOut",
-                STIM_SAMPLING_FREQ,
-                digProvided);
+        //    // Verify
+        //    auxTaskMaker.VerifyTasks();
 
-            // Verify
-            auxTaskMaker.VerifyTasks();
+        //    // Sync DO start to AO start
+        //    if (digProvided)
+        //        auxTaskMaker.SyncDOStartToAOStart();
 
-            // Sync DO start to AO start
-            if (digProvided)
-                auxTaskMaker.SyncDOStartToAOStart();
+        //    // Syncronize stimulation with the master task
+        //    auxTaskMaker.SyncTasksToMasterClock(masterTask);
+        //    auxTaskMaker.SyncTasksToMasterStart(Properties.Settings.Default.SigOutDev + "/ctr1");
+        //    //buffLoadTask.Timing.ReferenceClockSource);//
+        //    // Create buffer writters
+        //    auxTaskMaker.MakeWriters();
 
-            // Syncronize stimulation with the master task
-            auxTaskMaker.SyncTasksToMasterClock(masterTask);
-            auxTaskMaker.SyncTasksToMasterStart(masterTask);
-
-            // Create buffer writters
-            auxTaskMaker.MakeWriters();
-
-            // Verify
-            auxTaskMaker.VerifyTasks();
-        }
+        //    // Verify
+        //    auxTaskMaker.VerifyTasks();
+        //}
 
     }
 }

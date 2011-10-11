@@ -144,6 +144,7 @@ namespace NeuroRighter.SpikeDetection
                 }
             List<SpikeEvent> waveforms = new List<SpikeEvent>();
 
+            // Prevent two background workers from entering at once
             lock (this)
             {
                 // Update threshold

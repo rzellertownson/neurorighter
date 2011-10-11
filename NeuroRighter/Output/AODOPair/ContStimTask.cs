@@ -36,8 +36,8 @@ namespace NeuroRighter.Output
             int stimPortBandWidth, int sampRate)
         {
 
-            digitalTask  = new Task("analog" + stimTaskName);
-            analogTask = new Task("digital" + stimTaskName);
+            analogTask  = new Task("analog" + stimTaskName);
+            digitalTask = new Task("digital" + stimTaskName);
 
             if (stimPortBandWidth == 32)
                 digitalTask.DOChannels.CreateChannel("/" + dev + "/Port0/line0:31", "",

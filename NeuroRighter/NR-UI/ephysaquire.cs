@@ -83,7 +83,7 @@ namespace NeuroRighter
                 if (taskRunning)
                 {
                     int taskNumber = (int)ar.AsyncState;
-                    Debugger.Write(taskNumber.ToString() + ":spike callback start");
+                   // Debugger.Write(taskNumber.ToString() + ":spike callback start");
                     trackingReads[taskNumber]++;
                     
                     #region Stim_Timing_Acquisition
@@ -242,7 +242,7 @@ namespace NeuroRighter
                         string format = "HH:mm:ss";    // Use this format
                         Console.WriteLine("Warning: bwSpikes was busy at: " + errortime.ToString(format));  // Write to console
                     }
-                    Debugger.Write(taskNumber.ToString() + ":spike callback stop");
+                    //Debugger.Write(taskNumber.ToString() + ":spike callback stop");
                 }
             }
             catch (DaqException exception)

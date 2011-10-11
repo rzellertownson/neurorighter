@@ -77,6 +77,8 @@ namespace NeuroRighter.SpikeDetection
                     numChannels,
                     Convert.ToInt32(numericUpDown_maxK.Value),
                     Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+            comboBox_ProjectionType.SelectedIndex = 0;
+ 
             Flush();
         }
 
@@ -280,10 +282,27 @@ namespace NeuroRighter.SpikeDetection
                 hasData = false;
                 isHoarding = true;
                 spikeSorter = null;
-                spikeSorter = new SpikeSorter(
+
+
+                // Create the appropriate sorter
+                if (comboBox_ProjectionType.SelectedItem.ToString() == "Maximum Voltage Inflection")
+                {
+                    spikeSorter = new SpikeSorter(
                     numChannels,
-                    Convert.ToInt32(numericUpDown_maxK.Value),
-                    Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+                    (int)numericUpDown_maxK.Value,
+                    (int)numericUpDown_MinSpikesToTrain.Value,
+                    (int)numericUpDown_ProjDim.Value);
+                    spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
+                }
+                else if (comboBox_ProjectionType.SelectedItem.ToString() == "PCA")
+                {
+                    spikeSorter = new SpikeSorter(
+                    numChannels,
+                    (int)numericUpDown_maxK.Value,
+                    (int)numericUpDown_MinSpikesToTrain.Value,
+                    (int)numericUpDown_ProjDim.Value);
+                    spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
+                }
 
                 // Update hoard button
                 button_HoardSpikes.Text = "Stop";
@@ -307,7 +326,10 @@ namespace NeuroRighter.SpikeDetection
         private void sorterTrainer_trainSS(object sender, DoWorkEventArgs e)
         {
             // Actual training method
-            spikeSorter.Train(numPre);
+            if (spikeSorter.projectionType == "Maximum Voltage Inflection")
+                spikeSorter.Train(numPre);
+            else if (spikeSorter.projectionType == "PCA")
+                spikeSorter.Train();
         }
 
         private void sorterTrainer_DoneTraining(object sender, RunWorkerCompletedEventArgs e)
@@ -316,6 +338,7 @@ namespace NeuroRighter.SpikeDetection
             label_Trained.Text = "Spike sorter is trained.";
             label_Trained.ForeColor = Color.Green;
             // Enable Saving and sorting
+            isTrained = true;
             button_EngageSpikeSorter.Enabled = true;
 
             // Print detector stats to textbox
@@ -404,12 +427,22 @@ namespace NeuroRighter.SpikeDetection
 
         private void button_EngageSpikeSorter_Click(object sender, EventArgs e)
         {
+            if (!isTrained)
+            {
+                MessageBox.Show("Please train the spike sorter first.");
+                return;
+            }
+
             if (isEngaged)
             {
                 isEngaged = false;
                 button_EngageSpikeSorter.Text = "Engage Spike Sorter";
                 label_SorterEngaged.Text = "Sorter is not engaged";
                 label_SorterEngaged.ForeColor = Color.Red;
+                comboBox_ProjectionType.Enabled = true;
+                button_HoardSpikes.Enabled = true;
+                button_TrainSorter.Enabled = true;
+                button_SaveSpikeSorter.Enabled = true;
             }
             else if (!isEngaged)
             {
@@ -417,6 +450,10 @@ namespace NeuroRighter.SpikeDetection
                 button_EngageSpikeSorter.Text = "Disengage Spike Sorter";
                 label_SorterEngaged.Text = "Sorter is engaged";
                 label_SorterEngaged.ForeColor = Color.Green;
+                comboBox_ProjectionType.Enabled = false;
+                button_HoardSpikes.Enabled = false;
+                button_TrainSorter.Enabled = false;
+                button_SaveSpikeSorter.Enabled = false;
             }
         }
 
@@ -428,6 +465,7 @@ namespace NeuroRighter.SpikeDetection
             textBox_Results.Clear();
             textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
             textBox_Results.Text += "------------------------------------------\r\n";
+            textBox_Results.Text += "Projection Method: " + spikeSorter.projectionType + "\r\n";
             textBox_Results.Text += "# channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
             textBox_Results.Text += "# of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
 
@@ -439,7 +477,7 @@ namespace NeuroRighter.SpikeDetection
                 if (tmpCM.Count > 0)
                 {
                     textBox_Results.Text += "CHANNEL " + (tmpCM[0].channelNumber + 1).ToString() + "\r\n";
-                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / 50 \r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / "  + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
                     textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
                     textBox_Results.Text += " Clustering Results:\r\n";
 
@@ -485,6 +523,18 @@ namespace NeuroRighter.SpikeDetection
             button_HoardSpikes.Text = "Hoard";
             button_SaveSpikeSorter.Enabled = false;
             UpdateCollectionBar();
+        }
+
+        private void numericUpDown_ProjDim_ValueChanged(object sender, EventArgs e)
+        {
+            if (spikeSorter != null)
+                spikeSorter.projectionDimension = (int)numericUpDown_ProjDim.Value;
+        }
+
+        private void comboBox_ProjectionType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (spikeSorter != null)
+                spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
         }
 
     }

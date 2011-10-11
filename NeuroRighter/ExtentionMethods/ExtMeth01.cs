@@ -179,12 +179,13 @@ namespace ExtensionMethods
         public static List<Color> GenerateUnitBrainbow(this int numChannels)
         {
             // This is generated code
-            byte[,] cmap = new byte[6, 3]  {{120,120,120},
+            byte[,] cmap = new byte[7, 3]  {{120,120,120},
                                             {255,24,0},
                                             {255,240,0},
                                             {0,208,255},
                                             {32,255,0},
-                                            {255,0,240}};
+                                            {255,0,240},
+                                            {255,255,255}};
 
             // Create color list from RGB map above
             List<Color> NRColorMap = new List<Color>();

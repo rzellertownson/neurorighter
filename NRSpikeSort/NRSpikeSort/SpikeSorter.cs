@@ -58,11 +58,27 @@ namespace NRSpikeSort
         /// Number of spikes detected for training on each channel.
         /// </summary>
         public Hashtable spikesCollectedPerChannel;
+
+        /// <summary>
+        /// The type of projection to produce sortable pixels.
+        /// "Maximum Voltage Inflection" - peak aligned maximum voltage from spike waveforms
+        /// "PCA" - Principle component projection of spike waveforms
+        /// </summary>
+        public string projectionType;
+
+        /// <summary>
+        /// The number of dimensions in the coordinate system into which spike data will be projected.
+        /// </summary>
+        public int projectionDimension;
+
+        /// <summary>
+        /// The maximum number of waveforms used for training a GMM on each channel
+        /// </summary>
+        public int maxTrainingSpikesPerChannel = 100;
         
         // Private
         private int numberChannels;
-        private int inflectionSample; // The sample that spike peaks occur at
-        private const int maxTrainingSpikesPerChannel = 50;
+        private int inflectionSample = 14; // The sample that spike peaks occur at
         
         /// <summary>
         /// NeuroRighter's spike sorter.
@@ -81,7 +97,23 @@ namespace NRSpikeSort
             {
                 spikesCollectedPerChannel.Add(i+1, 0);
             }
+            this.projectionType = "MaxInflection";
+            this.projectionDimension = 1;
+        }
 
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, int projectionDim)
+        {
+            this.numberChannels = numberChannels;
+            this.maxK = maxK;
+            this.minSpikes = minSpikes;
+            this.channelModels = new List<ChannelModel>(numberChannels);
+            this.spikesCollectedPerChannel = new Hashtable();
+            for (int i = 0; i < numberChannels; ++i)
+            {
+                spikesCollectedPerChannel.Add(i + 1, 0);
+            }
+            this.projectionType = "PCA";
+            this.projectionDimension = projectionDim;
         }
 
         /// <summary>
@@ -110,6 +142,7 @@ namespace NRSpikeSort
             // Clear old channel models
             channelsToSort = new List<int>();
             channelModels.Clear();
+            trained = false;
 
             // Clear old unit dictionary
             unitDictionary = new Hashtable();
@@ -167,6 +200,69 @@ namespace NRSpikeSort
         }
 
         /// <summary>
+        /// Trains a classifier for each channel so long as (int)minSpikes worth of spikes have been collected
+        /// for that channel in the training buffer
+        /// </summary>
+        public void Train()
+        {
+            // Clear old channel models
+            channelsToSort = new List<int>();
+            channelModels.Clear();
+            trained = false;
+
+            // Clear old unit dictionary
+            unitDictionary = new Hashtable();
+
+            // Add the zero unit to the dictionary
+            unitDictionary.Add(0, 0);
+
+            // Make sure we have something in the training matrix
+            if (trainingSpikes.eventBuffer.Count == 0)
+            {
+                throw new InvalidOperationException("The training data set was empty");
+            }
+
+            for (int i = 0; i < numberChannels; ++i)
+            {
+                // Current channel
+                int currentChannel = i;
+
+                // Get the spikes that belong to this channel
+                List<SpikeEvent> spikesOnChan = trainingSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+
+                // Project channel data
+                if (spikesOnChan.Count >= minSpikes)
+                {
+                    // Note that we have to sort spikes on this channel
+                    channelsToSort.Add(currentChannel);
+
+                    // Train a channel model for this channel
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, projectionDimension);
+
+                    // Project Data
+                    thisChannelModel.PCCompute(spikesOnChan.ToList());
+
+                    // Train Classifier
+                    thisChannelModel.Train();
+
+                    // Update the unit dicationary and increment the total number of units
+                    for (int k = 1; k <= thisChannelModel.K; ++k)
+                    {
+                        unitDictionary.Add(totalNumberOfUnits + k, k);
+                    }
+
+                    totalNumberOfUnits += thisChannelModel.K;
+
+                    // Add the channel model to the list
+                    channelModels.Add(thisChannelModel);
+                }
+            }
+
+            // All finished
+            trained = true;
+        }
+
+        /// <summary>
         /// After the channel models (gmm's) have been created and trained, this function
         /// is used to classifty newly detected spikes for which a valide channel model exisits.
         /// </summary>
@@ -197,8 +293,10 @@ namespace NRSpikeSort
                 ChannelModel thisChannelModel = channelModels[channelsToSort.IndexOf(currentChannel)];
 
                 // Project the spikes
-                //thisChannelModel.PCProject(spikesOnChan.ToList());
-                thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), 14);
+                if (this.projectionType == "Maximum Voltage Inflection")
+                    thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
+                else if (this.projectionType == "PCA")
+                    thisChannelModel.PCProject(spikesOnChan.ToList());
 
                 // Sort the spikes
                 thisChannelModel.Classify();
@@ -225,6 +323,8 @@ namespace NRSpikeSort
             this.channelsToSort = (List<int>)info.GetValue("channelsToSort", typeof(List<int>));
             this.channelModels = (List<ChannelModel>)info.GetValue("channelModels", typeof(List<ChannelModel>));
             this.unitDictionary = (Hashtable)info.GetValue("unitDictionary", typeof(Hashtable));
+            this.projectionType = (string)info.GetValue("projectionType", typeof(string));
+            this.projectionDimension = (int)info.GetValue("projectionDimension", typeof(int));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -238,6 +338,8 @@ namespace NRSpikeSort
             info.AddValue("channelsToSort", this.channelsToSort);
             info.AddValue("channelModels", this.channelModels);
             info.AddValue("unitDictionary", this.unitDictionary);
+            info.AddValue("projectionType", this.projectionType);
+            info.AddValue("projectionDimension", this.projectionDimension);
         }
 
         #endregion

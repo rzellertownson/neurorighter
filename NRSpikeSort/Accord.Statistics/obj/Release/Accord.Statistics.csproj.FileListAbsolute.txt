@@ -34,9 +34,9 @@ C:\Users\Jon\Desktop\nr-371\Release\Accord.Statistics.pdb
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
-C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.Statistics.XML
 C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.Statistics.pdb
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\neurorighter-371\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-371\Release\Accord.Statistics.XML

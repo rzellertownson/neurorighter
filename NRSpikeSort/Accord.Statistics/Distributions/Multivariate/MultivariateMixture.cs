@@ -252,8 +252,8 @@ namespace Accord.Statistics.Distributions.Multivariate
             double likelihood = logLikelihood(pi, pdf, observations, weights);
             bool converged = false;
 
-
-            while (!converged)
+            int numTries = 0;
+            while (!converged  && numTries < 500)
             {
                 // 2. Expectation: Evaluate the responsibilities using the
                 //    current parameter values.
@@ -279,16 +279,16 @@ namespace Accord.Statistics.Distributions.Multivariate
                 {
                     double Nk = gamma[k].Sum();
                     double[] w;
-                    //if (Nk == 1.0 || Nk == 0) // Two cases will result in cov = NaN
-                    //{
-                    //    pi[k] = 0;
-                    //}
-                    //else
-                    //{
+                    if (Nk == 1.0 || Nk == 0) // Two cases will result in cov = NaN
+                    {
+                        pi[k] = 0;
+                    }
+                    else
+                    {
                         w = gamma[k].Divide(Nk);
                         pi[k] = Nk / N;
                         pdf[k].Fit(observations, w, innerOptions);
-                    //}
+                    }
                 }
 
                 // 4. Evaluate the log-likelihood and check for convergence
@@ -303,6 +303,7 @@ namespace Accord.Statistics.Distributions.Multivariate
                     converged = true;
 
                 likelihood = newLikelihood;
+                numTries++;
             }
 
             // Become the newly fitted distribution.

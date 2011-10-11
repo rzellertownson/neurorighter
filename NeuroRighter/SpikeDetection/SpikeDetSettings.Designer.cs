@@ -73,6 +73,10 @@
             this.button_LoadSpikeSorter = new System.Windows.Forms.Button();
             this.textBox_SorterLocation = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.comboBox_ProjectionType = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.numericUpDown_ProjDim = new System.Windows.Forms.NumericUpDown();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label_Trained = new System.Windows.Forms.Label();
             this.textBox_Results = new System.Windows.Forms.TextBox();
@@ -103,6 +107,7 @@
             this.tabPage2.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).BeginInit();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikesToTrain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_maxK)).BeginInit();
@@ -666,6 +671,10 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.comboBox_ProjectionType);
+            this.groupBox5.Controls.Add(this.label12);
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.numericUpDown_ProjDim);
             this.groupBox5.Controls.Add(this.groupBox8);
             this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Controls.Add(this.numericUpDown_MinSpikesToTrain);
@@ -679,15 +688,70 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "New Spike Sorter";
             // 
+            // comboBox_ProjectionType
+            // 
+            this.comboBox_ProjectionType.FormattingEnabled = true;
+            this.comboBox_ProjectionType.Items.AddRange(new object[] {
+            "Maximum Voltage Inflection",
+            "PCA"});
+            this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 24);
+            this.comboBox_ProjectionType.Name = "comboBox_ProjectionType";
+            this.comboBox_ProjectionType.Size = new System.Drawing.Size(195, 21);
+            this.comboBox_ProjectionType.TabIndex = 80;
+            this.comboBox_ProjectionType.SelectedIndexChanged += new System.EventHandler(this.comboBox_ProjectionType_SelectedIndexChanged);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(9, 27);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(93, 13);
+            this.label12.TabIndex = 79;
+            this.label12.Text = "Projection Method";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 61);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(118, 13);
+            this.label6.TabIndex = 77;
+            this.label6.Text = "Dimension of Projection";
+            // 
+            // numericUpDown_ProjDim
+            // 
+            this.numericUpDown_ProjDim.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.numericUpDown_ProjDim.Location = new System.Drawing.Point(247, 57);
+            this.numericUpDown_ProjDim.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.numericUpDown_ProjDim.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown_ProjDim.Name = "numericUpDown_ProjDim";
+            this.numericUpDown_ProjDim.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_ProjDim.TabIndex = 78;
+            this.numericUpDown_ProjDim.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown_ProjDim.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDown_ProjDim.ValueChanged += new System.EventHandler(this.numericUpDown_ProjDim_ValueChanged);
+            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.label_Trained);
             this.groupBox8.Controls.Add(this.textBox_Results);
             this.groupBox8.Controls.Add(this.button_TrainSorter);
             this.groupBox8.Controls.Add(this.button_SaveSpikeSorter);
-            this.groupBox8.Location = new System.Drawing.Point(6, 140);
+            this.groupBox8.Location = new System.Drawing.Point(6, 201);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(336, 289);
+            this.groupBox8.Size = new System.Drawing.Size(336, 228);
             this.groupBox8.TabIndex = 76;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "2. Train Classifier";
@@ -696,7 +760,7 @@
             // 
             this.label_Trained.AutoSize = true;
             this.label_Trained.ForeColor = System.Drawing.Color.Red;
-            this.label_Trained.Location = new System.Drawing.Point(83, 265);
+            this.label_Trained.Location = new System.Drawing.Point(83, 204);
             this.label_Trained.Name = "label_Trained";
             this.label_Trained.Size = new System.Drawing.Size(129, 13);
             this.label_Trained.TabIndex = 75;
@@ -709,13 +773,13 @@
             this.textBox_Results.Multiline = true;
             this.textBox_Results.Name = "textBox_Results";
             this.textBox_Results.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Results.Size = new System.Drawing.Size(324, 235);
+            this.textBox_Results.Size = new System.Drawing.Size(324, 174);
             this.textBox_Results.TabIndex = 72;
             // 
             // button_TrainSorter
             // 
             this.button_TrainSorter.Enabled = false;
-            this.button_TrainSorter.Location = new System.Drawing.Point(6, 260);
+            this.button_TrainSorter.Location = new System.Drawing.Point(6, 199);
             this.button_TrainSorter.Name = "button_TrainSorter";
             this.button_TrainSorter.Size = new System.Drawing.Size(73, 23);
             this.button_TrainSorter.TabIndex = 71;
@@ -726,7 +790,7 @@
             // button_SaveSpikeSorter
             // 
             this.button_SaveSpikeSorter.Enabled = false;
-            this.button_SaveSpikeSorter.Location = new System.Drawing.Point(215, 260);
+            this.button_SaveSpikeSorter.Location = new System.Drawing.Point(215, 199);
             this.button_SaveSpikeSorter.Name = "button_SaveSpikeSorter";
             this.button_SaveSpikeSorter.Size = new System.Drawing.Size(115, 23);
             this.button_SaveSpikeSorter.TabIndex = 71;
@@ -737,7 +801,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 58);
+            this.label7.Location = new System.Drawing.Point(9, 117);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(172, 13);
             this.label7.TabIndex = 68;
@@ -746,7 +810,7 @@
             // numericUpDown_MinSpikesToTrain
             // 
             this.numericUpDown_MinSpikesToTrain.BackColor = System.Drawing.Color.Yellow;
-            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(247, 56);
+            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(247, 116);
             this.numericUpDown_MinSpikesToTrain.Minimum = new decimal(new int[] {
             10,
             0,
@@ -766,7 +830,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 29);
+            this.label2.Location = new System.Drawing.Point(9, 89);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(124, 13);
             this.label2.TabIndex = 62;
@@ -775,9 +839,9 @@
             // numericUpDown_maxK
             // 
             this.numericUpDown_maxK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.numericUpDown_maxK.Location = new System.Drawing.Point(247, 27);
+            this.numericUpDown_maxK.Location = new System.Drawing.Point(247, 87);
             this.numericUpDown_maxK.Maximum = new decimal(new int[] {
-            7,
+            6,
             0,
             0,
             0});
@@ -802,7 +866,7 @@
             this.groupBox7.Controls.Add(this.label3);
             this.groupBox7.Controls.Add(this.label_NumSpikesCollected);
             this.groupBox7.Controls.Add(this.button_HoardSpikes);
-            this.groupBox7.Location = new System.Drawing.Point(6, 82);
+            this.groupBox7.Location = new System.Drawing.Point(6, 143);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(336, 52);
             this.groupBox7.TabIndex = 75;
@@ -877,6 +941,7 @@
             this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikesToTrain)).EndInit();
@@ -945,6 +1010,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label_NumSpikesCollected;
         private System.Windows.Forms.Button button_HoardSpikes;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown numericUpDown_ProjDim;
+        internal System.Windows.Forms.ComboBox comboBox_ProjectionType;
+        private System.Windows.Forms.Label label12;
 
     }
 }

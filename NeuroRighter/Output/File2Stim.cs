@@ -189,10 +189,10 @@ namespace NeuroRighter.Output
             stimbuff.Start();
         }
 
-        internal void Kill()
-        {
-            stimbuff.Kill();
-        }
+        //internal void Kill()
+        //{
+        //    stimbuff.Kill();
+        //}
 
         internal void AppendStimBufferAtThresh(object sender, EventArgs e)
         {

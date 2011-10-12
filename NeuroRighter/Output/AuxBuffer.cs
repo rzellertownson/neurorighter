@@ -55,14 +55,14 @@ namespace NeuroRighter.Output
                     lock (digBuffer)// wait until digbuffer is not in the middle of a populate buffer appending
                     {
                         ClearQueue();
-                        digBuffer.ClearQueue();
+                        digBuffer.ClearQueueInternal();
                         //clearTasks();
                         //Debugger.Write(" analog buffer attempted recover: analog cleared");
                         //digBuffer.clearTasks();
                         //Debugger.Write(" analog buffer attempted recover: digital cleared");
                         restartBuffer();
                         Debugger.Write(" analog buffer attempted recover: analog restarted");
-                        digBuffer.restartBuffer();
+                        digBuffer.restartBufferInternal();
                         Debugger.Write(" analog buffer attempted recover: digital restarted");
                         digBuffer.recoveryInProgress = false;
                     }

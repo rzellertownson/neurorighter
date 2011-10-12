@@ -78,10 +78,10 @@ namespace NeuroRighter.Output
         {
             digbuff.Stop();
         }
-        internal void Kill()
-        {
-            digbuff.Kill();
-        }
+        //internal void Kill()
+        //{
+        //    digbuff.Kill();
+        //}
         internal void Setup()
         {
             // Load the stimulus buffer

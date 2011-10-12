@@ -51,12 +51,12 @@ namespace NeuroRighter.Output
                     lock (analogBuffer)//this lock is so we don't try to restart in the middle of a pop.buf.append.
                     {
                         ClearQueue();
-                        analogBuffer.ClearQueue();
+                        analogBuffer.ClearQueueInternal();
                         //analogBuffer.clearTasks();
                         //Debugger.Write(" digital buffer attempted recover: analog cleared");
                         //clearTasks();
                         //Debugger.Write(" digital buffer attempted recover: digital cleared");
-                        analogBuffer.restartBuffer();
+                        analogBuffer.restartBufferInternal();
                         Debugger.Write(" digital buffer attempted recover: analog restarted");
                         restartBuffer();
                         Debugger.Write(" digital buffer attempted recover: digital cleared");
@@ -106,13 +106,7 @@ namespace NeuroRighter.Output
             
             digitalTasks = new Task[1];
             digitalTasks[0] = digitalTask;
-            digitalTasks[0].Timing.ConfigureSampleClock("100KHzTimeBase",
-                //masterTask.Timing.ReferenceClockSource,
-                //"/" + dev + "/ao/SampleClock",
-               STIM_SAMPLING_FREQ,
-               SampleClockActiveEdge.Rising,
-               SampleQuantityMode.ContinuousSamples,
-               (int)BUFFSIZE);
+            
 
             
                 analogTasks = new Task[0];

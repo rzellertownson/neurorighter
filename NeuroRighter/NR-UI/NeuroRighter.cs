@@ -1029,7 +1029,9 @@ namespace NeuroRighter
             if (stimSrv != null)
             {
                 stimSrv.StopAllBuffers();
-                stimSrv.KillAllAODOTasks();
+                //this is admittedly a bit of a hack, but it should always work: (need to wait atleast one more buffload so that daqs can clear)
+                System.Threading.Thread.Sleep((int)(Properties.Settings.Default.DACPollingPeriodSec * 2000));
+                stimSrv.StopLoading();
                 stimSrv = null;
                 //Debugger.Close();
             }

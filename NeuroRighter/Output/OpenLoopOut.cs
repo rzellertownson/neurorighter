@@ -312,19 +312,19 @@ namespace NeuroRighter.Output
                 KillTasks();
                 try
                 {
-                    digProtocol.Kill();
+                    digProtocol.Stop();
                 }
                 catch (Exception me)
                 { }
                 try
                 {
-                auxProtocol.Kill();
+                auxProtocol.Stop();
                 }
                 catch (Exception me)
                 { }
                 try
                 {
-                stimProtocol.Kill();
+                stimProtocol.Stop();
                  }
                 catch (Exception me)
                 { }

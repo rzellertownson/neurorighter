@@ -81,10 +81,10 @@ namespace NeuroRighter.Output
         {
             auxBuff.Stop();
         }
-        internal void Kill()
-        {
-            auxBuff.Kill();
-        }
+        //internal void Kill()
+        //{
+        //    auxBuff.Kill();
+        //}
         internal void Setup()
         {
             

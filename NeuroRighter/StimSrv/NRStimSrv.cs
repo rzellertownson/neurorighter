@@ -136,7 +136,7 @@ namespace NeuroRighter.StimSrv
             Console.WriteLine("NRStimSrv: StimSrv output Buffers Stopped");
         }
 
-        internal void KillAllAODOTasks()
+        internal void StopLoading()
         {
             
             if (buffLoadTask != null)
@@ -146,16 +146,16 @@ namespace NeuroRighter.StimSrv
                 buffLoadTask = null;
             } 
             Console.WriteLine("NRStimSrv: buffLoadTask is no more");
-            lock(AuxOut)
-                lock (DigitalOut)
-                {
-                    AuxOut.Stop();// Kill();
-                    DigitalOut.Stop();//Kill();
-                }
-            Console.WriteLine("NRStimSrv: auxTasks are no more");
-            lock (StimOut)
-                StimOut.Kill();
-            Console.WriteLine("NRStimSrv: stimTasks are no more");
+            //lock(AuxOut)
+            //    lock (DigitalOut)
+            //    {
+            //        AuxOut.Stop();// Kill();
+            //        DigitalOut.Stop();//Kill();
+            //    }
+            //Console.WriteLine("NRStimSrv: auxTasks are no more");
+            //lock (StimOut)
+            //    StimOut.Stop();
+            //Console.WriteLine("NRStimSrv: stimTasks are no more");
 
         }
 

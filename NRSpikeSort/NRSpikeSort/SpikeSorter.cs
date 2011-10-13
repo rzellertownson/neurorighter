@@ -101,6 +101,13 @@ namespace NRSpikeSort
             this.projectionDimension = 1;
         }
 
+        /// <summary>
+        /// NeuroRighter's spike sorter.
+        /// </summary>
+        /// <param name="numberChannels">Number of channels to make sorters for</param>
+        /// <param name="maxK">Maximum number of units to consider per channel</param>
+        /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
+        /// <param name="projectionDim">Dimension of projection if using PCA</param>
         public SpikeSorter(int numberChannels, int maxK, int minSpikes, int projectionDim)
         {
             this.numberChannels = numberChannels;
@@ -143,6 +150,7 @@ namespace NRSpikeSort
             channelsToSort = new List<int>();
             channelModels.Clear();
             trained = false;
+            totalNumberOfUnits = 0;
 
             // Clear old unit dictionary
             unitDictionary = new Hashtable();
@@ -209,6 +217,7 @@ namespace NRSpikeSort
             channelsToSort = new List<int>();
             channelModels.Clear();
             trained = false;
+            totalNumberOfUnits = 0;
 
             // Clear old unit dictionary
             unitDictionary = new Hashtable();
@@ -325,6 +334,9 @@ namespace NRSpikeSort
             this.unitDictionary = (Hashtable)info.GetValue("unitDictionary", typeof(Hashtable));
             this.projectionType = (string)info.GetValue("projectionType", typeof(string));
             this.projectionDimension = (int)info.GetValue("projectionDimension", typeof(int));
+            this.maxTrainingSpikesPerChannel = (int)info.GetValue("maxTrainingSpikesPerChannel", typeof(int));
+            this.spikesCollectedPerChannel = (Hashtable)info.GetValue("spikesCollectedPerChannel", typeof(Hashtable));
+            this.totalNumberOfUnits = (int)info.GetValue("totalNumberOfUnits", typeof(int));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -340,6 +352,9 @@ namespace NRSpikeSort
             info.AddValue("unitDictionary", this.unitDictionary);
             info.AddValue("projectionType", this.projectionType);
             info.AddValue("projectionDimension", this.projectionDimension);
+            info.AddValue("maxTrainingSpikesPerChannel", this.maxTrainingSpikesPerChannel);
+            info.AddValue("spikesCollectedPerChannel", this.spikesCollectedPerChannel);
+            info.AddValue("totalNumberOfUnits", this.totalNumberOfUnits);
         }
 
         #endregion

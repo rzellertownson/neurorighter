@@ -46,3 +46,9 @@ C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\Release\Accord.Statist
 C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\NR that Jon was using 10_8_11 - Copy\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-381\Release\Accord.Statistics.XML
+C:\Users\Jon\Desktop\neurorighter-381\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-381\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-381\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-381\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-381\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb

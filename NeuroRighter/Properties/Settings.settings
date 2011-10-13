@@ -203,7 +203,7 @@
     <Setting Name="UseAODO" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="CLstimdiretory" Type="System.String" Scope="User">
+    <Setting Name="CLstimdirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">.</Value>
     </Setting>
     <Setting Name="OLstimdirectory" Type="System.String" Scope="User">
@@ -223,6 +223,9 @@
     </Setting>
     <Setting Name="electrodesToRecord" Type="System.String" Scope="User">
       <Value Profile="(Default)">1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16</Value>
+    </Setting>
+    <Setting Name="spikeSorterDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">.</Value>
     </Setting>
   </Settings>
 </SettingsFile>

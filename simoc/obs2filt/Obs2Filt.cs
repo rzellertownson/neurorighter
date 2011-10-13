@@ -6,6 +6,7 @@ using simoc.UI;
 using simoc.srv;
 using NeuroRighter.DatSrv;
 using simoc;
+using simoc.persistantstate;
 
 namespace simoc.obs2filt
 {
@@ -39,10 +40,9 @@ namespace simoc.obs2filt
             this.firstFilt = firstLoop;
         }
 
-        internal virtual void Filter()
-        {
-            
-        }
+        internal virtual void Filter() { }
+
+        internal virtual void Filter(PersistentSimocVar persistantState) {}
 
         protected internal void GetObsBuffer(SIMOCRawSrv obsSrv)
         {
@@ -58,6 +58,15 @@ namespace simoc.obs2filt
             {
                 obsFiltBuff = obsSrv.ReadFromBuffer(currentInd[1] - (ulong)filterWidth, currentInd[1]);
             }
+        }
+
+        protected internal void GetObsBufferSingleSample(SIMOCRawSrv obsSrv)
+        {
+            // Get the most current indicies in the obsSrv Buffer back to the filter width
+            ulong[] currentInd = obsSrv.EstimateAvailableTimeRange();
+
+            // Get a single sample of the buffer to filter
+            obsFiltBuff = obsSrv.ReadFromBuffer(currentInd[1], currentInd[1]);
         }
 
         internal void PopulateFiltSrv(ref SIMOCRawSrv filtSrv, double currentTargetValue)

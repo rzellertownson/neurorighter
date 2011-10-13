@@ -21,13 +21,18 @@ namespace simoc.filt2out
         double stimFreqHz;
         double stimPulseWidthMSec;
         double currentTargetInt;
+        double lastErrorInt;
+        double N = 2;
 
         public Filt2PIDPowerFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
         {
             numberOutStreams = 3; // P, I and D streams
             K = c0;
-            Ti = 1 / c1;
+            if (c1 != 0)
+                Ti = 1 / c1;
+            else
+                Ti = 0;
             Td = c2;
             stimFreqHz = c3;
             stimPulseWidthMSec = c4;
@@ -38,9 +43,15 @@ namespace simoc.filt2out
             currentFilteredValue = currentFilt;
             base.CalculateError(ref currentError, currentTarget, currentFilt);
             if (currentTarget != 0)
+            {
+                lastErrorInt = currentError;
                 currentError = (currentTarget - currentFilt);  // currentTarget;
+            }
             else
+            {
+                lastErrorInt = currentError;
                 currentError = 0;
+            }
             currentErrorInt = currentError;
             currentTargetInt = currentTarget;
         }
@@ -50,12 +61,20 @@ namespace simoc.filt2out
         {
             base.SendFeedBack(simocVariableStorage);
 
+            simocVariableStorage.LastErrorValue = lastErrorInt;
+
             // Generate output frequency\
             if (currentTargetInt != 0)
             {
-                simocVariableStorage.GenericDouble3 = Td * (currentFilteredValue - simocVariableStorage.LastFilteredObs) / stimSrv.DACPollingPeriodSec;
-                simocVariableStorage.GenericDouble2 += Ti * stimSrv.DACPollingPeriodSec * currentErrorInt;
-                simocVariableStorage.GenericDouble1 = K * (currentErrorInt + simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3);
+                // Derivative Approx
+                simocVariableStorage.GenericDouble3 = (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
+                    (K*Td*N)/(Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs);
+                
+                // Tustin's Integral approximation
+                simocVariableStorage.GenericDouble2 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorInt;
+                
+                // PID feedback signal
+                simocVariableStorage.GenericDouble1 = K * currentErrorInt + simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
             }
             else
             {
@@ -112,12 +131,6 @@ namespace simoc.filt2out
             SendAuxAnalogOutput(toAppendAux);
             SendAuxDigitalOutput(toAppendDig);
 
-        }
-
-
-        internal void UpdateLastObservation(PersistentSimocVar simocVariableStorage, double currentFilt)
-        {
-            simocVariableStorage.LastFilteredObs = currentFilt;
         }
     }
 }

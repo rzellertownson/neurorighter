@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
-using NeuroRighter.DataTypes;
 using NeuroRighter.StimSrv;
 using simoc.UI;
 using simoc.persistantstate;
@@ -13,7 +12,10 @@ namespace simoc.targetfunc
 {
     class CustomTarget1 : TargetFunc
     {
-        private double[] ASDRTargets = {2000,550};
+        private double[] ASDRTargets = {0.5};
+        private int t1 = 1800;
+        private int t2 = 3600 * 12;
+
 
         public CustomTarget1(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
             : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref stimSrv)
@@ -70,13 +72,11 @@ namespace simoc.targetfunc
             //    currentTargetValue = 0;
 
             // Really very crappy if thinger
-            if (secondsSinceStart < 300)
+            if (secondsSinceStart < t1)
                 currentTargetValue = 0;
-            if (secondsSinceStart >= 300 && secondsSinceStart < 360)
+            if (secondsSinceStart >= t1 && secondsSinceStart < t1+t2)
                 currentTargetValue = ASDRTargets[0];
-            if (secondsSinceStart >= 360 && secondsSinceStart < 1800)
-                currentTargetValue = ASDRTargets[1];
-            if (secondsSinceStart >= 1800)
+            if (secondsSinceStart >= t1 + t2)
                 currentTargetValue = 0;
         }
 

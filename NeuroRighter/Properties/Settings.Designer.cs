@@ -810,12 +810,12 @@ namespace NeuroRighter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(".")]
-        public string CLstimdiretory {
+        public string CLstimdirectory {
             get {
-                return ((string)(this["CLstimdiretory"]));
+                return ((string)(this["CLstimdirectory"]));
             }
             set {
-                this["CLstimdiretory"] = value;
+                this["CLstimdirectory"] = value;
             }
         }
         
@@ -888,6 +888,18 @@ namespace NeuroRighter.Properties {
             }
             set {
                 this["electrodesToRecord"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".")]
+        public string spikeSorterDir {
+            get {
+                return ((string)(this["spikeSorterDir"]));
+            }
+            set {
+                this["spikeSorterDir"] = value;
             }
         }
     }

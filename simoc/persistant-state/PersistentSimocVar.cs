@@ -18,10 +18,16 @@ namespace simoc.persistantstate
         private ulong nextDigEventSample = 0;
         private ulong lastAuxEventSample = 0;
         private ulong nextAuxEventSample = 0;
+        private ulong numberOfLoopsCompleted = 0;
 
         // Input
         private ulong lastSampleRead = 0;
         private double lastFilteredObs = 0;
+        private double lastErrorValue = 0;
+        private double cumulativeAverageObs = 0;
+        private double frozenCumulativeAverageObs = 0;
+        private int lastTargetIndex = 0;
+        
 
         // Generic storage
         private double genericDouble1 = 0;
@@ -161,6 +167,20 @@ namespace simoc.persistantstate
             }
         }
 
+        /// <summary>
+        /// Number of times simoc has spun
+        /// </summary>
+        public ulong NumberOfLoopsCompleted
+        {
+            get
+            {
+                return numberOfLoopsCompleted;
+            }
+            set
+            {
+                numberOfLoopsCompleted = value;
+            }
+        }
 
         /// <summary>
         /// The next last input sample retrieved.
@@ -174,6 +194,66 @@ namespace simoc.persistantstate
             set
             {
                 lastFilteredObs = value;
+            }
+        }
+
+        /// <summary>
+        /// Last Error value
+        /// </summary>
+        public double LastErrorValue
+        {
+            get
+            {
+                return lastErrorValue;
+            }
+            set
+            {
+                lastErrorValue = value;
+            }
+        }
+
+        /// <summary>
+        /// Stores the average of the observable over long time periods
+        /// </summary>
+        public double CumulativeAverageObs
+        {
+            get
+            {
+                return cumulativeAverageObs;
+            }
+            set
+            {
+                cumulativeAverageObs = value;
+            }
+        }
+
+        /// <summary>
+        /// Used to store a certain value of the cummulative average
+        /// </summary>
+        public double FrozenCumulativeAverageObs
+        {
+            get
+            {
+                return frozenCumulativeAverageObs;
+            }
+            set
+            {
+                frozenCumulativeAverageObs = value;
+            }
+        }
+        
+        /// <summary>
+        /// Stores the last target index for custum, multistep target functions
+        /// </summary>
+        public int LastTargetIndex
+        {
+            get
+            {
+                return lastTargetIndex;
+            }
+            set
+            {
+                lastTargetIndex = value;
             }
         }
 
@@ -266,6 +346,30 @@ namespace simoc.persistantstate
                 genericUlong3 = value;
             }
         }
+
+
+
+        // Methods
+
+        /// <summary>
+        /// Update running avareage
+        /// </summary>
+        /// <param name="currentObservation"></param>
+        internal void UpdateRunningObsAverage(double currentObservation)
+        {
+            cumulativeAverageObs = (currentObservation + ((double)numberOfLoopsCompleted -1.0)*cumulativeAverageObs) / (double)numberOfLoopsCompleted;
+        }
+
+        /// <summary>
+        /// Reset the running average and number of loops averaged over
+        /// </summary>
+        internal void ResetRunningObsAverage()
+        {
+            numberOfLoopsCompleted = 0;
+            cumulativeAverageObs = 0;
+        }
+
+
 
     }
 }

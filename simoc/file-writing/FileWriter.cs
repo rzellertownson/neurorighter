@@ -30,7 +30,7 @@ namespace simoc.filewriting
 {
 
     /// <summary>
-    /// Writes simoc's data double data streams to file.
+    /// Writes simoc's data streams to file.
     /// </summary>
     internal class FileWriter
     {

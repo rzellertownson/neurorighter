@@ -58,7 +58,6 @@ namespace NRSpikeSort
         internal int[] classes;
         
         // Private
-
         private int projectionDimension;
         private double[][] currentProjection;
         private int maxK; // maximum possible number of units

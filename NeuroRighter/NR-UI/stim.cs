@@ -767,7 +767,7 @@ namespace NeuroRighter
             OpenFileDialog CLFileDialog = new OpenFileDialog();
             CLFileDialog.DefaultExt = "*.dll";         //default extension is for olstim files
             CLFileDialog.Filter = "library files|*.dll|All Files|*.*";
-            CLFileDialog.InitialDirectory = Properties.Settings.Default.CLstimdiretory;
+            CLFileDialog.InitialDirectory = Properties.Settings.Default.CLstimdirectory;
 
             // Display Save File Dialog (Windows forms control)
             DialogResult result = CLFileDialog.ShowDialog();
@@ -775,7 +775,7 @@ namespace NeuroRighter
             if (result == DialogResult.OK)
             {
                 string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
-                Properties.Settings.Default.CLstimdiretory = tmp;
+                Properties.Settings.Default.CLstimdirectory = tmp;
                 Properties.Settings.Default.Save();
                 filenameOutput = CLFileDialog.FileName;
                 

@@ -1104,6 +1104,6 @@ namespace NeuroRighter
             reset();
             UpdateRecordingSettings();
         }
-
+        
     }
 }

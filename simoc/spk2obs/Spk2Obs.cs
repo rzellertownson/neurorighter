@@ -75,5 +75,6 @@ namespace simoc.spk2obs
             datum[0,0] = currentObservation;
             obsSrv.WriteToBuffer(datum);
         }
+
     }
 }

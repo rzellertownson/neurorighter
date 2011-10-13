@@ -6,6 +6,7 @@ using simoc.srv;
 using simoc.UI;
 using NeuroRighter.DatSrv;
 using simoc.extensionmethods;
+using simoc.persistantstate;
 
 namespace simoc.obs2filt
 {
@@ -20,15 +21,16 @@ namespace simoc.obs2filt
 
         }
 
-        internal override void Filter()
+        internal override void Filter(PersistentSimocVar persistantState)
         {
             if (!firstFilt)
             {
-                currentFilteredValue = c0 * obsFiltBuff.rawMultiChannelBuffer[0].Average() + (1 - c0) * currentFilteredValue;
+                double a = 2.0 / (double)(filterWidth + 1);
+                currentFilteredValue = a * obsFiltBuff.rawMultiChannelBuffer[0][0] + (1 - a) * persistantState.LastFilteredObs;
             }
             else
             {
-                currentFilteredValue = obsFiltBuff.rawMultiChannelBuffer[0].Average();
+                currentFilteredValue = obsFiltBuff.rawMultiChannelBuffer[0][0];
             }
         }
     }

@@ -73,12 +73,11 @@ namespace NeuroRighter.SpikeDetection
                 new RunWorkerCompletedEventHandler(sorterTrainer_DoneTraining);
 
             // Flush Component
-            spikeSorter = new SpikeSorter(
-                    numChannels,
-                    Convert.ToInt32(numericUpDown_maxK.Value),
-                    Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+            //spikeSorter = new SpikeSorter(
+            //        numChannels,
+            //        Convert.ToInt32(numericUpDown_maxK.Value),
+            //        Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
             comboBox_ProjectionType.SelectedIndex = 0;
- 
             Flush();
         }
 
@@ -143,25 +142,18 @@ namespace NeuroRighter.SpikeDetection
 
         internal void UpdateCollectionBar()
         {
-            if (this.textBox_Results.InvokeRequired)
+            if (spikeSorter != null)
             {
-                SetTextCallback d = new SetTextCallback(UpdateCollectionBar);
-                this.Invoke(d);
-            }
-            else
-            {
-                int spikesCollected = spikeSorter.trainingSpikes.eventBuffer.Count;
-                this.label_NumSpikesCollected.Text = spikesCollected.ToString();
-
-                if (spikesCollected / numChannels > 37)
+                if (this.textBox_Results.InvokeRequired)
                 {
-                    this.label_NumSpikesCollected.ForeColor = Color.Green;
+                    SetTextCallback d = new SetTextCallback(UpdateCollectionBar);
+                    this.Invoke(d);
                 }
                 else
                 {
-                    this.label_NumSpikesCollected.ForeColor = Color.Black;
+                    int spikesCollected = spikeSorter.trainingSpikes.eventBuffer.Count;
+                    this.label_NumSpikesCollected.Text = spikesCollected.ToString();
                 }
-
             }
         }
 
@@ -264,8 +256,6 @@ namespace NeuroRighter.SpikeDetection
         {
             if (!isHoarding)
             {
-                // Update the UI to reflect the state of things
-                Flush();
 
                 // Make sure they want to kill the current sorter
                 if (spikeSorter != null)
@@ -275,6 +265,9 @@ namespace NeuroRighter.SpikeDetection
                         return;
                     }
                 }
+
+                // Update the UI to reflect the state of things
+                Flush();
 
                 // Reset the sorter completely
                 isTrained = false;
@@ -351,7 +344,7 @@ namespace NeuroRighter.SpikeDetection
             SaveFileDialog saveSSDialog = new SaveFileDialog();
             saveSSDialog.DefaultExt = "*.nrss";
             saveSSDialog.Filter = "NeuroRighter Spike Sorter|*.nrss";
-            saveSSDialog.Title = "Save Spike Sorter";
+            saveSSDialog.Title = "Save NeuroRighter Spike Sorter";
 
             if (saveSSDialog.ShowDialog() == DialogResult.OK && saveSSDialog.FileName != "")
             {
@@ -385,10 +378,10 @@ namespace NeuroRighter.SpikeDetection
 
             // Deserialize your saved sorter
             OpenFileDialog openSSDialog = new OpenFileDialog();
-            openSSDialog.InitialDirectory = "c:\\";
+            openSSDialog.DefaultExt = "*.nrss";
             openSSDialog.Filter = "NeuroRighter Spike Sorter|*.nrss";
-            openSSDialog.FilterIndex = 2;
-            openSSDialog.RestoreDirectory = true;
+            openSSDialog.Title = "Load NeuroRighter Spike Sorter";
+            openSSDialog.InitialDirectory = Properties.Settings.Default.spikeSorterDir;
 
             if (openSSDialog.ShowDialog() == DialogResult.OK)
             {
@@ -397,6 +390,7 @@ namespace NeuroRighter.SpikeDetection
                     textBox_SorterLocation.Text = openSSDialog.FileName;
                     SorterSerializer spikeSorterSerializer = new SorterSerializer();
                     spikeSorter = spikeSorterSerializer.DeSerializeObject(openSSDialog.FileName);
+                    Properties.Settings.Default.spikeSorterDir = new FileInfo(openSSDialog.FileName).DirectoryName;
 
                     // Update the number of spikes you have trained with
                     UpdateCollectionBar();
@@ -408,12 +402,17 @@ namespace NeuroRighter.SpikeDetection
                         label_Trained.Text = "Spike sorter is trained.";
                         label_Trained.ForeColor = Color.Green;
                         button_EngageSpikeSorter.Enabled = true;
+                        button_TrainSorter.Enabled = true;
+                        isTrained = true;
+                        ReportTrainingResults();
                     }
                     else
                     {
                         label_Trained.Text = "Spike sorter is not trained.";
                         label_Trained.ForeColor = Color.Red;
                         button_EngageSpikeSorter.Enabled = false;
+                        button_TrainSorter.Enabled = true;
+                        isTrained = false;
                     }
 
 
@@ -442,7 +441,7 @@ namespace NeuroRighter.SpikeDetection
                 comboBox_ProjectionType.Enabled = true;
                 button_HoardSpikes.Enabled = true;
                 button_TrainSorter.Enabled = true;
-                button_SaveSpikeSorter.Enabled = true;
+                button_LoadSpikeSorter.Enabled = true;
             }
             else if (!isEngaged)
             {
@@ -453,7 +452,7 @@ namespace NeuroRighter.SpikeDetection
                 comboBox_ProjectionType.Enabled = false;
                 button_HoardSpikes.Enabled = false;
                 button_TrainSorter.Enabled = false;
-                button_SaveSpikeSorter.Enabled = false;
+                button_LoadSpikeSorter.Enabled = false;
             }
         }
 

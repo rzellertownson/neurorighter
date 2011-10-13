@@ -32,6 +32,11 @@ namespace simoc
             currentTime = StimSrv.DigitalOut.GetTime() / 1000;
         }
 
+        private void UpdatePersistantState()
+        {
+            simocVariableStorage.NumberOfLoopsCompleted++;
+        }
+
         private void MakeObservation()
         {
             // reset the current observation
@@ -61,7 +66,22 @@ namespace simoc
                             currentObs = observer.currentObservation;
                         }
                         break;
+                    case "UNFR":
+                        {
+                            Spk2UNFR observer = new Spk2UNFR(StimSrv, DatSrv);
+                            numberOfObs = observer.numberOfObs;
+                            observer.SetNumberOfUnits((int)controlPanel.numericUpDown_NumUnits.Value);
+                            observer.GetNewSpikes(DatSrv, simocVariableStorage);
+                            observer.MeasureObservable();
+                            observer.PopulateObsSrv(ref obsSrv);
+                            currentObs = observer.currentObservation;
+                        }
+                        break;
                 }
+
+                // Update running average
+                simocVariableStorage.UpdateRunningObsAverage(currentObs);
+
             }
             catch (Exception sEx)
             {
@@ -93,6 +113,12 @@ namespace simoc
                         {
                             CustomTarget1 target = new CustomTarget1(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated,ref StimSrv);
                             target.GetTargetValue(ref currentTarget,simocVariableStorage);
+                        }
+                        break;
+                    case "Custom 2":
+                        {
+                            CustomTarget2 target = new CustomTarget2(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                 }
@@ -142,13 +168,17 @@ namespace simoc
                     case "Exponential Moving Average":
                         {
                             Obs2EMA filter = new Obs2EMA(controlPanel, DatSrv, firstLoop);
-                            filter.GetObsBuffer(obsSrv);
-                            filter.Filter();
+                            filter.GetObsBufferSingleSample(obsSrv);
+                            filter.Filter(simocVariableStorage);
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
                             currentFilt = filter.currentFilteredValue;
                         }
                         break;
                 }
+
+                // Store the current filtered value
+                simocVariableStorage.LastFilteredObs = currentFilt;
+
             }
             catch (Exception sEx)
             {
@@ -190,7 +220,6 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            controller.UpdateLastObservation(simocVariableStorage, currentFilt);
                         }
                         break;
                 }

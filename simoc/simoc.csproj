@@ -61,6 +61,8 @@
     <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="spk2obs\Spk2UNFR.cs" />
+    <Compile Include="targetfunc\CustomTarget2.cs" />
     <Compile Include="UI\ControlPanel.cs">
       <SubType>Form</SubType>
     </Compile>

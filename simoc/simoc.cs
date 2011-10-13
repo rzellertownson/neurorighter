@@ -144,6 +144,9 @@ namespace simoc
                     // Update the clock
                     UpdateClock();
 
+                    // Update persistant variables
+                    UpdatePersistantState();
+
                     // First, we grab the new spike data and estimate the chosen observable
                     MakeObservation();
 

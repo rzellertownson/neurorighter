@@ -731,7 +731,7 @@ namespace NeuroRighter.Output
                 //    start = 0;
                 
                     #region buffer calculation
-                    bufferLock.EnterWriteLock();
+                    
                     abuffs = new List<double[,]>();
                     dbuffs = new List<uint[]>();
 
@@ -830,7 +830,7 @@ namespace NeuroRighter.Output
                         //write buffers
                         //    if (!buffLoadTask.IsDone)
                         //      Debugger.Write(this.ToString() + " buffers calculated for load " + numBuffLoadsCompleted + " via internal count ");//+ Convert.ToDouble(buffLoadTask.COChannels[0].Count) + " via counter"
-                        bufferLock.ExitWriteLock();
+                        //bufferLock.ExitWriteLock();
                     }
                     #endregion
 
@@ -962,8 +962,9 @@ namespace NeuroRighter.Output
 
                         currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
                         Debugger.Write("grabbed stim at " + currentStim.sampleIndex.ToString() + " for NBLC " + numBuffLoadsCompleted);
+                        bufferLock.EnterWriteLock();
                         outerbuffer.RemoveAt(0);
-
+                        bufferLock.ExitWriteLock();
                         if (outerbuffer.Count > 0)
                         {
                             nextStim = outerbuffer.ElementAt(0);//we don't need a copy as we don't expect this element to change.

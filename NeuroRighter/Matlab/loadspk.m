@@ -8,7 +8,7 @@
 % time = [t0 t1] on the channels specified in chan. wave is a boolean that
 % specifies whether waveforms should be returned. Use empty brackets, [],
 % to specify defaults.
-function spk = loadspike3(fid, varargin)
+function spk = loadspk(fid, varargin)
 
 % Decode input arguments
 if nargin == 2
@@ -271,7 +271,9 @@ fprintf('...done\nLoad complete.\n\n');
         % Create struct
         spk.time = stime;
         spk.channel = channel;
-        spk.unit = unit;
+        if (recunit)
+            spk.unit = unit;
+        end
         spk.threshold = threshold;
         
         if (wave)

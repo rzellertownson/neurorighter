@@ -282,7 +282,7 @@ namespace NeuroRighter
 
                             // Set file base name + number of channels
                             recordingSettings.SetFID(filenameBase);
-                            //recordingSettings.SetNumElectrodes(numChannels);
+                            recordingSettings.SetNumElectrodes(numChannels);
                         }
 
                         // Find out how many devs and channels/dev we are going to need

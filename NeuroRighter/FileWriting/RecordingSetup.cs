@@ -97,11 +97,11 @@ namespace NeuroRighter.FileWriting
             this.fid = fid;
         }
 
-        //internal void SetNumElectrodes(int numElectrodes)
-        //{
-        //    this.numElectrodes = numElectrodes;
-        //    ResetElectrodeCheckBox();
-        //}
+        internal void SetNumElectrodes(int numElectrodes)
+        {
+            this.numElectrodes = numElectrodes;
+            //ResetElectrodeCheckBox();
+        }
 
         // For spike-type streams
         internal void Setup(string dataType, Task dataTask, int numPreSamp, int numPostSamp, bool recordingUnits)

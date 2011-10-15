@@ -29,3 +29,16 @@ C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\nr-371\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.pdb
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.pdb
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.pdb
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.pdb
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.xml
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

@@ -78,9 +78,13 @@ end
 headersize = ftell(h);
 
 % Size of a single spike record
-packetsize =0;
+packetsize = 0;
 for i = 1:fieldcount
-    packetsize = packetsize+fields{i}.size/8;
+    if (~recunit && strcmp(fields{i}.name,'unit'))
+        continue;
+    else
+        packetsize = packetsize+fields{i}.size/8;
+    end
 end
 packetsize = packetsize+waveSamples*8;
 
@@ -97,7 +101,7 @@ fprintf(['\tADC Polling period (sec): ' num2str(adcpoll) '\n']);
 fprintf(['\tNumber of channels: ' num2str(nochannels) '\n']);
 fprintf(['\tDigital gain: ' num2str(gain) '\n']);
 if (recunit)
-    fprintf('\tThis file contains unit information\n');
+    fprintf('\tThis file contain unit information\n');
 else
     fprintf('\tThis file does not contains unit information\n');
 end

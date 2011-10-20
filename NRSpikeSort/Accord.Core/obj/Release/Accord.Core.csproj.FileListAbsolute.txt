@@ -57,3 +57,14 @@ C:\RLOrtman\NeuroRighter_rev384\Release\Accord.pdb
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.xml
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

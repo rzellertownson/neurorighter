@@ -3,3 +3,13 @@ C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\bin\Deb
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb

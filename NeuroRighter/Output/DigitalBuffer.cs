@@ -30,8 +30,10 @@ namespace NeuroRighter.Output
         internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) {
                 //this.analogBuffer = analogBuffer;
+                failflag = false;
         }
-        internal object recoveryInProgress;
+       
+        internal bool failflag;
         internal void grabPartner(AuxBuffer analogBuffer)//different from the analog buffer version!
         {
             this.analogBuffer = analogBuffer;
@@ -41,14 +43,14 @@ namespace NeuroRighter.Output
         //since we need to restart the analog task as well, we need to override the base Recover method to signal to the analog buffer for restart
         protected override void Recover()
         {
-            lock (recoveryInProgress)//this lock is so analogbuffer doesnt try to restart
-            {
+            //we know that there is an analog buffer running simultaneously, so we need to restart it as well.
 
-            Debugger.Write(" digital buffer attempted recover");
-           
-            
-                
-                    lock (analogBuffer)//this lock is so we don't try to restart in the middle of a pop.buf.append.
+            if (Monitor.TryEnter(recoveryInProgress))//this lock is so analogbuffer doesnt try to restart, but if it has we dont need to do this
+            {
+                try
+                {
+                    //Debugger.Write(" digital buffer attempted recover");
+                    lock (analogBuffer.pbaLock)//this lock is so we don't try to restart in the middle of a pop.buf.append.
                     {
                         ClearQueue();
                         analogBuffer.ClearQueueInternal();
@@ -61,9 +63,17 @@ namespace NeuroRighter.Output
                         restartBuffer();
                         Debugger.Write(" digital buffer attempted recover: digital cleared");
                         //analogBuffer.recoveryInProgress = false;
+                        analogBuffer.failflag = false;
+                        analogBuffer.recoveryFlag = true;
+                        failflag = false;
                     }
+                    recoveryFlag = true;
                 }
-            
+                finally
+                {
+                    Monitor.Exit(recoveryInProgress);
+                }
+            }
         }
 
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)

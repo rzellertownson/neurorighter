@@ -58,3 +58,14 @@ C:\RLOrtman\NeuroRighter_rev384\Release\Accord.MachineLearning.pdb
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.MachineLearning.XML
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb

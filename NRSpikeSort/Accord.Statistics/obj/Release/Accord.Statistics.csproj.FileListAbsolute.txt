@@ -58,3 +58,14 @@ C:\RLOrtman\NeuroRighter_rev384\Release\Accord.Statistics.pdb
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-387\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-387\Release\Accord.Statistics.XML
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb

@@ -29,14 +29,18 @@ namespace NeuroRighter.Output
     {
         double[,] lastAuxOutState = new double[4, 1]; // Holds the place of the auxiliary analog ouputs so they are not reset everytime an 
                                                       // new event is written.
+        
+        internal bool failflag;
         DigitalBuffer digBuffer;
         internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) {
                // this.digBuffer = digBuffer;
-            recoveryInProgress = new object();
+            
             digBuffer = null;
+            
+            failflag = false;
         }
-        internal object recoveryInProgress;
+        
         internal void grabPartner(DigitalBuffer digBuffer)
     {
         this.digBuffer = digBuffer;
@@ -46,38 +50,51 @@ namespace NeuroRighter.Output
         protected override void Recover()
         {
             //if we have a digital buffer running simultaneously, we need to recover that one as well (as it is timed off of us)
-            lock (recoveryInProgress)//if someone is already trying to recovery, skip this to avoid deadlock
-            {
-                if (digBuffer != null)
+           
+                if (Monitor.TryEnter(recoveryInProgress))//if someone is already trying to recovery, skip this to avoid deadlock
                 {
-                    Debugger.Write(" analog buffer attempted recover: with digital buffer");
-                    digBuffer.recoveryInProgress = true;
-                    lock (digBuffer)// wait until digbuffer is not in the middle of a populate buffer appending
+                    try
                     {
-                        ClearQueue();
-                        digBuffer.ClearQueueInternal();
-                        //clearTasks();
-                        //Debugger.Write(" analog buffer attempted recover: analog cleared");
-                        //digBuffer.clearTasks();
-                        //Debugger.Write(" analog buffer attempted recover: digital cleared");
-                        restartBuffer();
-                        Debugger.Write(" analog buffer attempted recover: analog restarted");
-                        digBuffer.restartBufferInternal();
-                        Debugger.Write(" analog buffer attempted recover: digital restarted");
-                        digBuffer.recoveryInProgress = false;
-                    }
+                        if (digBuffer != null)
+                        {
+                            //Debugger.Write(" analog buffer attempted recover: with digital buffer");
+                            // digBuffer.recoveryInProgress = true;
+                            lock(digBuffer.pbaLock)// wait until digbuffer is not in the middle of a populate buffer appending
+                            {
+                                Console.WriteLine(this.ToString() + " digbuff pba aquired");
+                                ClearQueue();
+                                digBuffer.ClearQueueInternal();
+                                //clearTasks();
+                                //Debugger.Write(" analog buffer attempted recover: analog cleared");
+                                //digBuffer.clearTasks();
+                                //Debugger.Write(" analog buffer attempted recover: digital cleared");
+                                restartBuffer();
+                                Debugger.Write(" analog buffer attempted recover: analog restarted");
+                                digBuffer.restartBufferInternal();
+                                Debugger.Write(" analog buffer attempted recover: digital restarted");
+                                //  digBuffer.recoveryInProgress = false;
+                            }
+                            
+                            digBuffer.recoveryFlag = true;
 
+                        }
+                        else
+                        {
+                            ClearQueue();
+                            Debugger.Write(" analog buffer attempted recover: no digital buffer");
+                            clearTasks();
+                            Debugger.Write(" analog buffer attempted recover: analog cleared");
+                            restartBuffer();
+                            Debugger.Write(" analog buffer attempted recover: analog restarted");
+                        }
+                        recoveryFlag = true;
+                    }
+                    finally
+                    {
+                        Monitor.Exit(recoveryInProgress);
+                    }
                 }
-                else
-                {
-                    ClearQueue();
-                    Debugger.Write(" analog buffer attempted recover: no digital buffer");
-                    clearTasks();
-                    Debugger.Write(" analog buffer attempted recover: analog cleared");
-                    restartBuffer();
-                    Debugger.Write(" analog buffer attempted recover: analog restarted");
-                }
-            }
+            
             
         }
 

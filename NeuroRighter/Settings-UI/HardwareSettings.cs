@@ -311,7 +311,7 @@ namespace NeuroRighter
             Properties.Settings.Default.useAuxDigitalInput = checkBox_UseAuxDigitalInput.Checked;
             Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
-            
+            Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
             
             // Set up devices
             if (checkBox_useSecondBoard.Checked)

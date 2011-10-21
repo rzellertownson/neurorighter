@@ -68,3 +68,16 @@ C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Ma
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.xml
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

@@ -50,7 +50,7 @@ namespace NeuroRighter.Output
         string masterLoad;
         internal File2Aux(string auxfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE,
             Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad,
-            bool auxFileExists, RealTimeDebugger debugger)
+            bool auxFileExists, RealTimeDebugger debugger,bool robust)
         {
             this.auxfile = auxfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -62,7 +62,7 @@ namespace NeuroRighter.Output
             this.masterLoad = masterLoad;
             this.masterTask = masterTask;
             // Instatiate a DigitalBuffer object
-            auxBuff = new AuxBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
+            auxBuff = new AuxBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad,robust);
             //ab = auxBuff;
 
         }
@@ -85,7 +85,7 @@ namespace NeuroRighter.Output
         //{
         //    auxBuff.Kill();
         //}
-        internal void Setup()
+        internal void Setup(ulong altLoads )
         {
             
             // Load the stimulus buffer
@@ -116,9 +116,9 @@ namespace NeuroRighter.Output
             }
             else
             {
-                numAuxEvent = ulong.MaxValue;
-                numBuffLoadsRequired = uint.MaxValue;
-                auxBuff.numBuffLoadsRequired = uint.MaxValue;
+                numAuxEvent = altLoads;
+                numBuffLoadsRequired = numAuxEvent;
+                auxBuff.numBuffLoadsRequired = (uint) numAuxEvent;
                 int numFullLoads = (int)Math.Floor((double)numAuxEvent / (double)numEventPerLoad);
                 auxBuff.SetNumberofEvents(numAuxEvent);
 

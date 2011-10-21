@@ -32,8 +32,8 @@ namespace NeuroRighter.Output
         
         internal bool failflag;
         DigitalBuffer digBuffer;
-        internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
-            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) {
+        internal AuxBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold,bool robust)
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold,robust) {
                // this.digBuffer = digBuffer;
             
             digBuffer = null;
@@ -45,63 +45,28 @@ namespace NeuroRighter.Output
     {
         this.digBuffer = digBuffer;
     }
-        
-        //internal bool recoveryInProgress = false;
-        protected override void Recover()
-        {
-            //if we have a digital buffer running simultaneously, we need to recover that one as well (as it is timed off of us)
-           
-                if (Monitor.TryEnter(recoveryInProgress))//if someone is already trying to recovery, skip this to avoid deadlock
-                {
-                    try
-                    {
-                        if (digBuffer != null)
-                        {
-                            //Debugger.Write(" analog buffer attempted recover: with digital buffer");
-                            // digBuffer.recoveryInProgress = true;
-                            lock(digBuffer.pbaLock)// wait until digbuffer is not in the middle of a populate buffer appending
-                            {
-                                Console.WriteLine(this.ToString() + " digbuff pba aquired");
-                                ClearQueue();
-                                digBuffer.ClearQueueInternal();
-                                //clearTasks();
-                                //Debugger.Write(" analog buffer attempted recover: analog cleared");
-                                //digBuffer.clearTasks();
-                                //Debugger.Write(" analog buffer attempted recover: digital cleared");
-                                restartBuffer();
-                                Debugger.Write(" analog buffer attempted recover: analog restarted");
-                                digBuffer.restartBufferInternal();
-                                Debugger.Write(" analog buffer attempted recover: digital restarted");
-                                //  digBuffer.recoveryInProgress = false;
-                            }
-                            
-                            digBuffer.recoveryFlag = true;
 
-                        }
-                        else
-                        {
-                            ClearQueue();
-                            Debugger.Write(" analog buffer attempted recover: no digital buffer");
-                            clearTasks();
-                            Debugger.Write(" analog buffer attempted recover: analog cleared");
-                            restartBuffer();
-                            Debugger.Write(" analog buffer attempted recover: analog restarted");
-                        }
-                        recoveryFlag = true;
-                    }
-                    finally
-                    {
-                        Monitor.Exit(recoveryInProgress);
-                    }
-                }
-            
-            
+        internal override void calculateBuffer(List<double[,]> abuffs, List<uint[]> dbuffs, bool recoveryFlag)
+        {
+            List<uint[]> dummyd = new List<uint[]>();
+            //for (int i = 0; i < dbuffs.Count; i++)
+            //{
+            //    dummyd.Add(dbuffs.ElementAt(i));
+            //}
+            List<double[,]> dummya = new List<double[,]>();
+            //for (int i = 0; i < abuffs.Count; i++)
+            //{
+            //    dummya.Add(abuffs.ElementAt(i));
+            //}
+            digBuffer.setNBLC(numBuffLoadsCompleted);
+            base.calculateBuffer(abuffs, dummyd, recoveryFlag);
+
+            digBuffer.calculateBuffer(dummya, dbuffs, recoveryFlag);
         }
 
+        //sets up both the analog and digital auxillary tasks
         protected override void SetupTasksSpecific(ref Task[] analogTasks,ref  Task[] digitalTasks)
         {
-
-
             if (analogTasks != null)
                 clearTasks();
 
@@ -131,18 +96,43 @@ namespace NeuroRighter.Output
 
             analogTask.Control(TaskAction.Verify);
 
-
-
-
-
-
             // Sync DO start to AO start
             //if (digProvided)
                 //auxTaskMaker.SyncDOStartToAOStart();
 
             analogTasks = new Task[1];
             analogTasks[0] = analogTask;
-            digitalTasks = new Task[0];
+            
+            Task digitalTask;
+            digitalTask = new Task("digital" + auxTaskName);
+            digitalTask.DOChannels.CreateChannel(dev + "/Port0/line0:31",
+                "Generic Digital Out",
+                ChannelLineGrouping.OneChannelForAllLines);
+
+            // Setup DO clock
+            digitalTask.Timing.ConfigureSampleClock("100KHzTimeBase",
+                sampRate,
+                SampleClockActiveEdge.Rising,
+                SampleQuantityMode.ContinuousSamples,
+                bufferSize);
+
+            digitalTask.SynchronizeCallbacks = false;
+
+            digitalTask.Control(TaskAction.Verify);
+
+            // Verify
+            //auxTaskMaker.VerifyTasks();
+
+            // Sync DO start to AO start
+            //if (digProvided)
+            digitalTask.Timing.ConfigureSampleClock("/" + dev + "/ao/SampleClock",
+                sampRate,
+                SampleClockActiveEdge.Rising,
+                SampleQuantityMode.ContinuousSamples,
+                bufferSize);
+
+            digitalTasks = new Task[1];
+            digitalTasks[0] = digitalTask;
         }
         //internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
         //{

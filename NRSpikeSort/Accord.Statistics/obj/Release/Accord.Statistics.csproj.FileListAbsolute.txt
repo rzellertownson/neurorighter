@@ -69,3 +69,8 @@ C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.Statis
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb

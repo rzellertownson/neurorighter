@@ -1018,7 +1018,8 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec * STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0], Debugger);
+            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec * STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0], Debugger,Properties.Settings.Default.stimRobust
+                );
             stimSrv.Setup();
             stimSrv.StartAllTasks();
             return stimSrv.buffLoadTask;

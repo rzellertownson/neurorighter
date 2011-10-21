@@ -68,3 +68,8 @@ C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.pdb
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

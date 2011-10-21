@@ -27,8 +27,8 @@ namespace NeuroRighter.Output
     {
         AuxBuffer analogBuffer;
 
-        internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold)
-            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold) {
+        internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold, bool robust)
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust) {
                 //this.analogBuffer = analogBuffer;
                 failflag = false;
         }
@@ -39,87 +39,16 @@ namespace NeuroRighter.Output
             this.analogBuffer = analogBuffer;
             recoveryInProgress = analogBuffer.recoveryInProgress;
         }
-        
-        //since we need to restart the analog task as well, we need to override the base Recover method to signal to the analog buffer for restart
-        protected override void Recover()
+        internal void setNBLC(ulong nblc)
         {
-            //we know that there is an analog buffer running simultaneously, so we need to restart it as well.
-
-            if (Monitor.TryEnter(recoveryInProgress))//this lock is so analogbuffer doesnt try to restart, but if it has we dont need to do this
-            {
-                try
-                {
-                    //Debugger.Write(" digital buffer attempted recover");
-                    lock (analogBuffer.pbaLock)//this lock is so we don't try to restart in the middle of a pop.buf.append.
-                    {
-                        ClearQueue();
-                        analogBuffer.ClearQueueInternal();
-                        //analogBuffer.clearTasks();
-                        //Debugger.Write(" digital buffer attempted recover: analog cleared");
-                        //clearTasks();
-                        //Debugger.Write(" digital buffer attempted recover: digital cleared");
-                        analogBuffer.restartBufferInternal();
-                        Debugger.Write(" digital buffer attempted recover: analog restarted");
-                        restartBuffer();
-                        Debugger.Write(" digital buffer attempted recover: digital cleared");
-                        //analogBuffer.recoveryInProgress = false;
-                        analogBuffer.failflag = false;
-                        analogBuffer.recoveryFlag = true;
-                        failflag = false;
-                    }
-                    recoveryFlag = true;
-                }
-                finally
-                {
-                    Monitor.Exit(recoveryInProgress);
-                }
-            }
+            numBuffLoadsCompleted = nblc;
         }
+        
+       
 
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {
-            string dev = Properties.Settings.Default.SigOutDev;
-            string auxTaskName = "digOut";
-            int sampRate =  (int)STIM_SAMPLING_FREQ;
-            int bufferSize = (int)BUFFSIZE;
-
-
-            Task digitalTask;
-                digitalTask = new Task("digital" + auxTaskName);
-                digitalTask.DOChannels.CreateChannel(dev + "/Port0/line0:31",
-                    "Generic Digital Out",
-                    ChannelLineGrouping.OneChannelForAllLines);
-
-                // Setup DO clock
-                digitalTask.Timing.ConfigureSampleClock("100KHzTimeBase",
-                    sampRate,
-                    SampleClockActiveEdge.Rising,
-                    SampleQuantityMode.ContinuousSamples,
-                    bufferSize);
-
-                digitalTask.SynchronizeCallbacks = false;
-
-                digitalTask.Control(TaskAction.Verify);
-
-            // Verify
-            //auxTaskMaker.VerifyTasks();
-
-            // Sync DO start to AO start
-            //if (digProvided)
-                digitalTask.Timing.ConfigureSampleClock("/" + dev + "/ao/SampleClock",
-                    sampRate,
-                    SampleClockActiveEdge.Rising,
-                    SampleQuantityMode.ContinuousSamples,
-                    bufferSize);
-            
-
-            
-            digitalTasks = new Task[1];
-            digitalTasks[0] = digitalTask;
-            
-
-            
-                analogTasks = new Task[0];
+            //this should never get called
             
         }
 

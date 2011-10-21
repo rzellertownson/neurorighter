@@ -68,7 +68,7 @@ namespace NeuroRighter.Output
         //    stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         //}
 
-        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task buffLoadTask, Task masterTask, string masterLoad, RealTimeDebugger debugger, double[] cannedWave)
+        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task buffLoadTask, Task masterTask, string masterLoad, RealTimeDebugger debugger, double[] cannedWave, bool robust)
         {
 
             this.stimfile = stimfile;
@@ -83,7 +83,7 @@ namespace NeuroRighter.Output
             this.cannedWaveform = cannedWave;
             this.debugger = debugger;
 
-            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
+            stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad,robust);
         }
 
         internal void Stop()

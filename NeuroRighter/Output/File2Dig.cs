@@ -21,7 +21,7 @@ namespace NeuroRighter.Output
         private ulong numDigEvent; // number of stimuli specified in open-loop file
         private ulong numEventPerLoad; // Number of stimuli loaded per read of the olstim file
         private ulong numLoadsCompleted = 0; // Number loads completed
-        private ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
+        internal ulong numBuffLoadsRequired; // Number of DAQ loads needed to complete an openloop experiment
         private bool lastLoad;
 
         internal List<DigitalOutEvent> DigitalDataChunk;
@@ -43,9 +43,10 @@ namespace NeuroRighter.Output
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
         internal Task masterTask;
+        
         internal string masterLoad;
         internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, 
-            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad, RealTimeDebugger debugger)
+            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad, RealTimeDebugger debugger, bool robust)
         {
             this.digfile = digfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -59,7 +60,7 @@ namespace NeuroRighter.Output
             this.masterTask = masterTask;
             this.masterLoad = masterLoad;
             // Instatiate a DigitalBuffer object
-            digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad);
+            digbuff = new DigitalBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, (int)numEventPerLoad, robust);
             
 
         }
@@ -134,13 +135,14 @@ namespace NeuroRighter.Output
                 
 
             }
-            digbuff.Setup(buffLoadTask, debugger, masterTask);
+            //we don't need to set up the digital buffer as the analog is going to take care of all of that.
+            //digbuff.Setup(buffLoadTask, debugger, masterTask);
 
         }
 
         internal void Start()
         {
-            digbuff.Start();
+            //digbuff.Start();
         }
 
         internal void AppendDigBufferAtThresh(object sender, EventArgs e)

@@ -647,7 +647,7 @@ namespace NeuroRighter
 
         internal void FinishOutputFromFile(object sender, EventArgs e)
         {
-            ResetUIAfterOpenLoopOut(false);
+            //ResetUIAfterOpenLoopOut(false);
 
             if (repeatOpenLoopProtocol)
             {
@@ -708,6 +708,8 @@ namespace NeuroRighter
                 if (openLoopSynchronizedOutput != null)
                 {
                     openLoopSynchronizedOutput.StopAllBuffers();
+                    System.Threading.Thread.Sleep((int)(Properties.Settings.Default.DACPollingPeriodSec * 2000));
+                    openLoopSynchronizedOutput.KillTasks();
                     //openLoopSynchronizedOutput.KillAllAODOTasks();
                     
                 }

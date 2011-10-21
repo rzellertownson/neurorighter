@@ -69,3 +69,8 @@ C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\Release\Accord.Machin
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\NR 387 riley stuff - Copy\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb

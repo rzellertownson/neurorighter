@@ -177,7 +177,8 @@ namespace NeuroRighter.Output
                             masterTask,
                             masterLoad,
                             debugger,
-                            guiWave);
+                            guiWave,
+                            Properties.Settings.Default.stimRobust);
                             
                             
 
@@ -195,7 +196,8 @@ namespace NeuroRighter.Output
                             masterTask,
                             masterLoad,
                             debugger,
-                            null);
+                            null,
+                            Properties.Settings.Default.stimRobust);
                             
 
                         stimProtocol.AlertAllFinished +=
@@ -255,10 +257,13 @@ namespace NeuroRighter.Output
                         masterLoad,
                         EVENTS_PER_BUFFER_LOAD,
                         auxFileProvided,
-                        debugger);
+                        debugger,
+                        Properties.Settings.Default.stimRobust);
 
                     auxProtocol.AlertAllFinished +=
                         new File2Aux.AllFinishedHandler(SetAuxDone);
+                    auxProtocol.AlertAllFinished +=
+                        new File2Aux.AllFinishedHandler(SetDigDone);
                     auxProtocol.AlertAllFinished +=
                         new File2Aux.AllFinishedHandler(StopOpenLoopOut);
 
@@ -271,24 +276,24 @@ namespace NeuroRighter.Output
                             masterTask,
                             masterLoad,
                             EVENTS_PER_BUFFER_LOAD,
-                            debugger
+                            debugger,
+                            Properties.Settings.Default.stimRobust
                             );
 
                         digProtocol.connectBuffer(auxProtocol.refBuffer());
                         auxProtocol.connectBuffer(digProtocol.refBuffer());
-                        digProtocol.AlertAllFinished +=
-                            new File2Dig.AllFinishedHandler(SetDigDone);
-                        digProtocol.AlertAllFinished +=
-                            new File2Dig.AllFinishedHandler(StopOpenLoopOut);
+                        
+                        digProtocol.Setup();
+                        auxProtocol.Setup(digProtocol.numBuffLoadsRequired);
                     }
-                    auxProtocol.Setup();
+                    else
+                        auxProtocol.Setup(ulong.MaxValue);
+
+                   
+                    
                     auxProtocol.Start();
 
-                    if (digFileProvided)
-                    {
-                        digProtocol.Setup();
-                        digProtocol.Start();
-                    }
+                    
 
                     #endregion
 
@@ -444,12 +449,16 @@ namespace NeuroRighter.Output
 
         internal void KillTasks()
         {
-            if (buffLoadTask != null)
-            {
-                buffLoadTask.Dispose();
-                buffLoadTask = null;
-            }
-
+            
+                if (buffLoadTask != null)
+                {
+                    lock (buffLoadTask)
+                    {
+                    buffLoadTask.Dispose();
+                    buffLoadTask = null;
+                    }
+                }
+            
             //if (digProtocol != null)
             //{
             //    digProtocol.Stop();

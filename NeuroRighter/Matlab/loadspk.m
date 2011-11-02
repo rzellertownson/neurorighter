@@ -1,20 +1,29 @@
-% LOADSPK Load NeuroRighter .spk files, v0.7.0.0 and up
+% LOADSPK Load NeuroRighter .spk files for NR v0.7.0.0 and up
 %
 % SPK = LAODSPK(FID) fid is the fully qualified path to a NeuroRighter .spk
 % file. The field that is returned contains information about the spike
 % data and the spike data itself.
 %
-% SPK = LOADSPK(FID,TIME,WAVE) loads the .spk file for spikes that occured between
-% time = [t0 t1] on the channels specified in chan. wave is a boolean that
-% specifies whether waveforms should be returned. Use empty brackets, [],
-% to specify defaults.
+% SPK = LOADSPK(FID,TIME,WAVE) loads the .spk file for spikes that occured
+% between time = [t0 t1) on the channels specified in chan. wave is a
+% boolean that specifies whether waveforms should be returned. Use empty
+% brackets, [], to specify defaults.
+%
+% T = LOADSPK(FID,'last') returns the final spike time in the file. This is
+% useful setting up a loop that parses the file into time chunks.
+
 function spk = loadspk(fid, varargin)
 
 % Decode input arguments
 if nargin == 2
     if length(varargin) == 1 % time range specified
-        time = varargin{1};
-        wave = 1;
+        if strcmp(varargin{1},'last')
+            findlast = true;
+        else
+            findlast = false;
+            time = varargin{1};
+            wave = 1;
+        end
     elseif length(varargin) == 2 % time range and channels specified
         time = varargin{1};
         wave = varargin{2};
@@ -94,6 +103,12 @@ nospikes = ceil(datalength/packetsize);
 fseek(h,headersize+(nospikes-1)*packetsize+2,'bof');
 lastspiketime =  fread(h,1,'int32')./fs;
 
+% If the user only wants the last spiketime
+if findlast
+    spk = lastspiketime;
+    return;
+end
+
 % Display record info
 fprintf('\nNEURORIGHTER SPIKE RECORD\n');
 fprintf(['\tSampling rate (Hz): ' num2str(fs) '\n']);
@@ -117,11 +132,12 @@ fprintf(['\tRecording time (yr-mo-dy-hr-mi-sc-ms): ' ...
 
 fprintf(['\tNumber of spikes: ' num2str(nospikes) '\n']);
 fprintf(['\trecording duration: ' num2str(lastspiketime) '\n\n']);
+fprintf('------------\n\n');
 
-% RZT: algorithm for getting intervals: estimate average firing rate- from that,
-% estimate the start and stop indices, with a maximum of 1000 spikes between
-% the two of them
-fprintf('Entering search for desired spikes.\n');
+% RZT: algorithm for getting intervals: estimate average firing rate- from
+% that, estimate the start and stop indices, with a maximum of 1000 spikes
+% between the two of them
+fprintf('\tEntering search for desired spikes.\n');
 
 % Fix inputs
 if isempty(time)
@@ -130,7 +146,7 @@ end
 
 % Calculate average firing rate
 aveFiringRate = nospikes/lastspiketime;
-fprintf('Looking for first spike...');
+fprintf('\tLooking for first spike...');
 
 % Find start index:
 estStart = floor(time(1)*aveFiringRate);%estimate based on firing rate
@@ -182,7 +198,7 @@ end
 fprintf(' done\n');
 
 % Find end index
-fprintf('Looking for last spike...');
+fprintf('\tLooking for last spike...');
 estStop = floor((estStart+nospikes)/2);
 stopSpike = loadgroup(h,headersize,packetsize,fs,estStop,estStop);
 
@@ -230,9 +246,10 @@ while(~(((estStop<nospikes)&&((stopSpike.time<=hiLimit)&&(postSpike.time>hiLimit
 end
 fprintf(' done\n');
 
-fprintf(['Loading a total of ' num2str(estStop-estStart+1) ' spikes: \n\tStarting at time ' num2str(startSpike.time) '\n\tEnding at time ' num2str(stopSpike.time) '\n']);
+fprintf(['\tLoading a total of ' num2str(estStop-estStart+1) ' spikes: \n\t\tStarting at time ' num2str(startSpike.time) '\n\t\tEnding at time ' num2str(stopSpike.time) '\n']);
 
 spk = loadgroup(h,headersize,packetsize,fs,estStart,estStop);
+verifyspk();
 
 % Write down meta-data
 spk.meta.fs_Hz = fs;
@@ -248,8 +265,8 @@ spk.meta.date = [num2str(dt(1)) '-' ...
     num2str(dt(6)) '-' ...
     num2str(dt(7))];
 
-fprintf('...done\nLoad complete.\n\n');
-
+fprintf('\t...done\n\nLoad complete.\n\n');
+fclose(h);
 
     function spk = loadgroup(h, headersize, packetsize,fs ,start, stop)
         
@@ -285,6 +302,17 @@ fprintf('...done\nLoad complete.\n\n');
             spk.waveform = fread(h,[waveSamples numspk2load],[num2str(waveSamples) '*float64=>float64'],packetsize-8*waveSamples);
         end
         
+    end
+    function verifyspk()
+        spk.channel = spk.channel(spk.time >= time(1) & spk.time < time(2));
+        spk.threshold = spk.threshold(spk.time >= time(1) & spk.time < time(2));
+        if (recunit)
+            spk.unit = spk.unit(spk.time >= time(1) & spk.time < time(2));
+        end
+        if (wave)
+            spk.waveform = spk.waveform(:,spk.time >= time(1) & spk.time < time(2));
+        end
+        spk.time = spk.time(spk.time >= time(1) & spk.time < time(2));
     end
 
 end

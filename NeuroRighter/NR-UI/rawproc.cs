@@ -255,8 +255,6 @@ namespace NeuroRighter
                 // Send filtSpikeData to datSrv
                 datSrv.filteredElectrodeSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
 
-
-
                 if (switch_record.Value && recordingSettings.recordSpikeFilt && (spikeTask != null))
                 {
                     lock (recordingSettings.spkFiltOut)

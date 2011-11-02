@@ -714,7 +714,7 @@ namespace NeuroRighter
 
                             // Make history selector reflect current limits on input
                             slide_AnalogDispMaxVoltage.Range = new Range(0.05, 10);
-                            slide_AnalogDispWidth.Range = new Range(Properties.Settings.Default.ADCPollingPeriodSec * 5, Properties.Settings.Default.datSrvBufferSizeSec);
+                            slide_AnalogDispWidth.Range = new Range(Properties.Settings.Default.ADCPollingPeriodSec, Properties.Settings.Default.datSrvBufferSizeSec);
 
                         }
                         #endregion

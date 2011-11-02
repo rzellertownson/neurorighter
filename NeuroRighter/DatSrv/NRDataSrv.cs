@@ -119,7 +119,7 @@ namespace NeuroRighter.DatSrv
             }
 
             //3. Spike Filter data
-            if (spikeFiltAccess)
+            if (true)
             {
                 filteredElectrodeSrv = new RawDataSrv(
                     Properties.Settings.Default.RawSampleFrequency,

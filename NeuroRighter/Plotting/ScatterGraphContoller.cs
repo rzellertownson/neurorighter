@@ -33,7 +33,7 @@ namespace NeuroRighter
 
         private ScatterGraph analogScatterGraph;
         private ulong lastSampleRead = 0;
-        private const int NUM_SAMP_TO_PLOT = 500;
+        private ulong numSampToPlot = (ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
         private ulong points2Remove;
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace NeuroRighter
                      analogScatterGraph.Plots[i].AntiAliased = true;
 
                      // Set capacity
-                     analogScatterGraph.Plots[i].HistoryCapacity = NUM_SAMP_TO_PLOT;
+                     analogScatterGraph.Plots[i].HistoryCapacity = (int)numSampToPlot;
                 }
 
         }
@@ -69,7 +69,9 @@ namespace NeuroRighter
             // Plot bound settings
             ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
             double minUpdateTimeSec = requestedHistorySec/50; //seconds
-            int downSampleFactor = (int)(historySamples/NUM_SAMP_TO_PLOT);
+            int downSampleFactor = (int)(historySamples/numSampToPlot);
+            if (downSampleFactor < 1)
+                downSampleFactor = 1;
             int newDataLength;
 
             if ((availableDataRange[1]-lastSampleRead)*oneOverSampleFreq > minUpdateTimeSec)
@@ -98,7 +100,7 @@ namespace NeuroRighter
                     newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
-                    xDat = new double[NUM_SAMP_TO_PLOT];
+                    xDat = new double[numSampToPlot];
                     for (int j = 0; j < xDat.Length; ++j)
                     {
                         xDat[j] = k * oneOverSampleFreq;
@@ -111,7 +113,7 @@ namespace NeuroRighter
                     newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
-                    xDat = new double[NUM_SAMP_TO_PLOT];
+                    xDat = new double[numSampToPlot];
                     for (int j = 0; j < xDat.Length; ++j)
                     {
                         xDat[j] = k * oneOverSampleFreq;

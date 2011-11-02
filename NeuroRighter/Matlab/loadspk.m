@@ -29,6 +29,7 @@ if nargin == 2
         wave = varargin{2};
     end
 else
+    findlast = false;
     time = [];
     wave = 1;
 end
@@ -101,7 +102,7 @@ packetsize = packetsize+waveSamples*8;
 datalength = len-headersize;
 nospikes = ceil(datalength/packetsize);
 fseek(h,headersize+(nospikes-1)*packetsize+2,'bof');
-lastspiketime =  fread(h,1,'int32')./fs;
+lastspiketime =  fread(h,1,'uint32')./fs;
 
 % If the user only wants the last spiketime
 if findlast
@@ -277,7 +278,7 @@ fclose(h);
         fseek(h,offset,'bof');
         channel = fread(h,numspk2load,'int16',packetsize - 2);
         fseek(h,offset + 2,'bof');
-        stime = fread(h,numspk2load,'int32',packetsize - 4)./fs;
+        stime = fread(h,numspk2load,'uint32',packetsize - 4)./fs;
         fseek(h,offset + 6,'bof');
         threshold = fread(h,numspk2load,'double',packetsize - 8);
         fseek(h,offset + 14,'bof');

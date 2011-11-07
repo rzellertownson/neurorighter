@@ -66,7 +66,7 @@ namespace NeuroRighter.StimSrv
         /// <param name="STIM_SAMPLING_FREQ">The DAC sampling frequency in Hz for all forms of output</param>
         /// <param name="masterTask">The NI Task to which all of the output clocks are synchronized to</param>
         /// <param name="debugger"> NR's real-time debugger</param>
-        public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger)
+        public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger, bool robust)
         {
             this.masterTask = masterTask;
             this.INNERBUFFSIZE = INNERBUFFSIZE;
@@ -74,11 +74,11 @@ namespace NeuroRighter.StimSrv
             int sampblanking = 2;
             int queueThreshold = -1;//no queue thresholds for closed loop
             //create buffers
-            AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
-            DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold);
+            AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
+            DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
             AuxOut.grabPartner(DigitalOut);
             DigitalOut.grabPartner(AuxOut);
-            StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold);
+            StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold, robust);
             this.debugger = debugger;
             buffloadcount = 0;
             this.sampleFrequencyHz = Convert.ToDouble(STIM_SAMPLING_FREQ);
@@ -102,13 +102,14 @@ namespace NeuroRighter.StimSrv
 
                 
 
-                DigitalOut.Setup(buffLoadTask,  debugger, masterTask);
-                AuxOut.Setup(buffLoadTask, debugger, masterTask);
+                //DigitalOut.Setup(buffLoadTask,  debugger, masterTask);
+               
 
                 AuxOut.grabPartner(DigitalOut);
                 DigitalOut.grabPartner(AuxOut);
+                AuxOut.Setup(buffLoadTask, debugger, masterTask);
                 AuxOut.Start();
-                DigitalOut.Start();
+                //DigitalOut.Start();
             }
 
             if (Properties.Settings.Default.UseStimulator)

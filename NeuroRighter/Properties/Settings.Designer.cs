@@ -902,5 +902,17 @@ namespace NeuroRighter.Properties {
                 this["spikeSorterDir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool stimRobust {
+            get {
+                return ((bool)(this["stimRobust"]));
+            }
+            set {
+                this["stimRobust"] = value;
+            }
+        }
     }
 }

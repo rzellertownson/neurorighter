@@ -44,8 +44,8 @@ namespace NeuroRighter.Output
         private uint LengthWave;
 
         
-        internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold)
-            :base( INNERBUFFSIZE, STIM_SAMPLING_FREQ,  queueThreshold)
+        internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold,bool robust)
+            :base( INNERBUFFSIZE, STIM_SAMPLING_FREQ,  queueThreshold,robust)
         {
             
             this.NUM_SAMPLES_BLANKING = NUM_SAMPLES_BLANKING;

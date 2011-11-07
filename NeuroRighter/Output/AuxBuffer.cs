@@ -58,10 +58,13 @@ namespace NeuroRighter.Output
             //{
             //    dummya.Add(abuffs.ElementAt(i));
             //}
-            digBuffer.setNBLC(numBuffLoadsCompleted);
+            
             base.calculateBuffer(abuffs, dummyd, recoveryFlag);
-
-            digBuffer.calculateBuffer(dummya, dbuffs, recoveryFlag);
+            if (digBuffer != null)
+            {
+                digBuffer.setNBLC(numBuffLoadsCompleted);
+                digBuffer.calculateBuffer(dummya, dbuffs, recoveryFlag);
+            }
         }
 
         //sets up both the analog and digital auxillary tasks

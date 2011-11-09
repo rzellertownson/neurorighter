@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading;
 using ExtensionMethods;
 using NeuroRighter.DataTypes;
+using NationalInstruments.DAQmx;
 
 namespace NeuroRighter.SpikeDetection
 {
@@ -73,6 +74,7 @@ namespace NeuroRighter.SpikeDetection
         protected int recIndexOffset;
         protected int[] deadWidth;
         protected bool inBounds;
+        private double VOLTAGE_EPSILON = 0.0;   // 1 uV
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
             int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,
@@ -237,64 +239,64 @@ namespace NeuroRighter.SpikeDetection
                             // If the spike is no good
                             continue;
                         }
-                        else
-                        {
-                            // Infection point within dead time?
-                            bool inflectionWithinDead = true;
-                            deadWidth = null;
+                        //else
+                        //{
+                        //    // Infection point within dead time?
+                        //    bool inflectionWithinDead = true;
+                        //    deadWidth = null;
 
-                            if (deadTime > 0)
-                            {
-                                // Check the dead time for higher amplitdude waveform
-                                int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
+                            //if (deadTime > 0)
+                            //{
+                            //    // Check the dead time for higher amplitdude waveform
+                            //    int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
 
-                                // Check that the maximal value in the deadtime is not the 
-                                // exitSpikeIndex
-                                if (deadMaxIndex == exitSpikeIndex)
-                                {
-                                    inflectionWithinDead = false;
-                                    deadWidth = null;
-                                    goto ProcessSpike;
-                                }
+                            //    // Check that the maximal value in the deadtime is not the 
+                            //    // exitSpikeIndex
+                            //    if (deadMaxIndex == exitSpikeIndex)
+                            //    {
+                            //        inflectionWithinDead = false;
+                            //        deadWidth = null;
+                            //        goto ProcessSpike;
+                            //    }
 
-                                // Is this actually an infection point?
-                                int deadMaxIndex1 = deadMaxIndex + 1;
-                                int deadMaxIndex2 = deadMaxIndex - 1;
+                            //    // Is this actually an infection point?
+                            //    int deadMaxIndex1 = deadMaxIndex + 1;
+                            //    int deadMaxIndex2 = deadMaxIndex - 1;
 
-                                // If its not the infection point
-                                if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
-                                    // Forget it, we will catch this spike after the dead time
-                                    inflectionWithinDead = false;
+                            //    // If its not the infection point
+                            //    if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
+                            //        // Forget it, we will catch this spike after the dead time
+                            //        inflectionWithinDead = false;
 
-                                // Get the maximal value in the dead time
-                                double deadMax = spikeDetectionBuffer[deadMaxIndex];
+                            //    // Get the maximal value in the dead time
+                            //    double deadMax = spikeDetectionBuffer[deadMaxIndex];
 
-                                // Is it larger than the peak of the detected spike?
-                                bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
+                            //    // Is it larger than the peak of the detected spike?
+                            //    bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
 
-                                // get the spike width around this max point
-                                deadWidth = FindWidthFromMaxInd(deadMaxIndex);
+                            //    // get the spike width around this max point
+                            //    deadWidth = FindWidthFromMaxInd(deadMaxIndex);
 
-                                if (lookAtDeadWave && inflectionWithinDead)
-                                {
-                                    // If the deadMax is actually larger than the original 
-                                    // detection's max point
-                                    double[] deadWaveform = CreateWaveform(deadMaxIndex);
+                            //    if (lookAtDeadWave && inflectionWithinDead)
+                            //    {
+                            //        // If the deadMax is actually larger than the original 
+                            //        // detection's max point
+                            //        double[] deadWaveform = CreateWaveform(deadMaxIndex);
 
-                                    if (deadWidth != null)
-                                    {
-                                        bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
+                            //        if (deadWidth != null)
+                            //        {
+                            //            bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
 
-                                        if (goodDeadSpike && inflectionWithinDead)
-                                        {
-                                            waveform = deadWaveform;
-                                            spikeMaxIndex = deadMaxIndex;
-                                            spikeMax = deadMax;
-                                            exitSpikeIndex = deadWidth[1];
-                                        }
-                                    }
-                                }
-                            }
+                            //            if (goodDeadSpike && inflectionWithinDead)
+                            //            {
+                            //                waveform = deadWaveform;
+                            //                spikeMaxIndex = deadMaxIndex;
+                            //                spikeMax = deadMax;
+                            //                exitSpikeIndex = deadWidth[1];
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                         ProcessSpike:
                             // Record the waveform
@@ -305,9 +307,9 @@ namespace NeuroRighter.SpikeDetection
 
                             // Calculate dead-time
                             int dt;
-                            if (!inflectionWithinDead && deadWidth != null)
-                                dt = deadWidth[0] - 1;
-                            else
+                            //if (!inflectionWithinDead && deadWidth != null)
+                            //    dt = deadWidth[0] - 1;
+                            //else
                                 dt = deadTime;
 
                             // Carry-over dead time if we are at the end of the buffer
@@ -317,13 +319,13 @@ namespace NeuroRighter.SpikeDetection
                                 initialSamplesToSkip[channel] = 0;
 
                             // Advance through deadTime measured from the spike exit index
-                            if (!inflectionWithinDead && deadWidth != null)
-                                i = deadWidth[0] - 1;
+                            //if (!inflectionWithinDead && deadWidth != null)
+                            //    i = deadWidth[0] - 1;
 
-                            else
+                            //else
                                 i = exitSpikeIndex + deadTime;
 
-                        }
+                        //}
                     }
                     else if (inASpike[channel] && i == indiciesToSearchForReturn - 1)
                     {
@@ -488,11 +490,10 @@ namespace NeuroRighter.SpikeDetection
                 return spikeSlopeGood;
 
             //Ensure that part of the spike is not blanked
-            double VOLTAGE_EPSILON = 0.0000005; // 1 uV
             double numBlanked = 0;
             for (int i = 0; i < absWave.Length; ++i)
             {
-                if (absWave[i] < VOLTAGE_EPSILON)
+                if (absWave[i] <= VOLTAGE_EPSILON)
                 {
                     numBlanked++;
                 }
@@ -501,7 +502,7 @@ namespace NeuroRighter.SpikeDetection
                     numBlanked = 0;
                 }
 
-                if (numBlanked > 5)
+                if (numBlanked > 3)
                     return false;
             }
 
@@ -565,7 +566,7 @@ namespace NeuroRighter.SpikeDetection
             List<double> spkSnip = spikeDetectionBuffer.GetRange(startInd, widthToSearch);
 
             // Switch between max or min
-            if (posCross)
+            if (positiveCross)
             {
                 return spkSnip.MaxIndex() + startInd;
             }

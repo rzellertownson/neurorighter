@@ -33,7 +33,7 @@ namespace NeuroRighter
 
         private ScatterGraph analogScatterGraph;
         private ulong lastSampleRead = 0;
-        private ulong numSampToPlot = (ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private ulong numSampToPlot = 2000; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
         private ulong points2Remove;
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace NeuroRighter
                         --k;
                         if (j <= yDatDS.Length)
                             yDat[k] = yDatDS[yDatDS.Length - j];
-                        else
+                        else if(oldYDat.Length != 0)
                             yDat[k] = oldYDat[oldYDat.Length + yDatDS.Length - j];
                     }
 

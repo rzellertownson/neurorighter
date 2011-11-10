@@ -1,4 +1,20 @@
-﻿using System;
+﻿//RapidSort - A fast, unsupervised spike sorting program
+//Copyright (C) 2011  Jonathan Newman
+
+//This program is free software: you can redistribute it and/or modify
+//it under the terms of the GNU Lesser General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//any later version.
+
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU Lesser General Public License
+//along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +79,7 @@ namespace NRSpikeSort
         /// The type of projection to produce sortable pixels.
         /// "Maximum Voltage Inflection" - peak aligned maximum voltage from spike waveforms
         /// "PCA" - Principle component projection of spike waveforms
+        /// "Haar" - Haar Wavelet decomposition
         /// </summary>
         public string projectionType;
 
@@ -75,18 +92,24 @@ namespace NRSpikeSort
         /// The maximum number of waveforms used for training a GMM on each channel
         /// </summary>
         public int maxTrainingSpikesPerChannel = 500;
-        
+
+        /// <summary>
+        /// Minimum probability nessesary to classify a spike
+        /// </summary>
+        public double minProbability = 0;
+
         // Private
         private int numberChannels;
         private int inflectionSample = 14; // The sample that spike peaks occur at
         
+
         /// <summary>
         /// NeuroRighter's spike sorter.
         /// </summary>
         /// <param name="numberChannels">Number of channels to make sorters for</param>
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double minProbability)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -95,10 +118,11 @@ namespace NRSpikeSort
             this.spikesCollectedPerChannel = new Hashtable();
             for (int i = 0; i < numberChannels; ++i)
             {
-                spikesCollectedPerChannel.Add(i+1, 0);
+                spikesCollectedPerChannel.Add(i + 1, 0);
             }
             this.projectionType = "MaxInflection";
             this.projectionDimension = 1;
+            this.minProbability = minProbability;
         }
 
         /// <summary>
@@ -108,7 +132,7 @@ namespace NRSpikeSort
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
         /// <param name="projectionDim">Dimension of projection if using PCA</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes, int projectionDim)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double minProbability, int projectionDim)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -121,6 +145,7 @@ namespace NRSpikeSort
             }
             this.projectionType = "PCA";
             this.projectionDimension = projectionDim;
+            this.minProbability = minProbability;
         }
 
         /// <summary>
@@ -129,15 +154,12 @@ namespace NRSpikeSort
         /// <param name="newSpikes"> An EventBuffer contain spikes to add to the training buffer</param>
         public void HoardSpikes(EventBuffer<SpikeEvent> newSpikes)
         {
-            lock (this)
+            for (int i = 0; i < newSpikes.eventBuffer.Count; ++i)
             {
-                for (int i = 0; i < newSpikes.eventBuffer.Count; ++i)
+                if (!((int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] >= maxTrainingSpikesPerChannel))
                 {
-                    if (!((int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] >= maxTrainingSpikesPerChannel))
-                    {
-                        spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] = (int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] + 1;
-                        trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
-                    }
+                    spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] = (int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] + 1;
+                    trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
                 }
             }
         }
@@ -159,7 +181,7 @@ namespace NRSpikeSort
             unitDictionary = new Hashtable();
 
             // Add the zero unit to the dictionary
-            unitDictionary.Add(0,0);
+            unitDictionary.Add(0, 0);
 
             // Set the inflection sample
             inflectionSample = peakSample;
@@ -181,17 +203,22 @@ namespace NRSpikeSort
                 // Project channel data
                 if (spikesOnChan.Count >= minSpikes)
                 {
-                    // Note that we have to sort spikes on this channel
-                    channelsToSort.Add(currentChannel);
 
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, minProbability);
 
                     // Project Data
                     thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
 
                     // Train Classifier
                     thisChannelModel.Train();
+
+                    // If there was a training failure (e.g. convergence)
+                    if (!thisChannelModel.trained)
+                        continue;
+
+                    // Note that we have to sort spikes on this channel
+                    channelsToSort.Add(currentChannel);
 
                     // Update the unit dicationary and increment the total number of units
                     for (int k = 1; k <= thisChannelModel.K; ++k)
@@ -245,17 +272,24 @@ namespace NRSpikeSort
                 // Project channel data
                 if (spikesOnChan.Count >= minSpikes)
                 {
-                    // Note that we have to sort spikes on this channel
-                    channelsToSort.Add(currentChannel);
-
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, projectionDimension);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, minProbability, projectionDimension);
 
                     // Project Data
-                    thisChannelModel.PCCompute(spikesOnChan.ToList());
+                    if (projectionType == "PCA")
+                        thisChannelModel.PCCompute(spikesOnChan.ToList());
+                    else
+                        thisChannelModel.HaarCompute(spikesOnChan.ToList());
 
                     // Train Classifier
                     thisChannelModel.Train();
+
+                    // If there was a training failure (e.g. convergence)
+                    if (!thisChannelModel.trained)
+                        continue;
+
+                    // Note that we have to sort spikes on this channel
+                    channelsToSort.Add(currentChannel);
 
                     // Update the unit dicationary and increment the total number of units
                     for (int k = 1; k <= thisChannelModel.K; ++k)
@@ -309,6 +343,62 @@ namespace NRSpikeSort
                     thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
                 else if (this.projectionType == "PCA")
                     thisChannelModel.PCProject(spikesOnChan.ToList());
+                else if (this.projectionType == "Haar Wavelet")
+                    thisChannelModel.HaarProject(spikesOnChan.ToList());
+
+                // Sort the spikes
+                thisChannelModel.Classify();
+
+                // Update the newSpikes buffer 
+                for (int j = 0; j < spikesOnChan.Count; ++j)
+                {
+                    spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// After the channel models (gmm's) have been created and trained, this function
+        /// is used to classifty newly detected spikes for which a valide channel model exisits.
+        /// </summary>
+        /// <param name="newSpikes"> An EventBuffer conataining spikes to be classified</param>
+        public void Classify(ref EventBuffer<SpikeEvent> newSpikes, ref List<double[]> projections2D)
+        {
+
+            // Make sure the channel models are trained.
+            if (!trained)
+            {
+                throw new InvalidOperationException("The channel models were not yet trained so classification is not possible.");
+            }
+
+            // Sort the channels that need sorting
+            for (int i = 0; i < channelsToSort.Count; ++i)
+            {
+                // Current channel
+                int currentChannel = channelsToSort[i];
+
+                // Get the spikes that belong to this channel 
+                List<SpikeEvent> spikesOnChan = newSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+
+                // If there are no spikes on this channel
+                if (spikesOnChan.Count == 0)
+                    continue;
+
+                // Get the channel model for this channel
+                ChannelModel thisChannelModel = channelModels[channelsToSort.IndexOf(currentChannel)];
+
+                // Project the spikes
+                if (this.projectionType == "Maximum Voltage Inflection")
+                    thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
+                else if (this.projectionType == "PCA")
+                    thisChannelModel.PCProject(spikesOnChan.ToList());
+                else if (this.projectionType == "Haar Wavelet")
+                    thisChannelModel.HaarProject(spikesOnChan.ToList());
+
+                // Get the projection
+                projections2D = thisChannelModel.Return2DProjection();
 
                 // Sort the spikes
                 thisChannelModel.Classify();
@@ -327,7 +417,7 @@ namespace NRSpikeSort
         public SpikeSorter(SerializationInfo info, StreamingContext ctxt)
         {
             this.trained = (bool)info.GetValue("trained", typeof(bool));
-            this.numberChannels = (int)info.GetValue("numberChannels",typeof(int));
+            this.numberChannels = (int)info.GetValue("numberChannels", typeof(int));
             this.minSpikes = (int)info.GetValue("minSpikes", typeof(int));
             this.maxK = (int)info.GetValue("maxK", typeof(int));
             this.inflectionSample = (int)info.GetValue("inflectionSample", typeof(int));

@@ -103,18 +103,15 @@ namespace NeuroRighter
                         channel = (MEAChannelMappings.ch2rcPreMapped[channel, 0] - 1) * 8 + MEAChannelMappings.ch2rcPreMapped[channel, 1] - 1;
 
                     // Plot the spikes
-                    lock (this)
+                    if (wfms[i].unit == null)
                     {
-                        if (wfms[0].unit == null)
-                        {
-                            spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
-                                numSpkWfms[channel]++ + channel * maxWaveforms);
-                        }
-                        else
-                        {
-                            spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRUnitBrainbow[(int)wfms[i].unit], channel,
-                               numSpkWfms[channel]++ + channel * maxWaveforms);
-                        }
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
+                            numSpkWfms[channel]++ + channel * maxWaveforms);
+                    }
+                    else
+                    {
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRUnitBrainbow[(int)wfms[i].unit], channel,
+                            numSpkWfms[channel]++ + channel * maxWaveforms);
                     }
 
                     // Tally number of waveforms being displayed for each channel

@@ -73,6 +73,8 @@
             this.button_LoadSpikeSorter = new System.Windows.Forms.Button();
             this.textBox_SorterLocation = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.numericUpDown_MinClassificationProb = new System.Windows.Forms.NumericUpDown();
             this.comboBox_ProjectionType = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -111,6 +113,7 @@
             this.tabPage2.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).BeginInit();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikesToTrain)).BeginInit();
@@ -438,6 +441,12 @@
             // numericUpDown_MinSpikeSlope
             // 
             this.numericUpDown_MinSpikeSlope.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.numericUpDown_MinSpikeSlope.DecimalPlaces = 1;
+            this.numericUpDown_MinSpikeSlope.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.numericUpDown_MinSpikeSlope.Location = new System.Drawing.Point(151, 202);
             this.numericUpDown_MinSpikeSlope.Maximum = new decimal(new int[] {
             20,
@@ -675,6 +684,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.label18);
+            this.groupBox5.Controls.Add(this.numericUpDown_MinClassificationProb);
             this.groupBox5.Controls.Add(this.comboBox_ProjectionType);
             this.groupBox5.Controls.Add(this.label12);
             this.groupBox5.Controls.Add(this.label6);
@@ -692,22 +703,57 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "New Spike Sorter";
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(9, 124);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(172, 13);
+            this.label18.TabIndex = 81;
+            this.label18.Text = "Minimum likelihood to classify spike";
+            // 
+            // numericUpDown_MinClassificationProb
+            // 
+            this.numericUpDown_MinClassificationProb.BackColor = System.Drawing.Color.LawnGreen;
+            this.numericUpDown_MinClassificationProb.DecimalPlaces = 10;
+            this.numericUpDown_MinClassificationProb.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            589824});
+            this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
+            this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown_MinClassificationProb.Name = "numericUpDown_MinClassificationProb";
+            this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(115, 20);
+            this.numericUpDown_MinClassificationProb.TabIndex = 82;
+            this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.numericUpDown_MinClassificationProb.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            262144});
+            this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
+            // 
             // comboBox_ProjectionType
             // 
             this.comboBox_ProjectionType.FormattingEnabled = true;
             this.comboBox_ProjectionType.Items.AddRange(new object[] {
             "Maximum Voltage Inflection",
             "PCA"});
-            this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 24);
+            this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 14);
             this.comboBox_ProjectionType.Name = "comboBox_ProjectionType";
-            this.comboBox_ProjectionType.Size = new System.Drawing.Size(195, 21);
+            this.comboBox_ProjectionType.Size = new System.Drawing.Size(219, 21);
             this.comboBox_ProjectionType.TabIndex = 80;
             this.comboBox_ProjectionType.SelectedIndexChanged += new System.EventHandler(this.comboBox_ProjectionType_SelectedIndexChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(9, 27);
+            this.label12.Location = new System.Drawing.Point(9, 22);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(93, 13);
             this.label12.TabIndex = 79;
@@ -716,7 +762,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 61);
+            this.label6.Location = new System.Drawing.Point(9, 46);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(118, 13);
             this.label6.TabIndex = 77;
@@ -725,7 +771,7 @@
             // numericUpDown_ProjDim
             // 
             this.numericUpDown_ProjDim.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.numericUpDown_ProjDim.Location = new System.Drawing.Point(247, 57);
+            this.numericUpDown_ProjDim.Location = new System.Drawing.Point(221, 44);
             this.numericUpDown_ProjDim.Maximum = new decimal(new int[] {
             3,
             0,
@@ -737,7 +783,7 @@
             0,
             0});
             this.numericUpDown_ProjDim.Name = "numericUpDown_ProjDim";
-            this.numericUpDown_ProjDim.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_ProjDim.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_ProjDim.TabIndex = 78;
             this.numericUpDown_ProjDim.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_ProjDim.Value = new decimal(new int[] {
@@ -805,7 +851,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 117);
+            this.label7.Location = new System.Drawing.Point(9, 98);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(172, 13);
             this.label7.TabIndex = 68;
@@ -814,14 +860,14 @@
             // numericUpDown_MinSpikesToTrain
             // 
             this.numericUpDown_MinSpikesToTrain.BackColor = System.Drawing.Color.Yellow;
-            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(247, 116);
+            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(221, 96);
             this.numericUpDown_MinSpikesToTrain.Minimum = new decimal(new int[] {
             10,
             0,
             0,
             0});
             this.numericUpDown_MinSpikesToTrain.Name = "numericUpDown_MinSpikesToTrain";
-            this.numericUpDown_MinSpikesToTrain.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_MinSpikesToTrain.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_MinSpikesToTrain.TabIndex = 69;
             this.numericUpDown_MinSpikesToTrain.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinSpikesToTrain.Value = new decimal(new int[] {
@@ -834,7 +880,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 89);
+            this.label2.Location = new System.Drawing.Point(9, 72);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(124, 13);
             this.label2.TabIndex = 62;
@@ -843,7 +889,7 @@
             // numericUpDown_maxK
             // 
             this.numericUpDown_maxK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.numericUpDown_maxK.Location = new System.Drawing.Point(247, 87);
+            this.numericUpDown_maxK.Location = new System.Drawing.Point(221, 70);
             this.numericUpDown_maxK.Maximum = new decimal(new int[] {
             6,
             0,
@@ -855,7 +901,7 @@
             0,
             0});
             this.numericUpDown_maxK.Name = "numericUpDown_maxK";
-            this.numericUpDown_maxK.Size = new System.Drawing.Size(65, 20);
+            this.numericUpDown_maxK.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_maxK.TabIndex = 63;
             this.numericUpDown_maxK.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_maxK.Value = new decimal(new int[] {
@@ -874,9 +920,9 @@
             this.groupBox7.Controls.Add(this.label14);
             this.groupBox7.Controls.Add(this.label13);
             this.groupBox7.Controls.Add(this.button_HoardSpikes);
-            this.groupBox7.Location = new System.Drawing.Point(6, 143);
+            this.groupBox7.Location = new System.Drawing.Point(6, 148);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(336, 95);
+            this.groupBox7.Size = new System.Drawing.Size(336, 90);
             this.groupBox7.TabIndex = 75;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "1. Hoard Training Data ";
@@ -885,7 +931,7 @@
             // 
             this.label_NumSpikesCollected.AutoSize = true;
             this.label_NumSpikesCollected.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_NumSpikesCollected.Location = new System.Drawing.Point(37, 68);
+            this.label_NumSpikesCollected.Location = new System.Drawing.Point(11, 67);
             this.label_NumSpikesCollected.Name = "label_NumSpikesCollected";
             this.label_NumSpikesCollected.Size = new System.Drawing.Size(15, 16);
             this.label_NumSpikesCollected.TabIndex = 86;
@@ -895,7 +941,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(6, 50);
+            this.label3.Location = new System.Drawing.Point(10, 51);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 16);
             this.label3.TabIndex = 85;
@@ -904,7 +950,7 @@
             // zgc
             // 
             this.zgc.EditButtons = System.Windows.Forms.MouseButtons.Left;
-            this.zgc.Location = new System.Drawing.Point(127, 19);
+            this.zgc.Location = new System.Drawing.Point(145, 16);
             this.zgc.Name = "zgc";
             this.zgc.PanModifierKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.None)));
             this.zgc.ScrollGrace = 0D;
@@ -914,39 +960,42 @@
             this.zgc.ScrollMinX = 0D;
             this.zgc.ScrollMinY = 0D;
             this.zgc.ScrollMinY2 = 0D;
-            this.zgc.Size = new System.Drawing.Size(203, 57);
+            this.zgc.Size = new System.Drawing.Size(185, 57);
             this.zgc.TabIndex = 81;
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(192, 79);
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(210, 75);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(66, 13);
+            this.label17.Size = new System.Drawing.Size(56, 12);
             this.label17.TabIndex = 84;
             this.label17.Text = "Channel No.";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(100, 63);
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(128, 61);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(21, 13);
+            this.label14.Size = new System.Drawing.Size(18, 12);
             this.label14.TabIndex = 83;
             this.label14.Text = "0%";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(88, 19);
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(119, 16);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(33, 13);
+            this.label13.Size = new System.Drawing.Size(28, 12);
             this.label13.TabIndex = 82;
             this.label13.Text = "100%";
             // 
             // button_HoardSpikes
             // 
-            this.button_HoardSpikes.Location = new System.Drawing.Point(6, 19);
+            this.button_HoardSpikes.Location = new System.Drawing.Point(10, 19);
             this.button_HoardSpikes.Name = "button_HoardSpikes";
             this.button_HoardSpikes.Size = new System.Drawing.Size(73, 23);
             this.button_HoardSpikes.TabIndex = 71;
@@ -990,6 +1039,7 @@
             this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
@@ -1067,6 +1117,8 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label_NumSpikesCollected;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.NumericUpDown numericUpDown_MinClassificationProb;
 
     }
 }

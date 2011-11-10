@@ -296,6 +296,44 @@ namespace Accord.MachineLearning
         }
 
         /// <summary>
+        ///   Returns the most likely clusters of an observation subject to the constraint that
+        ///   the highest probability of the data point is higher than minProbability. In this case, 
+        ///   the classifier will return -1.
+        /// </summary>
+        /// 
+        /// <param name="observation">An input observation.</param>
+        /// <param name=" minProbability">highest probability of the data point is higher
+        /// than minProbability to be classified.</param>
+        /// <returns>
+        ///   The index of the most likely cluster
+        ///   of the given observation. </returns>
+        ///   
+        public int Classify(double[] observation, double minProbability)
+        {
+            if (observation == null)
+                throw new ArgumentNullException("observation");
+
+            int imax = 0;
+            double max = model.ProbabilityDensityFunction(0, observation);
+
+            for (int i = 1; i < model.Components.Length; i++)
+            {
+                double p = model.ProbabilityDensityFunction(i, observation);
+
+                if (p > max)
+                {
+                    max = p;
+                    imax = i;
+                }
+            }
+
+            if (max > minProbability)
+                return imax;
+            else
+                return -1;
+        }
+
+        /// <summary>
         ///   Returns the most likely clusters of an observation.
         /// </summary>
         /// 
@@ -339,6 +377,31 @@ namespace Accord.MachineLearning
             int[] result = new int[observations.Length];
             for (int i = 0; i < observations.Length; i++)
                 result[i] = Classify(observations[i]);
+            return result;
+        }
+
+        /// <summary>
+        ///   Returns the most likely clusters for an array of observation subject to the constraint that
+        ///   the highest probability a data point is higher than minProbability. In this case, 
+        ///   the classifier will return -1 as the classification.
+        /// </summary>
+        /// 
+        /// <param name="observations">An set of observations.</param>
+        ///<param name=" minProbability">highest probability of the data point is higher
+        /// than minProbability to be classified.</param>
+        /// 
+        /// <returns>
+        ///   An array containing the index of the most likely cluster
+        ///   for each of the given observations. </returns>
+        ///   
+        public int[] Classify(double[][] observations, double minProbability)
+        {
+            if (observations == null)
+                throw new ArgumentNullException("observations");
+
+            int[] result = new int[observations.Length];
+            for (int i = 0; i < observations.Length; i++)
+                result[i] = Classify(observations[i], minProbability);
             return result;
         }
 

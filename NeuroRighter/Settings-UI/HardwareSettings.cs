@@ -261,6 +261,7 @@ namespace NeuroRighter
             listBox_AuxAnalogInChan.Enabled = Properties.Settings.Default.useAuxAnalogInput;
             checkBox_UseAuxDigitalInput.Checked = Properties.Settings.Default.useAuxDigitalInput;
             comboBox_AuxDigInputPort.Enabled = Properties.Settings.Default.useAuxDigitalInput;
+            robustStim_checkbox.Checked = Properties.Settings.Default.stimRobust;
 
             switch (Properties.Settings.Default.MUXChannels)
             {

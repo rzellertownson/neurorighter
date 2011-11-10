@@ -73,11 +73,7 @@ namespace NeuroRighter.SpikeDetection
             sorterTrainer.RunWorkerCompleted +=
                 new RunWorkerCompletedEventHandler(sorterTrainer_DoneTraining);
 
-            // Flush Component
-            //spikeSorter = new SpikeSorter(
-            //        numChannels,
-            //        Convert.ToInt32(numericUpDown_maxK.Value),
-            //        Convert.ToInt32(numericUpDown_MinSpikesToTrain.Value));
+            // Set projection type
             comboBox_ProjectionType.SelectedIndex = 0;
             Flush();
         }
@@ -248,6 +244,12 @@ namespace NeuroRighter.SpikeDetection
                 spikeSorter.maxK = (int)(numericUpDown_maxK.Value);
         }
 
+        private void numericUpDown_MinClassificationProb_ValueChanged(object sender, EventArgs e)
+        {
+            if (spikeSorter != null)
+                spikeSorter.minProbability = (double)(numericUpDown_MinClassificationProb.Value);
+        }
+
         private void numericUpDown_MinSpikesToTrain_ValueChanged(object sender, EventArgs e)
         {
             if (spikeSorter != null)
@@ -278,7 +280,6 @@ namespace NeuroRighter.SpikeDetection
                 isHoarding = true;
                 spikeSorter = null;
 
-
                 // Create the appropriate sorter
                 if (comboBox_ProjectionType.SelectedItem.ToString() == "Maximum Voltage Inflection")
                 {
@@ -286,7 +287,7 @@ namespace NeuroRighter.SpikeDetection
                     numChannels,
                     (int)numericUpDown_maxK.Value,
                     (int)numericUpDown_MinSpikesToTrain.Value,
-                    (int)numericUpDown_ProjDim.Value);
+                    (double)numericUpDown_MinClassificationProb.Value);
                     spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
                 }
                 else if (comboBox_ProjectionType.SelectedItem.ToString() == "PCA")
@@ -295,6 +296,7 @@ namespace NeuroRighter.SpikeDetection
                     numChannels,
                     (int)numericUpDown_maxK.Value,
                     (int)numericUpDown_MinSpikesToTrain.Value,
+                    (double)numericUpDown_MinClassificationProb.Value,
                     (int)numericUpDown_ProjDim.Value);
                     spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
                 }
@@ -612,9 +614,6 @@ namespace NeuroRighter.SpikeDetection
             // Fill the axis background with a gradient
             gp.Chart.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
         }
-
-
-
 
     }
 }

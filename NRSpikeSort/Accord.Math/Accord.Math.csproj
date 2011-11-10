@@ -44,7 +44,7 @@
     <CodeAnalysisRuleSet>Migrated rules for Accord.Math.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
@@ -52,7 +52,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
-    <DocumentationFile>..\..\Release\Accord.Math.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Accord.Math.XML</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>

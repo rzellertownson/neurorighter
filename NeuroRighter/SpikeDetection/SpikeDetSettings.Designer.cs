@@ -87,8 +87,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown_maxK = new System.Windows.Forms.NumericUpDown();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.label_NumSpikesCollected = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.zgc = new ZedGraph.ZedGraphControl();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.button_HoardSpikes = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpikeWidth)).BeginInit();
@@ -749,9 +753,9 @@
             this.groupBox8.Controls.Add(this.textBox_Results);
             this.groupBox8.Controls.Add(this.button_TrainSorter);
             this.groupBox8.Controls.Add(this.button_SaveSpikeSorter);
-            this.groupBox8.Location = new System.Drawing.Point(6, 201);
+            this.groupBox8.Location = new System.Drawing.Point(6, 244);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(336, 228);
+            this.groupBox8.Size = new System.Drawing.Size(336, 185);
             this.groupBox8.TabIndex = 76;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "2. Train Classifier";
@@ -760,7 +764,7 @@
             // 
             this.label_Trained.AutoSize = true;
             this.label_Trained.ForeColor = System.Drawing.Color.Red;
-            this.label_Trained.Location = new System.Drawing.Point(83, 204);
+            this.label_Trained.Location = new System.Drawing.Point(83, 161);
             this.label_Trained.Name = "label_Trained";
             this.label_Trained.Size = new System.Drawing.Size(129, 13);
             this.label_Trained.TabIndex = 75;
@@ -773,13 +777,13 @@
             this.textBox_Results.Multiline = true;
             this.textBox_Results.Name = "textBox_Results";
             this.textBox_Results.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Results.Size = new System.Drawing.Size(324, 174);
+            this.textBox_Results.Size = new System.Drawing.Size(324, 131);
             this.textBox_Results.TabIndex = 72;
             // 
             // button_TrainSorter
             // 
             this.button_TrainSorter.Enabled = false;
-            this.button_TrainSorter.Location = new System.Drawing.Point(6, 199);
+            this.button_TrainSorter.Location = new System.Drawing.Point(6, 156);
             this.button_TrainSorter.Name = "button_TrainSorter";
             this.button_TrainSorter.Size = new System.Drawing.Size(73, 23);
             this.button_TrainSorter.TabIndex = 71;
@@ -790,7 +794,7 @@
             // button_SaveSpikeSorter
             // 
             this.button_SaveSpikeSorter.Enabled = false;
-            this.button_SaveSpikeSorter.Location = new System.Drawing.Point(215, 199);
+            this.button_SaveSpikeSorter.Location = new System.Drawing.Point(215, 156);
             this.button_SaveSpikeSorter.Name = "button_SaveSpikeSorter";
             this.button_SaveSpikeSorter.Size = new System.Drawing.Size(115, 23);
             this.button_SaveSpikeSorter.TabIndex = 71;
@@ -863,37 +867,82 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.Controls.Add(this.label3);
             this.groupBox7.Controls.Add(this.label_NumSpikesCollected);
+            this.groupBox7.Controls.Add(this.label3);
+            this.groupBox7.Controls.Add(this.zgc);
+            this.groupBox7.Controls.Add(this.label17);
+            this.groupBox7.Controls.Add(this.label14);
+            this.groupBox7.Controls.Add(this.label13);
             this.groupBox7.Controls.Add(this.button_HoardSpikes);
             this.groupBox7.Location = new System.Drawing.Point(6, 143);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(336, 52);
+            this.groupBox7.Size = new System.Drawing.Size(336, 95);
             this.groupBox7.TabIndex = 75;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "1. Hoard Training Data ";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(107, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(131, 20);
-            this.label3.TabIndex = 77;
-            this.label3.Text = "Spikes Collected:";
-            // 
             // label_NumSpikesCollected
             // 
             this.label_NumSpikesCollected.AutoSize = true;
-            this.label_NumSpikesCollected.BackColor = System.Drawing.Color.White;
-            this.label_NumSpikesCollected.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_NumSpikesCollected.ForeColor = System.Drawing.Color.Black;
-            this.label_NumSpikesCollected.Location = new System.Drawing.Point(244, 19);
+            this.label_NumSpikesCollected.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_NumSpikesCollected.Location = new System.Drawing.Point(37, 68);
             this.label_NumSpikesCollected.Name = "label_NumSpikesCollected";
-            this.label_NumSpikesCollected.Size = new System.Drawing.Size(18, 20);
-            this.label_NumSpikesCollected.TabIndex = 76;
+            this.label_NumSpikesCollected.Size = new System.Drawing.Size(15, 16);
+            this.label_NumSpikesCollected.TabIndex = 86;
             this.label_NumSpikesCollected.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(6, 50);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(77, 16);
+            this.label3.TabIndex = 85;
+            this.label3.Text = "No. Spikes:";
+            // 
+            // zgc
+            // 
+            this.zgc.EditButtons = System.Windows.Forms.MouseButtons.Left;
+            this.zgc.Location = new System.Drawing.Point(127, 19);
+            this.zgc.Name = "zgc";
+            this.zgc.PanModifierKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.None)));
+            this.zgc.ScrollGrace = 0D;
+            this.zgc.ScrollMaxX = 0D;
+            this.zgc.ScrollMaxY = 0D;
+            this.zgc.ScrollMaxY2 = 0D;
+            this.zgc.ScrollMinX = 0D;
+            this.zgc.ScrollMinY = 0D;
+            this.zgc.ScrollMinY2 = 0D;
+            this.zgc.Size = new System.Drawing.Size(203, 57);
+            this.zgc.TabIndex = 81;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(192, 79);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(66, 13);
+            this.label17.TabIndex = 84;
+            this.label17.Text = "Channel No.";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(100, 63);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(21, 13);
+            this.label14.TabIndex = 83;
+            this.label14.Text = "0%";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(88, 19);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(33, 13);
+            this.label13.TabIndex = 82;
+            this.label13.Text = "100%";
             // 
             // button_HoardSpikes
             // 
@@ -998,22 +1047,26 @@
         private System.Windows.Forms.TextBox textBox_SorterLocation;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.Label label_Trained;
-        private System.Windows.Forms.TextBox textBox_Results;
-        private System.Windows.Forms.Button button_TrainSorter;
-        private System.Windows.Forms.Button button_SaveSpikeSorter;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown numericUpDown_MinSpikesToTrain;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numericUpDown_maxK;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label_NumSpikesCollected;
         private System.Windows.Forms.Button button_HoardSpikes;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown numericUpDown_ProjDim;
         internal System.Windows.Forms.ComboBox comboBox_ProjectionType;
         private System.Windows.Forms.Label label12;
+        private ZedGraph.ZedGraphControl zgc;
+        private System.Windows.Forms.Label label_Trained;
+        private System.Windows.Forms.TextBox textBox_Results;
+        private System.Windows.Forms.Button button_TrainSorter;
+        private System.Windows.Forms.Button button_SaveSpikeSorter;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label_NumSpikesCollected;
+        private System.Windows.Forms.Label label3;
 
     }
 }

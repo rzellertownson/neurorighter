@@ -74,7 +74,7 @@ namespace NRSpikeSort
         /// <summary>
         /// The maximum number of waveforms used for training a GMM on each channel
         /// </summary>
-        public int maxTrainingSpikesPerChannel = 100;
+        public int maxTrainingSpikesPerChannel = 500;
         
         // Private
         private int numberChannels;
@@ -129,12 +129,15 @@ namespace NRSpikeSort
         /// <param name="newSpikes"> An EventBuffer contain spikes to add to the training buffer</param>
         public void HoardSpikes(EventBuffer<SpikeEvent> newSpikes)
         {
-            for (int i = 0; i < newSpikes.eventBuffer.Count; ++i)
+            lock (this)
             {
-                if (!((int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel+1] >= maxTrainingSpikesPerChannel))
+                for (int i = 0; i < newSpikes.eventBuffer.Count; ++i)
                 {
-                    spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel+1] = (int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel+1] + 1;
-                    trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
+                    if (!((int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] >= maxTrainingSpikesPerChannel))
+                    {
+                        spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] = (int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] + 1;
+                        trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
+                    }
                 }
             }
         }

@@ -96,14 +96,13 @@ namespace NeuroRighter
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPag_Gen = new System.Windows.Forms.TabPage();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
+            this.robustStim_checkbox = new System.Windows.Forms.CheckBox();
             this.numericUpDown_datSrvBufferSizeSec = new System.Windows.Forms.NumericUpDown();
             this.label24 = new System.Windows.Forms.Label();
-            this.numericUpDown_DACPollingPeriodSec = new System.Windows.Forms.NumericUpDown();
             this.label23 = new System.Windows.Forms.Label();
             this.numericUpDown_ADCPollingPeriodSec = new System.Windows.Forms.NumericUpDown();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox23 = new System.Windows.Forms.GroupBox();
-            this.label21 = new System.Windows.Forms.Label();
             this.tabPage_AuxInput = new System.Windows.Forms.TabPage();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
             this.comboBox_AuxDigInputPort = new System.Windows.Forms.ComboBox();
@@ -129,7 +128,8 @@ namespace NeuroRighter
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
-            this.robustStim_checkbox = new System.Windows.Forms.CheckBox();
+            this.numericUpDown_DACPollingPeriodSec = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -154,12 +154,12 @@ namespace NeuroRighter
             this.tabPag_Gen.SuspendLayout();
             this.groupBox21.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_datSrvBufferSizeSec)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ADCPollingPeriodSec)).BeginInit();
             this.tabPage_AuxInput.SuspendLayout();
             this.groupBox20.SuspendLayout();
             this.groupBox19.SuspendLayout();
             this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).BeginInit();
             this.SuspendLayout();
             // 
             // button_accept
@@ -886,6 +886,16 @@ namespace NeuroRighter
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "DAC Polling/Buffering";
             // 
+            // robustStim_checkbox
+            // 
+            this.robustStim_checkbox.AutoSize = true;
+            this.robustStim_checkbox.Location = new System.Drawing.Point(9, 120);
+            this.robustStim_checkbox.Name = "robustStim_checkbox";
+            this.robustStim_checkbox.Size = new System.Drawing.Size(173, 17);
+            this.robustStim_checkbox.TabIndex = 22;
+            this.robustStim_checkbox.Text = "recover from stimulation failures";
+            this.robustStim_checkbox.UseVisualStyleBackColor = true;
+            // 
             // numericUpDown_datSrvBufferSizeSec
             // 
             this.numericUpDown_datSrvBufferSizeSec.DecimalPlaces = 3;
@@ -922,34 +932,6 @@ namespace NeuroRighter
             this.label24.Size = new System.Drawing.Size(122, 13);
             this.label24.TabIndex = 21;
             this.label24.Text = "ADC Polling Period (sec)";
-            // 
-            // numericUpDown_DACPollingPeriodSec
-            // 
-            this.numericUpDown_DACPollingPeriodSec.DecimalPlaces = 3;
-            this.numericUpDown_DACPollingPeriodSec.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            196608});
-            this.numericUpDown_DACPollingPeriodSec.Location = new System.Drawing.Point(173, 54);
-            this.numericUpDown_DACPollingPeriodSec.Maximum = new decimal(new int[] {
-            15,
-            0,
-            0,
-            131072});
-            this.numericUpDown_DACPollingPeriodSec.Minimum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            196608});
-            this.numericUpDown_DACPollingPeriodSec.Name = "numericUpDown_DACPollingPeriodSec";
-            this.numericUpDown_DACPollingPeriodSec.Size = new System.Drawing.Size(89, 20);
-            this.numericUpDown_DACPollingPeriodSec.TabIndex = 19;
-            this.numericUpDown_DACPollingPeriodSec.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
             // 
             // label23
             // 
@@ -1005,15 +987,6 @@ namespace NeuroRighter
             this.groupBox23.TabIndex = 15;
             this.groupBox23.TabStop = false;
             this.groupBox23.Text = "Analog Input #1";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 58);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(122, 13);
-            this.label21.TabIndex = 1;
-            this.label21.Text = "DAC Polling Period (sec)";
             // 
             // tabPage_AuxInput
             // 
@@ -1260,15 +1233,42 @@ namespace NeuroRighter
             this.HWpersistWindowComponent.Form = this;
             this.HWpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
-            // robustStim_checkbox
+            // numericUpDown_DACPollingPeriodSec
             // 
-            this.robustStim_checkbox.AutoSize = true;
-            this.robustStim_checkbox.Location = new System.Drawing.Point(9, 120);
-            this.robustStim_checkbox.Name = "robustStim_checkbox";
-            this.robustStim_checkbox.Size = new System.Drawing.Size(173, 17);
-            this.robustStim_checkbox.TabIndex = 22;
-            this.robustStim_checkbox.Text = "recover from stimulation failures";
-            this.robustStim_checkbox.UseVisualStyleBackColor = true;
+            this.numericUpDown_DACPollingPeriodSec.DecimalPlaces = 3;
+            this.numericUpDown_DACPollingPeriodSec.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_DACPollingPeriodSec.Location = new System.Drawing.Point(173, 54);
+            this.numericUpDown_DACPollingPeriodSec.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            131072});
+            this.numericUpDown_DACPollingPeriodSec.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            196608});
+            this.numericUpDown_DACPollingPeriodSec.Name = "numericUpDown_DACPollingPeriodSec";
+            this.numericUpDown_DACPollingPeriodSec.Size = new System.Drawing.Size(89, 20);
+            this.numericUpDown_DACPollingPeriodSec.TabIndex = 19;
+            this.numericUpDown_DACPollingPeriodSec.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 58);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(122, 13);
+            this.label21.TabIndex = 1;
+            this.label21.Text = "DAC Polling Period (sec)";
             // 
             // HardwareSettings
             // 
@@ -1326,7 +1326,6 @@ namespace NeuroRighter
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_datSrvBufferSizeSec)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ADCPollingPeriodSec)).EndInit();
             this.tabPage_AuxInput.ResumeLayout(false);
             this.groupBox20.ResumeLayout(false);
@@ -1335,6 +1334,7 @@ namespace NeuroRighter
             this.groupBox19.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1427,7 +1427,6 @@ namespace NeuroRighter
         private System.Windows.Forms.TabPage tabPag_Gen;
         private System.Windows.Forms.GroupBox groupBox21;
         private System.Windows.Forms.GroupBox groupBox23;
-        private System.Windows.Forms.Label label21;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.GroupBox groupBox22;
         private System.Windows.Forms.Label label20;
@@ -1439,8 +1438,9 @@ namespace NeuroRighter
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.NumericUpDown numericUpDown_ADCPollingPeriodSec;
         private System.Windows.Forms.NumericUpDown numericUpDown_datSrvBufferSizeSec;
-        private System.Windows.Forms.NumericUpDown numericUpDown_DACPollingPeriodSec;
         private System.Windows.Forms.NumericUpDown numericUpDown_PreAmpGain;
         private System.Windows.Forms.CheckBox robustStim_checkbox;
+        private System.Windows.Forms.NumericUpDown numericUpDown_DACPollingPeriodSec;
+        private System.Windows.Forms.Label label21;
     }
 }

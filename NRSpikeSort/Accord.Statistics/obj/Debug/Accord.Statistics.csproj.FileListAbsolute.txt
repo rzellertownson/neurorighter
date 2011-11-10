@@ -30,3 +30,6 @@ C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.M
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb

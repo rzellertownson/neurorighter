@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Forms;
 using rawType = System.Double;
 using NRSpikeSort;
+using ZedGraph;
 
 namespace NeuroRighter.SpikeDetection
 {
@@ -153,6 +154,7 @@ namespace NeuroRighter.SpikeDetection
                 {
                     int spikesCollected = spikeSorter.trainingSpikes.eventBuffer.Count;
                     this.label_NumSpikesCollected.Text = spikesCollected.ToString();
+                    UpdateSpikeCollectionPlot();
                 }
             }
         }
@@ -522,6 +524,9 @@ namespace NeuroRighter.SpikeDetection
             button_HoardSpikes.Text = "Hoard";
             button_SaveSpikeSorter.Enabled = false;
             UpdateCollectionBar();
+
+            // Reset the plot
+            RefreshSpikeCollectionPlot();
         }
 
         private void numericUpDown_ProjDim_ValueChanged(object sender, EventArgs e)
@@ -535,6 +540,81 @@ namespace NeuroRighter.SpikeDetection
             if (spikeSorter != null)
                 spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
         }
+
+        private void RefreshSpikeCollectionPlot()
+        {
+            // Create GraphPanes
+            zgc.GraphPane.CurveList.Clear();
+            GraphPane projPane = zgc.GraphPane;
+
+            // Show data
+            zgc.AxisChange();
+            zgc.Invalidate();
+        }
+
+        private void UpdateSpikeCollectionPlot()
+        {
+            // Create GraphPanes
+            zgc.GraphPane.CurveList.Clear();
+            GraphPane numSpikesPane = zgc.GraphPane;
+            List<LineItem> myCurves = new List<LineItem>();
+
+            // Plot the spikes
+            PointPairList ppl = new PointPairList();
+            PointPairList pplThresh = new PointPairList();
+            for (int i = 0; i < numChannels; ++i)
+            {
+                lock (this)
+                {
+                    ppl.Add((double)i+1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i+1]));
+                }
+            }
+            pplThresh.Add(0,(double)numericUpDown_MinSpikesToTrain.Value);
+            pplThresh.Add(numChannels,(double)numericUpDown_MinSpikesToTrain.Value);
+
+            // Add data tp plot
+            myCurves.Add(numSpikesPane.AddCurve("numSpikes",ppl,Color.RoyalBlue, SymbolType.None));
+            myCurves.Add(numSpikesPane.AddCurve("trainThresh", pplThresh, Color.Red, SymbolType.None));
+
+            // Set plot parameteters
+            SetMinorPlotParameters(ref numSpikesPane);
+
+             // Show data
+            zgc.AxisChange();
+            zgc.Invalidate();
+
+        }
+
+        private void SetMinorPlotParameters(ref GraphPane gp)
+        {
+            // Text settings
+            gp.Legend.IsVisible = false;
+            gp.Title.IsVisible = false;
+            gp.XAxis.Title.IsVisible = false;
+            gp.YAxis.Title.IsVisible = false;
+
+            // turn off the opposite tics so the Y tics don't show up on the Y2 axis
+            gp.XAxis.IsVisible = false;
+            gp.YAxis.IsVisible = false;
+
+            // Display the Y zero line
+            gp.YAxis.MajorGrid.IsZeroLine = false;
+
+            // Align the Y axis labels so they are flush to the axis
+            gp.YAxis.Scale.Align = AlignP.Inside;
+
+            // Manually set the axis range
+            gp.YAxis.Scale.Min = 0;
+            gp.YAxis.Scale.Max = spikeSorter.maxTrainingSpikesPerChannel;
+            gp.XAxis.Scale.Min = 1;
+            gp.XAxis.Scale.Max = numChannels;
+
+            // Fill the axis background with a gradient
+            gp.Chart.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
+        }
+
+
+
 
     }
 }

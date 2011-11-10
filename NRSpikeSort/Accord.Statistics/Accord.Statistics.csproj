@@ -43,13 +43,13 @@
     <CodeAnalysisRuleSet>Migrated rules for Accord.Statistics.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>..\..\Release\Accord.Statistics.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Accord.Statistics.XML</DocumentationFile>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
     <RunCodeAnalysis>true</RunCodeAnalysis>

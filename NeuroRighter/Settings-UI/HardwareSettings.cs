@@ -236,7 +236,6 @@ namespace NeuroRighter
             radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
             radioButton_8Mux.Enabled = checkBox_useStimulator.Checked;
             numericUpDown_ADCPollingPeriodSec.Value = (decimal)Properties.Settings.Default.ADCPollingPeriodSec;
-            numericUpDown_DACPollingPeriodSec.Value = (decimal)Properties.Settings.Default.DACPollingPeriodSec;
             numericUpDown_datSrvBufferSizeSec.Value = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
             numericUpDown_PreAmpGain.Value = (decimal)Properties.Settings.Default.PreAmpGain;
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
@@ -291,7 +290,7 @@ namespace NeuroRighter
         {
             // Recording selections
             Properties.Settings.Default.datSrvBufferSizeSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
-            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
+            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
             Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
             Properties.Settings.Default.AnalogInDevice = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.AnalogInDevice.Clear();

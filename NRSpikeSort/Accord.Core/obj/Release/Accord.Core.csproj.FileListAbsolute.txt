@@ -72,3 +72,9 @@ C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Core\bin\Release\Accord
 C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\Users\Jon\Desktop\neurorighter-394\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\bin\Release\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\bin\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\bin\Release\Accord.xml
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-head\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

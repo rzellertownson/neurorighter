@@ -80,7 +80,6 @@ namespace NeuroRighter
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
-            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             this.currentRef = new int[2];
 
             // Create a new spike detection form so we can access its parameters
@@ -288,6 +287,10 @@ namespace NeuroRighter
                         // Find out how many devs and channels/dev we are going to need
                         int numDevices = (numChannels > 32 ? Properties.Settings.Default.AnalogInDevice.Count : 1);
                         numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
+
+                        // Set spike buffer lengths
+                        spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+                        lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
 
                         // Create spike aquisition task list
                         spikeTask = new List<Task>(numDevices);

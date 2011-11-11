@@ -54,12 +54,12 @@ namespace NeuroRighter.Output
         /// <summary>
         /// This method must be overriden in a derived closed-loop class.
         /// </summary>
-        internal protected abstract void Run();
+        internal protected abstract void Setup();
 
         /// <summary>
         /// This method must be overriden in a derived closed-loop class.
         /// </summary>
-        internal protected virtual void BuffLoadEvent(object sender, EventArgs e)
+        internal protected virtual void Loop(object sender, EventArgs e)
         { }
         
 

@@ -53,7 +53,7 @@ namespace NeuroRighter.Output
             this.Debugger = Debugger;
             this.NRFilePath = NRFilePath;
             this.NRRecording = NRRecording;
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.BuffLoadEvent);
+            buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.Loop);
         }
 
         internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, double[] standardWave)
@@ -110,7 +110,7 @@ namespace NeuroRighter.Output
                 if (useManStimWave)
                     CLE.GrabWave(guiWave);
                 CLE.Start();//set the 'running' bool to true;
-                CLE.Run();//run the user code
+                CLE.Setup();//run the user code
                 bw_returned = true;
             }
             catch (Exception me)

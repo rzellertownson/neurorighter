@@ -507,13 +507,13 @@ namespace NRSpikeSort
             this.rissanen = (double[])info.GetValue("rissanen", typeof(double[]));
             this.mdl = (double[])info.GetValue("mdl", typeof(double[]));
             this.channelNumber = (int)info.GetValue("channelNumber", typeof(int));
-            //this.classes = (int[])info.GetValue("classes", typeof(int[]));
             this.K = (int)info.GetValue("K", typeof(int));
             this.projectionDimension = (int)info.GetValue("projectionDimension", typeof(int));
             this.currentProjection = (double[][])info.GetValue("currentProjection", typeof(double[][]));
             this.maxK = (int)info.GetValue("maxK", typeof(int));
             this.gmm = (GaussianMixtureModel)info.GetValue("gmm", typeof(GaussianMixtureModel));
             this.pca = (PrincipalComponentAnalysis)info.GetValue("pca", typeof(PrincipalComponentAnalysis));
+            this.unitStartIndex = (int)info.GetValue("unitStartIndex", typeof(int));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -523,13 +523,13 @@ namespace NRSpikeSort
             info.AddValue("rissanen", this.rissanen);
             info.AddValue("mdl", this.mdl);
             info.AddValue("channelNumber", this.channelNumber);
-            //info.AddValue("classes", this.classes);
             info.AddValue("K", this.K);
             info.AddValue("projectionDimension", this.projectionDimension);
             info.AddValue("currentProjection", this.currentProjection);
             info.AddValue("maxK", this.maxK);
             info.AddValue("gmm", this.gmm);
             info.AddValue("pca", this.pca);
+            info.AddValue("unitStartIndex", this.unitStartIndex);
         }
 
         #endregion

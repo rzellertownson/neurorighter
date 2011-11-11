@@ -291,7 +291,7 @@ namespace NeuroRighter
         {
             // Recording selections
             Properties.Settings.Default.datSrvBufferSizeSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
-            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
+            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
             Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
             Properties.Settings.Default.AnalogInDevice = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.AnalogInDevice.Clear();

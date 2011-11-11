@@ -220,6 +220,10 @@ namespace NeuroRighter
             // update the recordingSettings object
             recordingSettings.Refresh();
 
+            // Set spike buffer lengths
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
+            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+
             // update recording type to nominal
             isNormalRecording = true;
 
@@ -302,8 +306,7 @@ namespace NeuroRighter
                 MessageBox.Show(exception.Message); //Display Errors
                 reset();
             }
-        }
-
+        }            
         // Look at the stimulation hardware settings and create NI Tasks that reflect the user's choices
         private void UpdateStimulationSettings()
         {

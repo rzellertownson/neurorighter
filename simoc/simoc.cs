@@ -65,7 +65,7 @@ namespace simoc
         // File writer
         private FileWriter simocOut;
 
-        protected override void Run()
+        protected override void Setup()
         {
 
             if (!finishedWithRun)
@@ -132,7 +132,7 @@ namespace simoc
             controlPanel.CloseSIMOC();
         }
 
-        protected override void BuffLoadEvent(object sender, EventArgs e)
+        protected override void Loop(object sender, EventArgs e)
         {
             if (Running && finishedWithRun && simocStarted)
             {

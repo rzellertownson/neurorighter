@@ -3,3 +3,8 @@ C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\bin\Deb
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
 C:\Users\Jon\Desktop\WORK_IN_PROGRESS\clustering\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb

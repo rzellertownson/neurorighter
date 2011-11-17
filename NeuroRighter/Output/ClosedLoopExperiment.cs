@@ -18,7 +18,7 @@ namespace NeuroRighter.Output
         protected NRDataSrv DatSrv;
         protected NRStimSrv StimSrv;
         protected RealTimeDebugger Debugger;
-        protected bool Running;
+        public bool Running;
         protected double[] cannedWaveform;
         protected int fs;
         protected string NRFilePath;

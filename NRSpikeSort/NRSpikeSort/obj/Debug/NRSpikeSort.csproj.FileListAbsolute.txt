@@ -102,3 +102,28 @@ C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\NRSpikeSort\bin\Debug\csmatio.xml
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll
 C:\RLOrtman\NeuroRighter_rev384\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\NRSpikeSort.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.MachineLearning.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Math.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Statistics.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.Math.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Mowog.PersistWindowState.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.MachineLearning.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Math.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.Math.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\NeuroRighter.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\NeuroRighter.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\bin\Debug\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.pdb

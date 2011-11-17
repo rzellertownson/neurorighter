@@ -53,7 +53,7 @@ namespace NeuroRighter.Output
             this.Debugger = Debugger;
             this.NRFilePath = NRFilePath;
             this.NRRecording = NRRecording;
-            buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.Loop);
+            
         }
 
         internal ClosedLoopOut(ClosedLoopExperiment CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, double[] standardWave)
@@ -71,7 +71,26 @@ namespace NeuroRighter.Output
             bw.ProgressChanged += new ProgressChangedEventHandler(bw_ProgressChanged);
             bw.WorkerSupportsCancellation = true;
             bw.WorkerReportsProgress = true;
-            
+
+            try
+            {
+                //pnpcl = new pnpClosedLoop();
+                bw_returned = false;
+                CLE.Grab(DatSrv, StimSrv, Debugger, outputSampFreq, NRFilePath, NRRecording);
+
+                if (useManStimWave)
+                    CLE.GrabWave(guiWave);
+
+                CLE.Setup();//run the user code
+                buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.Loop);
+                CLE.Start();//set the 'running' bool to true;
+
+
+            }
+            catch (Exception me)
+            {
+                MessageBox.Show("***Error while running closed loop experiment.*** \r \r" + me.Message);
+            }
             
             bw.RunWorkerAsync();
         }
@@ -101,22 +120,13 @@ namespace NeuroRighter.Output
         private void bw_DoWork(Object sender, DoWorkEventArgs e)
         {
 
-            try
+            while (CLE.Running)
             {
-                //pnpcl = new pnpClosedLoop();
-                bw_returned =false;
-                CLE.Grab(DatSrv, StimSrv, Debugger, outputSampFreq, NRFilePath, NRRecording);
-                
-                if (useManStimWave)
-                    CLE.GrabWave(guiWave);
-                CLE.Start();//set the 'running' bool to true;
-                CLE.Setup();//run the user code
-                bw_returned = true;
+                System.Threading.Thread.Sleep(1000);
             }
-            catch (Exception me)
-            {
-                MessageBox.Show("***Error while running closed loop experiment.*** \r \r" + me.Message);
-            }
+            bw_returned = true;
+
+            
         }
 
     }

@@ -65,6 +65,7 @@ namespace Accord.Statistics.Distributions.Multivariate
 
         // Derived measures
         private double[] variance;
+        private double[] stdEllipsoid;
 
 
         /// <summary>
@@ -208,6 +209,27 @@ namespace Accord.Statistics.Distributions.Multivariate
         }
 
         /// <summary>
+        ///   Gets the std ellipsoid for this distribution.
+        /// </summary>
+        /// 
+        public override void SetEllipsoid(double numSTD)
+        {
+            if (variance == null)
+                variance = Matrix.Diagonal(covariance);
+
+            stdEllipsoid = new double[variance.Length];
+            for (int i = 0; i < variance.Length; i++)
+            {
+                stdEllipsoid[i] = 1.0 / (numSTD * Math.Sqrt(variance[i]));
+            }
+        }
+
+        public override double[] StdEllipsoid
+        {
+            get { return stdEllipsoid; }
+        }
+
+        /// <summary>
         ///   This method is not supported.
         /// </summary>
         /// 
@@ -261,7 +283,6 @@ namespace Accord.Statistics.Distributions.Multivariate
 
             return r > 1 ? 1 : r;
         }
-
 
         /// <summary>
         ///   Fits the underlying distribution to a given set of observations.

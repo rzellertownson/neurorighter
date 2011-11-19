@@ -91,12 +91,12 @@ namespace NRSpikeSort
         /// <summary>
         /// The maximum number of waveforms used for training a GMM on each channel
         /// </summary>
-        public int maxTrainingSpikesPerChannel = 500;
+        public int maxTrainingSpikesPerChannel = 150;
 
         /// <summary>
         /// Minimum probability nessesary to classify a spike
         /// </summary>
-        public double minProbability = 0;
+        public double numSTD = 10;
 
         // Private
         private int numberChannels;
@@ -109,7 +109,7 @@ namespace NRSpikeSort
         /// <param name="numberChannels">Number of channels to make sorters for</param>
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double minProbability)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double numSTD)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -122,7 +122,7 @@ namespace NRSpikeSort
             }
             this.projectionType = "MaxInflection";
             this.projectionDimension = 1;
-            this.minProbability = minProbability;
+            this.numSTD = numSTD;
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace NRSpikeSort
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
         /// <param name="projectionDim">Dimension of projection if using PCA</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double minProbability, int projectionDim)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double numSTD, int projectionDim)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -145,7 +145,7 @@ namespace NRSpikeSort
             }
             this.projectionType = "PCA";
             this.projectionDimension = projectionDim;
-            this.minProbability = minProbability;
+            this.numSTD = numSTD;
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace NRSpikeSort
                 {
 
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, minProbability);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, numSTD);
 
                     // Project Data
                     thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
@@ -273,7 +273,7 @@ namespace NRSpikeSort
                 if (spikesOnChan.Count >= minSpikes)
                 {
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, minProbability, projectionDimension);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, numSTD, projectionDimension);
 
                     // Project Data
                     if (projectionType == "PCA")
@@ -347,12 +347,15 @@ namespace NRSpikeSort
                     thisChannelModel.HaarProject(spikesOnChan.ToList());
 
                 // Sort the spikes
-                thisChannelModel.Classify();
+                thisChannelModel.ClassifyThresh();
 
                 // Update the newSpikes buffer 
                 for (int j = 0; j < spikesOnChan.Count; ++j)
                 {
-                    spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
+                    if (thisChannelModel.classes[j] < 0)
+                        spikesOnChan[j].SetUnit((Int16)0);
+                    else
+                        spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
                 }
 
             }
@@ -401,12 +404,15 @@ namespace NRSpikeSort
                 projections2D = thisChannelModel.Return2DProjection();
 
                 // Sort the spikes
-                thisChannelModel.Classify();
+                thisChannelModel.ClassifyThresh();
 
                 // Update the newSpikes buffer 
                 for (int j = 0; j < spikesOnChan.Count; ++j)
                 {
-                    spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
+                    if (thisChannelModel.classes[j] < 0)
+                        spikesOnChan[j].SetUnit((Int16)0);
+                    else
+                        spikesOnChan[j].SetUnit((Int16)(thisChannelModel.classes[j] + thisChannelModel.unitStartIndex + 1));
                 }
 
             }
@@ -430,6 +436,7 @@ namespace NRSpikeSort
             this.maxTrainingSpikesPerChannel = (int)info.GetValue("maxTrainingSpikesPerChannel", typeof(int));
             this.spikesCollectedPerChannel = (Hashtable)info.GetValue("spikesCollectedPerChannel", typeof(Hashtable));
             this.totalNumberOfUnits = (int)info.GetValue("totalNumberOfUnits", typeof(int));
+            this.numSTD = (double)info.GetValue("numSTD", typeof(double));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -448,6 +455,7 @@ namespace NRSpikeSort
             info.AddValue("maxTrainingSpikesPerChannel", this.maxTrainingSpikesPerChannel);
             info.AddValue("spikesCollectedPerChannel", this.spikesCollectedPerChannel);
             info.AddValue("totalNumberOfUnits", this.totalNumberOfUnits);
+            info.AddValue("numSTD", this.numSTD);
         }
 
         #endregion

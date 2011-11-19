@@ -64,6 +64,7 @@ namespace Accord.Statistics.Distributions.Multivariate
         double[] mean;
         double[,] covariance;
         double[] variance;
+        double[] stdEllipsoid;
 
 
         /// <summary>
@@ -253,7 +254,7 @@ namespace Accord.Statistics.Distributions.Multivariate
             bool converged = false;
 
             int numTries = 0;
-            while (!converged  && numTries < 500)
+            while (!converged && numTries < 500)
             {
                 // 2. Expectation: Evaluate the responsibilities using the
                 //    current parameter values.
@@ -450,6 +451,28 @@ namespace Accord.Statistics.Distributions.Multivariate
 
                 return variance;
             }
+        }
+
+        /// <summary>
+        ///   Gets the std ellipsoid for this distribution.
+        /// </summary>
+        /// 
+        public override void SetEllipsoid(double numSTD)
+        {
+            double[] var = Matrix.Diagonal(Covariance);
+            stdEllipsoid = new double[var.Length];
+            for (int i = 0; i < var.Length; i++)
+            {
+                stdEllipsoid[i] = numSTD * Math.Sqrt(var[i]);
+            }
+        }
+
+        /// <summary>
+        /// Return the standard ellipsoid for this mv gaussian
+        /// </summary>
+        public override double[] StdEllipsoid
+        {
+            get { return stdEllipsoid; }
         }
 
         /// <summary>

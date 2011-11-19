@@ -71,8 +71,8 @@
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
     <Reference Include="Mowog.PersistWindowState, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.Analysis.Professional, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.Common, Version=9.1.35.159, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
-    <Reference Include="NationalInstruments.DAQmx, Version=9.4.35.50, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
+    <Reference Include="NationalInstruments.Common, Version=9.0.35.362, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=9.2.35.82, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=x86" />
     <Reference Include="NationalInstruments.UI, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.UI.WindowsForms, Version=9.0.35.292, Culture=neutral, PublicKeyToken=18cbae0f9955702a, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -294,6 +294,8 @@
     <Compile Include="SpikeDetection\LimAda.cs" />
     <Compile Include="SpikeDetection\RMSThresholdFixed.cs" />
     <Compile Include="SpikeDetection\SpikeDetector.cs" />
+    <Compile Include="SpikeDetection\SpikeDetectorParameters.cs" />
+    <Compile Include="SpikeDetection\SpikeDetectorSerializer.cs" />
     <Compile Include="SpikeDetection\SpikeDetSettings.cs">
       <SubType>Form</SubType>
     </Compile>

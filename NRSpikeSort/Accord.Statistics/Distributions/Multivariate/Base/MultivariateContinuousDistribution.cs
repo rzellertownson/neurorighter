@@ -99,6 +99,16 @@ namespace Accord.Statistics.Distributions.Multivariate
         /// 
         public abstract double[,] Covariance { get; }
 
+        /// <summary>
+        ///  Sets the standard ellipsoid for this distrubtion
+        /// </summary>
+        /// <param name="numSTD"> Number of standard deviations the ellipsoid should stay from the mean.</param>
+        public abstract void SetEllipsoid(double numSTD);
+
+        /// <summary>
+        /// Gets the ellipsoid defining the boundary around the mean of this distrubtion past which are outliers.
+        /// </summary>
+        public abstract double[] StdEllipsoid { get; }
 
         /// <summary>
         ///   Gets the mode for this distribution.

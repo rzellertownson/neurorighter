@@ -62,16 +62,13 @@
             this.label8 = new System.Windows.Forms.Label();
             this.button_SaveAndClose = new System.Windows.Forms.Button();
             this.spkDetpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
-            this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label_SorterEngaged = new System.Windows.Forms.Label();
             this.button_EngageSpikeSorter = new System.Windows.Forms.Button();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.button_LoadSpikeSorter = new System.Windows.Forms.Button();
-            this.textBox_SorterLocation = new System.Windows.Forms.TextBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label18 = new System.Windows.Forms.Label();
             this.numericUpDown_MinClassificationProb = new System.Windows.Forms.NumericUpDown();
@@ -83,7 +80,6 @@
             this.label_Trained = new System.Windows.Forms.Label();
             this.textBox_Results = new System.Windows.Forms.TextBox();
             this.button_TrainSorter = new System.Windows.Forms.Button();
-            this.button_SaveSpikeSorter = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.numericUpDown_MinSpikesToTrain = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
@@ -96,6 +92,10 @@
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.button_HoardSpikes = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.saveDetectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSpikeFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSpikeFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MaxSpikeWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DeadTime)).BeginInit();
@@ -111,7 +111,6 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).BeginInit();
@@ -119,6 +118,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikesToTrain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_maxK)).BeginInit();
             this.groupBox7.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // numericUpDown_MinSpikeWidth
@@ -555,11 +555,11 @@
             // 
             // button_SaveAndClose
             // 
-            this.button_SaveAndClose.Location = new System.Drawing.Point(267, 576);
+            this.button_SaveAndClose.Location = new System.Drawing.Point(264, 601);
             this.button_SaveAndClose.Name = "button_SaveAndClose";
             this.button_SaveAndClose.Size = new System.Drawing.Size(104, 23);
             this.button_SaveAndClose.TabIndex = 59;
-            this.button_SaveAndClose.Text = "Close and Save";
+            this.button_SaveAndClose.Text = "Close";
             this.button_SaveAndClose.UseVisualStyleBackColor = true;
             this.button_SaveAndClose.Click += new System.EventHandler(this.button_SaveAndClose_Click);
             // 
@@ -567,6 +567,16 @@
             // 
             this.spkDetpersistWindowComponent.Form = this;
             this.spkDetpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.comboBox_spikeDetAlg);
+            this.groupBox4.Location = new System.Drawing.Point(6, 76);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(342, 64);
+            this.groupBox4.TabIndex = 58;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Detection Algorithm";
             // 
             // comboBox_spikeDetAlg
             // 
@@ -581,21 +591,11 @@
             this.comboBox_spikeDetAlg.TabIndex = 52;
             this.comboBox_spikeDetAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_spikeDetAlg_SelectedIndexChanged);
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.comboBox_spikeDetAlg);
-            this.groupBox4.Location = new System.Drawing.Point(6, 76);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(342, 64);
-            this.groupBox4.TabIndex = 58;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Detection Algorithm";
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(2, 1);
+            this.tabControl1.Location = new System.Drawing.Point(2, 26);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(369, 569);
@@ -623,7 +623,6 @@
             // 
             this.tabPage2.Controls.Add(this.label_SorterEngaged);
             this.tabPage2.Controls.Add(this.button_EngageSpikeSorter);
-            this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -654,34 +653,6 @@
             this.button_EngageSpikeSorter.UseVisualStyleBackColor = true;
             this.button_EngageSpikeSorter.Click += new System.EventHandler(this.button_EngageSpikeSorter_Click);
             // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.button_LoadSpikeSorter);
-            this.groupBox6.Controls.Add(this.textBox_SorterLocation);
-            this.groupBox6.Location = new System.Drawing.Point(7, 447);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(348, 53);
-            this.groupBox6.TabIndex = 74;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Load Spike Sorter";
-            // 
-            // button_LoadSpikeSorter
-            // 
-            this.button_LoadSpikeSorter.Location = new System.Drawing.Point(12, 19);
-            this.button_LoadSpikeSorter.Name = "button_LoadSpikeSorter";
-            this.button_LoadSpikeSorter.Size = new System.Drawing.Size(73, 23);
-            this.button_LoadSpikeSorter.TabIndex = 73;
-            this.button_LoadSpikeSorter.Text = "Load";
-            this.button_LoadSpikeSorter.UseVisualStyleBackColor = true;
-            this.button_LoadSpikeSorter.Click += new System.EventHandler(this.button_LoadSpikeSorter_Click);
-            // 
-            // textBox_SorterLocation
-            // 
-            this.textBox_SorterLocation.Location = new System.Drawing.Point(92, 20);
-            this.textBox_SorterLocation.Name = "textBox_SorterLocation";
-            this.textBox_SorterLocation.Size = new System.Drawing.Size(244, 20);
-            this.textBox_SorterLocation.TabIndex = 0;
-            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.label18);
@@ -698,7 +669,7 @@
             this.groupBox5.Controls.Add(this.groupBox7);
             this.groupBox5.Location = new System.Drawing.Point(7, 6);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(348, 435);
+            this.groupBox5.Size = new System.Drawing.Size(348, 497);
             this.groupBox5.TabIndex = 73;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "New Spike Sorter";
@@ -708,34 +679,29 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(9, 124);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(172, 13);
+            this.label18.Size = new System.Drawing.Size(173, 13);
             this.label18.TabIndex = 81;
-            this.label18.Text = "Minimum likelihood to classify spike";
+            this.label18.Text = "Number of std. deviations for outlier";
             // 
             // numericUpDown_MinClassificationProb
             // 
             this.numericUpDown_MinClassificationProb.BackColor = System.Drawing.Color.LawnGreen;
-            this.numericUpDown_MinClassificationProb.DecimalPlaces = 10;
+            this.numericUpDown_MinClassificationProb.DecimalPlaces = 2;
             this.numericUpDown_MinClassificationProb.Increment = new decimal(new int[] {
             1,
             0,
             0,
-            589824});
+            65536});
             this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
-            this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.numericUpDown_MinClassificationProb.Name = "numericUpDown_MinClassificationProb";
             this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_MinClassificationProb.TabIndex = 82;
             this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinClassificationProb.Value = new decimal(new int[] {
-            1,
+            45,
             0,
             0,
-            262144});
+            65536});
             this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
             // 
             // comboBox_ProjectionType
@@ -798,10 +764,9 @@
             this.groupBox8.Controls.Add(this.label_Trained);
             this.groupBox8.Controls.Add(this.textBox_Results);
             this.groupBox8.Controls.Add(this.button_TrainSorter);
-            this.groupBox8.Controls.Add(this.button_SaveSpikeSorter);
             this.groupBox8.Location = new System.Drawing.Point(6, 244);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(336, 185);
+            this.groupBox8.Size = new System.Drawing.Size(336, 247);
             this.groupBox8.TabIndex = 76;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "2. Train Classifier";
@@ -810,7 +775,7 @@
             // 
             this.label_Trained.AutoSize = true;
             this.label_Trained.ForeColor = System.Drawing.Color.Red;
-            this.label_Trained.Location = new System.Drawing.Point(83, 161);
+            this.label_Trained.Location = new System.Drawing.Point(83, 223);
             this.label_Trained.Name = "label_Trained";
             this.label_Trained.Size = new System.Drawing.Size(129, 13);
             this.label_Trained.TabIndex = 75;
@@ -823,30 +788,19 @@
             this.textBox_Results.Multiline = true;
             this.textBox_Results.Name = "textBox_Results";
             this.textBox_Results.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Results.Size = new System.Drawing.Size(324, 131);
+            this.textBox_Results.Size = new System.Drawing.Size(324, 193);
             this.textBox_Results.TabIndex = 72;
             // 
             // button_TrainSorter
             // 
             this.button_TrainSorter.Enabled = false;
-            this.button_TrainSorter.Location = new System.Drawing.Point(6, 156);
+            this.button_TrainSorter.Location = new System.Drawing.Point(6, 218);
             this.button_TrainSorter.Name = "button_TrainSorter";
             this.button_TrainSorter.Size = new System.Drawing.Size(73, 23);
             this.button_TrainSorter.TabIndex = 71;
             this.button_TrainSorter.Text = "Train";
             this.button_TrainSorter.UseVisualStyleBackColor = true;
             this.button_TrainSorter.Click += new System.EventHandler(this.button_TrainSorter_Click);
-            // 
-            // button_SaveSpikeSorter
-            // 
-            this.button_SaveSpikeSorter.Enabled = false;
-            this.button_SaveSpikeSorter.Location = new System.Drawing.Point(215, 156);
-            this.button_SaveSpikeSorter.Name = "button_SaveSpikeSorter";
-            this.button_SaveSpikeSorter.Size = new System.Drawing.Size(115, 23);
-            this.button_SaveSpikeSorter.TabIndex = 71;
-            this.button_SaveSpikeSorter.Text = "Save Spike Sorter";
-            this.button_SaveSpikeSorter.UseVisualStyleBackColor = true;
-            this.button_SaveSpikeSorter.Click += new System.EventHandler(this.button_SaveSpikeSorter_Click);
             // 
             // label7
             // 
@@ -1003,17 +957,52 @@
             this.button_HoardSpikes.UseVisualStyleBackColor = true;
             this.button_HoardSpikes.Click += new System.EventHandler(this.button_HoardSpikes_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveDetectorToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(371, 24);
+            this.menuStrip1.TabIndex = 73;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // saveDetectorToolStripMenuItem
+            // 
+            this.saveDetectorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveSpikeFilterToolStripMenuItem,
+            this.loadSpikeFilterToolStripMenuItem});
+            this.saveDetectorToolStripMenuItem.Name = "saveDetectorToolStripMenuItem";
+            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.saveDetectorToolStripMenuItem.Text = "File";
+            // 
+            // saveSpikeFilterToolStripMenuItem
+            // 
+            this.saveSpikeFilterToolStripMenuItem.Name = "saveSpikeFilterToolStripMenuItem";
+            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveSpikeFilterToolStripMenuItem.Text = "Save Spike Filter";
+            this.saveSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.saveSpikeFilterToolStripMenuItem_Click);
+            // 
+            // loadSpikeFilterToolStripMenuItem
+            // 
+            this.loadSpikeFilterToolStripMenuItem.Name = "loadSpikeFilterToolStripMenuItem";
+            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadSpikeFilterToolStripMenuItem.Text = "Load Spike Filter";
+            this.loadSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.loadSpikeFilterToolStripMenuItem_Click);
+            // 
             // SpikeDetSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(379, 611);
+            this.ClientSize = new System.Drawing.Size(371, 634);
             this.ControlBox = false;
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.button_SaveAndClose);
+            this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "SpikeDetSettings";
             this.Text = "Spike Detection Settings";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinSpikeWidth)).EndInit();
@@ -1035,8 +1024,6 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).EndInit();
@@ -1047,7 +1034,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_maxK)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1084,7 +1074,6 @@
         private System.Windows.Forms.Label label_PreSampConv;
         private System.Windows.Forms.Label label_PostSampConv;
         private Mowog.PersistWindowComponent spkDetpersistWindowComponent;
-        protected System.Windows.Forms.ComboBox comboBox_spikeDetAlg;
         private System.Windows.Forms.GroupBox groupBox4;
         protected System.Windows.Forms.ComboBox comboBox_noiseEstAlg;
         private System.Windows.Forms.TabControl tabControl1;
@@ -1092,9 +1081,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label_SorterEngaged;
         private System.Windows.Forms.Button button_EngageSpikeSorter;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.Button button_LoadSpikeSorter;
-        private System.Windows.Forms.TextBox textBox_SorterLocation;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label7;
@@ -1111,7 +1097,6 @@
         private System.Windows.Forms.Label label_Trained;
         private System.Windows.Forms.TextBox textBox_Results;
         private System.Windows.Forms.Button button_TrainSorter;
-        private System.Windows.Forms.Button button_SaveSpikeSorter;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label17;
@@ -1119,6 +1104,11 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.NumericUpDown numericUpDown_MinClassificationProb;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        protected System.Windows.Forms.ComboBox comboBox_spikeDetAlg;
+        private System.Windows.Forms.ToolStripMenuItem saveDetectorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSpikeFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadSpikeFilterToolStripMenuItem;
 
     }
 }

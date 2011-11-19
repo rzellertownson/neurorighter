@@ -68,12 +68,12 @@ namespace NRSpikeSort
         // The minimum probability of an observation to be pulled from any
         // of the Gaussian distriubtions making up the mixture for it to be 
         // considered a member of any class.
-        private double minProbability = 0;
+        private double numSTD = 10;
         private double minWaveformsForClass = 0.1;
         private int[] dimToUse;
         private bool[] kVar;
 
-        public ChannelModel(int channel, int maxK, int unitStartIndex, double minProbability)
+        public ChannelModel(int channel, int maxK, int unitStartIndex, double numSTD)
         {
             // Parameterize this channel model
             this.channelNumber = channel;
@@ -85,11 +85,11 @@ namespace NRSpikeSort
                 this.kVals[i] = maxK - i;
             }
             this.projectionDimension = 1;
-            this.minProbability = minProbability;
+            this.numSTD = numSTD;
             this.trained = false;
         }
 
-        public ChannelModel(int channel, int maxK, int unitStartIndex, double minProbability, int numPCs)
+        public ChannelModel(int channel, int maxK, int unitStartIndex, double numSTD, int numPCs)
         {
             // Parameterize this channel model
             this.channelNumber = channel;
@@ -101,13 +101,18 @@ namespace NRSpikeSort
                 this.kVals[i] = maxK - i;
             }
             this.projectionDimension = numPCs;
-            this.minProbability = minProbability;
+            this.numSTD = numSTD;
             this.trained = false;
         }
 
         internal void Classify()
         {
-            classes = gmm.Classify(currentProjection, minProbability);
+            classes = gmm.Classify(currentProjection);
+        }
+
+        internal void ClassifyThresh()
+        {
+            classes = gmm.ClassifyThresh(currentProjection);
         }
 
         internal void MaxInflectProject(List<SpikeEvent> spikes, int maxInflectionIndex)
@@ -497,6 +502,9 @@ namespace NRSpikeSort
             // Is this a functional classifier?
             if (gmm != null)
                 trained = true;
+
+            // Set the STD ellipsoid
+            gmm.SetStdEllipsoid(numSTD);
         }
 
         #region Serialization Constructors/Deconstructors
@@ -514,6 +522,7 @@ namespace NRSpikeSort
             this.gmm = (GaussianMixtureModel)info.GetValue("gmm", typeof(GaussianMixtureModel));
             this.pca = (PrincipalComponentAnalysis)info.GetValue("pca", typeof(PrincipalComponentAnalysis));
             this.unitStartIndex = (int)info.GetValue("unitStartIndex", typeof(int));
+            this.numSTD = (double)info.GetValue("numSTD",typeof(double));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -530,6 +539,7 @@ namespace NRSpikeSort
             info.AddValue("gmm", this.gmm);
             info.AddValue("pca", this.pca);
             info.AddValue("unitStartIndex", this.unitStartIndex);
+            info.AddValue("numSTD", this.numSTD);
         }
 
         #endregion

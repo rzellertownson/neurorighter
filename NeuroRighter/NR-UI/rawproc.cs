@@ -50,13 +50,20 @@ using ExtensionMethods;
 
 namespace NeuroRighter
 {
+
+
     ///<summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams
     ///and, if appropriate, sending those raw streams to file.</summary>
     ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
+
+        //DateTime spkClk;
+
         private void bwSpikes_DoWork(object sender, DoWorkEventArgs e)
         {
+
+            //spkClk = DateTime.Now;
             bool test = Properties.Settings.Default.recordSpikes;
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
@@ -317,7 +324,7 @@ namespace NeuroRighter
             #endregion
 
          //   Debugger.Write(taskNumber.ToString() + ": digital referencing spikes");
-
+            
             #region SpikeDetection
             ++(numSpikeReads[taskNumber]);
 
@@ -453,6 +460,8 @@ namespace NeuroRighter
         //    Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
             bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;
+
+            //Console.WriteLine(DateTime.Now.Subtract(spkClk).TotalMilliseconds.ToString());
         }
 
         internal delegate void spikesAcquiredHandler(object sender, bool inTrigger);

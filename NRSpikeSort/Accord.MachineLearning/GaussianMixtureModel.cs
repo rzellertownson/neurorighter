@@ -62,7 +62,6 @@ namespace Accord.MachineLearning
         internal MultivariateMixture<MultivariateNormalDistribution> model;
         private GaussianClusterCollection clusters;
 
-
         /// <summary>
         ///   Gets the Gaussian components of the mixture model.
         /// </summary>
@@ -133,7 +132,7 @@ namespace Accord.MachineLearning
                     error = errorNew;
                     kmeans = _kmeans;
                 }
-                
+
             }
             // Initialize the model with K-Means
             Initialize(kmeans);
@@ -308,7 +307,7 @@ namespace Accord.MachineLearning
         ///   The index of the most likely cluster
         ///   of the given observation. </returns>
         ///   
-        public int Classify(double[] observation, double minProbability)
+        public int ClassifyThresh(double[] observation)
         {
             if (observation == null)
                 throw new ArgumentNullException("observation");
@@ -320,6 +319,7 @@ namespace Accord.MachineLearning
             {
                 double p = model.ProbabilityDensityFunction(i, observation);
 
+
                 if (p > max)
                 {
                     max = p;
@@ -327,10 +327,11 @@ namespace Accord.MachineLearning
                 }
             }
 
-            if (max > minProbability)
+            if (PointIsNotOutlier(observation, imax))
                 return imax;
             else
                 return -1;
+
         }
 
         /// <summary>
@@ -394,15 +395,45 @@ namespace Accord.MachineLearning
         ///   An array containing the index of the most likely cluster
         ///   for each of the given observations. </returns>
         ///   
-        public int[] Classify(double[][] observations, double minProbability)
+        public int[] ClassifyThresh(double[][] observations)
         {
             if (observations == null)
                 throw new ArgumentNullException("observations");
 
             int[] result = new int[observations.Length];
             for (int i = 0; i < observations.Length; i++)
-                result[i] = Classify(observations[i], minProbability);
+                result[i] = ClassifyThresh(observations[i]);
             return result;
+        }
+
+
+        /// <summary>
+        /// Set the standard ellipsoid for all the gaussian components in the mixture model
+        /// </summary>
+        /// <param name="numSTD"></param>
+        public void SetStdEllipsoid(double numSTD)
+        {
+            for (int i = 0; i < model.Components.Length; i++)
+            {
+                model.Components[i].SetEllipsoid(numSTD);
+            }
+        }
+
+        /// <summary>
+        /// Calculate if an observation is outside of the standard ellipsoid defining outlier boundary for a givin distrubtion
+        /// </summary>
+        /// <param name="obs"> The observation </param>
+        /// <param name="dist"> The index of the distrubtion being tested </param>
+        /// <returns></returns>
+        public bool PointIsNotOutlier(double[] obs, int dist)
+        {
+            double tmpScl = 0;
+            for (int i = 0; i < obs.Length; i++)
+            {
+                tmpScl += (obs[i] - model.Components[dist].Mean[i]) * model.Components[dist].StdEllipsoid[i] * (obs[i] - model.Components[dist].Mean[i]);
+            }
+
+            return tmpScl <= 1.0;
         }
 
     }

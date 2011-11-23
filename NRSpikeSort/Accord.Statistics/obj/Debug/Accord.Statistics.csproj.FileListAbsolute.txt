@@ -42,3 +42,12 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb

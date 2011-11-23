@@ -4,54 +4,6 @@
         <name>Accord</name>
     </assembly>
     <members>
-        <member name="T:Accord.ConvergenceException">
-            <summary>
-              Algorithm Convergence Exception.
-            </summary>
-            
-            <remarks><para>The algorithm convergence exception is thrown in cases where a iterative
-            algorithm could not converge to a finite solution.</para>
-            </remarks>
-            
-        </member>
-        <member name="M:Accord.ConvergenceException.#ctor">
-            <summary>
-              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.ConvergenceException.#ctor(System.String)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
-            </summary>
-            
-            <param name="message">Message providing some additional information.</param>
-            
-        </member>
-        <member name="M:Accord.ConvergenceException.#ctor(System.String,System.Exception)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
-            </summary>
-            
-            <param name="message">Message providing some additional information.</param>
-            <param name="innerException">The exception that is the cause of the current exception.</param>
-            
-        </member>
-        <member name="M:Accord.ConvergenceException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
-            </summary>
-            
-            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-            <exception cref="T:System.ArgumentNullException">
-            The <paramref name="info"/> parameter is null.
-            </exception>
-            <exception cref="T:System.Runtime.Serialization.SerializationException">
-            The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
-            </exception>
-            
-        </member>
         <member name="T:Accord.NonPositiveDefiniteMatrixException">
             <summary>
               Non-Positive Definite Matrix Exception.
@@ -87,6 +39,53 @@
         <member name="M:Accord.NonPositiveDefiniteMatrixException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Initializes a new instance of the <see cref="T:Accord.NonPositiveDefiniteMatrixException"/> class.
+            </summary>
+            
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">
+            The <paramref name="info"/> parameter is null.
+            </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">
+            The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
+            </exception>
+            
+        </member>
+        <member name="T:Accord.NonSymmetricMatrixException">
+            <summary>
+              Non-Symmetric Matrix Exception.
+            </summary>
+            
+            <remarks><para>The not symmetric matrix exception is thrown in cases where a method 
+            expects a matrix to be symmetric but it is not.</para>
+            </remarks>
+            
+        </member>
+        <member name="M:Accord.NonSymmetricMatrixException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+            </summary>
+        </member>
+        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+            </summary>
+            
+            <param name="message">Message providing some additional information.</param>
+            
+        </member>
+        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+            </summary>
+            
+            <param name="message">Message providing some additional information.</param>
+            <param name="innerException">The exception that is the cause of the current exception.</param>
+            
+        </member>
+        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
             </summary>
             
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
@@ -146,41 +145,42 @@
             </exception>
             
         </member>
-        <member name="T:Accord.NonSymmetricMatrixException">
+        <member name="T:Accord.ConvergenceException">
             <summary>
-              Non-Symmetric Matrix Exception.
+              Algorithm Convergence Exception.
             </summary>
             
-            <remarks><para>The not symmetric matrix exception is thrown in cases where a method 
-            expects a matrix to be symmetric but it is not.</para>
+            <remarks><para>The algorithm convergence exception is thrown in cases where a iterative
+            algorithm could not converge to a finite solution.</para>
             </remarks>
             
         </member>
-        <member name="M:Accord.NonSymmetricMatrixException.#ctor">
+        <member name="M:Accord.ConvergenceException.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
             </summary>
+            
         </member>
-        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.String)">
+        <member name="M:Accord.ConvergenceException.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
             </summary>
             
             <param name="message">Message providing some additional information.</param>
             
         </member>
-        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.String,System.Exception)">
+        <member name="M:Accord.ConvergenceException.#ctor(System.String,System.Exception)">
             <summary>
-            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
             </summary>
             
             <param name="message">Message providing some additional information.</param>
             <param name="innerException">The exception that is the cause of the current exception.</param>
             
         </member>
-        <member name="M:Accord.NonSymmetricMatrixException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+        <member name="M:Accord.ConvergenceException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            Initializes a new instance of the <see cref="T:Accord.NonSymmetricMatrixException"/> class.
+              Initializes a new instance of the <see cref="T:Accord.ConvergenceException"/> class.
             </summary>
             
             <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>

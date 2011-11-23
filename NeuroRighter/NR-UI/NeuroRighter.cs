@@ -924,8 +924,8 @@ namespace NeuroRighter
                     Debugger = new RealTimeDebugger();
                     Debugger.GrabTimer(spikeTask[0]);
 
-                    // Send debug output to the user's application data folder
-                    Debugger.SetPath("neurorighter-log.txt");
+                    //Send debug output to the user's application data folder 
+                    Debugger.SetPath(Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "neurorighter-log.txt"));
 
 
                     //Tell neuroRighter that the tasks now exist

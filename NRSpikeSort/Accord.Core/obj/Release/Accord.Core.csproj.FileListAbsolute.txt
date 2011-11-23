@@ -84,3 +84,9 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter398\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\bin\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\bin\Release\Accord.pdb
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\bin\Release\Accord.xml
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Users\Jon\Desktop\CRAP ON MY DESKTOP\neurorighter_fresh\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

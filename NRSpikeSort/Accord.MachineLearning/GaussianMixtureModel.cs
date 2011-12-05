@@ -28,6 +28,7 @@ namespace Accord.MachineLearning
     using Accord.Math;
     using Accord.Statistics.Distributions.Fitting;
     using Accord.Statistics.Distributions.Multivariate;
+    using Accord.Statistics.Testing;
 
     /// <summary>
     ///   Gaussian Mixture Model Clustering.
@@ -61,6 +62,7 @@ namespace Accord.MachineLearning
         // the underlying mixture distribution
         internal MultivariateMixture<MultivariateNormalDistribution> model;
         private GaussianClusterCollection clusters;
+        private double pValue;
 
         /// <summary>
         ///   Gets the Gaussian components of the mixture model.
@@ -327,11 +329,10 @@ namespace Accord.MachineLearning
                 }
             }
 
-            if (PointIsNotOutlier(observation, imax))
+            if (TestForOutlier(observation, imax))
                 return imax;
             else
                 return -1;
-
         }
 
         /// <summary>
@@ -406,17 +407,13 @@ namespace Accord.MachineLearning
             return result;
         }
 
-
         /// <summary>
-        /// Set the standard ellipsoid for all the gaussian components in the mixture model
+        /// Set the the pValue to consider a spike an outlier or not
         /// </summary>
-        /// <param name="numSTD"></param>
-        public void SetStdEllipsoid(double numSTD)
+        /// <param name="pVal"></param>
+        public void SetPValue(double pVal)
         {
-            for (int i = 0; i < model.Components.Length; i++)
-            {
-                model.Components[i].SetEllipsoid(numSTD);
-            }
+            this.pValue = pVal;
         }
 
         /// <summary>
@@ -425,15 +422,22 @@ namespace Accord.MachineLearning
         /// <param name="obs"> The observation </param>
         /// <param name="dist"> The index of the distrubtion being tested </param>
         /// <returns></returns>
-        public bool PointIsNotOutlier(double[] obs, int dist)
+        public bool TestForOutlier(double[] obs, int dist)
         {
-            double tmpScl = 0;
+            // Center the observation
+            double[] centObs = new double[obs.Length];
             for (int i = 0; i < obs.Length; i++)
             {
-                tmpScl += (obs[i] - model.Components[dist].Mean[i]) * model.Components[dist].StdEllipsoid[i] * (obs[i] - model.Components[dist].Mean[i]);
+                centObs[i] = (obs[i] - model.Components[dist].Mean[i]);
             }
 
-            return tmpScl <= 1.0;
+            // Calculate the chi-squared variable
+            double[] tmp = Matrix.Multiply(centObs,model.Components[dist].InvCovariance);
+            double[] qStat = Matrix.Multiply(tmp,centObs.Transpose());
+
+            // Perform chi-squared test on the statistic
+            ChiSquareTest chiSqTest = new ChiSquareTest(qStat[0],obs.Length,pValue);
+            return !chiSqTest.Significant;
         }
 
     }

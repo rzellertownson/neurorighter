@@ -68,12 +68,12 @@ namespace NRSpikeSort
         // The minimum probability of an observation to be pulled from any
         // of the Gaussian distriubtions making up the mixture for it to be 
         // considered a member of any class.
-        private double numSTD = 10;
+        private double pValue = 0.05;
         private double minWaveformsForClass = 0.1;
         private int[] dimToUse;
         private bool[] kVar;
 
-        public ChannelModel(int channel, int maxK, int unitStartIndex, double numSTD)
+        public ChannelModel(int channel, int maxK, int unitStartIndex, double pValue)
         {
             // Parameterize this channel model
             this.channelNumber = channel;
@@ -85,11 +85,11 @@ namespace NRSpikeSort
                 this.kVals[i] = maxK - i;
             }
             this.projectionDimension = 1;
-            this.numSTD = numSTD;
+            this.pValue = pValue;
             this.trained = false;
         }
 
-        public ChannelModel(int channel, int maxK, int unitStartIndex, double numSTD, int numPCs)
+        public ChannelModel(int channel, int maxK, int unitStartIndex, double pValue, int numPCs)
         {
             // Parameterize this channel model
             this.channelNumber = channel;
@@ -101,7 +101,7 @@ namespace NRSpikeSort
                 this.kVals[i] = maxK - i;
             }
             this.projectionDimension = numPCs;
-            this.numSTD = numSTD;
+            this.pValue = pValue;
             this.trained = false;
         }
 
@@ -504,7 +504,7 @@ namespace NRSpikeSort
                 trained = true;
 
             // Set the STD ellipsoid
-            gmm.SetStdEllipsoid(numSTD);
+            gmm.SetPValue(pValue);
         }
 
         #region Serialization Constructors/Deconstructors
@@ -522,7 +522,7 @@ namespace NRSpikeSort
             this.gmm = (GaussianMixtureModel)info.GetValue("gmm", typeof(GaussianMixtureModel));
             this.pca = (PrincipalComponentAnalysis)info.GetValue("pca", typeof(PrincipalComponentAnalysis));
             this.unitStartIndex = (int)info.GetValue("unitStartIndex", typeof(int));
-            this.numSTD = (double)info.GetValue("numSTD",typeof(double));
+            this.pValue = (double)info.GetValue("pValue",typeof(double));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -539,7 +539,7 @@ namespace NRSpikeSort
             info.AddValue("gmm", this.gmm);
             info.AddValue("pca", this.pca);
             info.AddValue("unitStartIndex", this.unitStartIndex);
-            info.AddValue("numSTD", this.numSTD);
+            info.AddValue("pValue", this.pValue);
         }
 
         #endregion

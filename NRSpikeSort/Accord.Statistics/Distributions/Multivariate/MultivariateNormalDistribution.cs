@@ -65,7 +65,8 @@ namespace Accord.Statistics.Distributions.Multivariate
 
         // Derived measures
         private double[] variance;
-        private double[] stdEllipsoid;
+        private double[,] invCovariance;
+        private double pValue;
 
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace Accord.Statistics.Distributions.Multivariate
             this.mean = m;
             this.covariance = cov;
             this.chol = cd;
+            this.invCovariance = covariance.Inverse();
 
 
             // Original code:
@@ -209,30 +211,33 @@ namespace Accord.Statistics.Distributions.Multivariate
         }
 
         /// <summary>
-        ///   Gets the std ellipsoid for this distribution.
+        /// Gets the inverse variance-covariance matrix for the Gaussian distribution.
         /// </summary>
-        /// 
-        public override void SetEllipsoid(double numSTD)
+        public override double[,] InvCovariance
         {
-            if (variance == null)
-                variance = Matrix.Diagonal(covariance);
-
-            stdEllipsoid = new double[variance.Length];
-            for (int i = 0; i < variance.Length; i++)
-            {
-                stdEllipsoid[i] = 1.0 / (numSTD * Math.Sqrt(variance[i]));
-            }
+            get { return invCovariance; }
         }
 
-        public override double[] StdEllipsoid
+        /// <summary>
+        /// Gets the inverse variance-covariance matrix for the Gaussian distribution.
+        /// </summary>
+        public override double PValue
         {
-            get { return stdEllipsoid; }
+            get { return pValue; }
+        }
+
+        /// <summary>
+        ///  Set the pValue for this distrubtion
+        /// </summary>
+        /// <param name="pValue"></param>
+        public override void SetPValue(double pValue)
+        {
+            this.pValue = pValue;
         }
 
         /// <summary>
         ///   This method is not supported.
         /// </summary>
-        /// 
         public override double DistributionFunction(params double[] x)
         {
             throw new NotSupportedException();

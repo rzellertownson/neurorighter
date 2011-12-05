@@ -105,7 +105,7 @@ namespace NeuroRighter
                     // Plot the spikes
                     if (wfms[i].unit == null)
                     {
-                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRBrainbow, channel,
+                        spkWfmGraph.plotY(wfms[i].waveform, pd.horizontalOffset(channel), 1, NRSnipBrainbow, channel,
                             numSpkWfms[channel]++ + channel * maxWaveforms);
                     }
                     else

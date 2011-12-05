@@ -98,11 +98,14 @@ namespace NRSpikeSort
         /// </summary>
         public double numSTD = 10;
 
+        /// <summary>
+        /// The sample at which the peak of the spike waveform occurs
+        /// </summary>
+        public int inflectionSample = 14; // The sample that spike peaks occur at
+
         // Private
         private int numberChannels;
-        private int inflectionSample = 14; // The sample that spike peaks occur at
         
-
         /// <summary>
         /// NeuroRighter's spike sorter.
         /// </summary>

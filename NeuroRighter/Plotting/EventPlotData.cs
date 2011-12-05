@@ -115,12 +115,14 @@ namespace NeuroRighter
         internal void write(List<SpikeEvent> newWaveforms, Hashtable unitMap)
         {
             //Only read first maxWaveforms for each channel
+            
             lock (waveforms)
             {
                 for (int i = 0; i < newWaveforms.Count; ++i)
                 {
                     if (numWfmsStored[newWaveforms[i].channel] <= maxWaveforms)
                     {
+                        waveformLength = newWaveforms[i].waveform.Length;
                         float[] wfmDataOffset = new float[waveformLength];
                         float offset;
                         if (numRows == 8 && channelMapping == "invitro")

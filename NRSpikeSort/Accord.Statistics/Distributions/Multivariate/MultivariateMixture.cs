@@ -64,7 +64,7 @@ namespace Accord.Statistics.Distributions.Multivariate
         double[] mean;
         double[,] covariance;
         double[] variance;
-        double[] stdEllipsoid;
+        double pValue;
 
 
         /// <summary>
@@ -195,7 +195,6 @@ namespace Accord.Statistics.Distributions.Multivariate
         {
             throw new NotSupportedException();
         }
-
 
         /// <summary>
         ///   Fits the underlying distribution to a given set of observations.
@@ -381,7 +380,6 @@ namespace Accord.Statistics.Distributions.Multivariate
             return new MultivariateMixture<T>(pi, pdf);
         }
 
-
         /// <summary>
         ///   Gets the mean for this distribution.
         /// </summary>
@@ -406,7 +404,7 @@ namespace Accord.Statistics.Distributions.Multivariate
         ///   Gets the variance-covariance matrix for this distribution.
         /// </summary>
         /// 
-        public override double[,] Covariance
+        public override double[,] InvCovariance
         {
             get
             {
@@ -439,6 +437,18 @@ namespace Accord.Statistics.Distributions.Multivariate
         }
 
         /// <summary>
+        ///   Gets the variance-covariance matrix for this distribution.
+        /// </summary>
+        /// 
+        public override double[,] Covariance
+        {
+            get
+            {
+                return Covariance.Inverse();
+            }
+        }
+
+        /// <summary>
         ///   Gets the variance vector for this distribution.
         /// </summary>
         /// 
@@ -457,23 +467,19 @@ namespace Accord.Statistics.Distributions.Multivariate
         ///   Gets the std ellipsoid for this distribution.
         /// </summary>
         /// 
-        public override void SetEllipsoid(double numSTD)
+        public override void SetPValue(double pValue)
         {
-            double[] var = Matrix.Diagonal(Covariance);
-            stdEllipsoid = new double[var.Length];
-            for (int i = 0; i < var.Length; i++)
-            {
-                stdEllipsoid[i] = numSTD * Math.Sqrt(var[i]);
-            }
+            this.pValue = pValue;
         }
 
         /// <summary>
         /// Return the standard ellipsoid for this mv gaussian
         /// </summary>
-        public override double[] StdEllipsoid
+        public override double PValue
         {
-            get { return stdEllipsoid; }
+            get { return pValue; }
         }
+
 
         /// <summary>
         ///   Estimates a new mixture model from a given set of observations.

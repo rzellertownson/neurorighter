@@ -679,9 +679,9 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(9, 124);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(173, 13);
+            this.label18.Size = new System.Drawing.Size(97, 13);
             this.label18.TabIndex = 81;
-            this.label18.Text = "Number of std. deviations for outlier";
+            this.label18.Text = "P Value for Outliers";
             // 
             // numericUpDown_MinClassificationProb
             // 
@@ -693,15 +693,20 @@
             0,
             65536});
             this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
+            this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.numericUpDown_MinClassificationProb.Name = "numericUpDown_MinClassificationProb";
             this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_MinClassificationProb.TabIndex = 82;
             this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinClassificationProb.Value = new decimal(new int[] {
-            45,
+            5,
             0,
             0,
-            65536});
+            131072});
             this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
             // 
             // comboBox_ProjectionType

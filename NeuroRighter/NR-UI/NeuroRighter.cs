@@ -211,7 +211,6 @@ namespace NeuroRighter
         {
             lock (this)
             {
-
                 if (!taskRunning)
                 {
                     try
@@ -239,6 +238,9 @@ namespace NeuroRighter
                             comboBox_LFPGain.Enabled = false;
                         numericUpDown_NumSnipsDisplayed.Enabled = false;
                         button_startClosedLoopStim.Enabled = false;
+
+                        // Disable spike detector saving while running
+                        spikeDet.DisableFileMenu();
 
                         if (switch_record.Value)
                         {
@@ -610,6 +612,7 @@ namespace NeuroRighter
 
                         //Create plot colormap
                         NRBrainbow = (64).GenerateBrainbow();
+                        NRSnipBrainbow = (64).GenerateSnipBrainbow();
                         NRUnitBrainbow = (64).GenerateUnitBrainbow();
 
                         //Initialize graphs
@@ -947,9 +950,6 @@ namespace NeuroRighter
             {
                 try
                 {
-
-
-
                     // Take care of buttons
                     buttonStop.Enabled = true;
                     buttonStart.Enabled = false;

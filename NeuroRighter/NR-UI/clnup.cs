@@ -224,6 +224,9 @@ namespace NeuroRighter
             spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
             lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
 
+            // Enable spike detector saving while stopped
+            spikeDet.EnableFileMenu();
+
             // update recording type to nominal
             isNormalRecording = true;
 

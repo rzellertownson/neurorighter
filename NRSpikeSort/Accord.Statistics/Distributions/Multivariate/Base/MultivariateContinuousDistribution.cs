@@ -103,12 +103,17 @@ namespace Accord.Statistics.Distributions.Multivariate
         ///  Sets the standard ellipsoid for this distrubtion
         /// </summary>
         /// <param name="numSTD"> Number of standard deviations the ellipsoid should stay from the mean.</param>
-        public abstract void SetEllipsoid(double numSTD);
+        public abstract void SetPValue(double pValue);
 
         /// <summary>
         /// Gets the ellipsoid defining the boundary around the mean of this distrubtion past which are outliers.
         /// </summary>
-        public abstract double[] StdEllipsoid { get; }
+        public abstract double PValue{ get; }
+
+        /// <summary>
+        /// Gets the inverse variance-covariance matrix for the Gaussian distribution.
+        /// </summary>
+        public abstract double[,] InvCovariance { get; }
 
         /// <summary>
         ///   Gets the mode for this distribution.

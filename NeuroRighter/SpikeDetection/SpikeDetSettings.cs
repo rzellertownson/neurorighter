@@ -194,6 +194,8 @@ namespace NeuroRighter.SpikeDetection
             detectorParameters.NumPre = numPreSamples.Value;
             detectorParameters.NumPost = numPostSamples.Value;
 
+            if (spikeSorter != null)
+                spikeSorter.inflectionSample = numPre;
 
             // Update label
             label_PreSampConv.Text =
@@ -403,6 +405,11 @@ namespace NeuroRighter.SpikeDetection
                 comboBox_ProjectionType.Enabled = true;
                 button_HoardSpikes.Enabled = true;
                 button_TrainSorter.Enabled = true;
+                numericUpDown_ProjDim.Enabled = true;
+                numericUpDown_MinClassificationProb.Enabled = true;
+                numericUpDown_maxK.Enabled = true;
+                numericUpDown_MinSpikesToTrain.Enabled = true;
+
             }
             else if (!isEngaged)
             {
@@ -413,6 +420,10 @@ namespace NeuroRighter.SpikeDetection
                 comboBox_ProjectionType.Enabled = false;
                 button_HoardSpikes.Enabled = false;
                 button_TrainSorter.Enabled = false;
+                numericUpDown_ProjDim.Enabled = false;
+                numericUpDown_MinClassificationProb.Enabled = false;
+                numericUpDown_maxK.Enabled = false;
+                numericUpDown_MinSpikesToTrain.Enabled = false;
             }
         }
 
@@ -690,6 +701,17 @@ namespace NeuroRighter.SpikeDetection
                 }
             }
         }
+
+        internal void DisableFileMenu()
+        {
+            saveDetectorToolStripMenuItem.Enabled = false;
+        }
+
+        internal void EnableFileMenu()
+        {
+            saveDetectorToolStripMenuItem.Enabled = true;
+        }
+
 
     }
 }

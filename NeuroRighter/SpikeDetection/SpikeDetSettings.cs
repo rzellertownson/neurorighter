@@ -190,9 +190,7 @@ namespace NeuroRighter.SpikeDetection
 
             SettingsHaveChanged(this, e);
             numPre = (int)numPreSamples.Value;
-            numPost = (int)numPostSamples.Value;
-            detectorParameters.NumPre = numPreSamples.Value;
-            detectorParameters.NumPost = numPostSamples.Value;
+            detectorParameters.NumPre = numPre;
 
             if (spikeSorter != null)
                 spikeSorter.inflectionSample = numPre;
@@ -204,16 +202,15 @@ namespace NeuroRighter.SpikeDetection
 
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
         {
-            numPre = (int)numPreSamples.Value;
+
             numPost = (int)numPostSamples.Value;
-            detectorParameters.NumPre = numPreSamples.Value;
-            detectorParameters.NumPost = numPostSamples.Value;
+            detectorParameters.NumPost = numPost;
 
             SettingsHaveChanged(this, e);
 
             // Update label
             label_PostSampConv.Text =
-                1000.0 * (double)numPostSamples.Value / Convert.ToDouble(sampleRate) + " msec";
+                1000.0 * (double)numPost / Convert.ToDouble(sampleRate) + " msec";
         }
 
         private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)

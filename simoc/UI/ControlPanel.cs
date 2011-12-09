@@ -14,12 +14,13 @@ using NeuroRighter.Output;
 using NeuroRighter.DataTypes;
 using NeuroRighter;
 using System.IO;
+using System.Threading;
 
 namespace simoc.UI
 {
     public partial class ControlPanel : Form
     {
-        
+
         // To stop the experiment
         internal bool stopButtonPressed = false;
         internal bool startButtonPressed = false;
@@ -41,6 +42,27 @@ namespace simoc.UI
         // Delegate for cross thread calls
         delegate void GetTextCallback();
 
+        // GUI parameters
+        private double obsHistorySec;
+        private double numUnits;
+
+        private double filterWidthSec;
+        private double filterC0;
+        private double filterC1;
+        private double filterC2;
+        
+        private double targetMean;
+        public double targetFreqHz;
+        public double targetStd;
+
+        private double controllerC0;
+        private double controllerC1;
+        private double controllerC2;
+        private double controllerC3;
+        private double controllerC4;
+        private double controllerC5;
+
+
         public ControlPanel()
         {
             InitializeComponent();
@@ -60,7 +82,7 @@ namespace simoc.UI
 
             // Take care of filt scatter graphs
             // Remove existing plots
-            for (int i =  scatterGraph_Filt.Plots.Count - 1; i >= 0; --i)
+            for (int i = scatterGraph_Filt.Plots.Count - 1; i >= 0; --i)
             {
                 scatterGraph_Filt.Plots.RemoveAt(i);
             }
@@ -95,7 +117,7 @@ namespace simoc.UI
                 slide_FiltPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show("Could not update sliders for some reason:" + e.Message);
             }
@@ -117,7 +139,7 @@ namespace simoc.UI
                         slide_FiltPlotScale.Value,
                         slide_FiltPlotShift.Value);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show("Could not update plots for some reason:" + e.Message);
             }
@@ -129,14 +151,29 @@ namespace simoc.UI
             if (this.comboBox_ObsAlg.InvokeRequired)
             {
                 GetTextCallback d = new GetTextCallback(UpdateProperties);
-                this.Invoke(d);
+                this.BeginInvoke(d);
             }
             else
             {
+                obsHistorySec = this.numericEdit_ObsBuffHistorySec.Value;
+                numUnits = (double)this.numericUpDown_NumUnits.Value;
                 obsAlg = this.comboBox_ObsAlg.SelectedItem.ToString();
                 filtAlg = this.comboBox_FiltAlg.SelectedItem.ToString();
                 targetFunc = this.comboBox_Target.SelectedItem.ToString();
                 contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
+                filterWidthSec = (double)this.numericEdit_FiltWidthSec.Value;
+                filterC0 = this.numericEdit_FiltC0.Value;
+                filterC1 = this.numericEdit_FiltC1.Value;
+                filterC2 = this.numericEdit_FiltC2.Value;
+                targetMean = (double)this.numericUpDown_TargetMean.Value;
+                targetFreqHz = (double)this.numericUpDown_TargetFreq.Value;
+                targetStd = (double)this.numericUpDown_TargetSD.Value;
+                controllerC0 = (double)this.numericUpDown_ContC0.Value;
+                controllerC1 = (double)this.numericUpDown_ContC1.Value;
+                controllerC2 = (double)this.numericUpDown_ContC2.Value;
+                controllerC3 = (double)this.numericUpDown_ContC3.Value;
+                controllerC4 = (double)this.numericUpDown_ContC4.Value;
+                controllerC5 = (double)this.numericUpDown_ContC5.Value;
             }
         }
 
@@ -180,7 +217,7 @@ namespace simoc.UI
 
             button_StopSIMOC.Enabled = true;
             button_StartSIMOC.Enabled = false;
-            startButtonPressed = true; 
+            startButtonPressed = true;
         }
 
         private void button_StopSIMOC_Click(object sender, EventArgs e)
@@ -198,5 +235,173 @@ namespace simoc.UI
             checkBox_FreezePlots_CheckedChanged(null, null);
         }
 
+        #region public access methods
+
+        /// <summary>
+        /// Observation history in seconds to store
+        /// </summary>
+        public double ObsHistorySec
+        {
+            get
+            {
+                return obsHistorySec;
+            }
+        }
+
+        /// <summary>
+        /// Number of units detected
+        /// </summary>
+        public double NumUnits
+        {
+            get
+            {
+                return numUnits;
+            }
+        }
+
+        /// <summary>
+        /// Get the filter window width.
+        /// </summary>
+        public double FilterWidthSec
+        {
+            get
+            {
+                return filterWidthSec;
+            }
+        }
+
+        /// <summary>
+        /// Get the first filter coefficient
+        /// </summary>
+        public double FilterC0
+        {
+            get
+            {
+                return filterC0;
+            }
+        }
+
+        /// <summary>
+        /// Get the second filter coefficient
+        /// </summary>
+        public double FilterC1
+        {
+            get
+            {
+                return filterC0;
+            }
+        }
+
+        /// <summary>
+        /// Get the third filter coefficient
+        /// </summary>
+        public double FilterC2
+        {
+            get
+            {
+                return filterC0;
+            }
+        }
+
+        /// <summary>
+        /// Get the DC part of the target
+        /// </summary>
+        public double TargetMean
+        {
+            get
+            {
+                return targetMean;
+            }
+        }
+
+        /// <summary>
+        /// Get the target frequency
+        /// </summary>
+        public double TargetFreqHz
+        {
+            get
+            {
+                return targetFreqHz;
+            }
+        }
+
+        /// <summary>
+        /// Get the target standard deviation
+        /// </summary>
+        public double TargetStd
+        {
+            get
+            {
+                return targetStd;
+            }
+        }
+
+        /// <summary>
+        /// Get the first controller coefficient
+        /// </summary>
+        public double ControllerC0
+        {
+            get
+            {
+                return controllerC0;
+            }
+        }
+
+        /// <summary>
+        /// Get the second controller coefficient
+        /// </summary>
+        public double ControllerC1
+        {
+            get
+            {
+                return controllerC1;
+            }
+        }
+
+        /// <summary>
+        /// Get the third controller coefficient
+        /// </summary>
+        public double ControllerC2
+        {
+            get
+            {
+                return controllerC2;
+            }
+        }
+
+        /// <summary>
+        /// Get the foruth controller coefficient
+        /// </summary>
+        public double ControllerC3
+        {
+            get
+            {
+                return controllerC3;
+            }
+        }
+
+        /// <summary>
+        /// Get the fifth controller coefficient
+        /// </summary>
+        public double ControllerC4
+        {
+            get
+            {
+                return controllerC4;
+            }
+        }
+
+        /// <summary>
+        /// Get the sixth controller coefficient
+        /// </summary>
+        public double ControllerC5
+        {
+            get
+            {
+                return controllerC5;
+            }
+        }
+
+        # endregion
     }
 }

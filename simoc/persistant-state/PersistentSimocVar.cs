@@ -19,6 +19,7 @@ namespace simoc.persistantstate
         private ulong lastAuxEventSample = 0;
         private ulong nextAuxEventSample = 0;
         private ulong numberOfLoopsCompleted = 0;
+        private List<ulong> pendingOutputTimes = new List<ulong>();
 
         // Input
         private ulong lastSampleRead = 0;
@@ -179,6 +180,21 @@ namespace simoc.persistantstate
             set
             {
                 numberOfLoopsCompleted = value;
+            }
+        }
+
+        /// <summary>
+        /// Number of times simoc has spun
+        /// </summary>
+        public List<ulong> PendingOutputTimes
+        {
+            get
+            {
+                return pendingOutputTimes;
+            }
+            set
+            {
+                pendingOutputTimes = value;
             }
         }
 

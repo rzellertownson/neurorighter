@@ -36,12 +36,12 @@ namespace simoc.filt2out
         {
             this.stimSrv = stimSrv;
             this.loadOffset = 0;//(ulong)stimSrv.GetBuffSize()*2;
-            this.c0 = (double)cp.numericUpDown_ContC0.Value;
-            this.c1 = (double)cp.numericUpDown_ContC1.Value;
-            this.c2 = (double)cp.numericUpDown_ContC2.Value;
-            this.c3 = (double)cp.numericUpDown_ContC3.Value;
-            this.c4 = (double)cp.numericUpDown_ContC4.Value;
-            this.c5 = (double)cp.numericUpDown_ContC5.Value;
+            this.c0 = cp.ControllerC0;
+            this.c1 = cp.ControllerC1;
+            this.c2 = cp.ControllerC2;
+            this.c3 = cp.ControllerC3;
+            this.c4 = cp.ControllerC4;
+            this.c5 = cp.ControllerC5;
             this.hardwareSampFreqHz = stimSrv.sampleFrequencyHz;
         }
 

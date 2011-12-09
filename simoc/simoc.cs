@@ -96,46 +96,46 @@ namespace simoc
                 // Set up closed loop algorithm
                 startTime = StimSrv.DigitalOut.GetTime()/1000;
                 Console.WriteLine("SIMOC starting out at time " + startTime.ToString() + " seconds.");
-
-                // Tell buffer loader that we are done setting up
-                finishedWithRun = true;
             }
-
-            // Infinite loop until stop is pressed or something explodes
-            while (Running && !controlPanel.stopButtonPressed)
-            {
-                System.Threading.Thread.Sleep(1000);
-                simocStarted = controlPanel.startButtonPressed;
-                if (simocStarted && !startTimeSet)
-                {
-                    startTimeSet = true;
-                    simocVariableStorage.SimocStartSample = StimSrv.DigitalOut.GetCurrentSample();
-                }
-            }
-
-            // Close the file stream
-            if (simocOut != null)
-                simocOut.Close();
-
-            // Set up closed loop algorithm
-            double stopTime = StimSrv.DigitalOut.GetTime()/1000;
-            Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString() + " seconds.");
-
-
-            // Release resources
-            Running = false;
-
-            // Allow last loop to finish
-            Thread.Sleep(100);
-
-            // Close the GUI
-            controlPanel.CloseSIMOC();
         }
 
         protected override void Loop(object sender, EventArgs e)
         {
-            if (Running && finishedWithRun && simocStarted)
+            if (Running && controlPanel.startButtonPressed)
             {
+
+                if (!controlPanel.stopButtonPressed)
+                {
+                    simocStarted = controlPanel.startButtonPressed;
+                    if (simocStarted && !startTimeSet)
+                    {
+                        startTimeSet = true;
+                        simocVariableStorage.SimocStartSample = StimSrv.DigitalOut.GetCurrentSample();
+                    }
+                }
+                else
+                {
+                    // Close the file stream
+                    if (simocOut != null)
+                        simocOut.Close();
+
+                    // Set up closed loop algorithm
+                    double stopTime = StimSrv.DigitalOut.GetTime() / 1000;
+                    Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString() + " seconds.");
+
+                    // Release resources
+                    Running = false;
+
+                    // Allow last loop to finish
+                    Thread.Sleep(100);
+
+                    // Close the GUI
+                    controlPanel.CloseSIMOC();
+
+                    // Return
+                    return;
+                }
+
                 try
                 {
                     // Invoke thread-safe access to form properties

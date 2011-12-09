@@ -43,8 +43,16 @@ namespace NeuroRighter.Output
         {
             numBuffLoadsCompleted = nblc;
         }
-        
-       
+
+        public override double GetTime()
+        {
+            return analogBuffer.GetTime();
+        }
+
+        public override ulong GetCurrentSample()
+        {
+            return analogBuffer.GetCurrentSample();
+        }
 
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {

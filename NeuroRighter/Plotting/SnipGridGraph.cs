@@ -142,7 +142,7 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                for (int i = 0; i < data.GetLength(0); ++i)
+                for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
                         yScale * ((float)data[i] - maxY), 0), colorWave[chan]);
             }
@@ -154,7 +154,7 @@ namespace NeuroRighter
         {
             lock (this)
             {
-                for (int i = 0; i < data.GetLength(0); ++i)
+                for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
                         yScale * ((float)data[i] - maxY), 0), colorWave);
             }

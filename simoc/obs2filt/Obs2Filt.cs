@@ -31,11 +31,10 @@ namespace simoc.obs2filt
         {
             // Grab parameters off the form
             this.daqPollingPeriodSeconds = DatSrv.ADCPollingPeriodSec;
-            this.filterWidth = Convert.ToInt32(cp.numericEdit_FiltWidthSec.Value);
-            this.c0 = cp.numericEdit_FiltC0.Value;
-            this.c1 = cp.numericEdit_FiltC1.Value;
-            this.c2 = cp.numericEdit_FiltC2.Value;
-            this.filterWidthSec = cp.numericEdit_FiltWidthSec.Value;
+            this.c0 = cp.FilterC0;
+            this.c1 = cp.FilterC1;
+            this.c2 = cp.FilterC2;
+            this.filterWidthSec = cp.FilterWidthSec;
             this.filterWidth = (int)(filterWidthSec/daqPollingPeriodSeconds);
             this.firstFilt = firstLoop;
         }

@@ -103,8 +103,6 @@ namespace NeuroRighter.StimSrv
                 
 
                 //DigitalOut.Setup(buffLoadTask,  debugger, masterTask);
-               
-
                 AuxOut.grabPartner(DigitalOut);
                 DigitalOut.grabPartner(AuxOut);
                 AuxOut.Setup(buffLoadTask, debugger, masterTask);

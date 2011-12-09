@@ -222,6 +222,15 @@ namespace simoc
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                         }
                         break;
+                    case "Filt2PIDutyCycleFB":
+                        {
+                            Filt2PIDutyCycleFB controller = new Filt2PIDutyCycleFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                        }
+                        break;
                 }
 
 

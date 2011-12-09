@@ -686,12 +686,12 @@
             // numericUpDown_MinClassificationProb
             // 
             this.numericUpDown_MinClassificationProb.BackColor = System.Drawing.Color.LawnGreen;
-            this.numericUpDown_MinClassificationProb.DecimalPlaces = 2;
+            this.numericUpDown_MinClassificationProb.DecimalPlaces = 4;
             this.numericUpDown_MinClassificationProb.Increment = new decimal(new int[] {
             1,
             0,
             0,
-            65536});
+            262144});
             this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
             this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
             1,
@@ -701,12 +701,13 @@
             this.numericUpDown_MinClassificationProb.Name = "numericUpDown_MinClassificationProb";
             this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(115, 20);
             this.numericUpDown_MinClassificationProb.TabIndex = 82;
+            this.numericUpDown_MinClassificationProb.TabStop = false;
             this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinClassificationProb.Value = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
-            131072});
+            262144});
             this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
             // 
             // comboBox_ProjectionType

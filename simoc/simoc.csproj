@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="filt2out\Filt2Out.cs" />
+    <Compile Include="filt2out\Filt2PIDutyCycleFB.cs" />
     <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="UI\ControlPanel.Designer.cs">
       <DependentUpon>ControlPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GUIUpdateObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="notes.txt" />

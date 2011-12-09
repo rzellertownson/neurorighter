@@ -74,7 +74,6 @@
             this.button_StartSIMOC = new System.Windows.Forms.Button();
             this.button_StopSIMOC = new System.Windows.Forms.Button();
             this.checkBox_FreezePlots = new System.Windows.Forms.CheckBox();
-            this.pictureBox5 = new System.Windows.Forms.PictureBox();
             this.numericEdit_ObsBuffHistorySec = new NationalInstruments.UI.WindowsForms.NumericEdit();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
@@ -114,7 +113,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.slide_PlotWidth)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_NumUnits)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ObsBuffHistorySec)).BeginInit();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC3)).BeginInit();
@@ -539,7 +537,6 @@
             this.groupBox1.Controls.Add(this.button_StartSIMOC);
             this.groupBox1.Controls.Add(this.button_StopSIMOC);
             this.groupBox1.Controls.Add(this.checkBox_FreezePlots);
-            this.groupBox1.Controls.Add(this.pictureBox5);
             this.groupBox1.Controls.Add(this.numericEdit_ObsBuffHistorySec);
             this.groupBox1.Controls.Add(this.slide_PlotWidth);
             this.groupBox1.Controls.Add(this.label10);
@@ -612,17 +609,6 @@
             this.checkBox_FreezePlots.UseVisualStyleBackColor = true;
             this.checkBox_FreezePlots.Visible = false;
             this.checkBox_FreezePlots.CheckedChanged += new System.EventHandler(this.checkBox_FreezePlots_CheckedChanged);
-            // 
-            // pictureBox5
-            // 
-            this.pictureBox5.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox5.Image")));
-            this.pictureBox5.Location = new System.Drawing.Point(480, 109);
-            this.pictureBox5.Name = "pictureBox5";
-            this.pictureBox5.Size = new System.Drawing.Size(106, 70);
-            this.pictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox5.TabIndex = 19;
-            this.pictureBox5.TabStop = false;
-            this.pictureBox5.Click += new System.EventHandler(this.pictureBox5_Click);
             // 
             // numericEdit_ObsBuffHistorySec
             // 
@@ -813,7 +799,8 @@
             "None",
             "Filt2PropFreqFB",
             "Filt2PropPowerFB",
-            "Filt2PIDPowerFB"});
+            "Filt2PIDPowerFB",
+            "Filt2PIDutyCycleFB"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(62, 29);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
             this.comboBox_FBAlg.Size = new System.Drawing.Size(184, 21);
@@ -859,7 +846,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_NumUnits)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_ObsBuffHistorySec)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
@@ -899,7 +885,6 @@
         private System.Windows.Forms.Label label15;
         internal System.Windows.Forms.ComboBox comboBox_FBAlg;
         private System.Windows.Forms.CheckBox checkBox_FreezePlots;
-        private System.Windows.Forms.PictureBox pictureBox5;
         private NationalInstruments.UI.WindowsForms.ScatterGraph scatterGraph_Filt;
         private NationalInstruments.UI.ScatterPlot scatterPlot2;
         private NationalInstruments.UI.XAxis xAxis2;

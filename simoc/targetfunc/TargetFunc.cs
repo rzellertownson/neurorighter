@@ -30,9 +30,9 @@ namespace simoc.targetfunc
         public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
         {
             // Grab parameters off the form
-            this.meanValue = (double)cp.numericUpDown_TargetMean.Value;
-            this.standardDev = (double)cp.numericUpDown_TargetSD.Value;
-            this.frequency = (double)cp.numericUpDown_TargetFreq.Value;
+            this.meanValue = (double)cp.TargetMean;
+            this.standardDev = (double)cp.TargetStd;
+            this.frequency = (double)cp.TargetFreqHz;
             this.numTargetSamplesGenerated = numTargetSamplesGenerated;
             this.DACPollingPeriodSec = DACPollingPeriodSec;
             this.currentOutputSample = stimSrv.DigitalOut.GetCurrentSample();

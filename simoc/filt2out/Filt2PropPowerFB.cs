@@ -29,7 +29,7 @@ namespace simoc.filt2out
         {
             base.CalculateError(ref currentError, currentTarget, currentFilt);
             currentError = (currentTarget - currentFilt);  // currentTarget;
-            currentErrorInt = currentError;
+            currentErrorIntenal = currentError;
 
             if (currentTarget == 0)
                 targetZero = true;
@@ -41,11 +41,11 @@ namespace simoc.filt2out
             base.SendFeedBack(simocVariableStorage);
 
             // Generate output frequency\
-            simocVariableStorage.GenericDouble2 += currentErrorInt;
+            simocVariableStorage.GenericDouble2 += currentErrorIntenal;
             if (targetZero)
                 simocVariableStorage.GenericDouble1 = 0;
             else
-                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorInt;
+                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorIntenal;
 
             // Set upper and lower bounds
             if (simocVariableStorage.GenericDouble1 < 0)

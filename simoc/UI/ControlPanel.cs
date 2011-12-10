@@ -36,11 +36,12 @@ namespace simoc.UI
         private ScatterGraphController filtScatterGraphController;
 
         // CL loop speed
-        private double clLoopPeriodSec = 1;
+        private double clLoopPeriodSec;
         private bool plotsFrozen = false;
 
         // Delegate for cross thread calls
         delegate void GetTextCallback();
+        string controllerResultText = "";
 
         // GUI parameters
         private double obsHistorySec;
@@ -63,9 +64,12 @@ namespace simoc.UI
         private double controllerC5;
 
 
-        public ControlPanel()
+        public ControlPanel(double pollingPeriodSec)
         {
             InitializeComponent();
+
+            // What is the loop time
+            clLoopPeriodSec = pollingPeriodSec;
 
             // Take care of obs scatter graphs
             // Remove existing plots
@@ -95,9 +99,9 @@ namespace simoc.UI
 
             // Create the scatter graph controllers
             obsScatterGraphController =
-                new ScatterGraphController(ref scatterGraph_Obs, false);
+                new ScatterGraphController(ref scatterGraph_Obs);
             filtScatterGraphController =
-                new ScatterGraphController(ref scatterGraph_Filt, false);
+                new ScatterGraphController(ref scatterGraph_Filt);
 
             // Set the default properties
             SetDefaultProperties();
@@ -108,7 +112,6 @@ namespace simoc.UI
         {
             try
             {
-
                 // Put sliders into the correct range
                 slide_ObsPlotScale.Range = new Range(0.1, slide_PlotRange.Value);
                 slide_ObsPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
@@ -145,36 +148,23 @@ namespace simoc.UI
             }
         }
 
-        internal void UpdateProperties()
+        internal void SetControllerResultText(string ctlResultsText)
         {
-
-            if (this.comboBox_ObsAlg.InvokeRequired)
+            controllerResultText = ctlResultsText;
+        }
+        internal void UpdateControllerTextbox()
+        {
+            if (this.textBox_ControllerResults.InvokeRequired)
             {
-                GetTextCallback d = new GetTextCallback(UpdateProperties);
+                GetTextCallback d = new GetTextCallback(UpdateControllerTextbox);
                 this.BeginInvoke(d);
             }
             else
             {
-                obsHistorySec = this.numericEdit_ObsBuffHistorySec.Value;
-                numUnits = (double)this.numericUpDown_NumUnits.Value;
-                obsAlg = this.comboBox_ObsAlg.SelectedItem.ToString();
-                filtAlg = this.comboBox_FiltAlg.SelectedItem.ToString();
-                targetFunc = this.comboBox_Target.SelectedItem.ToString();
-                contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
-                filterWidthSec = (double)this.numericEdit_FiltWidthSec.Value;
-                filterC0 = this.numericEdit_FiltC0.Value;
-                filterC1 = this.numericEdit_FiltC1.Value;
-                filterC2 = this.numericEdit_FiltC2.Value;
-                targetMean = (double)this.numericUpDown_TargetMean.Value;
-                targetFreqHz = (double)this.numericUpDown_TargetFreq.Value;
-                targetStd = (double)this.numericUpDown_TargetSD.Value;
-                controllerC0 = (double)this.numericUpDown_ContC0.Value;
-                controllerC1 = (double)this.numericUpDown_ContC1.Value;
-                controllerC2 = (double)this.numericUpDown_ContC2.Value;
-                controllerC3 = (double)this.numericUpDown_ContC3.Value;
-                controllerC4 = (double)this.numericUpDown_ContC4.Value;
-                controllerC5 = (double)this.numericUpDown_ContC5.Value;
+                textBox_ControllerResults.Clear();
+                textBox_ControllerResults.Text = controllerResultText;
             }
+
         }
 
         internal void CloseSIMOC()
@@ -403,5 +393,105 @@ namespace simoc.UI
         }
 
         # endregion
+
+        # region private value changed event handlers
+
+        private void numericUpDown_TargetMean_ValueChanged(object sender, EventArgs e)
+        {
+            targetMean = (double)this.numericUpDown_TargetMean.Value;
+        }
+
+        private void comboBox_FiltAlg_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            filtAlg = this.comboBox_FiltAlg.SelectedItem.ToString();
+        }
+
+        private void comboBox_Target_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            targetFunc = this.comboBox_Target.SelectedItem.ToString();
+        }
+
+        private void numericEdit_FiltWidthSec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
+        {
+            filterWidthSec = (double)this.numericEdit_FiltWidthSec.Value;
+        }
+
+        private void numericEdit_FiltC0_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
+        {
+            filterC0 = this.numericEdit_FiltC0.Value;
+        }
+
+        private void numericEdit_FiltC1_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
+        {
+            filterC1 = this.numericEdit_FiltC1.Value;
+        }
+
+        private void numericEdit_FiltC2_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
+        {
+            filterC2 = this.numericEdit_FiltC2.Value;
+        }
+
+        private void numericUpDown_TargetSD_ValueChanged(object sender, EventArgs e)
+        {
+            targetStd = (double)this.numericUpDown_TargetSD.Value;
+        }
+
+        private void numericUpDown_TargetFreq_ValueChanged(object sender, EventArgs e)
+        {
+            targetFreqHz = (double)this.numericUpDown_TargetFreq.Value;
+        }
+
+        private void comboBox_ObsAlg_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            obsAlg = this.comboBox_ObsAlg.SelectedItem.ToString();
+        }
+
+        private void numericUpDown_NumUnits_ValueChanged(object sender, EventArgs e)
+        {
+            numUnits = (double)this.numericUpDown_NumUnits.Value;
+        }
+
+        private void comboBox_FBAlg_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
+        }
+
+        private void numericUpDown_ContC0_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC0 = (double)this.numericUpDown_ContC0.Value;
+        }
+
+        private void numericUpDown_ContC1_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC1 = (double)this.numericUpDown_ContC1.Value;
+        }
+
+        private void numericUpDown_ContC2_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC2 = (double)this.numericUpDown_ContC2.Value;
+        }
+
+        private void numericUpDown_ContC3_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC3 = (double)this.numericUpDown_ContC3.Value;
+        }
+
+        private void numericUpDown_ContC4_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC4 = (double)this.numericUpDown_ContC4.Value;
+        }
+
+        private void numericUpDown_ContC5_ValueChanged(object sender, EventArgs e)
+        {
+            controllerC5 = (double)this.numericUpDown_ContC5.Value;
+        }
+
+        private void numericEdit_ObsBuffHistorySec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
+        {
+            obsHistorySec = this.numericEdit_ObsBuffHistorySec.Value;
+        }
+
+        # endregion
+
     }
 }

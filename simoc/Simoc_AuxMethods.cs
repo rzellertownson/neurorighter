@@ -145,6 +145,7 @@ namespace simoc
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
                             currentFilt = filter.currentFilteredValue;
+                            currentFilterType = 0;
                         }
                         break;
                     case "Moving Average":
@@ -154,6 +155,7 @@ namespace simoc
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
                             currentFilt = filter.currentFilteredValue;
+                            currentFilterType = 1;
                         }
                         break;
                     case "Moving Median":
@@ -163,6 +165,7 @@ namespace simoc
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
                             currentFilt = filter.currentFilteredValue;
+                            currentFilterType = 2;
                         }
                         break;
                     case "Exponential Moving Average":
@@ -172,6 +175,7 @@ namespace simoc
                             filter.Filter(simocVariableStorage);
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
                             currentFilt = filter.currentFilteredValue;
+                            currentFilterType = 3;
                         }
                         break;
                 }
@@ -195,6 +199,16 @@ namespace simoc
             {
                 switch (controlPanel.contAlg)
                 {
+                    case "None":
+                        {
+                            Filt2None controller = new Filt2None(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 0;
+                        }
+                        break;
                     case "Filt2PropFreqFB":
                         {
                             Filt2PropFreqFB controller = new Filt2PropFreqFB(ref StimSrv, controlPanel);
@@ -202,6 +216,7 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 1;
                         }
                         break;
                     case "Filt2PropPowerFB":
@@ -211,6 +226,7 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 2;
                         }
                         break;
                     case "Filt2PIDPowerFB":
@@ -220,6 +236,7 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 3;
                         }
                         break;
                     case "Filt2PIDutyCycleFB":
@@ -229,6 +246,17 @@ namespace simoc
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 4;
+                        }
+                        break;
+                    case "Filt2RelayDutyCycleFB":
+                        {
+                            Filt2RelayDutyCycleFB controller = new Filt2RelayDutyCycleFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 5;
                         }
                         break;
                 }
@@ -252,9 +280,12 @@ namespace simoc
                 datum[1] = currentFilt;
                 datum[2] = currentTarget;
                 datum[3] = currentError;
-                for (int i = 4; i < currentFeedBack.Length + 4; ++i)
+                datum[4] = currentFilterType;
+                datum[5] = currentControllerType;
+
+                for (int i = 6; i < currentFeedBack.Length + 6; ++i)
                 {
-                    datum[i] = currentFeedBack[i - 4];
+                    datum[i] = currentFeedBack[i - 6];
                 }
 
                 // Write data to file
@@ -286,7 +317,7 @@ namespace simoc
                 new ThreadStart(
                     (System.Action)delegate
                     {
-                        Application.Run(controlPanel = new ControlPanel());
+                        Application.Run(controlPanel = new ControlPanel(StimSrv.DACPollingPeriodSec));
                     }
                    )
             ).Start();

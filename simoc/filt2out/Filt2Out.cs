@@ -19,7 +19,7 @@ namespace simoc.filt2out
     {
        
         protected NRStimSrv stimSrv;
-        protected double currentErrorInt;
+        protected double currentErrorIntenal;
         protected ulong loadOffset;
         protected double c0;
         protected double c1;
@@ -35,7 +35,7 @@ namespace simoc.filt2out
         public Filt2Out(ref NRStimSrv stimSrv, ControlPanel cp)
         {
             this.stimSrv = stimSrv;
-            this.loadOffset = 0;//(ulong)stimSrv.GetBuffSize()*2;
+            this.loadOffset = 0;
             this.c0 = cp.ControllerC0;
             this.c1 = cp.ControllerC1;
             this.c2 = cp.ControllerC2;
@@ -48,7 +48,7 @@ namespace simoc.filt2out
         internal virtual void SendFeedBack(PersistentSimocVar simocVariableStorage)
         {
             // What buffer load are we currently processing?
-            ulong currentLoad = stimSrv.AuxOut.GetNumberBuffLoadsCompleted() + 1;
+            ulong currentLoad = stimSrv.AuxOut.GetNumberBuffLoadsCompleted();
             nextAvailableSample = currentLoad * (ulong)stimSrv.GetBuffSize();
 
         }

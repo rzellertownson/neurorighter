@@ -51,6 +51,8 @@ namespace simoc
         private double currentObs;
         private double currentFilt;
         private double currentError;
+        private double currentFilterType;
+        private double currentControllerType;
         private double[] currentFeedBack;
 
         // Variables Everyone needs
@@ -91,7 +93,7 @@ namespace simoc
 
                 // Create file writer
                 if (NRRecording)
-                    simocOut = new FileWriter(NRFilePath + ".simoc",14,DatSrv.spikeSrv.sampleFrequencyHz);
+                    simocOut = new FileWriter(NRFilePath + ".simoc", 14, DatSrv.spikeSrv.sampleFrequencyHz);
                 
                 // Set up closed loop algorithm
                 startTime = StimSrv.DigitalOut.GetTime()/1000;
@@ -138,8 +140,6 @@ namespace simoc
 
                 try
                 {
-                    // Invoke thread-safe access to form properties
-                    controlPanel.UpdateProperties();
 
                     // Update the clock
                     UpdateClock();

@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="filt2out\Filt2Out.cs" />
     <Compile Include="filt2out\Filt2PIDutyCycleFB.cs" />
+    <Compile Include="filt2out\Filt2RelayDutyCycleFB.cs" />
     <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="UI\ControlPanel.Designer.cs">
       <DependentUpon>ControlPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\GUIUpdateObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="notes.txt" />
@@ -121,7 +121,6 @@
     <Compile Include="targetfunc\CustomTarget1.cs" />
     <Compile Include="targetfunc\SineWave.cs" />
     <Compile Include="targetfunc\TargetFunc.cs" />
-    <Compile Include="file-writing\FileSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

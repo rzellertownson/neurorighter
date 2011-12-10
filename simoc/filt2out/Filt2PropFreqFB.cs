@@ -28,7 +28,7 @@ namespace simoc.filt2out
         {
             base.CalculateError(ref currentError, currentTarget, currentFilt);
             currentError = currentTarget - currentFilt;
-            currentErrorInt = currentError;
+            currentErrorIntenal = currentError;
         }
 
         internal override void SendFeedBack(PersistentSimocVar simocVariableStorage)
@@ -36,7 +36,7 @@ namespace simoc.filt2out
             base.SendFeedBack(simocVariableStorage);
 
             // Generate output frequency\
-            simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorInt;
+            simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble1 + c0 * currentErrorIntenal;
 
             // Set upper and lower bounds
             if (simocVariableStorage.GenericDouble1 < 0)

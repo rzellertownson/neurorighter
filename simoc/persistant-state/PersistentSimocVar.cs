@@ -34,6 +34,10 @@ namespace simoc.persistantstate
         private double genericDouble1 = 0;
         private double genericDouble2 = 0;
         private double genericDouble3 = 0;
+        private double genericDouble4 = 0;
+        private double genericDouble5 = 0;
+        private double genericDouble6 = 0;
+        private double genericDouble7 = 0;
 
         private double genericUlong1 = 0;
         private double genericUlong2 = 0;
@@ -319,6 +323,66 @@ namespace simoc.persistantstate
         }
 
         /// <summary>
+        /// A generic double.
+        /// </summary>
+        public double GenericDouble4
+        {
+            get
+            {
+                return genericDouble4;
+            }
+            set
+            {
+                genericDouble4 = value;
+            }
+        }
+
+        /// <summary>
+        /// A generic double.
+        /// </summary>
+        public double GenericDouble5
+        {
+            get
+            {
+                return genericDouble5;
+            }
+            set
+            {
+                genericDouble5 = value;
+            }
+        }
+
+        /// <summary>
+        /// A generic double.
+        /// </summary>
+        public double GenericDouble6
+        {
+            get
+            {
+                return genericDouble6;
+            }
+            set
+            {
+                genericDouble6 = value;
+            }
+        }
+
+        /// <summary>
+        /// A generic double.
+        /// </summary>
+        public double GenericDouble7
+        {
+            get
+            {
+                return genericDouble7;
+            }
+            set
+            {
+                genericDouble7 = value;
+            }
+        }
+
+        /// <summary>
         /// A generic ulong.
         /// </summary>
         public double GenericUlong1
@@ -362,8 +426,6 @@ namespace simoc.persistantstate
                 genericUlong3 = value;
             }
         }
-
-
 
         // Methods
 

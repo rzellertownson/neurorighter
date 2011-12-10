@@ -27,7 +27,7 @@ namespace simoc.filt2out
         public Filt2PIDPowerFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
         {
-            numberOutStreams = 3; // P, I and D streams
+            numberOutStreams = 4; // P, I and D streams
             K = c0;
             if (c1 != 0)
                 Ti = 1 / c1;
@@ -52,7 +52,7 @@ namespace simoc.filt2out
                 lastErrorInt = currentError;
                 currentError = 0;
             }
-            currentErrorInt = currentError;
+            currentErrorIntenal = currentError;
             currentTargetInt = currentTarget;
         }
 
@@ -67,17 +67,21 @@ namespace simoc.filt2out
             if (currentTargetInt != 0)
             {
                 // Derivative Approx
-                simocVariableStorage.GenericDouble3 = (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
+                simocVariableStorage.GenericDouble4 = (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
                     (K*Td*N)/(Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs);
                 
                 // Tustin's Integral approximation
-                simocVariableStorage.GenericDouble2 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorInt;
+                simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
+
+                // Proportional part
+                simocVariableStorage.GenericDouble3 = K * currentErrorIntenal;
                 
                 // PID feedback signal
-                simocVariableStorage.GenericDouble1 = K * currentErrorInt + simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
+                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble3 + simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
             }
             else
             {
+                simocVariableStorage.GenericDouble4 = 0;
                 simocVariableStorage.GenericDouble3 = 0;
                 simocVariableStorage.GenericDouble2 = 0;
                 simocVariableStorage.GenericDouble1 = 0;
@@ -93,9 +97,10 @@ namespace simoc.filt2out
             currentFeedbackSignals = new double[numberOutStreams];
             currentFeedbackSignals[0] = simocVariableStorage.GenericDouble1;
 
-            // Put I and D error components in the rest of the currentFeedBack array
+            // Put P,I and D error components in the rest of the currentFeedBack array
             currentFeedbackSignals[1] = simocVariableStorage.GenericDouble2;
             currentFeedbackSignals[2] = simocVariableStorage.GenericDouble3;
+            currentFeedbackSignals[3] = simocVariableStorage.GenericDouble4;
 
             // Get the pulse width (msec)
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * stimPulseWidthMSec / 1000);

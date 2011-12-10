@@ -60,11 +60,11 @@
             this.comboBox_ObsAlg = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox_ObservationPlot = new System.Windows.Forms.GroupBox();
-            this.slide_ObsPlotShift = new NationalInstruments.UI.WindowsForms.Slide();
             this.scatterGraph_Obs = new NationalInstruments.UI.WindowsForms.ScatterGraph();
             this.scatterPlot1 = new NationalInstruments.UI.ScatterPlot();
             this.xAxis1 = new NationalInstruments.UI.XAxis();
             this.yAxis1 = new NationalInstruments.UI.YAxis();
+            this.slide_ObsPlotShift = new NationalInstruments.UI.WindowsForms.Slide();
             this.slide_ObsPlotScale = new NationalInstruments.UI.WindowsForms.Slide();
             this.slide_PlotRange = new NationalInstruments.UI.WindowsForms.Slide();
             this.slide_PlotWidth = new NationalInstruments.UI.WindowsForms.Slide();
@@ -77,6 +77,8 @@
             this.numericEdit_ObsBuffHistorySec = new NationalInstruments.UI.WindowsForms.NumericEdit();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.comboBox_FBAlg = new System.Windows.Forms.ComboBox();
+            this.textBox_ControllerResults = new System.Windows.Forms.TextBox();
             this.numericUpDown_ContC3 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_ContC4 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_ContC1 = new System.Windows.Forms.NumericUpDown();
@@ -90,7 +92,6 @@
             this.numericUpDown_ContC0 = new System.Windows.Forms.NumericUpDown();
             this.label_ContC1 = new System.Windows.Forms.Label();
             this.label_ContC0 = new System.Windows.Forms.Label();
-            this.comboBox_FBAlg = new System.Windows.Forms.ComboBox();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetFreq)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetSD)).BeginInit();
@@ -106,8 +107,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltWidthSec)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC1)).BeginInit();
             this.groupBox_ObservationPlot.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scatterGraph_Obs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotScale)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_PlotRange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_PlotWidth)).BeginInit();
@@ -125,7 +126,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.BackColor = System.Drawing.Color.Fuchsia;
+            this.groupBox4.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.groupBox4.Controls.Add(this.numericUpDown_TargetFreq);
             this.groupBox4.Controls.Add(this.numericUpDown_TargetSD);
             this.groupBox4.Controls.Add(this.numericUpDown_TargetMean);
@@ -136,7 +137,7 @@
             this.groupBox4.Controls.Add(this.comboBox_Target);
             this.groupBox4.Location = new System.Drawing.Point(6, 100);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(580, 79);
+            this.groupBox4.Size = new System.Drawing.Size(616, 79);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Target Function";
@@ -146,29 +147,33 @@
             this.numericUpDown_TargetFreq.DecimalPlaces = 2;
             this.numericUpDown_TargetFreq.Location = new System.Drawing.Point(376, 48);
             this.numericUpDown_TargetFreq.Name = "numericUpDown_TargetFreq";
-            this.numericUpDown_TargetFreq.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDown_TargetFreq.Size = new System.Drawing.Size(78, 20);
             this.numericUpDown_TargetFreq.TabIndex = 29;
+            this.numericUpDown_TargetFreq.ValueChanged += new System.EventHandler(this.numericUpDown_TargetFreq_ValueChanged);
             // 
             // numericUpDown_TargetSD
             // 
             this.numericUpDown_TargetSD.DecimalPlaces = 2;
-            this.numericUpDown_TargetSD.Location = new System.Drawing.Point(483, 19);
+            this.numericUpDown_TargetSD.Location = new System.Drawing.Point(523, 20);
             this.numericUpDown_TargetSD.Name = "numericUpDown_TargetSD";
-            this.numericUpDown_TargetSD.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDown_TargetSD.Size = new System.Drawing.Size(74, 20);
             this.numericUpDown_TargetSD.TabIndex = 28;
+            this.numericUpDown_TargetSD.ValueChanged += new System.EventHandler(this.numericUpDown_TargetSD_ValueChanged);
             // 
             // numericUpDown_TargetMean
             // 
+            this.numericUpDown_TargetMean.CausesValidation = false;
             this.numericUpDown_TargetMean.DecimalPlaces = 2;
             this.numericUpDown_TargetMean.Location = new System.Drawing.Point(376, 19);
             this.numericUpDown_TargetMean.Maximum = new decimal(new int[] {
-            1000,
+            1000000,
             0,
             0,
             0});
             this.numericUpDown_TargetMean.Name = "numericUpDown_TargetMean";
-            this.numericUpDown_TargetMean.Size = new System.Drawing.Size(52, 20);
+            this.numericUpDown_TargetMean.Size = new System.Drawing.Size(78, 20);
             this.numericUpDown_TargetMean.TabIndex = 4;
+            this.numericUpDown_TargetMean.ValueChanged += new System.EventHandler(this.numericUpDown_TargetMean_ValueChanged);
             // 
             // label5
             // 
@@ -182,7 +187,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(434, 21);
+            this.label4.Location = new System.Drawing.Point(474, 22);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(43, 13);
             this.label4.TabIndex = 7;
@@ -218,6 +223,7 @@
             this.comboBox_Target.Name = "comboBox_Target";
             this.comboBox_Target.Size = new System.Drawing.Size(164, 21);
             this.comboBox_Target.TabIndex = 1;
+            this.comboBox_Target.SelectedIndexChanged += new System.EventHandler(this.comboBox_Target_SelectedIndexChanged);
             // 
             // comboBox_FiltAlg
             // 
@@ -231,16 +237,17 @@
             this.comboBox_FiltAlg.Name = "comboBox_FiltAlg";
             this.comboBox_FiltAlg.Size = new System.Drawing.Size(158, 21);
             this.comboBox_FiltAlg.TabIndex = 0;
+            this.comboBox_FiltAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_FiltAlg_SelectedIndexChanged);
             // 
             // groupBox2
             // 
-            this.groupBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.groupBox2.BackColor = System.Drawing.SystemColors.Highlight;
             this.groupBox2.Controls.Add(this.groupBox4);
             this.groupBox2.Controls.Add(this.groupBox6);
             this.groupBox2.Controls.Add(this.groupBox5);
-            this.groupBox2.Location = new System.Drawing.Point(684, 12);
+            this.groupBox2.Location = new System.Drawing.Point(648, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(592, 747);
+            this.groupBox2.Size = new System.Drawing.Size(628, 747);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Filtering and Target";
@@ -252,7 +259,7 @@
             this.groupBox6.Controls.Add(this.slide_FiltPlotScale);
             this.groupBox6.Location = new System.Drawing.Point(6, 185);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(580, 556);
+            this.groupBox6.Size = new System.Drawing.Size(616, 556);
             this.groupBox6.TabIndex = 8;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Plot";
@@ -263,7 +270,7 @@
             this.scatterGraph_Filt.Name = "scatterGraph_Filt";
             this.scatterGraph_Filt.Plots.AddRange(new NationalInstruments.UI.ScatterPlot[] {
             this.scatterPlot2});
-            this.scatterGraph_Filt.Size = new System.Drawing.Size(568, 458);
+            this.scatterGraph_Filt.Size = new System.Drawing.Size(604, 458);
             this.scatterGraph_Filt.TabIndex = 1;
             this.scatterGraph_Filt.UseColorGenerator = true;
             this.scatterGraph_Filt.XAxes.AddRange(new NationalInstruments.UI.XAxis[] {
@@ -283,11 +290,11 @@
             this.slide_FiltPlotShift.CaptionBackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.slide_FiltPlotShift.CaptionForeColor = System.Drawing.Color.Lime;
             this.slide_FiltPlotShift.FillBackColor = System.Drawing.SystemColors.Highlight;
-            this.slide_FiltPlotShift.Location = new System.Drawing.Point(294, 483);
+            this.slide_FiltPlotShift.Location = new System.Drawing.Point(317, 483);
             this.slide_FiltPlotShift.Name = "slide_FiltPlotShift";
             this.slide_FiltPlotShift.PointerColor = System.Drawing.SystemColors.ActiveBorder;
             this.slide_FiltPlotShift.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
-            this.slide_FiltPlotShift.Size = new System.Drawing.Size(280, 67);
+            this.slide_FiltPlotShift.Size = new System.Drawing.Size(293, 67);
             this.slide_FiltPlotShift.TabIndex = 30;
             // 
             // slide_FiltPlotScale
@@ -302,13 +309,13 @@
             this.slide_FiltPlotScale.PointerColor = System.Drawing.SystemColors.ActiveBorder;
             this.slide_FiltPlotScale.Range = new NationalInstruments.UI.Range(0.1D, 10D);
             this.slide_FiltPlotScale.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
-            this.slide_FiltPlotScale.Size = new System.Drawing.Size(280, 67);
+            this.slide_FiltPlotScale.Size = new System.Drawing.Size(305, 67);
             this.slide_FiltPlotScale.TabIndex = 28;
             this.slide_FiltPlotScale.Value = 1D;
             // 
             // groupBox5
             // 
-            this.groupBox5.BackColor = System.Drawing.Color.Fuchsia;
+            this.groupBox5.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.groupBox5.Controls.Add(this.numericEdit_FiltC2);
             this.groupBox5.Controls.Add(this.numericEdit_FiltC0);
             this.groupBox5.Controls.Add(this.numericEdit_FiltWidthSec);
@@ -321,7 +328,7 @@
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Location = new System.Drawing.Point(6, 17);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(580, 73);
+            this.groupBox5.Size = new System.Drawing.Size(616, 73);
             this.groupBox5.TabIndex = 10;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Choose filter";
@@ -334,6 +341,7 @@
             this.numericEdit_FiltC2.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
             this.numericEdit_FiltC2.Size = new System.Drawing.Size(50, 20);
             this.numericEdit_FiltC2.TabIndex = 24;
+            this.numericEdit_FiltC2.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.numericEdit_FiltC2_AfterChangeValue);
             // 
             // numericEdit_FiltC0
             // 
@@ -343,6 +351,7 @@
             this.numericEdit_FiltC0.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
             this.numericEdit_FiltC0.Size = new System.Drawing.Size(50, 20);
             this.numericEdit_FiltC0.TabIndex = 23;
+            this.numericEdit_FiltC0.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.numericEdit_FiltC0_AfterChangeValue);
             // 
             // numericEdit_FiltWidthSec
             // 
@@ -355,6 +364,7 @@
             this.numericEdit_FiltWidthSec.Size = new System.Drawing.Size(50, 20);
             this.numericEdit_FiltWidthSec.TabIndex = 22;
             this.numericEdit_FiltWidthSec.Value = 10D;
+            this.numericEdit_FiltWidthSec.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.numericEdit_FiltWidthSec_AfterChangeValue);
             // 
             // numericEdit_FiltC1
             // 
@@ -364,6 +374,7 @@
             this.numericEdit_FiltC1.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
             this.numericEdit_FiltC1.Size = new System.Drawing.Size(50, 20);
             this.numericEdit_FiltC1.TabIndex = 22;
+            this.numericEdit_FiltC1.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.numericEdit_FiltC1_AfterChangeValue);
             // 
             // label7
             // 
@@ -421,6 +432,7 @@
             this.comboBox_ObsAlg.Name = "comboBox_ObsAlg";
             this.comboBox_ObsAlg.Size = new System.Drawing.Size(105, 21);
             this.comboBox_ObsAlg.TabIndex = 0;
+            this.comboBox_ObsAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_ObsAlg_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -438,25 +450,10 @@
             this.groupBox_ObservationPlot.Controls.Add(this.slide_ObsPlotScale);
             this.groupBox_ObservationPlot.Location = new System.Drawing.Point(6, 185);
             this.groupBox_ObservationPlot.Name = "groupBox_ObservationPlot";
-            this.groupBox_ObservationPlot.Size = new System.Drawing.Size(578, 556);
+            this.groupBox_ObservationPlot.Size = new System.Drawing.Size(618, 556);
             this.groupBox_ObservationPlot.TabIndex = 7;
             this.groupBox_ObservationPlot.TabStop = false;
             this.groupBox_ObservationPlot.Text = "Plot";
-            // 
-            // slide_ObsPlotShift
-            // 
-            this.slide_ObsPlotShift.AutoDivisionSpacing = false;
-            this.slide_ObsPlotShift.Border = NationalInstruments.UI.Border.Solid;
-            this.slide_ObsPlotShift.Caption = "Y Shift";
-            this.slide_ObsPlotShift.CaptionBackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.slide_ObsPlotShift.CaptionForeColor = System.Drawing.Color.Lime;
-            this.slide_ObsPlotShift.FillBackColor = System.Drawing.SystemColors.Highlight;
-            this.slide_ObsPlotShift.Location = new System.Drawing.Point(292, 483);
-            this.slide_ObsPlotShift.Name = "slide_ObsPlotShift";
-            this.slide_ObsPlotShift.PointerColor = System.Drawing.SystemColors.ActiveBorder;
-            this.slide_ObsPlotShift.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
-            this.slide_ObsPlotShift.Size = new System.Drawing.Size(280, 67);
-            this.slide_ObsPlotShift.TabIndex = 26;
             // 
             // scatterGraph_Obs
             // 
@@ -464,7 +461,7 @@
             this.scatterGraph_Obs.Name = "scatterGraph_Obs";
             this.scatterGraph_Obs.Plots.AddRange(new NationalInstruments.UI.ScatterPlot[] {
             this.scatterPlot1});
-            this.scatterGraph_Obs.Size = new System.Drawing.Size(566, 458);
+            this.scatterGraph_Obs.Size = new System.Drawing.Size(606, 458);
             this.scatterGraph_Obs.TabIndex = 0;
             this.scatterGraph_Obs.UseColorGenerator = true;
             this.scatterGraph_Obs.XAxes.AddRange(new NationalInstruments.UI.XAxis[] {
@@ -476,6 +473,21 @@
             // 
             this.scatterPlot1.XAxis = this.xAxis1;
             this.scatterPlot1.YAxis = this.yAxis1;
+            // 
+            // slide_ObsPlotShift
+            // 
+            this.slide_ObsPlotShift.AutoDivisionSpacing = false;
+            this.slide_ObsPlotShift.Border = NationalInstruments.UI.Border.Solid;
+            this.slide_ObsPlotShift.Caption = "Y Shift";
+            this.slide_ObsPlotShift.CaptionBackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.slide_ObsPlotShift.CaptionForeColor = System.Drawing.Color.Lime;
+            this.slide_ObsPlotShift.FillBackColor = System.Drawing.SystemColors.Highlight;
+            this.slide_ObsPlotShift.Location = new System.Drawing.Point(321, 483);
+            this.slide_ObsPlotShift.Name = "slide_ObsPlotShift";
+            this.slide_ObsPlotShift.PointerColor = System.Drawing.SystemColors.ActiveBorder;
+            this.slide_ObsPlotShift.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
+            this.slide_ObsPlotShift.Size = new System.Drawing.Size(291, 67);
+            this.slide_ObsPlotShift.TabIndex = 26;
             // 
             // slide_ObsPlotScale
             // 
@@ -490,7 +502,7 @@
             this.slide_ObsPlotScale.PointerColor = System.Drawing.SystemColors.ActiveBorder;
             this.slide_ObsPlotScale.Range = new NationalInstruments.UI.Range(0.1D, 10D);
             this.slide_ObsPlotScale.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
-            this.slide_ObsPlotScale.Size = new System.Drawing.Size(280, 67);
+            this.slide_ObsPlotScale.Size = new System.Drawing.Size(306, 67);
             this.slide_ObsPlotScale.TabIndex = 24;
             this.slide_ObsPlotScale.Value = 1D;
             // 
@@ -524,13 +536,13 @@
             this.slide_PlotWidth.PointerColor = System.Drawing.SystemColors.ActiveBorder;
             this.slide_PlotWidth.Range = new NationalInstruments.UI.Range(0D, 60D);
             this.slide_PlotWidth.ScalePosition = NationalInstruments.UI.NumericScalePosition.Bottom;
-            this.slide_PlotWidth.Size = new System.Drawing.Size(321, 61);
+            this.slide_PlotWidth.Size = new System.Drawing.Size(466, 61);
             this.slide_PlotWidth.TabIndex = 25;
             this.slide_PlotWidth.Value = 10D;
             // 
             // groupBox1
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.groupBox1.BackColor = System.Drawing.SystemColors.Highlight;
             this.groupBox1.Controls.Add(this.numericUpDown_NumUnits);
             this.groupBox1.Controls.Add(this.label14);
             this.groupBox1.Controls.Add(this.slide_PlotRange);
@@ -545,7 +557,7 @@
             this.groupBox1.Controls.Add(this.comboBox_ObsAlg);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(592, 747);
+            this.groupBox1.Size = new System.Drawing.Size(630, 747);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Observation";
@@ -561,6 +573,7 @@
             this.numericUpDown_NumUnits.Name = "numericUpDown_NumUnits";
             this.numericUpDown_NumUnits.Size = new System.Drawing.Size(57, 20);
             this.numericUpDown_NumUnits.TabIndex = 29;
+            this.numericUpDown_NumUnits.ValueChanged += new System.EventHandler(this.numericUpDown_NumUnits_ValueChanged);
             // 
             // label14
             // 
@@ -601,13 +614,12 @@
             // 
             this.checkBox_FreezePlots.AutoSize = true;
             this.checkBox_FreezePlots.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_FreezePlots.Location = new System.Drawing.Point(480, 90);
+            this.checkBox_FreezePlots.Location = new System.Drawing.Point(499, 140);
             this.checkBox_FreezePlots.Name = "checkBox_FreezePlots";
             this.checkBox_FreezePlots.Size = new System.Drawing.Size(106, 21);
             this.checkBox_FreezePlots.TabIndex = 18;
             this.checkBox_FreezePlots.Text = "Freeze Plots";
             this.checkBox_FreezePlots.UseVisualStyleBackColor = true;
-            this.checkBox_FreezePlots.Visible = false;
             this.checkBox_FreezePlots.CheckedChanged += new System.EventHandler(this.checkBox_FreezePlots_CheckedChanged);
             // 
             // numericEdit_ObsBuffHistorySec
@@ -620,6 +632,7 @@
             this.numericEdit_ObsBuffHistorySec.Size = new System.Drawing.Size(57, 20);
             this.numericEdit_ObsBuffHistorySec.TabIndex = 20;
             this.numericEdit_ObsBuffHistorySec.Value = 60D;
+            this.numericEdit_ObsBuffHistorySec.AfterChangeValue += new NationalInstruments.UI.AfterChangeNumericValueEventHandler(this.numericEdit_ObsBuffHistorySec_AfterChangeValue);
             // 
             // label10
             // 
@@ -632,7 +645,9 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.groupBox7.BackColor = System.Drawing.Color.Crimson;
+            this.groupBox7.Controls.Add(this.comboBox_FBAlg);
+            this.groupBox7.Controls.Add(this.textBox_ControllerResults);
             this.groupBox7.Controls.Add(this.numericUpDown_ContC3);
             this.groupBox7.Controls.Add(this.numericUpDown_ContC4);
             this.groupBox7.Controls.Add(this.numericUpDown_ContC1);
@@ -646,13 +661,36 @@
             this.groupBox7.Controls.Add(this.numericUpDown_ContC0);
             this.groupBox7.Controls.Add(this.label_ContC1);
             this.groupBox7.Controls.Add(this.label_ContC0);
-            this.groupBox7.Controls.Add(this.comboBox_FBAlg);
-            this.groupBox7.Location = new System.Drawing.Point(344, 765);
+            this.groupBox7.Location = new System.Drawing.Point(12, 765);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(650, 87);
+            this.groupBox7.Size = new System.Drawing.Size(1264, 87);
             this.groupBox7.TabIndex = 3;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Controller";
+            // 
+            // comboBox_FBAlg
+            // 
+            this.comboBox_FBAlg.FormattingEnabled = true;
+            this.comboBox_FBAlg.Items.AddRange(new object[] {
+            "None",
+            "Filt2PropFreqFB",
+            "Filt2PropPowerFB",
+            "Filt2PIDPowerFB",
+            "Filt2PIDutyCycleFB",
+            "Filt2RelayDutyCycleFB"});
+            this.comboBox_FBAlg.Location = new System.Drawing.Point(62, 30);
+            this.comboBox_FBAlg.Name = "comboBox_FBAlg";
+            this.comboBox_FBAlg.Size = new System.Drawing.Size(196, 21);
+            this.comboBox_FBAlg.TabIndex = 30;
+            this.comboBox_FBAlg.SelectedIndexChanged += new System.EventHandler(this.comboBox_FBAlg_SelectedIndexChanged);
+            // 
+            // textBox_ControllerResults
+            // 
+            this.textBox_ControllerResults.Location = new System.Drawing.Point(656, 15);
+            this.textBox_ControllerResults.Multiline = true;
+            this.textBox_ControllerResults.Name = "textBox_ControllerResults";
+            this.textBox_ControllerResults.Size = new System.Drawing.Size(596, 63);
+            this.textBox_ControllerResults.TabIndex = 4;
             // 
             // numericUpDown_ContC3
             // 
@@ -661,6 +699,7 @@
             this.numericUpDown_ContC3.Name = "numericUpDown_ContC3";
             this.numericUpDown_ContC3.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC3.TabIndex = 7;
+            this.numericUpDown_ContC3.ValueChanged += new System.EventHandler(this.numericUpDown_ContC3_ValueChanged);
             // 
             // numericUpDown_ContC4
             // 
@@ -674,6 +713,7 @@
             this.numericUpDown_ContC4.Name = "numericUpDown_ContC4";
             this.numericUpDown_ContC4.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC4.TabIndex = 6;
+            this.numericUpDown_ContC4.ValueChanged += new System.EventHandler(this.numericUpDown_ContC4_ValueChanged);
             // 
             // numericUpDown_ContC1
             // 
@@ -687,6 +727,7 @@
             this.numericUpDown_ContC1.Name = "numericUpDown_ContC1";
             this.numericUpDown_ContC1.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC1.TabIndex = 9;
+            this.numericUpDown_ContC1.ValueChanged += new System.EventHandler(this.numericUpDown_ContC1_ValueChanged);
             // 
             // numericUpDown_ContC5
             // 
@@ -700,6 +741,7 @@
             this.numericUpDown_ContC5.Name = "numericUpDown_ContC5";
             this.numericUpDown_ContC5.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC5.TabIndex = 5;
+            this.numericUpDown_ContC5.ValueChanged += new System.EventHandler(this.numericUpDown_ContC5_ValueChanged);
             // 
             // label11
             // 
@@ -722,6 +764,7 @@
             this.numericUpDown_ContC2.Name = "numericUpDown_ContC2";
             this.numericUpDown_ContC2.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC2.TabIndex = 8;
+            this.numericUpDown_ContC2.ValueChanged += new System.EventHandler(this.numericUpDown_ContC2_ValueChanged);
             // 
             // label12
             // 
@@ -772,6 +815,7 @@
             this.numericUpDown_ContC0.Name = "numericUpDown_ContC0";
             this.numericUpDown_ContC0.Size = new System.Drawing.Size(69, 20);
             this.numericUpDown_ContC0.TabIndex = 4;
+            this.numericUpDown_ContC0.ValueChanged += new System.EventHandler(this.numericUpDown_ContC0_ValueChanged);
             // 
             // label_ContC1
             // 
@@ -792,25 +836,12 @@
             this.label_ContC0.TabIndex = 17;
             this.label_ContC0.Text = "Coeff. 0";
             // 
-            // comboBox_FBAlg
-            // 
-            this.comboBox_FBAlg.FormattingEnabled = true;
-            this.comboBox_FBAlg.Items.AddRange(new object[] {
-            "None",
-            "Filt2PropFreqFB",
-            "Filt2PropPowerFB",
-            "Filt2PIDPowerFB",
-            "Filt2PIDutyCycleFB"});
-            this.comboBox_FBAlg.Location = new System.Drawing.Point(62, 29);
-            this.comboBox_FBAlg.Name = "comboBox_FBAlg";
-            this.comboBox_FBAlg.Size = new System.Drawing.Size(184, 21);
-            this.comboBox_FBAlg.TabIndex = 0;
-            // 
             // ControlPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MediumPurple;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1284, 864);
             this.ControlBox = false;
             this.Controls.Add(this.groupBox7);
@@ -838,8 +869,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltWidthSec)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericEdit_FiltC1)).EndInit();
             this.groupBox_ObservationPlot.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.scatterGraph_Obs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_ObsPlotScale)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_PlotRange)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.slide_PlotWidth)).EndInit();
@@ -856,6 +887,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC0)).EndInit();
             this.ResumeLayout(false);
+
 
         }
 
@@ -883,7 +915,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label label15;
-        internal System.Windows.Forms.ComboBox comboBox_FBAlg;
         private System.Windows.Forms.CheckBox checkBox_FreezePlots;
         private NationalInstruments.UI.WindowsForms.ScatterGraph scatterGraph_Filt;
         private NationalInstruments.UI.ScatterPlot scatterPlot2;
@@ -923,5 +954,7 @@
         public System.Windows.Forms.NumericUpDown numericUpDown_TargetFreq;
         public System.Windows.Forms.NumericUpDown numericUpDown_TargetSD;
         public System.Windows.Forms.NumericUpDown numericUpDown_TargetMean;
+        private System.Windows.Forms.TextBox textBox_ControllerResults;
+        internal System.Windows.Forms.ComboBox comboBox_FBAlg;
     }
 }

@@ -78,6 +78,11 @@ namespace simoc
                 // Let it set up
                 System.Threading.Thread.Sleep(2000);
 
+                // Set up subscribers for cp's events
+                controlPanel.ResetRelayFBEstimateEvent += new ControlPanel.ResetRelayFBEstimateEventHander(UpdateRelayFBResults);
+                controlPanel.TargetFunctionSwitchedEvent += new ControlPanel.TargetFunctionSwitchedEventHander(TargetFunctionSwitched);
+                controlPanel.ObservableSwitchedEvent += new ControlPanel.ObservableSwitchedEventHander(ObservableSwitched);
+
                 // Tell the assembly some parameters of the I/O 
                 DACPollingPeriodSec = StimSrv.DACPollingPeriodSec;
                 ADCPollingPeriodSec = DatSrv.ADCPollingPeriodSec;
@@ -93,13 +98,15 @@ namespace simoc
 
                 // Create file writer
                 if (NRRecording)
-                    simocOut = new FileWriter(NRFilePath + ".simoc", 14, DatSrv.spikeSrv.sampleFrequencyHz);
+                    simocOut = new FileWriter(NRFilePath + ".simoc", 14, DatSrv.spikeSrv.SampleFrequencyHz);
                 
                 // Set up closed loop algorithm
                 startTime = StimSrv.DigitalOut.GetTime()/1000;
                 Console.WriteLine("SIMOC starting out at time " + startTime.ToString() + " seconds.");
             }
         }
+
+
 
         protected override void Loop(object sender, EventArgs e)
         {
@@ -174,6 +181,30 @@ namespace simoc
                 }
 
             }
+        }
+
+        private void UpdateRelayFBResults()
+        {
+            simocVariableStorage.RelayCrossingTimeList.Clear();
+            simocVariableStorage.UltimatePeriodList.Clear();
+            simocVariableStorage.ErrorDownStateAmpList.Clear();
+            simocVariableStorage.ErrorUpStateAmpList.Clear();
+            simocVariableStorage.ErrorSignalAmplitudeList.Clear();
+            simocVariableStorage.UltimateGainEstimate = 0;
+            simocVariableStorage.UltimatePeriodEstimate = 0;
+
+        }
+
+        private void ObservableSwitched()
+        {
+            simocVariableStorage.ResetRunningObsAverage();
+        }
+
+        private void TargetFunctionSwitched()
+        {
+            ulong[] now = DatSrv.spikeSrv.EstimateAvailableTimeRange();
+            simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.spikeSrv.SampleFrequencyHz;
+            simocVariableStorage.TargetOn = false;
         }
     }
 }

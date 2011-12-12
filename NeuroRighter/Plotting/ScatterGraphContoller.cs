@@ -32,8 +32,8 @@ namespace NeuroRighter
     {
 
         private ScatterGraph analogScatterGraph;
-        private ulong lastSampleRead = 0;
-        private ulong numSampToPlot = 2000; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private ulong lastSampleRead ;
+        private ulong numSampToPlot = 1500; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
         private ulong points2Remove;
 
         /// <summary>
@@ -68,10 +68,17 @@ namespace NeuroRighter
 
             // Plot bound settings
             ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
-            double minUpdateTimeSec = requestedHistorySec/50; //seconds
+            double minUpdateTimeSec = 0.05; //seconds
             int downSampleFactor = (int)(historySamples/numSampToPlot);
-            if (downSampleFactor < 1)
+            if (historySamples < numSampToPlot)
+            {
                 downSampleFactor = 1;
+                numSampToPlot = historySamples;
+            }
+            else
+            {
+                numSampToPlot = 1500;
+            }
             int newDataLength;
 
             if ((availableDataRange[1]-lastSampleRead)*oneOverSampleFreq > minUpdateTimeSec)
@@ -163,7 +170,5 @@ namespace NeuroRighter
             }
 
         }
-
-
     }
 }

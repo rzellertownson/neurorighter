@@ -26,13 +26,15 @@ namespace simoc.targetfunc
         protected double DACPollingPeriodSec;
         protected ulong currentOutputSample;
         protected double outputSampleRateHz;
+        protected double targetMultiplier;
 
         public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
         {
             // Grab parameters off the form
-            this.meanValue = (double)cp.TargetMean;
-            this.standardDev = (double)cp.TargetStd;
-            this.frequency = (double)cp.TargetFreqHz;
+            this.meanValue = cp.TargetMean;
+            this.standardDev = cp.TargetStd;
+            this.frequency = cp.TargetFreqHz;
+            this.targetMultiplier = cp.TargetMultiplier;
             this.numTargetSamplesGenerated = numTargetSamplesGenerated;
             this.DACPollingPeriodSec = DACPollingPeriodSec;
             this.currentOutputSample = stimSrv.DigitalOut.GetCurrentSample();

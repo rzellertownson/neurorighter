@@ -15,6 +15,7 @@ using NeuroRighter.DataTypes;
 using NeuroRighter;
 using System.IO;
 using System.Threading;
+using simoc.persistantstate;
 
 namespace simoc.UI
 {
@@ -30,6 +31,7 @@ namespace simoc.UI
         internal string filtAlg;
         internal string targetFunc;
         internal string contAlg;
+        internal string tuningAlg;
 
         // The two scatter graph objects
         private ScatterGraphController obsScatterGraphController;
@@ -39,11 +41,23 @@ namespace simoc.UI
         private double clLoopPeriodSec;
         private bool plotsFrozen = false;
 
-        // Delegate for cross thread calls
-        delegate void GetTextCallback();
-        string controllerResultText = "";
+        // Stuff for handling Relay experiment part of GUI
+        public delegate void ResetRelayFBEstimateEventHander();
+        public event ResetRelayFBEstimateEventHander ResetRelayFBEstimateEvent;
+        private double ultimatePeriodSec;
+        private double ultimateGain;
+        bool fbParametersLocked = false;
+
+        // Stuff for telling simoc that we switched target functions
+        public delegate void TargetFunctionSwitchedEventHander();
+        public event TargetFunctionSwitchedEventHander TargetFunctionSwitchedEvent;
+
+        // Stuff for telling simoc that we observation type
+        public delegate void ObservableSwitchedEventHander();
+        public event ObservableSwitchedEventHander ObservableSwitchedEvent;
 
         // GUI parameters
+        private delegate void GetTextCallback();
         private double obsHistorySec;
         private double numUnits;
 
@@ -53,8 +67,9 @@ namespace simoc.UI
         private double filterC2;
         
         private double targetMean;
-        public double targetFreqHz;
-        public double targetStd;
+        private double targetFreqHz;
+        private double targetStd;
+        private double targetMultiplier; 
 
         private double controllerC0;
         private double controllerC1;
@@ -62,7 +77,6 @@ namespace simoc.UI
         private double controllerC3;
         private double controllerC4;
         private double controllerC5;
-
 
         public ControlPanel(double pollingPeriodSec)
         {
@@ -148,21 +162,46 @@ namespace simoc.UI
             }
         }
 
-        internal void SetControllerResultText(string ctlResultsText)
+        internal void SetControllerResultText(double Tu, double Ku)
         {
-            controllerResultText = ctlResultsText;
+            ultimatePeriodSec = Tu;
+            ultimateGain = Ku;
         }
+
         internal void UpdateControllerTextbox()
         {
-            if (this.textBox_ControllerResults.InvokeRequired)
+            if (!fbParametersLocked)
             {
-                GetTextCallback d = new GetTextCallback(UpdateControllerTextbox);
-                this.BeginInvoke(d);
-            }
-            else
-            {
-                textBox_ControllerResults.Clear();
-                textBox_ControllerResults.Text = controllerResultText;
+
+                if (this.textBox_Ku.InvokeRequired)
+                {
+                    GetTextCallback d = new GetTextCallback(UpdateControllerTextbox);
+                    this.BeginInvoke(d);
+                }
+                else
+                {
+                    textBox_Tu.Text = Convert.ToString(ultimatePeriodSec);
+                    textBox_Ku.Text = Convert.ToString(ultimateGain);
+
+                    switch (tuningAlg)
+                    {
+                        case "Ziegler-Nichols-PI":
+                            {
+                                textBox_K.Text = Convert.ToString(0.4 * ultimateGain);
+                                textBox_Ti.Text = Convert.ToString(0.8 * ultimatePeriodSec);
+                            }
+                            break;
+                        case "Ziegler-Nichols-PID":
+                            {
+                                textBox_K.Text = Convert.ToString(0.6 * ultimateGain);
+                                textBox_Ti.Text = Convert.ToString(0.5 * ultimatePeriodSec);
+                                textBox_Td.Text = Convert.ToString(0.125 * ultimatePeriodSec);
+                            }
+                            break;
+                    }
+
+
+                }
             }
 
         }
@@ -191,13 +230,15 @@ namespace simoc.UI
             }
             else
             {
-                this.comboBox_ObsAlg.SelectedIndex = 0;
-                this.comboBox_FiltAlg.SelectedIndex = 0;
+                this.comboBox_ObsAlg.SelectedIndex = 1;
+                this.comboBox_FiltAlg.SelectedIndex = 1;
                 this.comboBox_Target.SelectedIndex = 0;
                 this.comboBox_FBAlg.SelectedIndex = 0;
+                this.comboBox_TuningType.SelectedIndex = 0;
             }
         }
 
+        # region Button Event Handlers
         private void button_StartSIMOC_Click(object sender, EventArgs e)
         {
             numericEdit_ObsBuffHistorySec.Enabled = false;
@@ -215,15 +256,60 @@ namespace simoc.UI
             stopButtonPressed = true;
         }
 
-        private void checkBox_FreezePlots_CheckedChanged(object sender, EventArgs e)
+        //private void checkBox_FreezePlots_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    plotsFrozen = checkBox_FreezePlots.Checked;
+        //}
+
+        //private void pictureBox5_Click(object sender, EventArgs e)
+        //{
+        //    checkBox_FreezePlots_CheckedChanged(null, null);
+        //}
+
+        private void button_ResetEstimates_Click(object sender, EventArgs e)
         {
-            plotsFrozen = checkBox_FreezePlots.Checked;
+            if (!fbParametersLocked)
+            {
+                ResetRelayFBEstimateEvent();
+            }
         }
 
-        private void pictureBox5_Click(object sender, EventArgs e)
+        private void button_LockEstimates_Click(object sender, EventArgs e)
         {
-            checkBox_FreezePlots_CheckedChanged(null, null);
+            if (fbParametersLocked)
+            {
+                fbParametersLocked = false;
+                button_LockEstimates.Text = "Lock Estimates";
+            }
+            else
+            {
+                fbParametersLocked = true;
+                button_LockEstimates.Text = "UnLock Estimates";
+            }
         }
+
+        private void button_SendEstimates_Click(object sender, EventArgs e)
+        {
+            switch (contAlg)
+            {
+                case "Filt2PIDIrradFB":
+                    {
+                        numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
+                        numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                        numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
+                    }
+                    break;
+                case "Filt2PIDutyCycleFB":
+                    {
+                        numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
+                        numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                    }
+                    break;
+            }
+
+        }
+
+        # endregion
 
         #region public access methods
 
@@ -327,6 +413,17 @@ namespace simoc.UI
         }
 
         /// <summary>
+        /// Get the target standard deviation
+        /// </summary>
+        public double TargetMultiplier
+        {
+            get
+            {
+                return targetMultiplier;
+            }
+        }
+
+        /// <summary>
         /// Get the first controller coefficient
         /// </summary>
         public double ControllerC0
@@ -409,6 +506,13 @@ namespace simoc.UI
         private void comboBox_Target_SelectedIndexChanged(object sender, EventArgs e)
         {
             targetFunc = this.comboBox_Target.SelectedItem.ToString();
+            if (TargetFunctionSwitchedEvent != null)
+                TargetFunctionSwitchedEvent();
+        }
+
+        private void comboBox_TuningType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tuningAlg = comboBox_TuningType.SelectedItem.ToString();
         }
 
         private void numericEdit_FiltWidthSec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
@@ -444,6 +548,8 @@ namespace simoc.UI
         private void comboBox_ObsAlg_SelectedIndexChanged(object sender, EventArgs e)
         {
             obsAlg = this.comboBox_ObsAlg.SelectedItem.ToString();
+            if (ObservableSwitchedEvent != null)
+                ObservableSwitchedEvent();
         }
 
         private void numericUpDown_NumUnits_ValueChanged(object sender, EventArgs e)
@@ -454,6 +560,75 @@ namespace simoc.UI
         private void comboBox_FBAlg_SelectedIndexChanged(object sender, EventArgs e)
         {
             contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
+
+            if (checkBox_GetTuneParams.Checked)
+            {
+                button_SendEstimates_Click(null, null);
+            }
+
+            switch (contAlg)
+            {
+                case "None":
+                    {
+                        label_CtlType.Text = "Controller 0";
+                    }
+                    break;
+                case "Filt2RelayIrradFB":
+                    {
+                        label_ContC0.Text = "Vi (0-5)";
+                        label_ContC1.Text = "dError";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "Freq (Hz)";
+                        label_ContC4.Text = "Pulse Width";
+                        label_ContC5.Text = "";
+                        label_CtlType.Text = "Controller 3";
+                    }
+                    break;
+                case "Filt2PIDIrradFB":
+                    {
+                        label_ContC0.Text = "K";
+                        label_ContC1.Text = "Ti";
+                        label_ContC2.Text = "Td";
+                        label_ContC3.Text = "Freq (Hz)";
+                        label_ContC4.Text = "Pulse Width";
+                        label_ContC5.Text = "";
+                        label_CtlType.Text = "Controller 4";
+                    }
+                    break;
+                case "Filt2RelayDutyCycleFB":
+                    {
+                        label_ContC0.Text = "U_max (0-1)";
+                        label_ContC1.Text = "dError";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "Vi (0-5)";
+                        label_ContC4.Text = "";
+                        label_ContC5.Text = "";
+                        label_CtlType.Text = "Controller 5";
+                    }
+                    break;
+                case "Filt2PIDutyCycleFB":
+                    {
+                        label_ContC0.Text = "K";
+                        label_ContC1.Text = "Ti";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "Vi (0-5)";
+                        label_ContC4.Text = "";
+                        label_ContC5.Text = "";
+                        label_CtlType.Text = "Controller 6";
+                    }
+                    break;
+                default:
+                     {
+                        label_ContC0.Text = "c0";
+                        label_ContC1.Text = "c1";
+                        label_ContC2.Text = "c2";
+                        label_ContC3.Text = "c3";
+                        label_ContC4.Text = "c4";
+                        label_ContC5.Text = "c5";
+                        label_CtlType.Text = "Controller X";
+                    }
+                    break;
+            }
         }
 
         private void numericUpDown_ContC0_ValueChanged(object sender, EventArgs e)
@@ -486,12 +661,19 @@ namespace simoc.UI
             controllerC5 = (double)this.numericUpDown_ContC5.Value;
         }
 
+        private void numericUpDown_TargetMultiplier_ValueChanged(object sender, EventArgs e)
+        {
+            targetMultiplier = (double)this.numericUpDown_TargetMultiplier.Value;
+        }
+
         private void numericEdit_ObsBuffHistorySec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
         {
             obsHistorySec = this.numericEdit_ObsBuffHistorySec.Value;
         }
 
         # endregion
+
+
 
     }
 }

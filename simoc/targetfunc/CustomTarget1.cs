@@ -22,7 +22,6 @@ namespace simoc.targetfunc
         {
         }
 
-
         internal override void GetTargetValue(ref double currentTargetValue, PersistentSimocVar simocVariableStorage)
         {
             // target value should increment by 25 every other minute. Otherwise it should be 0.

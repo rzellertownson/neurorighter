@@ -435,11 +435,6 @@ C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Ac
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.dll
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\AForge.dll
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Mowog.PersistWindowState.dll
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\AxInterop.CWUIControlsLib.dll
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Interop.CWUIControlsLib.dll
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.dll
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\zlib.net.dll
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.pdb
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.pdb
@@ -449,10 +444,7 @@ C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Ac
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.pdb
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.xml
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.pdb
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\AForge.xml
-C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
 C:\Users\Jon\Desktop\neurorighter-head_01\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb

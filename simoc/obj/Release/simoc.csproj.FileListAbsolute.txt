@@ -182,7 +182,6 @@ C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\AForge.Math.dll
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\NeuroRighter.pdb
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\NeuroRighter.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\NRSpikeSort.pdb
-C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\ZedGraph.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\csmatio.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\Accord.MachineLearning.pdb
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\Accord.MachineLearning.xml
@@ -194,3 +193,6 @@ C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\AForge.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\Accord.pdb
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\Accord.xml
 C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\AForge.Math.xml
+C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\NeuroRighter.exe
+C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\Miscellaneous\gpl.txt
+C:\Users\Jon\Desktop\neurorighter-head_01\simoc\bin\Release\NeuroRighter_v04.ico

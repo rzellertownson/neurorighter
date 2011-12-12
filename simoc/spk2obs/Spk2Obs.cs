@@ -32,8 +32,8 @@ namespace simoc.spk2obs
             this.dacPollingPeriodSec = stimSrv.DACPollingPeriodSec;
             this.channelCount = datSrv.rawElectrodeSrv.channelCount;
             this.dacPollingPeriodSamples = stimSrv.DACPollingPeriodSamples;
-            this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.spikeSrv.sampleFrequencyHz * dacPollingPeriodSec);
-            this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.spikeSrv.sampleFrequencyHz);
+            this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.spikeSrv.SampleFrequencyHz * dacPollingPeriodSec);
+            this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.spikeSrv.SampleFrequencyHz);
             this.numSecondInCurrentRead = adcSamplesInDacPoll;
         }
 
@@ -52,7 +52,7 @@ namespace simoc.spk2obs
                 newSpikes = DatSrv.spikeSrv.ReadFromBuffer(simocPersistentState.LastSampleRead, spikeTimeRange[1]);
 
                 // How many seconds is this data taken from
-                numSecondInCurrentRead = (double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead) / DatSrv.spikeSrv.sampleFrequencyHz;
+                numSecondInCurrentRead = (double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead) / DatSrv.spikeSrv.SampleFrequencyHz;
 
                 // Update the last sample read
                 simocPersistentState.LastSampleRead = spikeTimeRange[1];

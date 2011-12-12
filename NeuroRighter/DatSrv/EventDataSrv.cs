@@ -40,21 +40,15 @@ namespace NeuroRighter.DatSrv
         private EventBuffer<T> dataBuffer;
         
         private ulong[] currentSample;
-        private ulong bufferSizeInSamples; // The maximum number of samples between  the
-                                         // current sample and the last avaialbe mixed
-                                         // event time before it expires and is removed.
-        private int numSamplesPerWrite;  // The number of samples for each buffer that
-                                         // mixed events could have been detected in
+        private ulong bufferSizeInSamples; // The maximum number of samples between thecurrent sample and the last available event time before it expires and is removed.
+        private int numSamplesPerWrite;  // The number of samples for each buffer that events could have been detected in
         private ulong minCurrentSample;
         private ulong serverLagSamples;
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
 
-        /// <summary>
-        /// Sampling frequency for data collected for this server.
-        /// </summary>
-        public double sampleFrequencyHz;
+        private double sampleFrequencyHz;
 
         /// <summary>
         /// Generic event-type data server (e.g. spikes). The main data buffer that this class updates
@@ -131,7 +125,6 @@ namespace NeuroRighter.DatSrv
         {
             // This write operation is used when the sampleIndicies in the newData buffer
             // correspond to the start of a DAQ buffer poll rather than the start of the record
-            int added = 0; int rem = 0;
             string times = "";
             // Lock out other write operations
             bufferLock.EnterWriteLock();
@@ -140,19 +133,12 @@ namespace NeuroRighter.DatSrv
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
-                
-                for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
+                if (minCurrentSample > bufferSizeInSamples)
                 {
-                    if (minCurrentSample > bufferSizeInSamples)
-                        if (dataBuffer.eventBuffer[i].sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples)
-                    {
-                        dataBuffer.eventBuffer.RemoveAt(i);
-                        rem++;
-                    }
+                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
                 }
                 
                 // Move time stamps to absolute scheme
-                
                 for (int i = 0; i < newData.eventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
@@ -160,9 +146,7 @@ namespace NeuroRighter.DatSrv
                     tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
                     dataBuffer.eventBuffer.Add(tmp);
                     times += tmp.sampleIndex.ToString() + ", ";
-                    added++;
                 }
-                
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
@@ -199,12 +183,10 @@ namespace NeuroRighter.DatSrv
             finally
             {
                 // release the read lock
-                
                 bufferLock.ExitReadLock();
-                
             }
+
             return timeRange;
-            
         }
 
         /// <summary>
@@ -224,17 +206,11 @@ namespace NeuroRighter.DatSrv
             bufferLock.EnterReadLock();
             try
             {
-                // Collect all the data within the desired sample range and add to the returnBuffer
-                // object
-                for (int i = 0; i < dataBuffer.eventBuffer.Count;i++ )
-                {
-                    if (dataBuffer.eventBuffer[i].sampleIndex > desiredStartIndex &&
-                        dataBuffer.eventBuffer[i].sampleIndex <= desiredStopIndex && 
-                        dataBuffer.eventBuffer[i].sampleIndex <= minCurrentSample)
-                    {
-                        returnBuffer.eventBuffer.Add((T)dataBuffer.eventBuffer[i].DeepClone());
-                    }
-                }
+                // Collect all the data within the desired sample range and add to the returnBuffer object
+                returnBuffer.eventBuffer =  
+                    dataBuffer.eventBuffer.Where(
+                        x => (x.sampleIndex > desiredStartIndex 
+                        && x.sampleIndex <= desiredStopIndex)).ToList();
             }
             finally
             {
@@ -246,6 +222,26 @@ namespace NeuroRighter.DatSrv
             return returnBuffer;
 
         }
+
+        # region Public Accessors
+
+        /// <summary>
+        /// Sampling frequency for data collected for this server.
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+            set
+            {
+                sampleFrequencyHz = value;
+            }
+        }
+
+        # endregion
+
 
     }
 }

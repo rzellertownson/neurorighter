@@ -28,8 +28,18 @@ namespace simoc.persistantstate
         private double cumulativeAverageObs = 0;
         private double frozenCumulativeAverageObs = 0;
         private int lastTargetIndex = 0;
-        
+        private double lastTargetSwitchSec;
+        private bool targetOn;
 
+        // PID tuning
+        private double ultimatePeriodEstimate;
+        private double ultimateGainEstimate;
+        private List<double> ultimatePeriodList = new List<double>();
+        private List<double> relayCrossingTimeList = new List<double>();
+        private List<double> errorUpStateAmpList = new List<double>();
+        private List<double> errorDownStateAmpList = new List<double>();
+        private List<double> errorSignalAmplitudeList = new List<double>();
+        
         // Generic storage
         private double genericDouble1 = 0;
         private double genericDouble2 = 0;
@@ -49,7 +59,8 @@ namespace simoc.persistantstate
         /// </summary>
         public PersistentSimocVar()
         {
-
+            ultimatePeriodList = new List<double>();
+            errorSignalAmplitudeList = new List<double>();
         }
 
         /// <summary>
@@ -274,6 +285,141 @@ namespace simoc.persistantstate
             set
             {
                 lastTargetIndex = value;
+            }
+        }
+
+        /// <summary>
+        /// The absolute sample time that we last switched the target function
+        /// </summary>
+        public double LastTargetSwitchedSec
+        {
+            get
+            {
+                return lastTargetSwitchSec;
+            }
+            set
+            {
+                lastTargetSwitchSec = value;
+            }
+        }
+
+        /// <summary>
+        /// Are we tracking a target?
+        /// </summary>
+        public bool TargetOn 
+        {
+            get
+            {
+                return targetOn;
+            }
+            set
+            {
+                targetOn = value;
+            }
+        }
+
+        /// <summary>
+        /// Ultimate period estimate
+        /// </summary>
+        public double UltimatePeriodEstimate
+        {
+            get
+            {
+                return ultimatePeriodEstimate;
+            }
+            set
+            {
+                ultimatePeriodEstimate = value;
+            }
+        }
+
+        /// <summary>
+        /// Ultimate period estimate
+        /// </summary>
+        public double UltimateGainEstimate
+        {
+            get
+            {
+                return ultimateGainEstimate;
+            }
+            set
+            {
+                ultimateGainEstimate = value;
+            }
+        }
+
+        /// <summary>
+        /// A List of the ultimate periods used to for frequency-response based tuning
+        /// </summary>
+        public List<double> UltimatePeriodList
+        {
+            get
+            {
+                return ultimatePeriodList;
+            }
+            set
+            {
+                ultimatePeriodList = value;
+            }
+        }
+
+        /// <summary>
+        /// A List of the times that the relay signal turned on
+        /// </summary>
+        public List<double> RelayCrossingTimeList
+        {
+            get
+            {
+                return relayCrossingTimeList;
+            }
+            set
+            {
+                relayCrossingTimeList = value;
+            }
+        }
+
+        /// <summary>
+        /// Stores the last target index for custum, multistep target functions
+        /// </summary>
+        public List<double> ErrorSignalAmplitudeList
+        {
+            get
+            {
+                return errorSignalAmplitudeList;
+            }
+            set
+            {
+                errorSignalAmplitudeList = value;
+            }
+        }
+
+        /// <summary>
+        /// Stores the error values when the error is above delta in relay FB
+        /// </summary>
+        public List<double> ErrorUpStateAmpList
+        {
+            get
+            {
+                return errorUpStateAmpList;
+            }
+            set
+            {
+                errorUpStateAmpList = value;
+            }
+        }
+
+        /// <summary>
+        /// Stores the error values when the error is above delta in relay FB
+        /// </summary>
+        public List<double> ErrorDownStateAmpList
+        {
+            get
+            {
+                return errorDownStateAmpList;
+            }
+            set
+            {
+                errorDownStateAmpList = value;
             }
         }
 

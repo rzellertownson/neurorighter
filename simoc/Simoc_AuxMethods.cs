@@ -121,6 +121,19 @@ namespace simoc
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
+                    case "5 Minute Steps":
+                        {
+                            FiveMinuteSteps target = new FiveMinuteSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
+                    case "Multiple of Average Observable":
+                        {
+                            MulipleOfAverageObs target = new MulipleOfAverageObs(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
+                        
                 }
                 numTargetSamplesGenerated++;
             }
@@ -193,7 +206,7 @@ namespace simoc
         private void CreateFeedback()
         {
             // reset the currenFeedback array
-            currentFeedBack = new double[10];
+            currentFeedBack = new double[8];
 
             try
             {
@@ -229,19 +242,21 @@ namespace simoc
                             currentControllerType = 2;
                         }
                         break;
-                    case "Filt2PIDPowerFB":
+                    case "Filt2RelayIrradFB":
                         {
-                            Filt2PIDPowerFB controller = new Filt2PIDPowerFB(ref StimSrv, controlPanel);
+                            Filt2RelayIrradFB controller = new Filt2RelayIrradFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                             currentControllerType = 3;
+                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                            controlPanel.UpdateControllerTextbox();
                         }
                         break;
-                    case "Filt2PIDutyCycleFB":
+                    case "Filt2PIDIrradFB":
                         {
-                            Filt2PIDutyCycleFB controller = new Filt2PIDutyCycleFB(ref StimSrv, controlPanel);
+                            Filt2PIDIrradFB controller = new Filt2PIDIrradFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
@@ -257,6 +272,18 @@ namespace simoc
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                             currentControllerType = 5;
+                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                            controlPanel.UpdateControllerTextbox();
+                        }
+                        break;
+                    case "Filt2PIDutyCycleFB":
+                        {
+                            Filt2PIDutyCycleFB controller = new Filt2PIDutyCycleFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 6;
                         }
                         break;
                 }

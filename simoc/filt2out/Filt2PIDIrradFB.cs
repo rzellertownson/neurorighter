@@ -10,7 +10,7 @@ using NeuroRighter.DataTypes;
 
 namespace simoc.filt2out
 {
-    class Filt2PIDPowerFB : Filt2Out
+    class Filt2PIDIrradFB : Filt2Out
     {
         ulong pulseWidthSamples;
         double offVoltage = -0.5;
@@ -20,11 +20,11 @@ namespace simoc.filt2out
         double currentFilteredValue;
         double stimFreqHz;
         double stimPulseWidthMSec;
-        double currentTargetInt;
-        double lastErrorInt;
+        double currentTargetIntenal;
+        double lastErrorIntenal;
         double N = 2;
 
-        public Filt2PIDPowerFB(ref NRStimSrv stimSrv, ControlPanel cp)
+        public Filt2PIDIrradFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
         {
             numberOutStreams = 4; // P, I and D streams
@@ -44,16 +44,16 @@ namespace simoc.filt2out
             base.CalculateError(ref currentError, currentTarget, currentFilt);
             if (currentTarget != 0)
             {
-                lastErrorInt = currentError;
+                lastErrorIntenal = currentError;
                 currentError = (currentTarget - currentFilt);  // currentTarget;
             }
             else
             {
-                lastErrorInt = currentError;
+                lastErrorIntenal = currentError;
                 currentError = 0;
             }
             currentErrorIntenal = currentError;
-            currentTargetInt = currentTarget;
+            currentTargetIntenal = currentTarget;
         }
 
 
@@ -61,10 +61,10 @@ namespace simoc.filt2out
         {
             base.SendFeedBack(simocVariableStorage);
 
-            simocVariableStorage.LastErrorValue = lastErrorInt;
+            simocVariableStorage.LastErrorValue = lastErrorIntenal;
 
             // Generate output frequency\
-            if (currentTargetInt != 0)
+            if (currentTargetIntenal != 0)
             {
                 // Derivative Approx
                 simocVariableStorage.GenericDouble4 = (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
@@ -108,7 +108,11 @@ namespace simoc.filt2out
             // Create the output buffer
             List<AuxOutEvent> toAppendAux = new List<AuxOutEvent>();
             List<DigitalOutEvent> toAppendDig = new List<DigitalOutEvent>();
-            ulong isi = (ulong)(hardwareSampFreqHz / stimFreqHz);
+            ulong isi;
+            if (stimFreqHz != 0)
+                isi = (ulong)(hardwareSampFreqHz / stimFreqHz);
+            else
+                isi = (ulong)(hardwareSampFreqHz / 1.0); ;
 
             // Get the current buffer sample and make sure that we are going
             // to produce stimuli that are in the future

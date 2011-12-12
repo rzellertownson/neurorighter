@@ -40,17 +40,9 @@ namespace NeuroRighter.DatSrv
         // Main storage buffer
         private DigitalEventBuffer dataBuffer;
         private ulong currentSample;
-        private int bufferSizeInSamples; // The maximum number of samples between  the
-                                         // current sample and the last avaialbe mixed
-                                         // event time before it expires and is removed.
-        private int numSamplesPerWrite;  // The number of samples for each buffer that
-                                         // mixed events could have been detected in
-
-        /// <summary>
-        /// Sampling frequency for data collected for this server.
-        /// </summary>
-        public double sampleFrequencyHz;
-
+        private int bufferSizeInSamples; // The maximum number of samples between the current sample and the last avaialbe mixed event time before it expires and is removed.
+        private int numSamplesPerWrite;  // The number of samples for each buffer that mixed events could have been detected in
+        private double sampleFrequencyHz;
 
         /// <summary>
         /// Generic digital data server for a given 32 bit port. The main data buffer that this class updates
@@ -88,12 +80,13 @@ namespace NeuroRighter.DatSrv
                         dataBuffer.sampleBuffer.RemoveAt(i);
                         dataBuffer.portStateBuffer.RemoveAt(i);
                     }
-
-                    // Add new data
-                    dataBuffer.sampleBuffer.AddRange(newData.sampleBuffer);
-                    dataBuffer.portStateBuffer.AddRange(newData.portStateBuffer);
                 }
 
+                // Add new data
+                dataBuffer.sampleBuffer.AddRange(newData.sampleBuffer);
+                dataBuffer.portStateBuffer.AddRange(newData.portStateBuffer);
+
+                // Update the most current sample read
                 currentSample += (ulong)numSamplesPerWrite;
             }
             finally
@@ -170,6 +163,25 @@ namespace NeuroRighter.DatSrv
             return returnBuffer;
 
         }
+
+        # region Public Accessors
+
+        /// <summary>
+        /// Sampling frequency for data collected for this server.
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+            set
+            {
+                sampleFrequencyHz = value;
+            }
+        }
+
+        # endregion
     }
 
 }

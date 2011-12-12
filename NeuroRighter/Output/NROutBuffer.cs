@@ -524,7 +524,9 @@ namespace NeuroRighter.Output
             //if (running)
             //{
                 //{
-                    if(notDead)
+            try
+            {
+                if (notDead)
                     lock (namesLock)
                     {
                         //the number of times the counter has gone off
@@ -534,6 +536,12 @@ namespace NeuroRighter.Output
                         //for each of these name on deck, release a semaphore
                         sem.Release(1);
                     }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error in closed loop Timer Deamon: \n\r");
+            }
+
                 //}
                 
             //}

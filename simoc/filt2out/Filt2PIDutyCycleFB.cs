@@ -17,10 +17,10 @@ namespace simoc.filt2out
         double K;
         double Ti;
         double currentFilteredValue;
-        double stimPowerVolts = 5.0;
+        double stimPowerVolts;
         double stimPulseWidthMSec;
-        double currentTargetInt;
-        double lastErrorInt;
+        double currentTargetIntenal;
+        double lastErrorIntenal;
         double N = 2;
 
         public Filt2PIDutyCycleFB(ref NRStimSrv stimSrv, ControlPanel cp)
@@ -32,6 +32,7 @@ namespace simoc.filt2out
                 Ti = 1 / c1;
             else
                 Ti = 0;
+            stimPowerVolts = c3;
         }
 
         internal override void CalculateError(ref double currentError, double currentTarget, double currentFilt)
@@ -40,16 +41,16 @@ namespace simoc.filt2out
             base.CalculateError(ref currentError, currentTarget, currentFilt);
             if (currentTarget != 0)
             {
-                lastErrorInt = currentError;
+                lastErrorIntenal = currentError;
                 currentError = (currentTarget - currentFilt);  // currentTarget;
             }
             else
             {
-                lastErrorInt = currentError;
+                lastErrorIntenal = currentError;
                 currentError = 0;
             }
             currentErrorIntenal = currentError;
-            currentTargetInt = currentTarget;
+            currentTargetIntenal = currentTarget;
         }
 
 
@@ -57,16 +58,17 @@ namespace simoc.filt2out
         {
             base.SendFeedBack(simocVariableStorage);
 
-            simocVariableStorage.LastErrorValue = lastErrorInt;
+            simocVariableStorage.LastErrorValue = lastErrorIntenal;
 
-            // Generate output frequency\
-            if (currentTargetInt != 0)
+            // Generate output frequency
+            if (currentTargetIntenal != 0)
             {
-                // Tustin's Integral approximation
-                simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
+                // Tustin's Integral approximation w/ anti-windup
+                if (simocVariableStorage.GenericDouble1 < 1.0)
+                    simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
 
                 // Proportional Term
-                simocVariableStorage.GenericDouble2 += K * currentErrorIntenal;
+                simocVariableStorage.GenericDouble2 = K * currentErrorIntenal;
 
                 // PI feedback signal
                 simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
@@ -98,7 +100,7 @@ namespace simoc.filt2out
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * stimPulseWidthMSec / 1000);
 
             // Get stim frequency
-            double stimFreqHz = 30 * simocVariableStorage.GenericDouble1 + 1;
+            double stimFreqHz = 29 * simocVariableStorage.GenericDouble1 + 1;
 
             currentFeedbackSignals[4] = stimFreqHz;
             currentFeedbackSignals[5] = stimPulseWidthMSec;
@@ -117,7 +119,7 @@ namespace simoc.filt2out
             }
 
             // Make periodic stimulation
-            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + (ulong)stimSrv.GetBuffSize()))
+            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + 2*(ulong)stimSrv.GetBuffSize()))
             {
                 // Send a V_ctl = simocVariableStorage.GenericDouble1 volt pulse to channel 0 for c2 milliseconds.
                 toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), 0, stimPowerVolts));

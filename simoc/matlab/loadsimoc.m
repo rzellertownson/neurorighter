@@ -8,7 +8,12 @@ function simoc = loadsimoc(fid)
 %         filt          [1 N] vector of filtered values
 %         target        [1 N] vector of target values
 %         error         [1 N] vector of error values
-%         output        [M N] matrix containing the feedback signals.
+%         filtertype    [1 N] vector of integer codes for the filter type
+%                             being using
+%         feedbacktype  [1 N] vector of integer codes for the feedback algorithm
+%                             being using
+%         output        [M N] matrix containing the feedback signals. There
+%                             meaning depends on the alogrithm used.
 % 
 %    Created by: Jon Newman (jnewman6<snail>gatech<dot>edu)
 %    Created on: Aug 19, 2011
@@ -19,7 +24,7 @@ function simoc = loadsimoc(fid)
 if nargin < 1
     error('You must provide a file path')
 end
-if(~strcmp(fid(end-2:end),'simoc'))
+if(~strcmp(fid(end-4:end),'simoc'))
     warning(['This file does not have a .simoc extension. '... 
              'trying to extract data anayway...'])
 end
@@ -63,7 +68,9 @@ simoc.obs = zeros(numdat,1);
 simoc.filt = zeros(numdat,1);
 simoc.target = zeros(numdat,1);
 simoc.error = zeros(numdat,1);
-simoc.output = zeros([numstreams-4,numdat]);
+simoc.filtertype = zeros(numdat,1);
+simoc.feedbacktype = zeros(numdat,1);
+simoc.output = zeros([numstreams-6,numdat]);
 
 % Read the 'daturs
 % , SIMOC_REC_BYTES - 8
@@ -76,10 +83,14 @@ fseek(h,HEADER_BYTES + 24,'bof');
 simoc.target = fread(h,numdat,'double', SIMOC_REC_BYTES - 8);
 fseek(h,HEADER_BYTES + 32,'bof');
 simoc.error = fread(h,numdat,'double', SIMOC_REC_BYTES - 8);
+fseek(h,HEADER_BYTES + 40,'bof');
+simoc.filtertype = fread(h,numdat,'double', SIMOC_REC_BYTES - 8);
+fseek(h,HEADER_BYTES + 48,'bof');
+simoc.feedbacktype = fread(h,numdat,'double', SIMOC_REC_BYTES - 8);
 
 % populated the temporary output array
-for i = 1:10
-    fseek(h,HEADER_BYTES + 32 + i*8,'bof');
+for i = 1:8
+    fseek(h,HEADER_BYTES + 48 + i*8,'bof');
     simoc.output(i,:) = fread(h,numdat,'double', SIMOC_REC_BYTES - 8);
 end
 

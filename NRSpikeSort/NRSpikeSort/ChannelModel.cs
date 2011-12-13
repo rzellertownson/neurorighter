@@ -115,9 +115,22 @@ namespace NRSpikeSort
             classes = gmm.ClassifyThresh(currentProjection);
         }
 
+        internal void DoubleInflectProject(List<SpikeEvent> spikes, int maxInflectionIndex, int secondInflectionIndex)
+        {
+            // Create waveform matrix
+            int numObs = spikes.Count;
+            currentProjection = new double[numObs][];
+            for (int i = 0; i < numObs; ++i)
+            {
+                currentProjection[i] = new double[2];
+                currentProjection[i][0] = 10000000000 * spikes[i].waveform[maxInflectionIndex];
+                currentProjection[i][1] = 10000000000 * spikes[i].waveform[secondInflectionIndex];
+            }
+
+        }
+
         internal void MaxInflectProject(List<SpikeEvent> spikes, int maxInflectionIndex)
         {
-
             // Create waveform matrix
             int numObs = spikes.Count;
             currentProjection = new double[numObs][];

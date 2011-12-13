@@ -290,23 +290,29 @@ namespace simoc.UI
 
         private void button_SendEstimates_Click(object sender, EventArgs e)
         {
-            switch (contAlg)
+            try
             {
-                case "Filt2PIDIrradFB":
-                    {
-                        numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
-                        numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
-                        numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
-                    }
-                    break;
-                case "Filt2PIDutyCycleFB":
-                    {
-                        numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
-                        numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
-                    }
-                    break;
+                switch (contAlg)
+                {
+                    case "Filt2PIDIrradFB":
+                        {
+                            numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
+                            numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                            numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
+                        }
+                        break;
+                    case "Filt2PIDutyCycleFB":
+                        {
+                            numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
+                            numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                        }
+                        break;
+                }
             }
-
+            catch
+            {
+                MessageBox.Show("One of the tuning parameters was invalid");
+            }
         }
 
         # endregion

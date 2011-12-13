@@ -27,7 +27,7 @@ namespace simoc.filt2out
         public Filt2PIDIrradFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
         {
-            numberOutStreams = 4; // P, I and D streams
+            numberOutStreams = 7; // P, I and D streams
             K = c0;
             if (c1 != 0)
                 Ti = 1 / c1;
@@ -67,15 +67,15 @@ namespace simoc.filt2out
             if (currentTargetIntenal != 0)
             {
                 // Derivative Approx
-                simocVariableStorage.GenericDouble4 = (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
-                    (K*Td*N)/(Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs);
+                simocVariableStorage.GenericDouble4 = K*((Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
+                    (K*Td*N)/(Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs));
                 
                 // Tustin's Integral approximation
                 simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
 
                 // Proportional part
-                simocVariableStorage.GenericDouble3 = K * currentErrorIntenal;
-                
+                simocVariableStorage.GenericDouble2 = K * currentErrorIntenal;
+                 
                 // PID feedback signal
                 simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble3 + simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
             }
@@ -101,6 +101,11 @@ namespace simoc.filt2out
             currentFeedbackSignals[1] = simocVariableStorage.GenericDouble2;
             currentFeedbackSignals[2] = simocVariableStorage.GenericDouble3;
             currentFeedbackSignals[3] = simocVariableStorage.GenericDouble4;
+
+            // The 3 pulse parameters
+            currentFeedbackSignals[4] = stimFreqHz;
+            currentFeedbackSignals[5] = stimPulseWidthMSec;
+            currentFeedbackSignals[6] = simocVariableStorage.GenericDouble1; 
 
             // Get the pulse width (msec)
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * stimPulseWidthMSec / 1000);

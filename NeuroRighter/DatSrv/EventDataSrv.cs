@@ -90,26 +90,15 @@ namespace NeuroRighter.DatSrv
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
-                int rem = 0;
-                for (int i = 0; i < dataBuffer.eventBuffer.Count; ++i)
+                if (minCurrentSample > bufferSizeInSamples)
                 {
-                    // Remove expired data. This minCurrentSample is the mimimum of the most current sample
-                    // between the N tasks responsible for spike collection
-                 
-                    if (dataBuffer.eventBuffer[i].sampleIndex + bufferSizeInSamples < minCurrentSample)
-                    {
-                        dataBuffer.eventBuffer.RemoveAt(i);
-                        rem++;
-                    }
-   
+                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
                 }
 
                 // Add new data
-                int added = 0;
                 foreach (T ev in newData.eventBuffer)
                 {
                     dataBuffer.eventBuffer.Add((T)ev.DeepClone());
-                    added++;
                 }
 
             }
@@ -125,7 +114,9 @@ namespace NeuroRighter.DatSrv
         {
             // This write operation is used when the sampleIndicies in the newData buffer
             // correspond to the start of a DAQ buffer poll rather than the start of the record
-            string times = "";
+            
+            //string times = "";
+
             // Lock out other write operations
             bufferLock.EnterWriteLock();
             try
@@ -145,7 +136,7 @@ namespace NeuroRighter.DatSrv
                     T tmp = (T)newData.eventBuffer[i].DeepClone();
                     tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
                     dataBuffer.eventBuffer.Add(tmp);
-                    times += tmp.sampleIndex.ToString() + ", ";
+                    //times += tmp.sampleIndex.ToString() + ", ";
                 }
 
                 // Update current read-head position
@@ -176,9 +167,9 @@ namespace NeuroRighter.DatSrv
                 if (minCurrentSample < bufferSizeInSamples)
                     timeRange[0] = 0;
                 else
-                    timeRange[0] = minCurrentSample - bufferSizeInSamples;
+                    timeRange[0] = (minCurrentSample - bufferSizeInSamples).DeepClone();
 
-                timeRange[1] = minCurrentSample;
+                timeRange[1] = minCurrentSample.DeepClone();
             }
             finally
             {

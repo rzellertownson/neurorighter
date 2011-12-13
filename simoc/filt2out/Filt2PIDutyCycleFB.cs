@@ -63,6 +63,7 @@ namespace simoc.filt2out
             // Generate output frequency
             if (currentTargetIntenal != 0)
             {
+
                 // Tustin's Integral approximation w/ anti-windup
                 if (simocVariableStorage.GenericDouble1 < 1.0)
                     simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;

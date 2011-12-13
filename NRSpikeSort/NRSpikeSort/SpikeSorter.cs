@@ -91,17 +91,18 @@ namespace NRSpikeSort
         /// <summary>
         /// The maximum number of waveforms used for training a GMM on each channel
         /// </summary>
-        public int maxTrainingSpikesPerChannel = 150;
+        public int maxTrainingSpikesPerChannel = 200;
 
         /// <summary>
         /// Minimum probability nessesary to classify a spike
         /// </summary>
-        public double numSTD = 10;
+        public double pValue;
 
         /// <summary>
         /// The sample at which the peak of the spike waveform occurs
         /// </summary>
-        public int inflectionSample = 14; // The sample that spike peaks occur at
+        public int inflectionSample; // The sample that spike peaks occur at
+        private int secondInflectionIndex; // Secondary infleciton sample
 
         // Private
         private int numberChannels;
@@ -112,7 +113,7 @@ namespace NRSpikeSort
         /// <param name="numberChannels">Number of channels to make sorters for</param>
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double numSTD)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double pValue, string projectionType)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -123,9 +124,18 @@ namespace NRSpikeSort
             {
                 spikesCollectedPerChannel.Add(i + 1, 0);
             }
-            this.projectionType = "MaxInflection";
-            this.projectionDimension = 1;
-            this.numSTD = numSTD;
+            this.projectionType = projectionType;
+            switch (projectionType)
+            {
+                case "Maximum Voltage Inflection":
+                    projectionDimension = 1;
+                    break;
+                case "Double Voltage Inflection":
+                    projectionDimension = 2;
+                    break;
+            }
+
+            this.pValue = pValue;
         }
 
         /// <summary>
@@ -135,7 +145,7 @@ namespace NRSpikeSort
         /// <param name="maxK">Maximum number of units to consider per channel</param>
         /// <param name="minSpikes">Minimum number of detected training spikes to create a sorter for a given channel</param>
         /// <param name="projectionDim">Dimension of projection if using PCA</param>
-        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double numSTD, int projectionDim)
+        public SpikeSorter(int numberChannels, int maxK, int minSpikes, double pValue, int projectionDim, string projectionType)
         {
             this.numberChannels = numberChannels;
             this.maxK = maxK;
@@ -146,9 +156,9 @@ namespace NRSpikeSort
             {
                 spikesCollectedPerChannel.Add(i + 1, 0);
             }
-            this.projectionType = "PCA";
+            this.projectionType = projectionType;
             this.projectionDimension = projectionDim;
-            this.numSTD = numSTD;
+            this.pValue = pValue;
         }
 
         /// <summary>
@@ -165,6 +175,83 @@ namespace NRSpikeSort
                     trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
                 }
             }
+        }
+
+        /// <summary>
+        /// Trains a classifier for each channel so long as (int)minSpikes worth of spikes have been collected
+        /// for that channel in the training buffer. This uses to time points as the projection: The peak sample
+        /// of the waveform and sample at some fixed  (mSecToSecondSample) delay from the peak sample. Preferably,
+        /// this should be in the middle of the AHP.
+        /// </summary>
+        /// <param name="peakSample"> Sample that the peak of the waveform occured at </param>
+        /// <param name="mSecToSecondSample">Delay, in msec, to get the second data point</param>
+        public void Train(int peakSample, double mSecToSecondSample, int sampleFreqHz)
+        {
+            // Clear old channel models
+            channelsToSort = new List<int>();
+            channelModels.Clear();
+            trained = false;
+            totalNumberOfUnits = 0;
+
+            // Clear old unit dictionary
+            unitDictionary = new Hashtable();
+
+            // Add the zero unit to the dictionary
+            unitDictionary.Add(0, 0);
+
+            // Set the inflection sample
+            inflectionSample = peakSample;
+            secondInflectionIndex = peakSample + (int)(sampleFreqHz*(mSecToSecondSample / 1000));
+
+            // Make sure we have something in the training matrix
+            if (trainingSpikes.eventBuffer.Count == 0)
+            {
+                throw new InvalidOperationException("The training data set was empty");
+            }
+
+            for (int i = 0; i < numberChannels; ++i)
+            {
+                // Current channel
+                int currentChannel = i;
+
+                // Get the spikes that belong to this channel
+                List<SpikeEvent> spikesOnChan = trainingSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+
+                // Project channel data
+                if (spikesOnChan.Count >= minSpikes)
+                {
+
+                    // Train a channel model for this channel
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, pValue);
+
+                    // Project Data
+                    thisChannelModel.DoubleInflectProject(spikesOnChan.ToList(), inflectionSample, secondInflectionIndex);
+
+                    // Train Classifier
+                    thisChannelModel.Train();
+
+                    // If there was a training failure (e.g. convergence)
+                    if (!thisChannelModel.trained)
+                        continue;
+
+                    // Note that we have to sort spikes on this channel
+                    channelsToSort.Add(currentChannel);
+
+                    // Update the unit dicationary and increment the total number of units
+                    for (int k = 1; k <= thisChannelModel.K; ++k)
+                    {
+                        unitDictionary.Add(totalNumberOfUnits + k, k);
+                    }
+
+                    totalNumberOfUnits += thisChannelModel.K;
+
+                    // Add the channel model to the list
+                    channelModels.Add(thisChannelModel);
+                }
+            }
+
+            // All finished
+            trained = true;
         }
 
         /// <summary>
@@ -208,7 +295,7 @@ namespace NRSpikeSort
                 {
 
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, numSTD);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, pValue);
 
                     // Project Data
                     thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
@@ -276,7 +363,7 @@ namespace NRSpikeSort
                 if (spikesOnChan.Count >= minSpikes)
                 {
                     // Train a channel model for this channel
-                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, numSTD, projectionDimension);
+                    ChannelModel thisChannelModel = new ChannelModel(currentChannel, maxK, totalNumberOfUnits, pValue, projectionDimension);
 
                     // Project Data
                     if (projectionType == "PCA")
@@ -344,6 +431,8 @@ namespace NRSpikeSort
                 // Project the spikes
                 if (this.projectionType == "Maximum Voltage Inflection")
                     thisChannelModel.MaxInflectProject(spikesOnChan.ToList(), inflectionSample);
+                else if (this.projectionType == "Double Voltage Inflection")
+                    thisChannelModel.DoubleInflectProject(spikesOnChan.ToList(), inflectionSample, secondInflectionIndex);
                 else if (this.projectionType == "PCA")
                     thisChannelModel.PCProject(spikesOnChan.ToList());
                 else if (this.projectionType == "Haar Wavelet")
@@ -439,7 +528,8 @@ namespace NRSpikeSort
             this.maxTrainingSpikesPerChannel = (int)info.GetValue("maxTrainingSpikesPerChannel", typeof(int));
             this.spikesCollectedPerChannel = (Hashtable)info.GetValue("spikesCollectedPerChannel", typeof(Hashtable));
             this.totalNumberOfUnits = (int)info.GetValue("totalNumberOfUnits", typeof(int));
-            this.numSTD = (double)info.GetValue("numSTD", typeof(double));
+            this.pValue = (double)info.GetValue("pValue", typeof(double));
+            this.secondInflectionIndex = (int)info.GetValue("secondInflectionIndex", typeof(int));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -458,7 +548,8 @@ namespace NRSpikeSort
             info.AddValue("maxTrainingSpikesPerChannel", this.maxTrainingSpikesPerChannel);
             info.AddValue("spikesCollectedPerChannel", this.spikesCollectedPerChannel);
             info.AddValue("totalNumberOfUnits", this.totalNumberOfUnits);
-            info.AddValue("numSTD", this.numSTD);
+            info.AddValue("pValue", this.pValue);
+            info.AddValue("secondInflectionIndex", this.secondInflectionIndex);
         }
 
         #endregion

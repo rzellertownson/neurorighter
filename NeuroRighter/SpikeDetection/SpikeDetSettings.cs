@@ -93,8 +93,8 @@ namespace NeuroRighter.SpikeDetection
 
         internal void SetSpikeDetector()
         {
-            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(sampleRate)*
-                (double)numericUpDown_DeadTime.Value/1.0e6);
+            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(sampleRate) *
+                (double)numericUpDown_DeadTime.Value / 1.0e6);
             int minSpikeWidth = (int)Math.Floor(Convert.ToDouble(sampleRate) *
                 (double)numericUpDown_MinSpikeWidth.Value / 1.0e6);
             int maxSpikeWidth = (int)Math.Round(Convert.ToDouble(sampleRate) *
@@ -108,13 +108,13 @@ namespace NeuroRighter.SpikeDetection
             label_MaxWidthSamp.Text = maxSpikeWidth + " sample(s)";
 
             // Half a millisecond to determine spike polarity
-            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate)/1000);
+            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate) / 1000);
 
             switch (comboBox_noiseEstAlg.SelectedIndex)
             {
                 case 0:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value),detectionDeadTime,minSpikeWidth,maxSpikeWidth,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
                     break;
                 case 1:  //RMS Adaptive
@@ -124,7 +124,7 @@ namespace NeuroRighter.SpikeDetection
                     break;
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
-                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime,minSpikeWidth,maxSpikeWidth,
+                        numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(sampleRate));
                     break;
                 default:
@@ -258,7 +258,7 @@ namespace NeuroRighter.SpikeDetection
 
         private void comboBox_noiseEstAlg_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (SettingsHaveChanged !=null)
+            if (SettingsHaveChanged != null)
             {
                 SettingsHaveChanged(this, e);
             }
@@ -277,7 +277,7 @@ namespace NeuroRighter.SpikeDetection
         {
             if (spikeSorter != null)
             {
-                spikeSorter.numSTD = (double)(numericUpDown_MinClassificationProb.Value);
+                spikeSorter.pValue = (double)(numericUpDown_MinClassificationProb.Value);
                 detectorParameters.SS = spikeSorter;
             }
         }
@@ -316,24 +316,39 @@ namespace NeuroRighter.SpikeDetection
                 spikeSorter = null;
 
                 // Create the appropriate sorter
-                if (comboBox_ProjectionType.SelectedItem.ToString() == "Maximum Voltage Inflection")
+                switch (comboBox_ProjectionType.SelectedItem.ToString())
                 {
-                    spikeSorter = new SpikeSorter(
-                    numChannels,
-                    (int)numericUpDown_maxK.Value,
-                    (int)numericUpDown_MinSpikesToTrain.Value,
-                    (double)numericUpDown_MinClassificationProb.Value);
-                    spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
-                }
-                else if (comboBox_ProjectionType.SelectedItem.ToString() == "PCA")
-                {
-                    spikeSorter = new SpikeSorter(
-                    numChannels,
-                    (int)numericUpDown_maxK.Value,
-                    (int)numericUpDown_MinSpikesToTrain.Value,
-                    (double)numericUpDown_MinClassificationProb.Value,
-                    (int)numericUpDown_ProjDim.Value);
-                    spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
+                    case "Maximum Voltage Inflection":
+                        {
+                            spikeSorter = new SpikeSorter(
+                            numChannels,
+                            (int)numericUpDown_maxK.Value,
+                            (int)numericUpDown_MinSpikesToTrain.Value,
+                            (double)numericUpDown_MinClassificationProb.Value,
+                            comboBox_ProjectionType.SelectedItem.ToString());
+                            break;
+                        }
+                    case "Double Voltage Inflection":
+                        {
+                            spikeSorter = new SpikeSorter(
+                            numChannels,
+                            (int)numericUpDown_maxK.Value,
+                            (int)numericUpDown_MinSpikesToTrain.Value,
+                            (double)numericUpDown_MinClassificationProb.Value,
+                            comboBox_ProjectionType.SelectedItem.ToString());
+                            break;
+                        }
+                    case "PCA":
+                        {
+                            spikeSorter = new SpikeSorter(
+                            numChannels,
+                            (int)numericUpDown_maxK.Value,
+                            (int)numericUpDown_MinSpikesToTrain.Value,
+                            (double)numericUpDown_MinClassificationProb.Value,
+                            (int)numericUpDown_ProjDim.Value,
+                            comboBox_ProjectionType.SelectedItem.ToString());
+                            break;
+                        }
                 }
 
                 // Update hoard button
@@ -365,6 +380,8 @@ namespace NeuroRighter.SpikeDetection
                 spikeSorter.Train(numPre);
             else if (spikeSorter.projectionType == "PCA")
                 spikeSorter.Train();
+            else if (spikeSorter.projectionType == "Double Voltage Inflection")
+                spikeSorter.Train(numPre,0.4,sampleRate);
 
         }
 
@@ -433,6 +450,7 @@ namespace NeuroRighter.SpikeDetection
             textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
             textBox_Results.Text += "------------------------------------------\r\n";
             textBox_Results.Text += "Projection Method: " + spikeSorter.projectionType + "\r\n";
+            textBox_Results.Text += "Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
             textBox_Results.Text += "# channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
             textBox_Results.Text += "# of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
 
@@ -444,7 +462,7 @@ namespace NeuroRighter.SpikeDetection
                 if (tmpCM.Count > 0)
                 {
                     textBox_Results.Text += "CHANNEL " + (tmpCM[0].channelNumber + 1).ToString() + "\r\n";
-                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / "  + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
                     textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
                     textBox_Results.Text += " Clustering Results:\r\n";
 
@@ -507,7 +525,29 @@ namespace NeuroRighter.SpikeDetection
             if (spikeSorter != null)
             {
                 spikeSorter.projectionType = comboBox_ProjectionType.SelectedItem.ToString();
-                detectorParameters.SS = spikeSorter;
+                ManageProjectionChange();
+            }
+            detectorParameters.SS = spikeSorter;
+        }
+
+        private void ManageProjectionChange()
+        {
+            switch (spikeSorter.projectionType)
+            {
+                case "Maximum Voltage Inflection":
+                    spikeSorter.projectionDimension = 1;
+                    numericUpDown_ProjDim.Value = 1;
+                    numericUpDown_ProjDim.Enabled = false;
+                    break;
+                case "Double Voltage Inflection":
+                    spikeSorter.projectionDimension = 2;
+                    numericUpDown_ProjDim.Value = 2;
+                    numericUpDown_ProjDim.Enabled = false;
+                    break;
+                case "PCA":
+                    spikeSorter.projectionDimension = (int)numericUpDown_ProjDim.Value;
+                    numericUpDown_ProjDim.Enabled = true;
+                    break;
             }
         }
 
@@ -536,20 +576,20 @@ namespace NeuroRighter.SpikeDetection
             {
                 lock (this)
                 {
-                    ppl.Add((double)i+1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i+1]));
+                    ppl.Add((double)i + 1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i + 1]));
                 }
             }
-            pplThresh.Add(0,(double)numericUpDown_MinSpikesToTrain.Value);
-            pplThresh.Add(numChannels,(double)numericUpDown_MinSpikesToTrain.Value);
+            pplThresh.Add(0, (double)numericUpDown_MinSpikesToTrain.Value);
+            pplThresh.Add(numChannels, (double)numericUpDown_MinSpikesToTrain.Value);
 
             // Add data tp plot
-            myCurves.Add(numSpikesPane.AddCurve("numSpikes",ppl,Color.RoyalBlue, SymbolType.None));
+            myCurves.Add(numSpikesPane.AddCurve("numSpikes", ppl, Color.RoyalBlue, SymbolType.None));
             myCurves.Add(numSpikesPane.AddCurve("trainThresh", pplThresh, Color.Red, SymbolType.None));
 
             // Set plot parameteters
             SetMinorPlotParameters(ref numSpikesPane);
 
-             // Show data
+            // Show data
             zgc.AxisChange();
             zgc.Invalidate();
 
@@ -661,12 +701,15 @@ namespace NeuroRighter.SpikeDetection
                             case "Maximum Voltage Inflection":
                                 comboBox_ProjectionType.SelectedIndex = 0;
                                 break;
-                            case "PCA":
+                            case "Double Voltage Inflection":
                                 comboBox_ProjectionType.SelectedIndex = 1;
+                                break;
+                            case "PCA":
+                                comboBox_ProjectionType.SelectedIndex = 2;
                                 break;
                         }
                         numericUpDown_ProjDim.Value = (decimal)spikeSorter.projectionDimension;
-                        numericUpDown_MinClassificationProb.Value = (decimal)spikeSorter.numSTD;
+                        numericUpDown_MinClassificationProb.Value = (decimal)spikeSorter.pValue;
                         numericUpDown_MinSpikesToTrain.Value = (decimal)spikeSorter.minSpikes;
                         numericUpDown_maxK.Value = (decimal)spikeSorter.maxK;
 

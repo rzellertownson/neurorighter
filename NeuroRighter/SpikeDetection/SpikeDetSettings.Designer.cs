@@ -686,12 +686,12 @@
             // numericUpDown_MinClassificationProb
             // 
             this.numericUpDown_MinClassificationProb.BackColor = System.Drawing.Color.LawnGreen;
-            this.numericUpDown_MinClassificationProb.DecimalPlaces = 4;
+            this.numericUpDown_MinClassificationProb.DecimalPlaces = 6;
             this.numericUpDown_MinClassificationProb.Increment = new decimal(new int[] {
             1,
             0,
             0,
-            262144});
+            327680});
             this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
             this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
             1,
@@ -707,7 +707,7 @@
             1,
             0,
             0,
-            262144});
+            327680});
             this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
             // 
             // comboBox_ProjectionType
@@ -715,6 +715,7 @@
             this.comboBox_ProjectionType.FormattingEnabled = true;
             this.comboBox_ProjectionType.Items.AddRange(new object[] {
             "Maximum Voltage Inflection",
+            "Double Voltage Inflection",
             "PCA"});
             this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 14);
             this.comboBox_ProjectionType.Name = "comboBox_ProjectionType";
@@ -743,6 +744,7 @@
             // numericUpDown_ProjDim
             // 
             this.numericUpDown_ProjDim.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.numericUpDown_ProjDim.Enabled = false;
             this.numericUpDown_ProjDim.Location = new System.Drawing.Point(221, 44);
             this.numericUpDown_ProjDim.Maximum = new decimal(new int[] {
             3,

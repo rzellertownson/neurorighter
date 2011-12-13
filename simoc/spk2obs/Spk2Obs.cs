@@ -34,7 +34,7 @@ namespace simoc.spk2obs
             this.dacPollingPeriodSamples = stimSrv.DACPollingPeriodSamples;
             this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.spikeSrv.SampleFrequencyHz * dacPollingPeriodSec);
             this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.spikeSrv.SampleFrequencyHz);
-            this.numSecondInCurrentRead = adcSamplesInDacPoll;
+            this.numSecondInCurrentRead = datSrv.ADCPollingPeriodSec;
         }
 
         /// <summary>
@@ -53,6 +53,9 @@ namespace simoc.spk2obs
 
                 // How many seconds is this data taken from
                 numSecondInCurrentRead = (double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead) / DatSrv.spikeSrv.SampleFrequencyHz;
+
+                if (numSecondInCurrentRead > DatSrv.ADCPollingPeriodSec)
+                    Console.WriteLine("Lag: " + numSecondInCurrentRead.ToString());
 
                 // Update the last sample read
                 simocPersistentState.LastSampleRead = spikeTimeRange[1];

@@ -52,6 +52,7 @@ namespace NeuroRighter
         private void button_OpenSpkDetSettings_Click(object sender, EventArgs e)
         {
             spikeDet.Show();
+            spikeDet.BringToFront();
         }
 
         private void button_TrainSpkDet_Click(object sender, EventArgs e)

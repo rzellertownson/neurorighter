@@ -72,7 +72,7 @@ namespace NeuroRighter.SpikeDetection
         protected bool posCross; // polarity of inital threshold crossing
         protected int recIndexOffset;
         protected int[] deadWidth;
-        private double VOLTAGE_EPSILON = 0.0;   // 1 uV
+        private double VOLTAGE_EPSILON = 1e-6;   // 1 uV
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
             int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,

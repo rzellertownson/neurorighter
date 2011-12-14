@@ -5,6 +5,7 @@ using System.Text;
 using simoc.UI;
 using simoc.srv;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 using simoc;
 using simoc.persistantstate;
 
@@ -27,10 +28,10 @@ namespace simoc.obs2filt
         protected RawSimocBuffer obsFiltBuff;
         protected bool firstFilt;
 
-        public Obs2Filt(ControlPanel cp, NRDataSrv DatSrv, bool firstLoop)
+        public Obs2Filt(ControlPanel cp, NRStimSrv StimSrv, bool firstLoop)
         {
             // Grab parameters off the form
-            this.daqPollingPeriodSeconds = DatSrv.ADCPollingPeriodSec;
+            this.daqPollingPeriodSeconds = StimSrv.DACPollingPeriodSec;
             this.c0 = cp.FilterC0;
             this.c1 = cp.FilterC1;
             this.c2 = cp.FilterC2;

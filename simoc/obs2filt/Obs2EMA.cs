@@ -7,6 +7,7 @@ using simoc.UI;
 using NeuroRighter.DatSrv;
 using simoc.extensionmethods;
 using simoc.persistantstate;
+using NeuroRighter.StimSrv;
 
 namespace simoc.obs2filt
 {
@@ -15,8 +16,8 @@ namespace simoc.obs2filt
         /// <summary>
         /// Exponential Moving average filter of observation stream. Jon Newman.
         /// </summary>
-        public Obs2EMA(ControlPanel cp, NRDataSrv DatSrv, bool firstLoop)
-            : base(cp, DatSrv, firstLoop)
+        public Obs2EMA(ControlPanel cp, NRStimSrv StimSrv, bool firstLoop)
+            : base(cp, StimSrv, firstLoop)
         {
 
         }

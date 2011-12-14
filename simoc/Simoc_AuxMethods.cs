@@ -154,7 +154,7 @@ namespace simoc
                 {
                     case "None":
                         {
-                            Obs2Obs filter = new Obs2Obs(controlPanel, DatSrv, firstLoop);
+                            Obs2Obs filter = new Obs2Obs(controlPanel, StimSrv, firstLoop);
                             filter.GetObsBuffer(obsSrv);
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
@@ -164,7 +164,7 @@ namespace simoc
                         break;
                     case "Moving Average":
                         {
-                            Obs2MA filter = new Obs2MA(controlPanel, DatSrv, firstLoop);
+                            Obs2MA filter = new Obs2MA(controlPanel, StimSrv, firstLoop);
                             filter.GetObsBuffer(obsSrv);
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
@@ -174,7 +174,7 @@ namespace simoc
                         break;
                     case "Moving Median":
                         {
-                            Obs2MM filter = new Obs2MM(controlPanel, DatSrv, firstLoop);
+                            Obs2MM filter = new Obs2MM(controlPanel, StimSrv, firstLoop);
                             filter.GetObsBuffer(obsSrv);
                             filter.Filter();
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);
@@ -184,7 +184,7 @@ namespace simoc
                         break;
                     case "Exponential Moving Average":
                         {
-                            Obs2EMA filter = new Obs2EMA(controlPanel, DatSrv, firstLoop);
+                            Obs2EMA filter = new Obs2EMA(controlPanel, StimSrv, firstLoop);
                             filter.GetObsBufferSingleSample(obsSrv);
                             filter.Filter(simocVariableStorage);
                             filter.PopulateFiltSrv(ref filtSrv, currentTarget);

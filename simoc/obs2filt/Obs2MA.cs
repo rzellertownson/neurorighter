@@ -6,6 +6,7 @@ using simoc.srv;
 using simoc.UI;
 using NeuroRighter.DatSrv;
 using simoc.extensionmethods;
+using NeuroRighter.StimSrv;
 
 namespace simoc.obs2filt
 {
@@ -14,8 +15,8 @@ namespace simoc.obs2filt
         /// <summary>
         /// Moving average filter of observation stream. Jon Newman.
         /// </summary>
-        public Obs2MA(ControlPanel cp, NRDataSrv DatSrv, bool firstLoop)
-            : base(cp, DatSrv, firstLoop)
+        public Obs2MA(ControlPanel cp, NRStimSrv StimSrv, bool firstLoop)
+            : base(cp, StimSrv, firstLoop)
         {
 
         }

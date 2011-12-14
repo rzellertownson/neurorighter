@@ -5,6 +5,7 @@ using System.Text;
 using simoc.srv;
 using simoc.UI;
 using NeuroRighter.DatSrv;
+using NeuroRighter.StimSrv;
 
 namespace simoc.obs2filt
 {
@@ -13,8 +14,8 @@ namespace simoc.obs2filt
     /// </summary>
     class Obs2MM : Obs2Filt
     {
-        public Obs2MM(ControlPanel cp, NRDataSrv DatSrv,bool firstLoop)
-            : base(cp, DatSrv, firstLoop)
+        public Obs2MM(ControlPanel cp, NRStimSrv StimSrv,  bool firstLoop)
+            : base(cp, StimSrv, firstLoop)
         {
 
         }

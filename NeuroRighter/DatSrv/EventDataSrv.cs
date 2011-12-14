@@ -34,16 +34,18 @@ namespace NeuroRighter.DatSrv
         /// <summary>
         ///  The mutex class for concurrent read and write access to data buffers
         /// </summary>
-        protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        protected static readonly object lockObj = new object();
 
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
-        
+
         private ulong[] currentSample;
         private ulong bufferSizeInSamples; // The maximum number of samples between thecurrent sample and the last available event time before it expires and is removed.
         private int numSamplesPerWrite;  // The number of samples for each buffer that events could have been detected in
         private ulong minCurrentSample;
         private ulong serverLagSamples;
+        
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
@@ -75,38 +77,37 @@ namespace NeuroRighter.DatSrv
             this.serverLagSamples = (ulong)serverLag;
         }
 
-        internal void WriteToBuffer(EventBuffer<T> newData, int taskNo) 
-        { 
+        internal void WriteToBuffer(EventBuffer<T> newData, int taskNo)
+        {
             // Lock out other threads 
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
-                currentSample[taskNo] += (ulong)numSamplesPerWrite;
-
-                // Find the mimimum of the most current sample
-                // between the N tasks responsible for spike collection
-                minCurrentSample = currentSample.Min()-serverLagSamples;
-
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
                 if (minCurrentSample > bufferSizeInSamples)
                 {
-                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
+                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
                 }
 
                 // Add new data
-                foreach (T ev in newData.eventBuffer)
-                {
-                    dataBuffer.eventBuffer.Add((T)ev.DeepClone());
-                }
+                dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
+                //Console.WriteLine(newData.eventBuffer.Count);
 
+                // Update current read-head position
+                currentSample[taskNo] += (ulong)numSamplesPerWrite;
+                minCurrentSample = currentSample.Min() - serverLagSamples;
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
 
         }
 
@@ -114,40 +115,43 @@ namespace NeuroRighter.DatSrv
         {
             // This write operation is used when the sampleIndicies in the newData buffer
             // correspond to the start of a DAQ buffer poll rather than the start of the record
-            
+
             //string times = "";
 
-            // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
-            {
-                // First we must remove the expired samples (we cannot assume these are
-                // in temporal order since for 64 channels, we have to write 2x, once for
-                // each 32 channel recording task)
-                if (minCurrentSample > bufferSizeInSamples)
+            //// Lock out other write operations
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+                lock (lockObj)
                 {
-                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
-                }
-                
-                // Move time stamps to absolute scheme
-                for (int i = 0; i < newData.eventBuffer.Count; ++i)
-                {
-                    // Convert time stamps to absolute scheme
-                    T tmp = (T)newData.eventBuffer[i].DeepClone();
-                    tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
-                    dataBuffer.eventBuffer.Add(tmp);
-                    //times += tmp.sampleIndex.ToString() + ", ";
-                }
+                    // First we must remove the expired samples (we cannot assume these are
+                    // in temporal order since for 64 channels, we have to write 2x, once for
+                    // each 32 channel recording task)
+                    if (minCurrentSample > bufferSizeInSamples)
+                    {
+                        dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
+                    }
 
-                // Update current read-head position
-                currentSample[taskNo] += (ulong)numSamplesPerWrite;
-                minCurrentSample = currentSample.Min();
-            }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+                    // Move time stamps to absolute scheme
+                    for (int i = 0; i < newData.eventBuffer.Count; ++i)
+                    {
+                        // Convert time stamps to absolute scheme
+                        T tmp = (T)newData.eventBuffer[i].DeepClone();
+                        tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
+                        dataBuffer.eventBuffer.Add(tmp);
+                        //times += tmp.sampleIndex.ToString() + ", ";
+                    }
+
+                    // Update current read-head position
+                    currentSample[taskNo] += (ulong)numSamplesPerWrite;
+                    minCurrentSample = currentSample.Min() - serverLagSamples;
+                }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
 
         }
 
@@ -160,24 +164,29 @@ namespace NeuroRighter.DatSrv
         {
             ulong[] timeRange = new ulong[2];
 
-            // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //// Enforce a read lock
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 if (minCurrentSample < bufferSizeInSamples)
                     timeRange[0] = 0;
                 else
-                    timeRange[0] = (minCurrentSample - bufferSizeInSamples).DeepClone();
+                    timeRange[0] = (minCurrentSample - bufferSizeInSamples);
 
-                timeRange[1] = minCurrentSample.DeepClone();
-            }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
+                timeRange[1] = minCurrentSample;
 
-            return timeRange;
+                return timeRange;
+            }
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitWriteLock();
+            //}
+
+
         }
 
         /// <summary>
@@ -188,29 +197,36 @@ namespace NeuroRighter.DatSrv
         /// </summary>
         /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
         /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
-        /// <returns>EventBuffer<T></returns>
-        public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
+        /// <returns>EventBuffer</returns>
+        public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
             EventBuffer<T> returnBuffer = new EventBuffer<T>(sampleFrequencyHz);
 
-            // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //// Enforce a read lock
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Collect all the data within the desired sample range and add to the returnBuffer object
-                returnBuffer.eventBuffer =  
+                //returnBuffer = dataBuffer.DeepClone();
+                returnBuffer.eventBuffer.AddRange(
                     dataBuffer.eventBuffer.Where(
-                        x => (x.sampleIndex > desiredStartIndex 
-                        && x.sampleIndex <= desiredStopIndex)).ToList();
-            }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
+                        x => (x.sampleIndex > desiredStartIndex
+                        && x.sampleIndex <= desiredStopIndex)).ToList());
 
-            // Return the data
-            return returnBuffer;
+                // Return the data
+                return returnBuffer;
+            }
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitWriteLock();
+            //}
+
+            //// Return the data
+            //return returnBuffer;
 
         }
 

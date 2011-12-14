@@ -157,7 +157,7 @@ namespace NeuroRighter.SpikeDetection
                     // Data from this buffer
                     spikeDetectionBuffer.AddRange(data);
 
-                    // Need to account for the fact that we our new spike detection buffer will have
+                    // Need to account for the fact that our new spike detection buffer will have
                     // a starting index that does not start with new data's 0 index
                     recIndexOffset = carryOverLength;
 

@@ -13,7 +13,8 @@ namespace NeuroRighter.DatSrv
     public class RawDataSrv
     {
         // The mutex class for concurrent read and write access to data buffers
-        protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        protected static readonly object lockObj = new object();
 
         // Main storage buffer
         private RawMultiChannelBuffer dataBuffer;
@@ -51,61 +52,69 @@ namespace NeuroRighter.DatSrv
             this.channelCount = numChannels;
         }
 
-        internal void WriteToBuffer(double[][] newData, int task, int offset) 
-        { 
+        internal void WriteToBuffer(double[][] newData, int task, int offset)
+        {
             // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
                     for (int j = 0; j < dataBuffer.numChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[offset*task+j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
+                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
         }
 
         internal void WriteToBuffer(double[,] newData, int task, int offset)
         {
             // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
                     for (int j = 0; j < dataBuffer.numChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j,i];
+                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j, i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
         }
 
         internal void WriteToBuffer(double[][] newData)
         {
             // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
@@ -119,18 +128,21 @@ namespace NeuroRighter.DatSrv
                     dataBuffer.IncrementCurrentPosition(0);
                 }
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
         }
 
         internal void WriteToBuffer(double[,] newData)
         {
             // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
@@ -144,11 +156,12 @@ namespace NeuroRighter.DatSrv
                     dataBuffer.IncrementCurrentPosition(0);
                 }
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
         }
 
         /// <summary>
@@ -157,18 +170,21 @@ namespace NeuroRighter.DatSrv
         /// </summary>
         /// <returns>timeRange</returns>
         public ulong[] EstimateAvailableTimeRange()
-        { 
+        {
             // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //bufferLock.EnterReadLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 return dataBuffer.startAndEndSample;
             }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitReadLock();
+            //}
         }
 
         /// <summary>
@@ -180,7 +196,7 @@ namespace NeuroRighter.DatSrv
         /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
         /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
         /// <returns>RawMultiChannelBuffer</returns>
-        public RawMultiChannelBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
+        public RawMultiChannelBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
             // Make sure the desiredSampleRange is correctly formatted
             if (desiredStartIndex > desiredStopIndex)
@@ -194,8 +210,10 @@ namespace NeuroRighter.DatSrv
             RawMultiChannelBuffer returnBuffer = null;
 
             // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //bufferLock.EnterReadLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // First make sure that there are samples available within the desired range
                 if (dataBuffer.startAndEndSample[0] <= desiredStartIndex ||
@@ -230,7 +248,7 @@ namespace NeuroRighter.DatSrv
 
                     // Instantiate the returnBuffer
                     returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, (int)(absStop - absStart + 1), numTasks);
-                    returnBuffer.startAndEndSample = new ulong[] {absStart,absStop};
+                    returnBuffer.startAndEndSample = new ulong[] { absStart, absStop };
 
                     for (ulong j = absStart; j < absStop + 1; ++j)
                     {
@@ -241,18 +259,17 @@ namespace NeuroRighter.DatSrv
                         }
                     }
                 }
+                // Return the data
+                return returnBuffer;
             }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
-
-            // Return the data
-            return returnBuffer;
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitReadLock();
+            //}
 
         }
-
 
     }
 }

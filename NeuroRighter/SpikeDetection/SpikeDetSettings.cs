@@ -147,10 +147,7 @@ namespace NeuroRighter.SpikeDetection
                     break;
             }
 
-            spikeDetectionLag = spikeDetector.carryOverLength;
-
-
-
+            spikeDetectionLag = spikeDetector.serverLag;
         }
 
         internal void UpdateCollectionBar()

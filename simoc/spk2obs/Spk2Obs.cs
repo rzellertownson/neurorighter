@@ -45,24 +45,18 @@ namespace simoc.spk2obs
             // First, figure out what history of spikes we have
             ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvailableTimeRange();
 
+
             // Do is there any new data yet?
             if (spikeTimeRange[1] > simocPersistentState.LastSampleRead)
             {
+                // How many seconds is this data taken from
+                //numSecondInCurrentRead = ((double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead)) / DatSrv.spikeSrv.SampleFrequencyHz;
+
                 // Try to get the number of spikes within the available time range
                 newSpikes = DatSrv.spikeSrv.ReadFromBuffer(simocPersistentState.LastSampleRead, spikeTimeRange[1]);
 
-                // How many seconds is this data taken from
-                numSecondInCurrentRead = (double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead) / DatSrv.spikeSrv.SampleFrequencyHz;
-
-                if (numSecondInCurrentRead > DatSrv.ADCPollingPeriodSec)
-                    Console.WriteLine("Lag: " + numSecondInCurrentRead.ToString());
-
                 // Update the last sample read
                 simocPersistentState.LastSampleRead = spikeTimeRange[1];
-                //for (int i = 0; i < newSpikes.eventBuffer.Count(); ++i)
-                //{
-                //    if (newSpikes.eventBuffer[i].sampleIndex >
-                //    simocPersistentState.LastSampleRead = newSpikes.eventBuffer.;
             }
 
         }

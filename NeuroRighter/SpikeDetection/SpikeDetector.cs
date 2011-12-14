@@ -45,12 +45,14 @@ namespace NeuroRighter.SpikeDetection
         protected double currentThreshold;
         protected double[][] detectionCarryOverBuffer;
         internal protected int carryOverLength;
+        internal protected int serverLag;
         protected double[,] threshold;
         protected double _thresholdMultiplier;
         protected float[][] returnThresh;
         protected int deadTime; //Num samples overlap between possible spike detections
         protected int[] initialSamplesToSkip;
         protected bool[] inASpike; // true when the waveform is over or under the current detection threshold for a given channel
+        protected bool[] waitToComeDown;
         internal double thresholdMultiplier
         {
             get { return _thresholdMultiplier; }
@@ -61,9 +63,6 @@ namespace NeuroRighter.SpikeDetection
         protected int enterSpikeIndex;
         protected int exitSpikeIndex;
         protected int spikeWidth;
-        protected double primarySpikeIntegral;
-        protected int[] secondarySpikeIdx;
-        protected double secondarySpikeIntegral;
         protected int maxSpikeWidth;
         protected int minSpikeWidth;
         protected double maxSpikeAmp;
@@ -73,7 +72,6 @@ namespace NeuroRighter.SpikeDetection
         protected bool posCross; // polarity of inital threshold crossing
         protected int recIndexOffset;
         protected int[] deadWidth;
-        protected bool inBounds;
         private double VOLTAGE_EPSILON = 0.0;   // 1 uV
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
@@ -89,6 +87,7 @@ namespace NeuroRighter.SpikeDetection
             this._thresholdMultiplier = threshMult;
             this.deadTime = detectionDeadTime;
             this.inASpike = new bool[numChannels];
+            this.waitToComeDown = new bool[numChannels];
             this.regularDetect = new bool[numChannels];
             this.maxSpikeWidth = maxSpikeWidth;
             this.minSpikeWidth = minSpikeWidth;
@@ -99,6 +98,9 @@ namespace NeuroRighter.SpikeDetection
                 this.carryOverLength = numPre + 2 * maxSpikeWidth + deadTime + numPost;
             else
                 this.carryOverLength = numPre + maxSpikeWidth + numPost;
+
+            this.serverLag = carryOverLength;
+            //this.serverLag = maxSpikeWidth + numPost;
 
             this.initialSamplesToSkip = new int[numChannels];
 
@@ -152,6 +154,7 @@ namespace NeuroRighter.SpikeDetection
                 // Update threshold
                 updateThreshold(data, channel);
 
+                // Define starting position in current data buffer
                 // Define position in current data buffer
                 int i = numPre + initialSamplesToSkip[channel];
 
@@ -198,9 +201,10 @@ namespace NeuroRighter.SpikeDetection
                         if (spikeDetectionBuffer[i] < currentThreshold &&
                             spikeDetectionBuffer[i] > -currentThreshold)
                         {
+                            waitToComeDown[channel] = false;
                             continue; // not above threshold, next point please
                         }
-                        else
+                        else if (!waitToComeDown[channel])
                         {
                             // We are entering a spike
                             inASpike[channel] = true;
@@ -208,6 +212,10 @@ namespace NeuroRighter.SpikeDetection
 
                             // Positive or negative crossing
                             posCross = FindSpikePolarityBySlopeOfCrossing();
+                        }
+                        else
+                        {
+                            continue;
                         }
                     }
                     //exiting a spike- requires + maxspikewidth (to find peak), -pre and +post (to find waveform)
@@ -239,98 +247,26 @@ namespace NeuroRighter.SpikeDetection
                             // If the spike is no good
                             continue;
                         }
+
+                        // Record the waveform
+                        ulong tmpindex = ((ulong)(spikeMaxIndex) + bufferOffset) - (ulong)(recIndexOffset);
+                        waveforms.Add(new SpikeEvent(channel,
+                            tmpindex, currentThreshold, waveform));
+
+                        // Carry-over dead time if we are at the end of the buffer
+                        if (i >= indiciesToSearchForCross)
+                            initialSamplesToSkip[channel] = deadTime + exitSpikeIndex - indiciesToSearchForCross;
+                        else
+                            initialSamplesToSkip[channel] = 0;
+
                         //else
-                        //{
-                        //    // Infection point within dead time?
-                        //    bool inflectionWithinDead = true;
-                        //    deadWidth = null;
-
-                            //if (deadTime > 0)
-                            //{
-                            //    // Check the dead time for higher amplitdude waveform
-                            //    int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
-
-                            //    // Check that the maximal value in the deadtime is not the 
-                            //    // exitSpikeIndex
-                            //    if (deadMaxIndex == exitSpikeIndex)
-                            //    {
-                            //        inflectionWithinDead = false;
-                            //        deadWidth = null;
-                            //        goto ProcessSpike;
-                            //    }
-
-                            //    // Is this actually an infection point?
-                            //    int deadMaxIndex1 = deadMaxIndex + 1;
-                            //    int deadMaxIndex2 = deadMaxIndex - 1;
-
-                            //    // If its not the infection point
-                            //    if (Math.Abs(spikeDetectionBuffer[deadMaxIndex1]) > Math.Abs(spikeDetectionBuffer[deadMaxIndex]))
-                            //        // Forget it, we will catch this spike after the dead time
-                            //        inflectionWithinDead = false;
-
-                            //    // Get the maximal value in the dead time
-                            //    double deadMax = spikeDetectionBuffer[deadMaxIndex];
-
-                            //    // Is it larger than the peak of the detected spike?
-                            //    bool lookAtDeadWave = Math.Abs(deadMax) > Math.Abs(spikeMax);
-
-                            //    // get the spike width around this max point
-                            //    deadWidth = FindWidthFromMaxInd(deadMaxIndex);
-
-                            //    if (lookAtDeadWave && inflectionWithinDead)
-                            //    {
-                            //        // If the deadMax is actually larger than the original 
-                            //        // detection's max point
-                            //        double[] deadWaveform = CreateWaveform(deadMaxIndex);
-
-                            //        if (deadWidth != null)
-                            //        {
-                            //            bool goodDeadSpike = CheckSpike(deadWidth[2], deadWaveform);
-
-                            //            if (goodDeadSpike && inflectionWithinDead)
-                            //            {
-                            //                waveform = deadWaveform;
-                            //                spikeMaxIndex = deadMaxIndex;
-                            //                spikeMax = deadMax;
-                            //                exitSpikeIndex = deadWidth[1];
-                            //            }
-                            //        }
-                            //    }
-                            //}
-
-                        ProcessSpike:
-                            // Record the waveform
-                            ulong tmpindex = ((ulong)(spikeMaxIndex) + bufferOffset) - (ulong)(recIndexOffset);
-
-                            waveforms.Add(new SpikeEvent(channel,
-                                tmpindex, currentThreshold, waveform));
-
-                            // Calculate dead-time
-                            int dt;
-                            //if (!inflectionWithinDead && deadWidth != null)
-                            //    dt = deadWidth[0] - 1;
-                            //else
-                                dt = deadTime;
-
-                            // Carry-over dead time if we are at the end of the buffer
-                            if (i >= indiciesToSearchForCross)
-                                initialSamplesToSkip[channel] = dt + exitSpikeIndex - indiciesToSearchForCross;
-                            else
-                                initialSamplesToSkip[channel] = 0;
-
-                            // Advance through deadTime measured from the spike exit index
-                            //if (!inflectionWithinDead && deadWidth != null)
-                            //    i = deadWidth[0] - 1;
-
-                            //else
-                                i = exitSpikeIndex + deadTime;
-
-                        //}
+                        i = exitSpikeIndex + deadTime;
                     }
                     else if (inASpike[channel] && i == indiciesToSearchForReturn - 1)
                     {
                         // Spike is taking to long to come back through the threshold, its no good
                         inASpike[channel] = false;
+                        waitToComeDown[channel] = true;
                         break;
                     }
                     else if (!inASpike[channel] && i >= indiciesToSearchForCross)

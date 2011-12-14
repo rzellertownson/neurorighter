@@ -29,7 +29,8 @@ namespace simoc
 
         private void UpdateClock()
         {
-            currentTime = StimSrv.DigitalOut.GetTime() / 1000;
+            ulong[] tmp = DatSrv.rawElectrodeSrv.EstimateAvailableTimeRange();
+            currentTime =  (double)tmp[1]/DatSrv.spikeSrv.SampleFrequencyHz;
         }
 
         private void UpdatePersistantState()

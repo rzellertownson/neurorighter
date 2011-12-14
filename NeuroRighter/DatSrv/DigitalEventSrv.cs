@@ -35,7 +35,8 @@ namespace NeuroRighter.DatSrv
         /// <summary>
         ///  The mutex class for concurrent read and write access to data buffers
         /// </summary>
-        protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        protected static readonly object lockObj = new object();
 
         // Main storage buffer
         private DigitalEventBuffer dataBuffer;
@@ -62,11 +63,13 @@ namespace NeuroRighter.DatSrv
             this.bufferSizeInSamples = (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
         }
 
-        internal void WriteToBuffer(DigitalEventBuffer newData) 
-        { 
+        internal void WriteToBuffer(DigitalEventBuffer newData)
+        {
             // Lock out other write operations
-            bufferLock.EnterWriteLock();
-            try
+            //bufferLock.EnterWriteLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
@@ -89,11 +92,12 @@ namespace NeuroRighter.DatSrv
                 // Update the most current sample read
                 currentSample += (ulong)numSamplesPerWrite;
             }
-            finally
-            {
-                // release the write lock
-                bufferLock.ExitWriteLock();
-            }
+            //}
+            //finally
+            //{
+            //    // release the write lock
+            //    bufferLock.ExitWriteLock();
+            //}
 
         }
 
@@ -108,19 +112,24 @@ namespace NeuroRighter.DatSrv
             ulong[] timeRange = new ulong[2];
 
             // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //bufferLock.EnterReadLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 timeRange[0] = dataBuffer.sampleBuffer.Min();
                 timeRange[1] = dataBuffer.sampleBuffer.Max();
-            }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
 
-            return timeRange;
+                return timeRange;
+            }
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitReadLock();
+            //}
+
+
         }
 
         /// <summary>
@@ -132,13 +141,15 @@ namespace NeuroRighter.DatSrv
         /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
         /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
         /// <returns>DigitalEventBuffer</returns>
-        internal DigitalEventBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex) 
+        internal DigitalEventBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
             DigitalEventBuffer returnBuffer = new DigitalEventBuffer(dataBuffer.sampleFrequencyHz);
 
             // Enforce a read lock
-            bufferLock.EnterReadLock();
-            try
+            //bufferLock.EnterReadLock();
+            //try
+            //{
+            lock (lockObj)
             {
                 // Collect all the data within the desired sample range and add to the returnBuffer
                 // object
@@ -152,15 +163,18 @@ namespace NeuroRighter.DatSrv
                         returnBuffer.portStateBuffer.Add(dataBuffer.portStateBuffer.ElementAt(i));
                     }
                 }
-            }
-            finally
-            {
-                // release the read lock
-                bufferLock.ExitReadLock();
-            }
 
-            // Return the data
-            return returnBuffer;
+                // Return the data
+                return returnBuffer;
+            }
+            //}
+            //finally
+            //{
+            //    // release the read lock
+            //    bufferLock.ExitReadLock();
+            //}
+
+
 
         }
 

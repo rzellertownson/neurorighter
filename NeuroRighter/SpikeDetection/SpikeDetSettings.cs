@@ -18,15 +18,14 @@ namespace NeuroRighter.SpikeDetection
     {
 
         // Parameters passed in from NR interface
-        private int sampleRate;
         private int spikeBufferLength;
         private int numChannels;
 
         // Detector
         internal SpikeDetectorParameters detectorParameters = new SpikeDetectorParameters();
         internal SpikeDetector spikeDetector;
-        internal int numPre; // num smaples to save pre-spike
-        internal int numPost; // num samples to save post-spike
+        private int numPre; // num smaples to save pre-spike
+        private int numPost; // num samples to save post-spike
         internal int spikeDetectionLag; // number of samples that spike detector will cause buffers to lag
         internal int detectorType = 0;
 
@@ -43,19 +42,18 @@ namespace NeuroRighter.SpikeDetection
         internal event resetSpkDetSettingsHandler SettingsHaveChanged;
         private delegate void SetTextCallback();
 
-        public SpikeDetSettings(int spikeBufferLength, int numChannels, int sampleRate)
+        public SpikeDetSettings(int spikeBufferLength, int numChannels)
         {
             this.spikeBufferLength = spikeBufferLength;
             this.numChannels = numChannels;
-            this.sampleRate = sampleRate;
 
             InitializeComponent();
 
             //Default spike det. algorithm is fixed RMS
             this.comboBox_noiseEstAlg.SelectedIndex = 0;
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
-            this.numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
-            this.numPost = (int)((double)numPostSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
+            this.numPre = (int)((double)numPreSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
+            this.numPost = (int)((double)numPostSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
 
             // Set the pre/post sample coversion label
             label_PreSampConv.Text =
@@ -88,13 +86,15 @@ namespace NeuroRighter.SpikeDetection
             Flush();
         }
 
-        internal void SetSpikeDetector()
+        internal void SetSpikeDetector(int spkBufferLength)
         {
-            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(sampleRate) *
+            this.spikeBufferLength = spkBufferLength;
+
+            int detectionDeadTime = (int)Math.Round(Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency) *
                 (double)numericUpDown_DeadTime.Value / 1.0e6);
-            int minSpikeWidth = (int)Math.Floor(Convert.ToDouble(sampleRate) *
+            int minSpikeWidth = (int)Math.Floor(Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency) *
                 (double)numericUpDown_MinSpikeWidth.Value / 1.0e6);
-            int maxSpikeWidth = (int)Math.Round(Convert.ToDouble(sampleRate) *
+            int maxSpikeWidth = (int)Math.Round(Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency) *
                 (double)numericUpDown_MaxSpikeWidth.Value / 1.0e6);
             double maxSpikeAmp = (double)numericUpDown_MaxSpkAmp.Value / 1.0e6;
             double minSpikeSlope = (double)numericUpDown_MinSpikeSlope.Value / 1.0e6;
@@ -104,8 +104,22 @@ namespace NeuroRighter.SpikeDetection
             label_MinWidthSamp.Text = minSpikeWidth + " sample(s)";
             label_MaxWidthSamp.Text = maxSpikeWidth + " sample(s)";
 
+            // Reset the number of samples
+            this.numPre = (int)((double)numPreSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
+            this.numPost = (int)((double)numPostSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
+            if (numPre == 0)
+                numPre = 1;
+            if (numPost == 0)
+                numPost = 1;
+
+            // Set the pre/post sample coversion label
+            label_PreSampConv.Text =
+                numPre + " samples"; ;
+            label_PostSampConv.Text =
+                numPost + " samples"; ;
+
             // Half a millisecond to determine spike polarity
-            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(sampleRate) / 1000);
+            int spikeIntegrationTime = (int)Math.Ceiling(Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency) / 1000);
 
             switch (comboBox_noiseEstAlg.SelectedIndex)
             {
@@ -122,7 +136,7 @@ namespace NeuroRighter.SpikeDetection
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
-                        maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(sampleRate));
+                        maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency));
                     break;
                 default:
                     break;
@@ -182,10 +196,11 @@ namespace NeuroRighter.SpikeDetection
             // Set min of numPost = numPre
             //numPostSamples.Minimum = ((double)numPreSamples.Value) / 1e6* Convert.ToDouble(sampleRate);
 
-
-            numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
+            numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency));
+            
             if (numPre == 0)
                 numPre = 1;
+
             detectorParameters.NumPre = numPre;
 
             SettingsHaveChanged(this, e);
@@ -200,7 +215,7 @@ namespace NeuroRighter.SpikeDetection
 
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
         {
-            numPost = (int)((double)numPostSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
+            numPost = (int)((double)numPostSamples.Value / 1e6 * Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency));
 
             if (numPost == 0)
                 numPost = 1;
@@ -382,7 +397,7 @@ namespace NeuroRighter.SpikeDetection
             else if (spikeSorter.projectionType == "PCA")
                 spikeSorter.Train();
             else if (spikeSorter.projectionType == "Double Voltage Inflection")
-                spikeSorter.Train(numPre, 0.4, sampleRate);
+                spikeSorter.Train(numPre, 0.4, (int)Properties.Settings.Default.RawSampleFrequency);
 
         }
 
@@ -687,6 +702,8 @@ namespace NeuroRighter.SpikeDetection
                     numericUpDown_MaxSpikeWidth.Value = detectorParameters.MaxSpikeWidth;
                     numPreSamples.Value = detectorParameters.NumPre;
                     numPostSamples.Value = detectorParameters.NumPost;
+                    //numPreSamples_ValueChanged(null, null);
+                    //numPostSamples_ValueChanged(null, null);
 
                     if (detectorParameters.SS != null)
                     {
@@ -752,6 +769,26 @@ namespace NeuroRighter.SpikeDetection
         {
             saveDetectorToolStripMenuItem.Enabled = true;
         }
+
+        # region public accessors
+
+        public int NumPre
+        {
+            get
+            {
+                return numPre;
+            }
+        }
+
+        public int NumPost
+        {
+            get
+            {
+                return numPost;
+            }
+        }
+
+        # endregion
 
 
     }

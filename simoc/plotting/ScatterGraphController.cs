@@ -66,7 +66,7 @@ namespace simoc.plotting
 
             // Plot bound settings
             ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
-            double minUpdateTimeSec = 0.2; //seconds
+            double minUpdateTimeSec = 0.1; //seconds
             int downSampleFactor;
             if (historySamples <= 1500)
             {

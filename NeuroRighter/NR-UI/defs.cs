@@ -139,8 +139,6 @@ namespace NeuroRighter
         private List<double[]> scalingCoeffsSpikes; //Scaling coefficients for NI-DAQs
         private double[] scalingCoeffsLFPs;
         private double[] scalingCoeffsEEG;
-        private int numPre;     //Num samples before threshold crossing to save
-        private int numPost;    //Num samples after ' '
         private rawType[] thrSALPA; //Thresholds for SALPA
         private SALPA3 SALPAFilter;
         private int numChannels;

@@ -82,12 +82,14 @@ namespace NeuroRighter
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             this.currentRef = new int[2];
 
+            //Ensure that sampling rates are okay
+            button_lfpSamplingRate_Click(null, null);
+            button_spikeSamplingRate_Click(null, null);
+
             // Create a new spike detection form so we can access its parameters
-            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
+            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
             spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
-            spikeDet.SetSpikeDetector();
-            this.numPre = spikeDet.numPre;
-            this.numPost = spikeDet.numPost;
+            spikeDet.SetSpikeDetector(spikeBufferLength);
 
             // Create a raw-scaler so that we can store the doubles produced by the NI tasks as 16-bit integers
             neuralDataScaler = new RawScale();
@@ -185,7 +187,7 @@ namespace NeuroRighter
             //Ensure that, if recording is setup, that it has been done properly
             //Retrain Spike detector if required
             if (checkBox_RetrainOnRestart.Checked)
-                spikeDet.SetSpikeDetector();
+                spikeDet.SetSpikeDetector(spikeBufferLength);
 
             // Call the recording setup/start functions
             recordingCancelled = false;
@@ -684,7 +686,7 @@ namespace NeuroRighter
                             lfpPlotData.dataAcquired += new PlotData.dataAcquiredHandler(lfpPlotData_dataAcquired);
                         }
 
-                        waveformPlotData = new EventPlotData(numChannels, numPre + numPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
+                        waveformPlotData = new EventPlotData(numChannels, spikeDet.NumPre + spikeDet.NumPost + 1, (float)(spikeTask[0].AIChannels.All.RangeHigh * 2F),
                             numRows, numCols, numSnipsDisplayed, Properties.Settings.Default.ChannelMapping);
                         waveformPlotData.setGain(Properties.Settings.Default.SpkWfmDisplayGain);
                         spkWfmGraph.setDisplayGain(Properties.Settings.Default.SpkWfmDisplayGain);
@@ -784,19 +786,14 @@ namespace NeuroRighter
                             stimJump = (double)spikeSamplingRate * 0.0001; //num. indices in 100 us of data
                         }
 
-                        // Storage from spike waveforms
-                       
-                        numPre = Convert.ToInt32(spikeDet.numPreSamples.Value);
-                        numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
-
                         stimIndices = new List<StimTick>(5);
                         //if devices refresh rate is reset, need to reset SALPA
                         if (checkBox_SALPA.Checked)
                             resetSALPA();
                         if (spikeDet != null && isNormalRecording)
-                            spikeDet.SetSpikeDetector();
+                            spikeDet.SetSpikeDetector(spikeBufferLength);
                         if (spikeDet.spikeDetector == null)
-                            spikeDet.SetSpikeDetector();
+                            spikeDet.SetSpikeDetector(spikeBufferLength);
 
                         #endregion
 
@@ -1072,9 +1069,9 @@ namespace NeuroRighter
 
                         // 1. spk stream
                         if (spikeDet.spikeSorter != null && spikeDet.isEngaged)
-                            recordingSettings.Setup("spk", spikeTask[0], numPre, numPost, true);
+                            recordingSettings.Setup("spk", spikeTask[0], spikeDet.NumPre, spikeDet.NumPost, true);
                         else
-                            recordingSettings.Setup("spk", spikeTask[0], numPre, numPost, false);
+                            recordingSettings.Setup("spk", spikeTask[0], spikeDet.NumPre, spikeDet.NumPost, false);
 
                         // 2. raw streams
                         recordingSettings.Setup("raw", spikeTask[0]);

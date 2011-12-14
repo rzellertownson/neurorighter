@@ -89,9 +89,9 @@ namespace simoc
 
                 // Set up servers
                 obsSrv = new SIMOCRawSrv
-                    (1 / DatSrv.ADCPollingPeriodSec, numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
+                    (1 / StimSrv.DACPollingPeriodSec, numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
                 filtSrv = new SIMOCRawSrv
-                    (1 / DatSrv.ADCPollingPeriodSec, 3 * numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
+                    (1 / StimSrv.DACPollingPeriodSec, 3 * numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
 
                 // Set up persistant internal varaible storage
                 simocVariableStorage = new PersistentSimocVar();

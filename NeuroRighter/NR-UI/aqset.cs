@@ -100,12 +100,12 @@ namespace NeuroRighter
             //Ensure that sampling rates are okay
             button_lfpSamplingRate_Click(null, null);
             button_spikeSamplingRate_Click(null, null);
-            
+
             // Reset the spike detector if it exists
             if (spikeDet != null)
             {
-                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels, spikeSamplingRate);
-                spikeDet.SetSpikeDetector();
+                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
+                spikeDet.SetSpikeDetector(spikeBufferLength);
             }
 
             resetReferencers();
@@ -144,12 +144,16 @@ namespace NeuroRighter
                 int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
 
                 int fs = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                if (fs * Properties.Settings.Default.ADCPollingPeriodSec <= numPost + numPre + 1)
-                {
-                    int fsmin = (int)Math.Ceiling((numPost + numPre + 1) / Properties.Settings.Default.ADCPollingPeriodSec);
-                    textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
-                    fs = fsmin;
-                }
+
+                // This constraint is worked out in the GUI min/max settings
+
+                //if (fs * Properties.Settings.Default.ADCPollingPeriodSec <= spikeDet.NumPre + spikeDet.NumPost + 1)
+                //{
+                //    int fsmin = (int)Math.Ceiling((spikeDet.NumPost + spikeDet.NumPre + 1) / Properties.Settings.Default.ADCPollingPeriodSec);
+                //    textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
+                //    fs = fsmin;
+                //}
+
                 if (fs > 1000000 / numChannelsPerDevice)
                 {
                     textBox_spikeSamplingRate.Text = maxFs.ToString();
@@ -161,7 +165,7 @@ namespace NeuroRighter
             }
             catch  //This should happen if the user enters something inane
             {
-                textBox_spikeSamplingRate.Text = "25000"; //Set to default of 1kHz
+                textBox_spikeSamplingRate.Text = "25000"; //Set to default
             }
 
             spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
@@ -169,14 +173,14 @@ namespace NeuroRighter
 
             // Reset the spike detector if it exists
             if (spikeDet != null)
-                spikeDet.SetSpikeDetector();
+                spikeDet.SetSpikeDetector(spikeBufferLength);
         }
 
-        // Set number of samples to collect after each spike detection
-        private void numPostSamples_ValueChanged(object sender, EventArgs e)
-        {
-            numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
-        }
+        //// Set number of samples to collect after each spike detection
+        //private void numPostSamples_ValueChanged(object sender, EventArgs e)
+        //{
+        //    numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
+        //}
 
         // Train the SALPA filter
         private void button_Train_Click(object sender, EventArgs e)
@@ -414,7 +418,7 @@ namespace NeuroRighter
             int asym_sams = Convert.ToInt32(numericUpDown_salpa_asym.Value);
             int blank_sams = Convert.ToInt32(numericUpDown_salpa_postpeg.Value);
             int ahead_sams = Convert.ToInt32(numericUpDown_salpa_ahead.Value); //0.0002 = 5 samples @ 25 kHz
-            int forcepeg_sams= Convert.ToInt32(numericUpDown_salpa_forcepeg.Value);
+            int forcepeg_sams = Convert.ToInt32(numericUpDown_salpa_forcepeg.Value);
             SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
             //if (4 * SALPA_WIDTH + 1 > spikeBufferLength) // Make sure that the number of samples needed for polynomial fit is not more than the current buffersize
@@ -423,13 +427,13 @@ namespace NeuroRighter
             //    SALPA_WIDTH = (int)Math.Floor(max_halfwidth);
             //}
 
-            
+
             //public SALPA3(int length_sams,int asym_sams,int blank_sams,int ahead_sams, int forcepeg_sams, rawType railLow, rawType railHigh, int numElectrodes, int bufferLength, rawType[] thresh)
             if (thrSALPA == null)
                 MessageBox.Show("train salpa before editing parameters");
             else
-            SALPAFilter = new global::NeuroRighter.Filters.SALPA3(SALPA_WIDTH, asym_sams,blank_sams,ahead_sams,forcepeg_sams,(rawType)(-4 * Math.Pow(10, -3)),
-                (rawType)(4 * Math.Pow(10, -3)), numChannels, spikeBufferLength, thrSALPA);
+                SALPAFilter = new global::NeuroRighter.Filters.SALPA3(SALPA_WIDTH, asym_sams, blank_sams, ahead_sams, forcepeg_sams, (rawType)(-4 * Math.Pow(10, -3)),
+                    (rawType)(4 * Math.Pow(10, -3)), numChannels, spikeBufferLength, thrSALPA);
             //SALPAFilter = new SALPA3(SALPA_WIDTH, prepeg, postpeg, postpegzero, (rawType)(-10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) + 0.01),
             //    (rawType)(10 / Convert.ToDouble(comboBox_SpikeGain.SelectedItem) - 0.01), numChannels, delta, spikeBufferLength);
         }

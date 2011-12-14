@@ -181,12 +181,12 @@ namespace NeuroRighter
             spkWfmGraph = new SnipGridGraph();
             if (spikeTask != null && spikeTask[0] != null)
                 spkWfmGraph.setup(numRows, numCols, numSnipsDisplayed,
-                    numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
+                    spikeDet.NumPre + spikeDet.NumPost + 1, true, (double)(spikeDet.NumPre + spikeDet.NumPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
             else
             {
                 double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
-                spkWfmGraph.setup(numRows, numCols, numSnipsDisplayed, 
-                    numPre + numPost + 1, true, (double)(numPre + numPost + 1) / spikeSamplingRate, gain);
+                spkWfmGraph.setup(numRows, numCols, numSnipsDisplayed,
+                    spikeDet.NumPre + spikeDet.NumPost + 1, true, (double)(spikeDet.NumPre + spikeDet.NumPost + 1) / spikeSamplingRate, gain);
             }
             //spkWfmGraph.Resize += new EventHandler(spkWfmGraph.resize);
             //spkWfmGraph.SizeChanged += new EventHandler(spkWfmGraph.resize);
@@ -198,7 +198,7 @@ namespace NeuroRighter
             //Adjust ranges
             if (spikeTask != null && spikeTask[0] != null)
             {
-                double wfmLength = numPre + numPost + 1;
+                double wfmLength = spikeDet.NumPre + spikeDet.NumPost + 1;
                 spkWfmGraph.setMinMax(1, (float)(numCols * wfmLength), (float)(spikeTask[0].AIChannels.All.RangeLow * (numRows * 2 - 1)), (float)(spikeTask[0].AIChannels.All.RangeHigh));
             }
             //spkWfmGraph.clear();

@@ -98,7 +98,7 @@ namespace simoc
 
                 // Create file writer
                 if (NRRecording)
-                    simocOut = new FileWriter(NRFilePath + ".simoc", 14, DatSrv.spikeSrv.SampleFrequencyHz);
+                    simocOut = new FileWriter(NRFilePath + ".simoc", 14, DatSrv.SpikeSrv.SampleFrequencyHz);
                 
                 // Set up closed loop algorithm
                 startTime = StimSrv.DigitalOut.GetTime()/1000;
@@ -202,8 +202,8 @@ namespace simoc
 
         private void TargetFunctionSwitched()
         {
-            ulong[] now = DatSrv.spikeSrv.EstimateAvailableTimeRange();
-            simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.spikeSrv.SampleFrequencyHz;
+            ulong[] now = DatSrv.SpikeSrv.EstimateAvailableTimeRange();
+            simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.SpikeSrv.SampleFrequencyHz;
             simocVariableStorage.TargetOn = false;
         }
     }

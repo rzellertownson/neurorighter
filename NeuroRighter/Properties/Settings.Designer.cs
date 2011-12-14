@@ -914,5 +914,89 @@ namespace NeuroRighter.Properties {
                 this["stimRobust"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useRawDataBuffer {
+            get {
+                return ((bool)(this["useRawDataBuffer"]));
+            }
+            set {
+                this["useRawDataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useSpikeDataBuffer {
+            get {
+                return ((bool)(this["useSpikeDataBuffer"]));
+            }
+            set {
+                this["useSpikeDataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useBPDataBuffer {
+            get {
+                return ((bool)(this["useBPDataBuffer"]));
+            }
+            set {
+                this["useBPDataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useSALPADataBuffer {
+            get {
+                return ((bool)(this["useSALPADataBuffer"]));
+            }
+            set {
+                this["useSALPADataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useLFPDataBuffer {
+            get {
+                return ((bool)(this["useLFPDataBuffer"]));
+            }
+            set {
+                this["useLFPDataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useEEGDataBuffer {
+            get {
+                return ((bool)(this["useEEGDataBuffer"]));
+            }
+            set {
+                this["useEEGDataBuffer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useStimDataBuffer {
+            get {
+                return ((bool)(this["useStimDataBuffer"]));
+            }
+            set {
+                this["useStimDataBuffer"] = value;
+            }
+        }
     }
 }

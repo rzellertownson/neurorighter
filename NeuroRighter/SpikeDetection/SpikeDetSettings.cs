@@ -54,17 +54,14 @@ namespace NeuroRighter.SpikeDetection
             //Default spike det. algorithm is fixed RMS
             this.comboBox_noiseEstAlg.SelectedIndex = 0;
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
-            this.numPre = (int)numPreSamples.Value;
-            this.numPost = (int)numPostSamples.Value;
+            this.numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
+            this.numPost = (int)((double)numPostSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
 
             // Set the pre/post sample coversion label
             label_PreSampConv.Text =
-                1000 * ((double)numPre / Convert.ToDouble(sampleRate)) + " msec";
+                numPre + " samples"; ;
             label_PostSampConv.Text =
-                1000 * ((double)numPost / Convert.ToDouble(sampleRate)) + " msec";
-
-            // Set min of numPost = numPre
-            numPostSamples.Minimum = numPreSamples.Value;
+                numPost + " samples"; ;
 
             // Set up the spike sorter's BW
             sorterTrainer = new BackgroundWorker();
@@ -183,31 +180,38 @@ namespace NeuroRighter.SpikeDetection
         private void numPreSamples_ValueChanged(object sender, EventArgs e)
         {
             // Set min of numPost = numPre
-            numPostSamples.Minimum = numPreSamples.Value;
+            //numPostSamples.Minimum = ((double)numPreSamples.Value) / 1e6* Convert.ToDouble(sampleRate);
+
+
+            numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
+            if (numPre == 0)
+                numPre = 1;
+            detectorParameters.NumPre = numPre;
 
             SettingsHaveChanged(this, e);
-            numPre = (int)numPreSamples.Value;
-            detectorParameters.NumPre = numPre;
 
             if (spikeSorter != null)
                 spikeSorter.inflectionSample = numPre;
 
             // Update label
             label_PreSampConv.Text =
-                1000.0 * (double)numPreSamples.Value / Convert.ToDouble(sampleRate) + " msec";
+                numPre + " samples";
         }
 
         private void numPostSamples_ValueChanged(object sender, EventArgs e)
         {
+            numPost = (int)((double)numPostSamples.Value / 1e6 * Convert.ToDouble(sampleRate));
 
-            numPost = (int)numPostSamples.Value;
+            if (numPost == 0)
+                numPost = 1;
+
             detectorParameters.NumPost = numPost;
 
             SettingsHaveChanged(this, e);
 
             // Update label
             label_PostSampConv.Text =
-                1000.0 * (double)numPost / Convert.ToDouble(sampleRate) + " msec";
+                numPost + " samples";
         }
 
         private void numericUpDown_DeadTime_ValueChanged(object sender, EventArgs e)
@@ -378,7 +382,7 @@ namespace NeuroRighter.SpikeDetection
             else if (spikeSorter.projectionType == "PCA")
                 spikeSorter.Train();
             else if (spikeSorter.projectionType == "Double Voltage Inflection")
-                spikeSorter.Train(numPre,0.4,sampleRate);
+                spikeSorter.Train(numPre, 0.4, sampleRate);
 
         }
 

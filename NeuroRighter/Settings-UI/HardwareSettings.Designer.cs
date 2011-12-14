@@ -95,6 +95,14 @@ namespace NeuroRighter
             this.comboBox_analogInputDevice1 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPag_Gen = new System.Windows.Forms.TabPage();
+            this.groupBox25 = new System.Windows.Forms.GroupBox();
+            this.checkBox_UseStimDataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseEEGDataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseLFPDataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseSALPADataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseBPDataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseSpikeDataBuffer = new System.Windows.Forms.CheckBox();
+            this.checkBox_UseRawDataBuffer = new System.Windows.Forms.CheckBox();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.robustStim_checkbox = new System.Windows.Forms.CheckBox();
             this.numericUpDown_datSrvBufferSizeSec = new System.Windows.Forms.NumericUpDown();
@@ -128,6 +136,8 @@ namespace NeuroRighter
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
+            this.numericUpDown_DACPollingPeriodSec = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -150,6 +160,7 @@ namespace NeuroRighter
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPag_Gen.SuspendLayout();
+            this.groupBox25.SuspendLayout();
             this.groupBox21.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_datSrvBufferSizeSec)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ADCPollingPeriodSec)).BeginInit();
@@ -157,6 +168,7 @@ namespace NeuroRighter
             this.groupBox20.SuspendLayout();
             this.groupBox19.SuspendLayout();
             this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).BeginInit();
             this.SuspendLayout();
             // 
             // button_accept
@@ -856,6 +868,7 @@ namespace NeuroRighter
             // 
             // tabPag_Gen
             // 
+            this.tabPag_Gen.Controls.Add(this.groupBox25);
             this.tabPag_Gen.Controls.Add(this.groupBox21);
             this.tabPag_Gen.Location = new System.Drawing.Point(4, 22);
             this.tabPag_Gen.Name = "tabPag_Gen";
@@ -865,18 +878,113 @@ namespace NeuroRighter
             this.tabPag_Gen.Text = "General";
             this.tabPag_Gen.UseVisualStyleBackColor = true;
             // 
+            // groupBox25
+            // 
+            this.groupBox25.Controls.Add(this.checkBox_UseStimDataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseEEGDataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseLFPDataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseSALPADataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseBPDataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseSpikeDataBuffer);
+            this.groupBox25.Controls.Add(this.checkBox_UseRawDataBuffer);
+            this.groupBox25.Location = new System.Drawing.Point(6, 165);
+            this.groupBox25.Name = "groupBox25";
+            this.groupBox25.Size = new System.Drawing.Size(286, 238);
+            this.groupBox25.TabIndex = 18;
+            this.groupBox25.TabStop = false;
+            this.groupBox25.Text = "Data Buffer Selection";
+            // 
+            // checkBox_UseStimDataBuffer
+            // 
+            this.checkBox_UseStimDataBuffer.AutoSize = true;
+            this.checkBox_UseStimDataBuffer.Location = new System.Drawing.Point(9, 208);
+            this.checkBox_UseStimDataBuffer.Name = "checkBox_UseStimDataBuffer";
+            this.checkBox_UseStimDataBuffer.Size = new System.Drawing.Size(231, 17);
+            this.checkBox_UseStimDataBuffer.TabIndex = 23;
+            this.checkBox_UseStimDataBuffer.Text = "Use E. Stim. Data Buffer (When Applicable)";
+            this.checkBox_UseStimDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseStimDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseStimDataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseEEGDataBuffer
+            // 
+            this.checkBox_UseEEGDataBuffer.AutoSize = true;
+            this.checkBox_UseEEGDataBuffer.Location = new System.Drawing.Point(9, 177);
+            this.checkBox_UseEEGDataBuffer.Name = "checkBox_UseEEGDataBuffer";
+            this.checkBox_UseEEGDataBuffer.Size = new System.Drawing.Size(217, 17);
+            this.checkBox_UseEEGDataBuffer.TabIndex = 23;
+            this.checkBox_UseEEGDataBuffer.Text = "Use EEG Data Buffer (When Applicable)";
+            this.checkBox_UseEEGDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseEEGDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseEEGDataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseLFPDataBuffer
+            // 
+            this.checkBox_UseLFPDataBuffer.AutoSize = true;
+            this.checkBox_UseLFPDataBuffer.Location = new System.Drawing.Point(9, 146);
+            this.checkBox_UseLFPDataBuffer.Name = "checkBox_UseLFPDataBuffer";
+            this.checkBox_UseLFPDataBuffer.Size = new System.Drawing.Size(214, 17);
+            this.checkBox_UseLFPDataBuffer.TabIndex = 23;
+            this.checkBox_UseLFPDataBuffer.Text = "Use LFP Data Buffer (When Applicable)";
+            this.checkBox_UseLFPDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseLFPDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseLFPDataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseSALPADataBuffer
+            // 
+            this.checkBox_UseSALPADataBuffer.AutoSize = true;
+            this.checkBox_UseSALPADataBuffer.Location = new System.Drawing.Point(9, 115);
+            this.checkBox_UseSALPADataBuffer.Name = "checkBox_UseSALPADataBuffer";
+            this.checkBox_UseSALPADataBuffer.Size = new System.Drawing.Size(229, 17);
+            this.checkBox_UseSALPADataBuffer.TabIndex = 23;
+            this.checkBox_UseSALPADataBuffer.Text = "Use SALPA Data Buffer (When Applicable)";
+            this.checkBox_UseSALPADataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseSALPADataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseSALPADataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseBPDataBuffer
+            // 
+            this.checkBox_UseBPDataBuffer.AutoSize = true;
+            this.checkBox_UseBPDataBuffer.Location = new System.Drawing.Point(9, 84);
+            this.checkBox_UseBPDataBuffer.Name = "checkBox_UseBPDataBuffer";
+            this.checkBox_UseBPDataBuffer.Size = new System.Drawing.Size(246, 17);
+            this.checkBox_UseBPDataBuffer.TabIndex = 23;
+            this.checkBox_UseBPDataBuffer.Text = "Use Band-Pass Data Buffer (When Applicable)";
+            this.checkBox_UseBPDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseBPDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseBPDataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseSpikeDataBuffer
+            // 
+            this.checkBox_UseSpikeDataBuffer.AutoSize = true;
+            this.checkBox_UseSpikeDataBuffer.Location = new System.Drawing.Point(9, 53);
+            this.checkBox_UseSpikeDataBuffer.Name = "checkBox_UseSpikeDataBuffer";
+            this.checkBox_UseSpikeDataBuffer.Size = new System.Drawing.Size(132, 17);
+            this.checkBox_UseSpikeDataBuffer.TabIndex = 23;
+            this.checkBox_UseSpikeDataBuffer.Text = "Use Spike Data Buffer";
+            this.checkBox_UseSpikeDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseSpikeDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseSpikeDataBuffer_CheckedChanged);
+            // 
+            // checkBox_UseRawDataBuffer
+            // 
+            this.checkBox_UseRawDataBuffer.AutoSize = true;
+            this.checkBox_UseRawDataBuffer.Location = new System.Drawing.Point(9, 22);
+            this.checkBox_UseRawDataBuffer.Name = "checkBox_UseRawDataBuffer";
+            this.checkBox_UseRawDataBuffer.Size = new System.Drawing.Size(127, 17);
+            this.checkBox_UseRawDataBuffer.TabIndex = 23;
+            this.checkBox_UseRawDataBuffer.Text = "Use Raw Data Buffer";
+            this.checkBox_UseRawDataBuffer.UseVisualStyleBackColor = true;
+            this.checkBox_UseRawDataBuffer.CheckedChanged += new System.EventHandler(this.checkBox_UseRawDataBuffer_CheckedChanged);
+            // 
             // groupBox21
             // 
             this.groupBox21.Controls.Add(this.robustStim_checkbox);
             this.groupBox21.Controls.Add(this.numericUpDown_datSrvBufferSizeSec);
+            this.groupBox21.Controls.Add(this.label21);
             this.groupBox21.Controls.Add(this.label24);
             this.groupBox21.Controls.Add(this.label23);
+            this.groupBox21.Controls.Add(this.numericUpDown_DACPollingPeriodSec);
             this.groupBox21.Controls.Add(this.numericUpDown_ADCPollingPeriodSec);
             this.groupBox21.Controls.Add(this.label22);
             this.groupBox21.Controls.Add(this.groupBox23);
             this.groupBox21.Location = new System.Drawing.Point(6, 6);
             this.groupBox21.Name = "groupBox21";
-            this.groupBox21.Size = new System.Drawing.Size(286, 117);
+            this.groupBox21.Size = new System.Drawing.Size(286, 153);
             this.groupBox21.TabIndex = 17;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "DAC Polling/Buffering";
@@ -884,7 +992,7 @@ namespace NeuroRighter
             // robustStim_checkbox
             // 
             this.robustStim_checkbox.AutoSize = true;
-            this.robustStim_checkbox.Location = new System.Drawing.Point(9, 89);
+            this.robustStim_checkbox.Location = new System.Drawing.Point(9, 127);
             this.robustStim_checkbox.Name = "robustStim_checkbox";
             this.robustStim_checkbox.Size = new System.Drawing.Size(258, 17);
             this.robustStim_checkbox.TabIndex = 22;
@@ -899,7 +1007,7 @@ namespace NeuroRighter
             0,
             0,
             65536});
-            this.numericUpDown_datSrvBufferSizeSec.Location = new System.Drawing.Point(173, 54);
+            this.numericUpDown_datSrvBufferSizeSec.Location = new System.Drawing.Point(173, 92);
             this.numericUpDown_datSrvBufferSizeSec.Maximum = new decimal(new int[] {
             10,
             0,
@@ -924,9 +1032,9 @@ namespace NeuroRighter
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(6, 24);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(142, 13);
+            this.label24.Size = new System.Drawing.Size(122, 13);
             this.label24.TabIndex = 21;
-            this.label24.Text = "Data I/O Polling Period (sec)";
+            this.label24.Text = "ADC Polling Period (sec)";
             // 
             // label23
             // 
@@ -952,7 +1060,7 @@ namespace NeuroRighter
             0,
             131072});
             this.numericUpDown_ADCPollingPeriodSec.Minimum = new decimal(new int[] {
-            5,
+            4,
             0,
             0,
             196608});
@@ -960,15 +1068,16 @@ namespace NeuroRighter
             this.numericUpDown_ADCPollingPeriodSec.Size = new System.Drawing.Size(89, 20);
             this.numericUpDown_ADCPollingPeriodSec.TabIndex = 18;
             this.numericUpDown_ADCPollingPeriodSec.Value = new decimal(new int[] {
-            1,
+            4,
             0,
             0,
-            65536});
+            196608});
+            this.numericUpDown_ADCPollingPeriodSec.ValueChanged += new System.EventHandler(this.numericUpDown_ADCPollingPeriodSec_ValueChanged);
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(6, 58);
+            this.label22.Location = new System.Drawing.Point(6, 96);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(132, 13);
             this.label22.TabIndex = 18;
@@ -1228,6 +1337,44 @@ namespace NeuroRighter
             this.HWpersistWindowComponent.Form = this;
             this.HWpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
+            // numericUpDown_DACPollingPeriodSec
+            // 
+            this.numericUpDown_DACPollingPeriodSec.DecimalPlaces = 3;
+            this.numericUpDown_DACPollingPeriodSec.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_DACPollingPeriodSec.Location = new System.Drawing.Point(173, 56);
+            this.numericUpDown_DACPollingPeriodSec.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            65536});
+            this.numericUpDown_DACPollingPeriodSec.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.numericUpDown_DACPollingPeriodSec.Name = "numericUpDown_DACPollingPeriodSec";
+            this.numericUpDown_DACPollingPeriodSec.Size = new System.Drawing.Size(89, 20);
+            this.numericUpDown_DACPollingPeriodSec.TabIndex = 18;
+            this.numericUpDown_DACPollingPeriodSec.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.numericUpDown_DACPollingPeriodSec.ValueChanged += new System.EventHandler(this.numericUpDown_DACPollingPeriodSec_ValueChanged);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 60);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(122, 13);
+            this.label21.TabIndex = 21;
+            this.label21.Text = "DAC Polling Period (sec)";
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1281,6 +1428,8 @@ namespace NeuroRighter
             this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPag_Gen.ResumeLayout(false);
+            this.groupBox25.ResumeLayout(false);
+            this.groupBox25.PerformLayout();
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_datSrvBufferSizeSec)).EndInit();
@@ -1292,6 +1441,7 @@ namespace NeuroRighter
             this.groupBox19.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_DACPollingPeriodSec)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1397,5 +1547,15 @@ namespace NeuroRighter
         private System.Windows.Forms.NumericUpDown numericUpDown_datSrvBufferSizeSec;
         private System.Windows.Forms.NumericUpDown numericUpDown_PreAmpGain;
         private System.Windows.Forms.CheckBox robustStim_checkbox;
+        private System.Windows.Forms.GroupBox groupBox25;
+        private System.Windows.Forms.CheckBox checkBox_UseStimDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseEEGDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseLFPDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseSALPADataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseBPDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseSpikeDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_UseRawDataBuffer;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown numericUpDown_DACPollingPeriodSec;
     }
 }

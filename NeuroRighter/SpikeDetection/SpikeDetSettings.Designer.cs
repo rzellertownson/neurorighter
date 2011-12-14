@@ -265,18 +265,24 @@
             // numPostSamples
             // 
             this.numPostSamples.BackColor = System.Drawing.SystemColors.Control;
+            this.numPostSamples.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.numPostSamples.Location = new System.Drawing.Point(150, 54);
-            this.numPostSamples.Minimum = new decimal(new int[] {
-            5,
+            this.numPostSamples.Maximum = new decimal(new int[] {
+            2000,
             0,
             0,
             0});
             this.numPostSamples.Name = "numPostSamples";
+            this.numPostSamples.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.numPostSamples.Size = new System.Drawing.Size(65, 20);
             this.numPostSamples.TabIndex = 44;
             this.numPostSamples.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numPostSamples.Value = new decimal(new int[] {
-            35,
+            1390,
             0,
             0,
             0});
@@ -285,14 +291,14 @@
             // numPreSamples
             // 
             this.numPreSamples.BackColor = System.Drawing.SystemColors.Control;
-            this.numPreSamples.Location = new System.Drawing.Point(150, 23);
-            this.numPreSamples.Maximum = new decimal(new int[] {
-            49,
+            this.numPreSamples.Increment = new decimal(new int[] {
+            10,
             0,
             0,
             0});
-            this.numPreSamples.Minimum = new decimal(new int[] {
-            5,
+            this.numPreSamples.Location = new System.Drawing.Point(150, 23);
+            this.numPreSamples.Maximum = new decimal(new int[] {
+            1000,
             0,
             0,
             0});
@@ -301,7 +307,7 @@
             this.numPreSamples.TabIndex = 43;
             this.numPreSamples.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numPreSamples.Value = new decimal(new int[] {
-            14,
+            400,
             0,
             0,
             0});

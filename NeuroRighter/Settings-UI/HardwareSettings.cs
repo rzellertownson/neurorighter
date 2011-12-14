@@ -236,6 +236,7 @@ namespace NeuroRighter
             radioButton_8bit.Enabled = checkBox_useStimulator.Checked;
             radioButton_8Mux.Enabled = checkBox_useStimulator.Checked;
             numericUpDown_ADCPollingPeriodSec.Value = (decimal)Properties.Settings.Default.ADCPollingPeriodSec;
+            numericUpDown_DACPollingPeriodSec.Value = (decimal)Properties.Settings.Default.DACPollingPeriodSec;
             numericUpDown_datSrvBufferSizeSec.Value = (decimal)Properties.Settings.Default.datSrvBufferSizeSec;
             numericUpDown_PreAmpGain.Value = (decimal)Properties.Settings.Default.PreAmpGain;
             checkBox_useCineplex.Checked = Properties.Settings.Default.UseCineplex;
@@ -262,6 +263,13 @@ namespace NeuroRighter
             checkBox_UseAuxDigitalInput.Checked = Properties.Settings.Default.useAuxDigitalInput;
             comboBox_AuxDigInputPort.Enabled = Properties.Settings.Default.useAuxDigitalInput;
             robustStim_checkbox.Checked = Properties.Settings.Default.stimRobust;
+            checkBox_UseRawDataBuffer.Checked = Properties.Settings.Default.useRawDataBuffer;
+            checkBox_UseBPDataBuffer.Checked = Properties.Settings.Default.useBPDataBuffer;
+            checkBox_UseSALPADataBuffer.Checked = Properties.Settings.Default.useSALPADataBuffer;
+            checkBox_UseLFPDataBuffer.Checked = Properties.Settings.Default.useLFPDataBuffer;
+            checkBox_UseEEGDataBuffer.Checked = Properties.Settings.Default.useEEGDataBuffer;
+            checkBox_UseSpikeDataBuffer.Checked = Properties.Settings.Default.useSpikeDataBuffer;
+            checkBox_UseStimDataBuffer.Checked = Properties.Settings.Default.useStimDataBuffer; 
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -291,7 +299,7 @@ namespace NeuroRighter
         {
             // Recording selections
             Properties.Settings.Default.datSrvBufferSizeSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
-            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
+            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
             Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
             Properties.Settings.Default.AnalogInDevice = new System.Collections.Specialized.StringCollection();
             Properties.Settings.Default.AnalogInDevice.Clear();
@@ -505,5 +513,51 @@ namespace NeuroRighter
             Properties.Settings.Default.RecordStimTimes = checkBox_RecStimTimes.Checked;
             comboBox_stimInfoDev.Enabled = checkBox_RecStimTimes.Checked;
         }
+
+        private void checkBox_UseRawDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useRawDataBuffer = checkBox_UseRawDataBuffer.Checked;
+        }
+
+        private void checkBox_UseSpikeDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useSpikeDataBuffer = checkBox_UseSpikeDataBuffer.Checked;
+        }
+
+        private void checkBox_UseBPDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useBPDataBuffer = checkBox_UseBPDataBuffer.Checked;
+        }
+
+        private void checkBox_UseSALPADataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useSALPADataBuffer = checkBox_UseSALPADataBuffer.Checked;
+        }
+
+        private void checkBox_UseLFPDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useLFPDataBuffer = checkBox_UseLFPDataBuffer.Checked;
+        }
+
+        private void checkBox_UseEEGDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useEEGDataBuffer = checkBox_UseEEGDataBuffer.Checked;
+        }
+
+        private void checkBox_UseStimDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useStimDataBuffer = checkBox_UseStimDataBuffer.Checked;
+        }
+
+        private void numericUpDown_ADCPollingPeriodSec_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
+        }
+
+        private void numericUpDown_DACPollingPeriodSec_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
+        }
+
     }
 }

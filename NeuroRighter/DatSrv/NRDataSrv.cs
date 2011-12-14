@@ -28,57 +28,57 @@ namespace NeuroRighter.DatSrv
         /// <summary>
         /// Raw electrode persistant buffer.
         /// </summary>
-        public RawDataSrv rawElectrodeSrv;
+        private RawDataSrv rawElectrodeSrv;
 
         /// <summary>
         /// SALPA filtered electrode data persistant buffer.
         /// </summary>
-        public RawDataSrv salpaElectrodeSrv;
+        private RawDataSrv salpaElectrodeSrv;
 
         /// <summary>
         /// Butterworth filtered electrode data persistant buffer.
         /// </summary>
-        public RawDataSrv filteredElectrodeSrv;
+        private RawDataSrv filteredElectrodeSrv;
 
         /// <summary>
         /// LFP persistant buffer.
         /// </summary>
-        public RawDataSrv lfpSrv;
+        private RawDataSrv lfpSrv;
 
         /// <summary>
         /// EEG persistant buffer.
         /// </summary>
-        public RawDataSrv eegSrv;
+        private RawDataSrv eegSrv;
 
         /// <summary>
         /// Aux analog persistant buffer.
         /// </summary>
-        public RawDataSrv auxAnalogSrv;
+        private RawDataSrv auxAnalogSrv;
 
         /// <summary>
         /// Spike snippet persistant buffer.
         /// </summary>
-        public EventDataSrv<SpikeEvent> spikeSrv;
+        private EventDataSrv<SpikeEvent> spikeSrv;
 
         /// <summary>
         /// Digital input persistant buffer.
         /// </summary>
-        public EventDataSrv<DigitalPortEvent> auxDigitalSrv;
+        private EventDataSrv<DigitalPortEvent> auxDigitalSrv;
 
         /// <summary>
         /// Stimulus server.
         /// </summary>
-        public EventDataSrv<ElectricalStimEvent> stimSrv;
+        private EventDataSrv<ElectricalStimEvent> stimSrv;
 
         /// <summary>
         /// The ADC polling periods in seconds.
         /// </summary>
-        public double ADCPollingPeriodSec;
+        private double aDCPollingPeriodSec;
 
         /// <summary>
         /// The ADC polling periods in samples.
         /// </summary>
-        public int ADCPollingPeriodSamples;
+        private int aDCPollingPeriodSamples;
 
         /// <summary>
         /// NeuroRighter's Persistant Data Server
@@ -86,11 +86,11 @@ namespace NeuroRighter.DatSrv
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
         /// <param name="salpaAccess"> Using SALPA? </param>
         /// <param name="spikeFiltAccess"> Using spike filters? </param>
-        public NRDataSrv(double bufferSizeSeconds, bool salpaAccess,int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
+        public NRDataSrv(double bufferSizeSeconds, bool salpaAccess, int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
         {
             // Set the polling periods
-            ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
-            ADCPollingPeriodSamples = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
+            aDCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
+            aDCPollingPeriodSamples = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
 
             // Set the spike server lag
             int spikeLag = spikeDetlag;
@@ -136,7 +136,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency * 
+                    Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency *
                     (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
                     1);
             }
@@ -148,7 +148,7 @@ namespace NeuroRighter.DatSrv
                     Properties.Settings.Default.RawSampleFrequency,
                     Properties.Settings.Default.EEGNumChannels,
                     bufferSizeSeconds,
-                    Convert.ToInt32(Properties.Settings.Default.EEGSamplingRate * 
+                    Convert.ToInt32(Properties.Settings.Default.EEGSamplingRate *
                     (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
                     1);
             }
@@ -166,9 +166,9 @@ namespace NeuroRighter.DatSrv
 
             //7. Spike data, always available
             spikeSrv = new EventDataSrv<SpikeEvent>(
-                Properties.Settings.Default.RawSampleFrequency,bufferSizeSeconds,
+                Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                 ADCPollingPeriodSamples,
-                2, spikeDetlag);
+                2, spikeDetlag, Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
 
             //8. Auxiliary Digital data
             if (Properties.Settings.Default.useAuxDigitalInput)
@@ -176,7 +176,7 @@ namespace NeuroRighter.DatSrv
                 auxDigitalSrv = new EventDataSrv<DigitalPortEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    1,0);
+                    1, 0, 32);
             }
 
             //9. Stimulus data
@@ -185,10 +185,136 @@ namespace NeuroRighter.DatSrv
                 stimSrv = new EventDataSrv<ElectricalStimEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    2,0);
+                    2, 0, 0);
             }
 
         }
+
+        # region public accessors
+
+        /// <summary>
+        /// Raw electrode persistant buffer.
+        /// </summary>
+        public RawDataSrv RawElectrodeSrv
+        {
+            get
+            {
+                return rawElectrodeSrv;
+            }
+        }
+
+        /// <summary>
+        /// SALPA filtered electrode data persistant buffer.
+        /// </summary>
+        public RawDataSrv SalpaElectrodeSrv
+        {
+            get
+            {
+                return salpaElectrodeSrv;
+            }
+        }
+
+        /// <summary>
+        /// Butterworth filtered electrode data persistant buffer.
+        /// </summary>
+        public RawDataSrv FilteredElectrodeSrv
+        {
+            get
+            {
+                return filteredElectrodeSrv;
+            }
+        }
+
+        /// <summary>
+        /// LFP persistant buffer.
+        /// </summary>
+        public RawDataSrv LFPSrv
+        {
+            get
+            {
+                return lfpSrv;
+            }
+        }
+
+        /// <summary>
+        /// EEG persistant buffer.
+        /// </summary>
+        public RawDataSrv EEGSrv
+        {
+            get
+            {
+                return eegSrv;
+            }
+        }
+
+        /// <summary>
+        /// Aux analog persistant buffer.
+        /// </summary>
+        public RawDataSrv AuxAnalogSrv
+        {
+            get
+            {
+                return auxAnalogSrv;
+            }
+        }
+
+        /// <summary>
+        /// Spike snippet persistant buffer.
+        /// </summary>
+        public EventDataSrv<SpikeEvent> SpikeSrv
+        {
+            get
+            {
+                return spikeSrv;
+            }
+        }
+
+        /// <summary>
+        /// Digital input persistant buffer.
+        /// </summary>
+        public EventDataSrv<DigitalPortEvent> AuxDigitalSrv
+        {
+            get
+            {
+                return auxDigitalSrv;
+            }
+        }
+
+        /// <summary>
+        /// Stimulus server.
+        /// </summary>
+        public EventDataSrv<ElectricalStimEvent> StimSrv
+        {
+            get
+            {
+                return stimSrv;
+            }
+        }
+
+        /// <summary>
+        /// The ADC polling periods in seconds.
+        /// </summary>
+        public double ADCPollingPeriodSec
+        {
+            get
+            {
+                return aDCPollingPeriodSec;
+            }
+        }
+
+        /// <summary>
+        /// The ADC polling periods in samples.
+        /// </summary>
+        public int ADCPollingPeriodSamples
+        {
+            get
+            {
+                return aDCPollingPeriodSamples;
+            }
+        }
+
+        # endregion
+
 
     }
 }

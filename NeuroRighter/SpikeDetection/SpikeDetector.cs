@@ -94,13 +94,14 @@ namespace NeuroRighter.SpikeDetection
             this.maxSpikeAmp = maxSpikeAmp;
             this.minSpikeSlope = minSpikeSlope;
 
-            if (deadTime != 0)
-                this.carryOverLength = numPre + 2 * maxSpikeWidth + deadTime + numPost;
-            else
-                this.carryOverLength = numPre + maxSpikeWidth + numPost;
+            this.carryOverLength = numPre + maxSpikeWidth + numPost;
+
+            //if (deadTime != 0)
+            //    this.carryOverLength = numPre + 2 * maxSpikeWidth + deadTime + numPost;
+            //else
+            //    this.carryOverLength = numPre + maxSpikeWidth + numPost;
 
             this.serverLag = carryOverLength;
-            //this.serverLag = maxSpikeWidth + numPost;
 
             this.initialSamplesToSkip = new int[numChannels];
 

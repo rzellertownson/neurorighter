@@ -45,12 +45,13 @@ namespace NeuroRighter.DatSrv
         private int numSamplesPerWrite;  // The number of samples for each buffer that events could have been detected in
         private ulong minCurrentSample;
         private ulong serverLagSamples;
-        
+
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
 
         private double sampleFrequencyHz;
+        private int channelCount;
 
         /// <summary>
         /// Generic event-type data server (e.g. spikes). The main data buffer that this class updates
@@ -65,7 +66,7 @@ namespace NeuroRighter.DatSrv
         /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
         /// <param name="serverLag"> If there is some lag in the process producing the samples, e.g. a filter like SALPA or spike detection, this is the total number of samples
         /// behind that this event process is compared to the raw process that produced it.</param>
-        public EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks, int serverLag)
+        public EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks, int serverLag, int channelCount)
         {
             this.currentSample = new ulong[numDataCollectionTasks];
             this.minCurrentSample = 0;
@@ -75,6 +76,7 @@ namespace NeuroRighter.DatSrv
             this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
             this.numDataCollectionTasks = numDataCollectionTasks;
             this.serverLagSamples = (ulong)serverLag;
+            this.channelCount = channelCount;
         }
 
         internal void WriteToBuffer(EventBuffer<T> newData, int taskNo)
@@ -122,30 +124,30 @@ namespace NeuroRighter.DatSrv
             //bufferLock.EnterWriteLock();
             //try
             //{
-                lock (lockObj)
+            lock (lockObj)
+            {
+                // First we must remove the expired samples (we cannot assume these are
+                // in temporal order since for 64 channels, we have to write 2x, once for
+                // each 32 channel recording task)
+                if (minCurrentSample > bufferSizeInSamples)
                 {
-                    // First we must remove the expired samples (we cannot assume these are
-                    // in temporal order since for 64 channels, we have to write 2x, once for
-                    // each 32 channel recording task)
-                    if (minCurrentSample > bufferSizeInSamples)
-                    {
-                        dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
-                    }
-
-                    // Move time stamps to absolute scheme
-                    for (int i = 0; i < newData.eventBuffer.Count; ++i)
-                    {
-                        // Convert time stamps to absolute scheme
-                        T tmp = (T)newData.eventBuffer[i].DeepClone();
-                        tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
-                        dataBuffer.eventBuffer.Add(tmp);
-                        //times += tmp.sampleIndex.ToString() + ", ";
-                    }
-
-                    // Update current read-head position
-                    currentSample[taskNo] += (ulong)numSamplesPerWrite;
-                    minCurrentSample = currentSample.Min() - serverLagSamples;
+                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
                 }
+
+                // Move time stamps to absolute scheme
+                for (int i = 0; i < newData.eventBuffer.Count; ++i)
+                {
+                    // Convert time stamps to absolute scheme
+                    T tmp = (T)newData.eventBuffer[i].DeepClone();
+                    tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
+                    dataBuffer.eventBuffer.Add(tmp);
+                    //times += tmp.sampleIndex.ToString() + ", ";
+                }
+
+                // Update current read-head position
+                currentSample[taskNo] += (ulong)numSamplesPerWrite;
+                minCurrentSample = currentSample.Min() - serverLagSamples;
+            }
             //}
             //finally
             //{
@@ -244,6 +246,17 @@ namespace NeuroRighter.DatSrv
             set
             {
                 sampleFrequencyHz = value;
+            }
+        }
+
+        /// <summary>
+        /// The number of channels supplying this server.
+        /// </summary>
+        public int ChannelCount
+        {
+            get
+            {
+                return channelCount;
             }
         }
 

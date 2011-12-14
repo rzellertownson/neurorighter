@@ -30,10 +30,10 @@ namespace simoc.spk2obs
         public Spk2Obs(NRStimSrv stimSrv,NRDataSrv datSrv)
         {
             this.dacPollingPeriodSec = stimSrv.DACPollingPeriodSec;
-            this.channelCount = datSrv.rawElectrodeSrv.channelCount;
+            this.channelCount = datSrv.SpikeSrv.ChannelCount;
             this.dacPollingPeriodSamples = stimSrv.DACPollingPeriodSamples;
-            this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.spikeSrv.SampleFrequencyHz * dacPollingPeriodSec);
-            this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.spikeSrv.SampleFrequencyHz);
+            this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.SpikeSrv.SampleFrequencyHz * dacPollingPeriodSec);
+            this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.SpikeSrv.SampleFrequencyHz);
             this.numSecondInCurrentRead = datSrv.ADCPollingPeriodSec;
         }
 
@@ -43,7 +43,7 @@ namespace simoc.spk2obs
         internal void GetNewSpikes(NRDataSrv DatSrv, PersistentSimocVar simocPersistentState)
         {
             // First, figure out what history of spikes we have
-            ulong[] spikeTimeRange = DatSrv.spikeSrv.EstimateAvailableTimeRange();
+            ulong[] spikeTimeRange = DatSrv.SpikeSrv.EstimateAvailableTimeRange();
 
 
             // Do is there any new data yet?
@@ -53,7 +53,7 @@ namespace simoc.spk2obs
                 //numSecondInCurrentRead = ((double)(spikeTimeRange[1] - simocPersistentState.LastSampleRead)) / DatSrv.spikeSrv.SampleFrequencyHz;
 
                 // Try to get the number of spikes within the available time range
-                newSpikes = DatSrv.spikeSrv.ReadFromBuffer(simocPersistentState.LastSampleRead, spikeTimeRange[1]);
+                newSpikes = DatSrv.SpikeSrv.ReadFromBuffer(simocPersistentState.LastSampleRead, spikeTimeRange[1]);
 
                 // Update the last sample read
                 simocPersistentState.LastSampleRead = spikeTimeRange[1];

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
-using NeuroRighter.StimSrv;
+using NeuroRighter.DatSrv;
 using simoc.UI;
 using simoc.persistantstate;
 
@@ -17,8 +17,8 @@ namespace simoc.targetfunc
         private int t2 = 3600 * 12;
 
 
-        public CustomTarget1(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
-            : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref stimSrv)
+        public CustomTarget1(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref  NRDataSrv datSrv)
+            : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref datSrv)
         {
         }
 

@@ -31,9 +31,9 @@ namespace NeuroRighter.SpikeDetection
 
         // Spike sorter
         internal SpikeSorter spikeSorter;
-        internal bool isHoarding = false;
-        internal bool isTrained = false;
-        internal bool isEngaged = false;
+        private bool isHoarding = false;
+        private bool isTrained = false;
+        private bool isEngaged = false;
         internal bool hasData;
         private BackgroundWorker sorterTrainer;
 
@@ -197,7 +197,7 @@ namespace NeuroRighter.SpikeDetection
             //numPostSamples.Minimum = ((double)numPreSamples.Value) / 1e6* Convert.ToDouble(sampleRate);
 
             numPre = (int)((double)numPreSamples.Value / 1e6 * Convert.ToDouble(Properties.Settings.Default.RawSampleFrequency));
-            
+
             if (numPre == 0)
                 numPre = 1;
 
@@ -785,6 +785,30 @@ namespace NeuroRighter.SpikeDetection
             get
             {
                 return numPost;
+            }
+        }
+
+        public bool IsEngaged
+        {
+            get
+            {
+                return isEngaged;
+            }
+        }
+
+        public bool IsHoarding
+        {
+            get
+            {
+                return isHoarding;
+            }
+        }
+
+        public bool IsTrained
+        {
+            get
+            {
+                return isTrained;
             }
         }
 

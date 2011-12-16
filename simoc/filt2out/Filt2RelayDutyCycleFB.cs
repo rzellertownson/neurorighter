@@ -24,6 +24,9 @@ namespace simoc.filt2out
         double Ku = 0;
         double Tu = 0;
         double relayAmp;
+        double maxStimFreq;
+        double maxStimPulseWidthMSec;
+        double maxStimPowerVolts;
 
         public Filt2RelayDutyCycleFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
@@ -31,8 +34,10 @@ namespace simoc.filt2out
             numberOutStreams = 7; // P and I streams
             relayAmp = c0;
             deltaError = c1;
-            stimPowerVolts = c3;
             cp.SetControllerResultText(Tu,Ku);
+            maxStimFreq = c3;
+            maxStimPulseWidthMSec = c4;
+            maxStimPowerVolts = c5;
         }
 
         internal override void CalculateError(ref double currentError, double currentTarget, double currentFilt)
@@ -125,25 +130,27 @@ namespace simoc.filt2out
                 simocVariableStorage.GenericDouble1 = 0;
             }
 
-            // set the currentFeedback array
-            currentFeedbackSignals = new double[numberOutStreams];
-            
             // Get the pulse width (msec)
-            stimPulseWidthMSec = 5 * simocVariableStorage.GenericDouble1;
+            stimPulseWidthMSec = maxStimPulseWidthMSec * simocVariableStorage.GenericDouble1;
             pulseWidthSamples = (ulong)(stimSrv.sampleFrequencyHz * stimPulseWidthMSec / 1000);
 
-            // Get stim frequency
-            double stimFreqHz = 29 * simocVariableStorage.GenericDouble1 + 1;
+            // Stim current (volts ~ amps)
+            double stimPowerVolts = maxStimPowerVolts;
 
+            // Get stim frequency
+            double stimFreqHz = maxStimFreq * simocVariableStorage.GenericDouble1 + 1;
+
+            // set the currentFeedback array
+            currentFeedbackSignals = new double[numberOutStreams];
 
             // Put P,I and D error components in the rest of the currentFeedBack array
             currentFeedbackSignals[0] = simocVariableStorage.GenericDouble1;
-            currentFeedbackSignals[1] = 0;
-            currentFeedbackSignals[2] = 0;
-            currentFeedbackSignals[3] = 0;
+            currentFeedbackSignals[1] = simocVariableStorage.GenericDouble2;
+            currentFeedbackSignals[2] = simocVariableStorage.GenericDouble3;
+            currentFeedbackSignals[3] = simocVariableStorage.GenericDouble4;
             currentFeedbackSignals[4] = stimFreqHz;
             currentFeedbackSignals[5] = stimPulseWidthMSec;
-            currentFeedbackSignals[6] = stimPowerVolts;
+            currentFeedbackSignals[6] = stimPowerVolts; 
 
             // Create the output buffer
             List<AuxOutEvent> toAppendAux = new List<AuxOutEvent>();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using simoc.UI;
-using NeuroRighter.StimSrv;
+using NeuroRighter.DatSrv;
 using simoc.persistantstate;
 
 namespace simoc.targetfunc
@@ -12,8 +12,8 @@ namespace simoc.targetfunc
     {
         private double sqrt2 = Math.Sqrt(2);
 
-        public SineWave(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
-            : base(cp, DACPollingPeriodSec,numTargetSamplesGenerated, ref stimSrv)
+        public SineWave(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref  NRDataSrv datSrv)
+            : base(cp, DACPollingPeriodSec,numTargetSamplesGenerated, ref datSrv)
         {
 
         }

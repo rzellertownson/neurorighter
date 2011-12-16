@@ -236,8 +236,7 @@
             this.comboBox_noiseEstAlg.FormattingEnabled = true;
             this.comboBox_noiseEstAlg.Items.AddRange(new object[] {
             "Fixed RMS",
-            "Adaptive RMS",
-            "LimAda (Wagenaar)"});
+            "Adaptive RMS"});
             this.comboBox_noiseEstAlg.Location = new System.Drawing.Point(6, 24);
             this.comboBox_noiseEstAlg.Name = "comboBox_noiseEstAlg";
             this.comboBox_noiseEstAlg.Size = new System.Drawing.Size(258, 21);
@@ -282,7 +281,7 @@
             this.numPostSamples.TabIndex = 44;
             this.numPostSamples.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numPostSamples.Value = new decimal(new int[] {
-            1390,
+            1400,
             0,
             0,
             0});
@@ -307,7 +306,7 @@
             this.numPreSamples.TabIndex = 43;
             this.numPreSamples.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numPreSamples.Value = new decimal(new int[] {
-            400,
+            600,
             0,
             0,
             0});
@@ -589,8 +588,7 @@
             this.comboBox_spikeDetAlg.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_spikeDetAlg.FormattingEnabled = true;
             this.comboBox_spikeDetAlg.Items.AddRange(new object[] {
-            "Auto-Aligner",
-            "Simple Threshold"});
+            "Auto-Aligner"});
             this.comboBox_spikeDetAlg.Location = new System.Drawing.Point(6, 25);
             this.comboBox_spikeDetAlg.Name = "comboBox_spikeDetAlg";
             this.comboBox_spikeDetAlg.Size = new System.Drawing.Size(321, 21);

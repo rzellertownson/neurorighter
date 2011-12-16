@@ -19,8 +19,8 @@ namespace simoc.targetfunc
     class Constant : TargetFunc
     {
 
-        public Constant(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
-            : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref stimSrv)
+        public Constant(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRDataSrv datSrv)
+            : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref datSrv)
         {
 
         }

@@ -67,7 +67,7 @@ namespace simoc.filt2out
             if (currentTargetIntenal != 0)
             {
                 // Derivative Approx
-                simocVariableStorage.GenericDouble4 = K*((Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble3 -
+                simocVariableStorage.GenericDouble4 = K*((Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble4 -
                     (K*Td*N)/(Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs));
                 
                 // Tustin's Integral approximation

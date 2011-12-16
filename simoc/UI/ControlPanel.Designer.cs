@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlPanel));
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.numericUpDown_TargetMultiplier = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
             this.numericUpDown_TargetFreq = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_TargetSD = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_TargetMean = new System.Windows.Forms.NumericUpDown();
@@ -108,9 +110,8 @@
             this.numericUpDown_ContC0 = new System.Windows.Forms.NumericUpDown();
             this.label_ContC1 = new System.Windows.Forms.Label();
             this.label_ContC0 = new System.Windows.Forms.Label();
-            this.numericUpDown_TargetMultiplier = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMultiplier)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetFreq)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetSD)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMean)).BeginInit();
@@ -141,7 +142,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC0)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMultiplier)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox4
@@ -163,6 +163,24 @@
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Target Function";
+            // 
+            // numericUpDown_TargetMultiplier
+            // 
+            this.numericUpDown_TargetMultiplier.DecimalPlaces = 2;
+            this.numericUpDown_TargetMultiplier.Location = new System.Drawing.Point(523, 46);
+            this.numericUpDown_TargetMultiplier.Name = "numericUpDown_TargetMultiplier";
+            this.numericUpDown_TargetMultiplier.Size = new System.Drawing.Size(74, 20);
+            this.numericUpDown_TargetMultiplier.TabIndex = 31;
+            this.numericUpDown_TargetMultiplier.ValueChanged += new System.EventHandler(this.numericUpDown_TargetMultiplier_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(474, 48);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(48, 13);
+            this.label11.TabIndex = 30;
+            this.label11.Text = "Multiplier";
             // 
             // numericUpDown_TargetFreq
             // 
@@ -240,6 +258,7 @@
             "Constant",
             "Sine Wave",
             "Multiple of Average Observable",
+            "1 Minute Steps",
             "5 Minute Steps"});
             this.comboBox_Target.Location = new System.Drawing.Point(92, 28);
             this.comboBox_Target.Name = "comboBox_Target";
@@ -865,12 +884,12 @@
             this.comboBox_FBAlg.FormattingEnabled = true;
             this.comboBox_FBAlg.Items.AddRange(new object[] {
             "None",
-            "Filt2PropFreqFB",
-            "Filt2PropPowerFB",
-            "Filt2RelayIrradFB",
-            "Filt2PIDIrradFB",
-            "Filt2RelayDutyCycleFB",
-            "Filt2PIDutyCycleFB"});
+            "Relay Irrad ",
+            "Filt Irrad",
+            "Relay DutyCycle",
+            "PID DutyCycle",
+            "Relay Power",
+            "PID Power"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(12, 34);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
             this.comboBox_FBAlg.Size = new System.Drawing.Size(196, 21);
@@ -1053,24 +1072,6 @@
             this.label_ContC0.TabIndex = 17;
             this.label_ContC0.Text = "Coeff. 0";
             // 
-            // numericUpDown_TargetMultiplier
-            // 
-            this.numericUpDown_TargetMultiplier.DecimalPlaces = 2;
-            this.numericUpDown_TargetMultiplier.Location = new System.Drawing.Point(523, 46);
-            this.numericUpDown_TargetMultiplier.Name = "numericUpDown_TargetMultiplier";
-            this.numericUpDown_TargetMultiplier.Size = new System.Drawing.Size(74, 20);
-            this.numericUpDown_TargetMultiplier.TabIndex = 31;
-            this.numericUpDown_TargetMultiplier.ValueChanged += new System.EventHandler(this.numericUpDown_TargetMultiplier_ValueChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(474, 48);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(48, 13);
-            this.label11.TabIndex = 30;
-            this.label11.Text = "Multiplier";
-            // 
             // ControlPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1089,6 +1090,7 @@
             this.Text = "SIMOC Interface";
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMultiplier)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetFreq)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetSD)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMean)).EndInit();
@@ -1123,7 +1125,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ContC0)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_TargetMultiplier)).EndInit();
             this.ResumeLayout(false);
 
         }

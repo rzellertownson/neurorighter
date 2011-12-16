@@ -391,7 +391,7 @@ namespace NeuroRighter
             }
 
             // Spike Detection - Hoarding
-            if (spikeDet.isHoarding)
+            if (spikeDet.IsHoarding)
             {
                 // Send spikes to the sorter's internal buffer
                 spikeDet.spikeSorter.HoardSpikes(toRawsrv);
@@ -399,7 +399,7 @@ namespace NeuroRighter
             }
 
             // Spike Detection - Classification
-            if (spikeDet.isEngaged)
+            if (spikeDet.IsEngaged)
             {
                 spikeDet.spikeSorter.Classify(ref toRawsrv);
             }
@@ -425,7 +425,7 @@ namespace NeuroRighter
 
 
             //Post to PlotData
-            if (spikeDet.isEngaged)
+            if (spikeDet.IsEngaged)
             {
                 waveformPlotData.write(toRawsrv.eventBuffer, spikeDet.spikeSorter.unitDictionary);
             }

@@ -59,9 +59,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="filt2out\Filt2Out.cs" />
-    <Compile Include="filt2out\Filt2PIDutyCycleFB.cs" />
+    <Compile Include="filt2out\Filt2PIDDutyCycleFB.cs" />
+    <Compile Include="filt2out\Filt2PIDPowerFB.cs" />
     <Compile Include="filt2out\Filt2RelayDutyCycleFB.cs" />
     <Compile Include="filt2out\Filt2RelayIrradFB.cs" />
+    <Compile Include="filt2out\Filt2RelayPowerFB.cs" />
     <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="targetfunc\FiveMinuteSteps.cs" />
     <Compile Include="targetfunc\CustomTarget2.cs" />
     <Compile Include="targetfunc\MulipleOfAverageObs.cs" />
+    <Compile Include="targetfunc\OneMinuteSteps.cs" />
     <Compile Include="UI\ControlPanel.cs">
       <SubType>Form</SubType>
     </Compile>

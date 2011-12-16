@@ -187,13 +187,14 @@ namespace simoc.UI
                     {
                         case "Ziegler-Nichols-PI":
                             {
-                                textBox_K.Text = Convert.ToString(0.4 * ultimateGain);
+                                textBox_K.Text = Convert.ToString(0.4 * ultimateGain/10);
                                 textBox_Ti.Text = Convert.ToString(0.8 * ultimatePeriodSec);
+                                textBox_Td.Text = "0.0";
                             }
                             break;
                         case "Ziegler-Nichols-PID":
                             {
-                                textBox_K.Text = Convert.ToString(0.6 * ultimateGain);
+                                textBox_K.Text = Convert.ToString(0.6 * ultimateGain/10);
                                 textBox_Ti.Text = Convert.ToString(0.5 * ultimatePeriodSec);
                                 textBox_Td.Text = Convert.ToString(0.125 * ultimatePeriodSec);
                             }
@@ -294,17 +295,25 @@ namespace simoc.UI
             {
                 switch (contAlg)
                 {
-                    case "Filt2PIDIrradFB":
+                    case "PID Irrad":
                         {
                             numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
                             numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
                             numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
                         }
                         break;
-                    case "Filt2PIDutyCycleFB":
+                    case "PID DutyCycle":
                         {
                             numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
                             numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                            numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
+                        }
+                        break;
+                    case "PID Power":
+                        {
+                            numericUpDown_ContC0.Value = Convert.ToDecimal(textBox_K.Text);
+                            numericUpDown_ContC1.Value = Convert.ToDecimal(textBox_Ti.Text);
+                            numericUpDown_ContC2.Value = Convert.ToDecimal(textBox_Td.Text);
                         }
                         break;
                 }
@@ -519,6 +528,7 @@ namespace simoc.UI
         private void comboBox_TuningType_SelectedIndexChanged(object sender, EventArgs e)
         {
             tuningAlg = comboBox_TuningType.SelectedItem.ToString();
+            UpdateControllerTextbox();
         }
 
         private void numericEdit_FiltWidthSec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
@@ -567,11 +577,6 @@ namespace simoc.UI
         {
             contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
 
-            if (checkBox_GetTuneParams.Checked)
-            {
-                button_SendEstimates_Click(null, null);
-            }
-
             switch (contAlg)
             {
                 case "None":
@@ -579,7 +584,7 @@ namespace simoc.UI
                         label_CtlType.Text = "Controller 0";
                     }
                     break;
-                case "Filt2RelayIrradFB":
+                case "Relay Irrad":
                     {
                         label_ContC0.Text = "Vi (0-5)";
                         label_ContC1.Text = "dError";
@@ -590,37 +595,91 @@ namespace simoc.UI
                         label_CtlType.Text = "Controller 3";
                     }
                     break;
-                case "Filt2PIDIrradFB":
+                case "PID Irrad":
                     {
                         label_ContC0.Text = "K";
                         label_ContC1.Text = "Ti";
                         label_ContC2.Text = "Td";
                         label_ContC3.Text = "Freq (Hz)";
-                        label_ContC4.Text = "Pulse Width";
+                        label_ContC4.Text = "Pulse Width (msec)";
                         label_ContC5.Text = "";
                         label_CtlType.Text = "Controller 4";
                     }
                     break;
-                case "Filt2RelayDutyCycleFB":
+                case "Relay DutyCycle":
                     {
                         label_ContC0.Text = "U_max (0-1)";
                         label_ContC1.Text = "dError";
                         label_ContC2.Text = "";
-                        label_ContC3.Text = "Vi (0-5)";
-                        label_ContC4.Text = "";
-                        label_ContC5.Text = "";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vi (0-5)";
+
                         label_CtlType.Text = "Controller 5";
+
+                        numericUpDown_ContC0.Value = 1.0m;
+                        numericUpDown_ContC1.Value = 0.0m;
+                        numericUpDown_ContC2.Value = 0.0m;
+                        numericUpDown_ContC3.Value = 10.0m;
+                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
-                case "Filt2PIDutyCycleFB":
+                case "PID DutyCycle":
                     {
                         label_ContC0.Text = "K";
                         label_ContC1.Text = "Ti";
-                        label_ContC2.Text = "";
-                        label_ContC3.Text = "Vi (0-5)";
-                        label_ContC4.Text = "";
-                        label_ContC5.Text = "";
+                        label_ContC2.Text = "Td";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vi (0-5)";
+
                         label_CtlType.Text = "Controller 6";
+
+                        numericUpDown_ContC0.Value = 1.0m;
+                        numericUpDown_ContC1.Value = 1.0m;
+                        numericUpDown_ContC2.Value = 100.0m;
+                        numericUpDown_ContC3.Value = 10.0m;
+                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
+                    }
+                    break;
+                case "Relay Power":
+                    {
+                        label_ContC0.Text = "U_max (0-1)";
+                        label_ContC1.Text = "dError";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vimax (0-5)";
+
+                        label_CtlType.Text = "Controller 5";
+
+                        numericUpDown_ContC0.Value = 1.0m;
+                        numericUpDown_ContC1.Value = 0.0m;
+                        numericUpDown_ContC2.Value = 0.0m;
+                        numericUpDown_ContC3.Value = 10.0m;
+                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
+                    }
+                    break;
+                case "PID Power":
+                    {
+                        label_ContC0.Text = "K";
+                        label_ContC1.Text = "Ti";
+                        label_ContC2.Text = "Td";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vimax (0-5)";
+
+                        label_CtlType.Text = "Controller 8";
+
+                        numericUpDown_ContC0.Value = 1.0m;
+                        numericUpDown_ContC1.Value = 1.0m;
+                        numericUpDown_ContC2.Value = 100.0m;
+                        numericUpDown_ContC3.Value = 10.0m;
+                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
                 default:
@@ -634,6 +693,11 @@ namespace simoc.UI
                         label_CtlType.Text = "Controller X";
                     }
                     break;
+            }
+
+            if (checkBox_GetTuneParams.Checked)
+            {
+                button_SendEstimates_Click(null, null);
             }
         }
 

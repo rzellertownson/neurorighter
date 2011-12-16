@@ -9,7 +9,7 @@ using NeuroRighter.StimSrv;
 
 namespace simoc.spk2obs
 {
-    class Spk2UNFR: Spk2Obs
+    class Spk2UNFR : Spk2Obs
     {
         // Number of detected units
         private int numberOfDetectedUnits;

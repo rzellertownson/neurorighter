@@ -100,37 +100,43 @@ namespace simoc
                 {
                     case "Constant":
                         {
-                            Constant target = new Constant(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            Constant target = new Constant(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                     case "Sine Wave":
                         {
-                            SineWave target = new SineWave(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            SineWave target = new SineWave(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                     case "Custom 1":
                         {
-                            CustomTarget1 target = new CustomTarget1(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated,ref StimSrv);
+                            CustomTarget1 target = new CustomTarget1(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget,simocVariableStorage);
                         }
                         break;
                     case "Custom 2":
                         {
-                            CustomTarget2 target = new CustomTarget2(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            CustomTarget2 target = new CustomTarget2(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                     case "5 Minute Steps":
                         {
-                            FiveMinuteSteps target = new FiveMinuteSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            FiveMinuteSteps target = new FiveMinuteSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
+                    case "1 Minute Steps":
+                        {
+                            OneMinuteSteps target = new OneMinuteSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                     case "Multiple of Average Observable":
                         {
-                            MulipleOfAverageObs target = new MulipleOfAverageObs(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref StimSrv);
+                            MulipleOfAverageObs target = new MulipleOfAverageObs(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
@@ -150,8 +156,12 @@ namespace simoc
 
             try
             {
+                // Store the current last value (needed for derivative estimation)
+                simocVariableStorage.LastFilteredObs = currentFilt.DeepClone();
+
                 switch (controlPanel.filtAlg)
                 {
+
                     case "None":
                         {
                             Obs2Obs filter = new Obs2Obs(controlPanel, StimSrv, firstLoop);
@@ -193,10 +203,6 @@ namespace simoc
                         }
                         break;
                 }
-
-                // Store the current filtered value
-                simocVariableStorage.LastFilteredObs = currentFilt;
-
             }
             catch (Exception sEx)
             {
@@ -243,7 +249,7 @@ namespace simoc
                             currentControllerType = 2;
                         }
                         break;
-                    case "Filt2RelayIrradFB":
+                    case "Relay Irrad":
                         {
                             Filt2RelayIrradFB controller = new Filt2RelayIrradFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
@@ -255,7 +261,7 @@ namespace simoc
                             controlPanel.UpdateControllerTextbox();
                         }
                         break;
-                    case "Filt2PIDIrradFB":
+                    case "PID Irrad":
                         {
                             Filt2PIDIrradFB controller = new Filt2PIDIrradFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
@@ -265,7 +271,7 @@ namespace simoc
                             currentControllerType = 4;
                         }
                         break;
-                    case "Filt2RelayDutyCycleFB":
+                    case "Relay DutyCycle":
                         {
                             Filt2RelayDutyCycleFB controller = new Filt2RelayDutyCycleFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
@@ -277,14 +283,36 @@ namespace simoc
                             controlPanel.UpdateControllerTextbox();
                         }
                         break;
-                    case "Filt2PIDutyCycleFB":
+                    case "PID DutyCycle":
                         {
-                            Filt2PIDutyCycleFB controller = new Filt2PIDutyCycleFB(ref StimSrv, controlPanel);
+                            Filt2PIDDutyCycleFB controller = new Filt2PIDDutyCycleFB(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)
                                 currentFeedBack[i] = controller.currentFeedbackSignals[i];
                             currentControllerType = 6;
+                        }
+                        break;
+                    case "Relay Power":
+                        {
+                            Filt2RelayPowerFB controller = new Filt2RelayPowerFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 7;
+                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                            controlPanel.UpdateControllerTextbox();
+                        }
+                        break;
+                    case "PID Power":
+                        {
+                            Filt2PIDPowerFB controller = new Filt2PIDPowerFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 8;
                         }
                         break;
                 }

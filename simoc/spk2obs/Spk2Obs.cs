@@ -34,7 +34,7 @@ namespace simoc.spk2obs
             this.dacPollingPeriodSamples = stimSrv.DACPollingPeriodSamples;
             this.adcSamplesInDacPoll = (ulong)Math.Round(datSrv.SpikeSrv.SampleFrequencyHz * dacPollingPeriodSec);
             this.newSpikes = new EventBuffer<SpikeEvent>(datSrv.SpikeSrv.SampleFrequencyHz);
-            this.numSecondInCurrentRead = datSrv.ADCPollingPeriodSec;
+            this.numSecondInCurrentRead = dacPollingPeriodSec;
         }
 
         /// <summary>

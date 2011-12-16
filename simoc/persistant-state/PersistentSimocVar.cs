@@ -581,7 +581,7 @@ namespace simoc.persistantstate
         /// <param name="currentObservation"></param>
         internal void UpdateRunningObsAverage(double currentObservation)
         {
-            cumulativeAverageObs = (currentObservation + ((double)numberOfLoopsCompleted -1.0)*cumulativeAverageObs) / (double)numberOfLoopsCompleted;
+            cumulativeAverageObs = (currentObservation + ((double)numberOfLoopsCompleted - 1.0)*cumulativeAverageObs) / (double)numberOfLoopsCompleted;
         }
 
         /// <summary>

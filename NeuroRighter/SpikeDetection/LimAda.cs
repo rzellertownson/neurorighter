@@ -196,10 +196,10 @@ namespace NeuroRighter.SpikeDetection
                         {
                             // We are entering a spike
                             inASpike[channel] = true;
-                            enterSpikeIndex = i;
+                            enterSpikeIndex[channel] = i;
 
                             // Positive or negative crossing
-                            posCross = FindSpikePolarityBySlopeOfCrossing();
+                            posCross = FindSpikePolarityBySlopeOfCrossing(channel);
                         }
                     }
                     else if (inASpike[channel] &&
@@ -210,13 +210,13 @@ namespace NeuroRighter.SpikeDetection
 
                         // We were in a spike and now we are exiting
                         inASpike[channel] = false;
-                        exitSpikeIndex = i;
+                        exitSpikeIndex[channel] = i;
 
                         // Calculate Spike width
-                        spikeWidth = exitSpikeIndex - enterSpikeIndex;
+                        spikeWidth = exitSpikeIndex[channel] - enterSpikeIndex[channel];
 
                         // Find the index + value of the spike maximum
-                        int spikeMaxIndex = FindMaxDeflection(posCross, enterSpikeIndex, spikeWidth);
+                        int spikeMaxIndex = FindMaxDeflection(posCross, enterSpikeIndex[channel], spikeWidth);
                         double spikeMax = spikeDetectionBuffer[spikeMaxIndex];
 
                         // Define spike waveform
@@ -240,11 +240,11 @@ namespace NeuroRighter.SpikeDetection
                             if (deadTime > 0)
                             {
                                 // Check the dead time for higher amplitdude waveform
-                                int deadMaxIndex = FindMaxDeflection(exitSpikeIndex, deadTime);
+                                int deadMaxIndex = FindMaxDeflection(exitSpikeIndex[channel], deadTime);
 
                                 // Check that the maximal value in the deadtime is not the 
-                                // exitSpikeIndex
-                                if (deadMaxIndex == exitSpikeIndex)
+                                // exitSpikeIndex[channel]
+                                if (deadMaxIndex == exitSpikeIndex[channel])
                                 {
                                     inflectionWithinDead = false;
                                     deadWidth = null;
@@ -284,7 +284,7 @@ namespace NeuroRighter.SpikeDetection
                                             waveform = deadWaveform;
                                             spikeMaxIndex = deadMaxIndex;
                                             spikeMax = deadMax;
-                                            exitSpikeIndex = deadWidth[1];
+                                            exitSpikeIndex[channel] = deadWidth[1];
                                         }
                                     }
                                 }
@@ -304,7 +304,7 @@ namespace NeuroRighter.SpikeDetection
 
                             // Carry-over dead time if we are at the end of the buffer
                             if (i >= indiciesToSearchForCross)
-                                initialSamplesToSkip[channel] = dt + exitSpikeIndex - indiciesToSearchForCross;
+                                initialSamplesToSkip[channel] = dt + exitSpikeIndex[channel] - indiciesToSearchForCross;
                             else
                                 initialSamplesToSkip[channel] = 0;
 
@@ -313,7 +313,7 @@ namespace NeuroRighter.SpikeDetection
                                 i = deadWidth[0] - 1;
 
                             else
-                                i = exitSpikeIndex + deadTime;
+                                i = exitSpikeIndex[channel] + deadTime;
 
                         }
                     }

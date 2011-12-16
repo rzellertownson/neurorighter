@@ -32,14 +32,13 @@ namespace NeuroRighter
             get { return _isSpikeWaveformPlot; }
         }
 
+        private static readonly object lockObject = new object();
 
         private Color gridColor = Color.White;
 
         BasicEffect effect;
         VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
-        List<VertexPositionColor[]> threshlines1; // threshold lines to be plotted
-        List<VertexPositionColor[]> threshlines2; // -threshold lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
         int[] idx; //Index to points in 'lines'
         private static readonly short[] gridIdx = { 0, 1 }; //Index to points in gridLines
@@ -56,36 +55,43 @@ namespace NeuroRighter
         private double timeRange; //in seconds
         private Vector2 voltageTimeLabelCoords;
 
-        private int  waveformsPerPlot;
+        private int waveformsPerPlot;
 
         internal void setup(int numRows, int numColumns, int waveformsPerPlot,
             int numSamplesPerPlot, bool isSpikeWaveformPlot, double timeRange, double voltageRange)
         {
-            this.numRows = numRows; this.numCols = numColumns; this._isSpikeWaveformPlot = isSpikeWaveformPlot;
-            this.numSamplesPerPlot = numSamplesPerPlot;
-            this.waveformsPerPlot = waveformsPerPlot;
+            lock (lockObject)
+            {
 
-            lines = new List<VertexPositionColor[]>(numCols * numRows *  waveformsPerPlot);
-            for (int i = 0; i < numCols * numRows *  waveformsPerPlot; ++i)
-                lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-            idx = new int[numSamplesPerPlot];
+                this.numRows = numRows; this.numCols = numColumns; this._isSpikeWaveformPlot = isSpikeWaveformPlot;
+                this.numSamplesPerPlot = numSamplesPerPlot;
+                this.waveformsPerPlot = waveformsPerPlot;
+
+                lines = new List<VertexPositionColor[]>(numCols * numRows * waveformsPerPlot);
+                for (int i = 0; i < numCols * numRows * waveformsPerPlot; ++i)
+                    lines.Add(new VertexPositionColor[numSamplesPerPlot]);
+                idx = new int[numSamplesPerPlot];
 
 
-            gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
+                gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
 
-            for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
-            for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+                for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
+                for (int i = 0; i < idx.Length; ++i) idx[i] = i;
 
-            this.timeRange = timeRange;
-            this.voltageRange = voltageRange;
+                this.timeRange = timeRange;
+                this.voltageRange = voltageRange;
+            }
 
         }
 
         internal void clear()
         {
+            lock (lockObject)
+            {
                 lines.Clear();
-                for (int i = 0; i < numCols * numRows *  waveformsPerPlot; ++i)
+                for (int i = 0; i < numCols * numRows * waveformsPerPlot; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
+            }
         }
 
         protected override void Initialize()
@@ -123,7 +129,7 @@ namespace NeuroRighter
 
         internal void setMinMax(float minX, float maxX, float minY, float maxY)
         {
-            lock (this)
+            lock (lockObject)
             {
                 this.minX = minX;
                 this.minY = minY;
@@ -140,7 +146,7 @@ namespace NeuroRighter
         internal void plotY(float[] data, float firstX, float incrementX, List<Color> colorWave, int chan,
             int plotNumber)
         {
-            lock (this)
+            lock (lockObject)
             {
                 for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
@@ -152,7 +158,7 @@ namespace NeuroRighter
         internal void plotY(float[] data, float firstX, float incrementX, Color colorWave, int chan,
             int plotNumber)
         {
-            lock (this)
+            lock (lockObject)
             {
                 for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),

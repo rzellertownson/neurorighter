@@ -28,7 +28,7 @@ namespace simoc.targetfunc
         protected double outputSampleRateHz;
         protected double targetMultiplier;
 
-        public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRStimSrv stimSrv)
+        public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRDataSrv datSrv)
         {
             // Grab parameters off the form
             this.meanValue = cp.TargetMean;
@@ -37,8 +37,9 @@ namespace simoc.targetfunc
             this.targetMultiplier = cp.TargetMultiplier;
             this.numTargetSamplesGenerated = numTargetSamplesGenerated;
             this.DACPollingPeriodSec = DACPollingPeriodSec;
-            this.currentOutputSample = stimSrv.DigitalOut.GetCurrentSample();
-            this.outputSampleRateHz = stimSrv.sampleFrequencyHz;
+            ulong[] tr = datSrv.SpikeSrv.EstimateAvailableTimeRange();
+            this.currentOutputSample = tr[1];
+            this.outputSampleRateHz = datSrv.SpikeSrv.SampleFrequencyHz;
         }
 
         internal virtual void GetTargetValue(ref double currentTargetValue, PersistentSimocVar simocVariableStorage)

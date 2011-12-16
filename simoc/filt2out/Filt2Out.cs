@@ -49,7 +49,7 @@ namespace simoc.filt2out
         {
             // What buffer load are we currently processing?
             ulong currentLoad = stimSrv.AuxOut.GetNumberBuffLoadsCompleted();
-            nextAvailableSample = currentLoad * (ulong)stimSrv.GetBuffSize();
+            nextAvailableSample = (currentLoad + 1) * (ulong)stimSrv.GetBuffSize();
 
         }
 

@@ -859,10 +859,9 @@ namespace NeuroRighter
         }
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
         {
-            
             lock (this)
             {
-                this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
+                this.Invoke((MethodInvoker)delegate //this code is executed on the main thread
                 {
                     Console.WriteLine("Closed loop stimulation stop initiated");
                     Debugger.Write("Closed loop stimulation stop initiated");

@@ -140,6 +140,12 @@ namespace simoc
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
+                    case "12 Hour Step":
+                        {
+                            TwelveHourStep target = new TwelveHourStep(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
                         
                 }
                 numTargetSamplesGenerated++;
@@ -315,6 +321,17 @@ namespace simoc
                             currentControllerType = 8;
                         }
                         break;
+                   case "Integral Bang-Bang":
+                        {
+                            Filt2IBangBangFB controller = new Filt2IBangBangFB(ref StimSrv, controlPanel);
+                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                            controller.SendFeedBack(simocVariableStorage);
+                            for (int i = 0; i < controller.numberOutStreams; ++i)
+                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                            currentControllerType = 9;
+                        }
+                        break;
+                        
                 }
 
 

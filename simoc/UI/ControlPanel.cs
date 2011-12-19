@@ -39,7 +39,9 @@ namespace simoc.UI
 
         // CL loop speed
         private double clLoopPeriodSec;
-        private bool plotsFrozen = false;
+
+        // Lock object
+        private static readonly object lockObject = new object();
 
         // Stuff for handling Relay experiment part of GUI
         public delegate void ResetRelayFBEstimateEventHander();
@@ -65,11 +67,11 @@ namespace simoc.UI
         private double filterC0;
         private double filterC1;
         private double filterC2;
-        
+
         private double targetMean;
         private double targetFreqHz;
         private double targetStd;
-        private double targetMultiplier; 
+        private double targetMultiplier;
 
         private double controllerC0;
         private double controllerC1;
@@ -126,17 +128,19 @@ namespace simoc.UI
         {
             try
             {
-                // Put sliders into the correct range
-                slide_ObsPlotScale.Range = new Range(0.1, slide_PlotRange.Value);
-                slide_ObsPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
+                lock (lockObject)
+                {
+                    // Put sliders into the correct range
+                    slide_ObsPlotScale.Range = new Range(0.1, slide_PlotRange.Value);
+                    slide_ObsPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
 
-                slide_FiltPlotScale.Range = new Range(0.1, slide_PlotRange.Value);
-                slide_FiltPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
-
+                    slide_FiltPlotScale.Range = new Range(0.1, slide_PlotRange.Value);
+                    slide_FiltPlotShift.Range = new Range(-slide_PlotRange.Value, slide_PlotRange.Value);
+                }
             }
             catch (Exception e)
             {
-                MessageBox.Show("Could not update sliders for some reason:" + e.Message);
+                MessageBox.Show("Could not update sliders for some reason: " + e.Message);
             }
 
         }
@@ -145,20 +149,23 @@ namespace simoc.UI
         {
             try
             {
-                // Update the plots
-                obsScatterGraphController.updateScatterGraph(obsSrv,
-                        slide_PlotWidth.Value,
-                        slide_ObsPlotScale.Value,
-                        slide_ObsPlotShift.Value);
+                lock (lockObject)
+                {
+                    // Update the plots
+                    obsScatterGraphController.updateScatterGraph(obsSrv,
+                            slide_PlotWidth.Value,
+                            slide_ObsPlotScale.Value,
+                            slide_ObsPlotShift.Value);
 
-                filtScatterGraphController.updateScatterGraph(filtSrv,
-                        slide_PlotWidth.Value,
-                        slide_FiltPlotScale.Value,
-                        slide_FiltPlotShift.Value);
+                    filtScatterGraphController.updateScatterGraph(filtSrv,
+                            slide_PlotWidth.Value,
+                            slide_FiltPlotScale.Value,
+                            slide_FiltPlotShift.Value);
+                }
             }
             catch (Exception e)
             {
-                MessageBox.Show("Could not update plots for some reason:" + e.Message);
+                MessageBox.Show("Could not update plots for some reason: " + e.Message);
             }
         }
 
@@ -187,14 +194,14 @@ namespace simoc.UI
                     {
                         case "Ziegler-Nichols-PI":
                             {
-                                textBox_K.Text = Convert.ToString(0.4 * ultimateGain/10);
+                                textBox_K.Text = Convert.ToString(0.4 * ultimateGain / 10);
                                 textBox_Ti.Text = Convert.ToString(0.8 * ultimatePeriodSec);
                                 textBox_Td.Text = "0.0";
                             }
                             break;
                         case "Ziegler-Nichols-PID":
                             {
-                                textBox_K.Text = Convert.ToString(0.6 * ultimateGain/10);
+                                textBox_K.Text = Convert.ToString(0.6 * ultimateGain / 10);
                                 textBox_Ti.Text = Convert.ToString(0.5 * ultimatePeriodSec);
                                 textBox_Td.Text = Convert.ToString(0.125 * ultimatePeriodSec);
                             }
@@ -620,8 +627,8 @@ namespace simoc.UI
                         numericUpDown_ContC0.Value = 1.0m;
                         numericUpDown_ContC1.Value = 0.0m;
                         numericUpDown_ContC2.Value = 0.0m;
-                        numericUpDown_ContC3.Value = 10.0m;
-                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
@@ -639,8 +646,8 @@ namespace simoc.UI
                         numericUpDown_ContC0.Value = 1.0m;
                         numericUpDown_ContC1.Value = 1.0m;
                         numericUpDown_ContC2.Value = 100.0m;
-                        numericUpDown_ContC3.Value = 10.0m;
-                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
@@ -658,8 +665,8 @@ namespace simoc.UI
                         numericUpDown_ContC0.Value = 1.0m;
                         numericUpDown_ContC1.Value = 0.0m;
                         numericUpDown_ContC2.Value = 0.0m;
-                        numericUpDown_ContC3.Value = 10.0m;
-                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
@@ -677,13 +684,32 @@ namespace simoc.UI
                         numericUpDown_ContC0.Value = 1.0m;
                         numericUpDown_ContC1.Value = 1.0m;
                         numericUpDown_ContC2.Value = 100.0m;
-                        numericUpDown_ContC3.Value = 10.0m;
-                        numericUpDown_ContC4.Value = 1.0m;
+                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
+                    }
+                    break;
+                case "Integral Bang-Bang":
+                    {
+                        label_ContC0.Text = "K";
+                        label_ContC1.Text = "Ti";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vimax (0-5)";
+
+                        label_CtlType.Text = "Controller 8";
+
+                        numericUpDown_ContC0.Value = 1.0m;
+                        numericUpDown_ContC1.Value = 1.0m;
+                        numericUpDown_ContC2.Value = 100.0m;
+                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
                 default:
-                     {
+                    {
                         label_ContC0.Text = "c0";
                         label_ContC1.Text = "c1";
                         label_ContC2.Text = "c2";
@@ -738,7 +764,23 @@ namespace simoc.UI
 
         private void numericEdit_ObsBuffHistorySec_AfterChangeValue(object sender, AfterChangeNumericValueEventArgs e)
         {
+
             obsHistorySec = this.numericEdit_ObsBuffHistorySec.Value;
+
+            try
+            {
+                lock (lockObject)
+                {
+                  // Set the range of the history slider
+                    slide_PlotWidth.Range = new Range(1.0, obsHistorySec);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not update history slider for some reason: " + ex.Message);
+            }
+
+            
         }
 
         # endregion

@@ -457,7 +457,10 @@ namespace NeuroRighter
                         auxAnData = auxAnReader.EndMemoryOptimizedReadMultiSample(ar, out numAuxSampRead);
 
                         // Send to datSrv
-                        datSrv.AuxAnalogSrv.WriteToBuffer(auxAnData, 0, numChannels);
+                        if (Properties.Settings.Default.useAuxDataBuffer)
+                        {
+                            datSrv.AuxAnalogSrv.WriteToBuffer(auxAnData, 0, numChannels);
+                        }
 
                         //Write to file in format [numChannels numSamples]
                         #region Write aux file
@@ -511,24 +514,27 @@ namespace NeuroRighter
                                 lastDigState = auxDigData[i];
 
                                 // Create Digital data
-                                DigitalPortEvent thisPortEvent = new DigitalPortEvent((ulong)i, lastDigState);
-                                EventBuffer<DigitalPortEvent> thisDigitalEventBuffer = new EventBuffer<DigitalPortEvent>(Properties.Settings.Default.RawSampleFrequency);
-                                thisDigitalEventBuffer.eventBuffer.Add(thisPortEvent);
+                                if (Properties.Settings.Default.useDigDataBuffer)
+                                {
+                                    DigitalPortEvent thisPortEvent = new DigitalPortEvent((ulong)i, lastDigState);
+                                    EventBuffer<DigitalPortEvent> thisDigitalEventBuffer = new EventBuffer<DigitalPortEvent>(Properties.Settings.Default.RawSampleFrequency);
+                                    thisDigitalEventBuffer.eventBuffer.Add(thisPortEvent);
 
-                                // send to datSrv
-                                datSrv.AuxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer, 0);
+                                    // send to datSrv
+                                    datSrv.AuxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer, 0);
+                                }
 
                                 if (switch_record.Value && recordingSettings.recordAuxDig)
                                 {
                                     recordingSettings.auxDigitalOut.write(i, lastDigState, trackingDigReads, spikeBufferLength);
                                 }
 
-                                // Update led array
-                                bool[] boolLEDState = new bool[32];
-                                var ledState = new BitArray(new int[] { (int)auxDigData[i] });
-                                for (int j = 0; j < 32; j++)
-                                    boolLEDState[j] = ledState[j];
-                                ledArray_DigitalState.SetValues(boolLEDState, 0, 32);
+                                //// Update led array
+                                //bool[] boolLEDState = new bool[32];
+                                //var ledState = new BitArray(new int[] { (int)auxDigData[i] });
+                                //for (int j = 0; j < 32; j++)
+                                //    boolLEDState[j] = ledState[j];
+                                //ledArray_DigitalState.SetValues(boolLEDState, 0, 32);
                             }
                         }
 

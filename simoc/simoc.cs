@@ -87,12 +87,6 @@ namespace simoc
                 DACPollingPeriodSec = StimSrv.DACPollingPeriodSec;
                 ADCPollingPeriodSec = DatSrv.ADCPollingPeriodSec;
 
-                // Set up servers
-                obsSrv = new SIMOCRawSrv
-                    (1 / StimSrv.DACPollingPeriodSec, numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
-                filtSrv = new SIMOCRawSrv
-                    (1 / StimSrv.DACPollingPeriodSec, 3 * numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
-
                 // Set up persistant internal varaible storage
                 simocVariableStorage = new PersistentSimocVar();
 
@@ -118,6 +112,13 @@ namespace simoc
                     simocStarted = controlPanel.startButtonPressed;
                     if (simocStarted && !startTimeSet)
                     {
+                        // Set up servers
+                        obsSrv = new SIMOCRawSrv
+                            (1 / StimSrv.DACPollingPeriodSec, numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
+                        filtSrv = new SIMOCRawSrv
+                            (1 / StimSrv.DACPollingPeriodSec, 3 * numberOfObs, controlPanel.numericEdit_ObsBuffHistorySec.Value, 1, 1);
+
+                        // Start SIMOC
                         startTimeSet = true;
                         simocVariableStorage.SimocStartSample = StimSrv.DigitalOut.GetCurrentSample();
                     }

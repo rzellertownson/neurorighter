@@ -80,7 +80,7 @@ namespace simoc.filt2out
                 simocVariableStorage.GenericDouble2 = K * currentErrorIntenal;
 
                 // PI feedback signal
-                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3;
+                simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3 + simocVariableStorage.GenericDouble4;
             }
             else
             {

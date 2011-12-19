@@ -259,7 +259,8 @@
             "Sine Wave",
             "Multiple of Average Observable",
             "1 Minute Steps",
-            "5 Minute Steps"});
+            "5 Minute Steps",
+            "12 Hour Step"});
             this.comboBox_Target.Location = new System.Drawing.Point(92, 28);
             this.comboBox_Target.Name = "comboBox_Target";
             this.comboBox_Target.Size = new System.Drawing.Size(164, 21);
@@ -656,7 +657,7 @@
             this.numericEdit_ObsBuffHistorySec.Location = new System.Drawing.Point(561, 21);
             this.numericEdit_ObsBuffHistorySec.Name = "numericEdit_ObsBuffHistorySec";
             this.numericEdit_ObsBuffHistorySec.OutOfRangeMode = NationalInstruments.UI.NumericOutOfRangeMode.CoerceToRange;
-            this.numericEdit_ObsBuffHistorySec.Range = new NationalInstruments.UI.Range(1D, double.PositiveInfinity);
+            this.numericEdit_ObsBuffHistorySec.Range = new NationalInstruments.UI.Range(1D, 300D);
             this.numericEdit_ObsBuffHistorySec.Size = new System.Drawing.Size(57, 20);
             this.numericEdit_ObsBuffHistorySec.TabIndex = 20;
             this.numericEdit_ObsBuffHistorySec.Value = 60D;
@@ -889,7 +890,8 @@
             "Relay DutyCycle",
             "PID DutyCycle",
             "Relay Power",
-            "PID Power"});
+            "PID Power",
+            "Integral Bang-Bang"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(12, 34);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
             this.comboBox_FBAlg.Size = new System.Drawing.Size(196, 21);

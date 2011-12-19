@@ -68,17 +68,17 @@ namespace simoc.plotting
             ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
             double minUpdateTimeSec = 0.1; //seconds
             int downSampleFactor;
-            if (historySamples <= 1500)
-            {
+            //if (historySamples <= 1500)
+            //{
                 numSampToPlot = historySamples;
                 downSampleFactor = 1;
-            }
-            else
-            {
-                numSampToPlot = 1500;
-                downSampleFactor = (int)(historySamples / numSampToPlot);
+            //}
+            //else
+            //{
+            //    numSampToPlot = 1500;
+            //    downSampleFactor = (int)(historySamples / numSampToPlot);
                 
-            }
+            //}
             int newDataLength;
 
             if ((availableDataRange[1]-lastSampleRead)*oneOverSampleFreq > minUpdateTimeSec)

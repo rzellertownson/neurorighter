@@ -269,7 +269,9 @@ namespace NeuroRighter
             checkBox_UseLFPDataBuffer.Checked = Properties.Settings.Default.useLFPDataBuffer;
             checkBox_UseEEGDataBuffer.Checked = Properties.Settings.Default.useEEGDataBuffer;
             checkBox_UseSpikeDataBuffer.Checked = Properties.Settings.Default.useSpikeDataBuffer;
-            checkBox_UseStimDataBuffer.Checked = Properties.Settings.Default.useStimDataBuffer; 
+            checkBox_UseStimDataBuffer.Checked = Properties.Settings.Default.useStimDataBuffer;
+            checkBox_UseDigDataBuffer.Checked = Properties.Settings.Default.useDigDataBuffer;
+            checkBox_UseAuxDataBuffer.Checked = Properties.Settings.Default.useAuxDataBuffer;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -559,5 +561,14 @@ namespace NeuroRighter
             Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
         }
 
+        private void checkBox_UseDigDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useDigDataBuffer = checkBox_UseDigDataBuffer.Checked;
+        }
+
+        private void checkBox_UseAuxDataBuffer_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.useAuxDataBuffer = checkBox_UseAuxDataBuffer.Checked;
+        }
     }
 }

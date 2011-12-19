@@ -557,7 +557,7 @@ namespace NeuroRighter.Output
         //this is the code executed by the thread that actually does the processing
         private void ProcessTickThread(object sender, DoWorkEventArgs e)
         {
-            Debugger.Write("starting processing thread for "+ this.ToString());
+            //Debugger.Write("starting processing thread for "+ this.ToString());
             
 
             //the "infinite" loop- 
@@ -572,7 +572,7 @@ namespace NeuroRighter.Output
                 {
                     currentCount = names.Dequeue();//figure out what name needs to be executed
                 }
-                Debugger.Write(this.ToString()+ " tick " + currentCount + " passed semaphore");
+                //Debugger.Write(this.ToString()+ " tick " + currentCount + " passed semaphore");
                 lock (runningLock)
                 {
                     lock (taskLock)
@@ -584,7 +584,7 @@ namespace NeuroRighter.Output
             }
             notDead = false;
             //we are no longer trying to load to the DAQ.  Wait for output generation to finish, and then clear everything.
-            Debugger.Write("ending buffer calculation processing queue thread for " + this.ToString());
+            //Debugger.Write("ending buffer calculation processing queue thread for " + this.ToString());
            // buffLoadTask.CounterOutput -= tt;
             lock (taskLock)
             {
@@ -646,14 +646,14 @@ namespace NeuroRighter.Output
             //
             if (running)//if we haven't finished the necessary buffer loads
             {  
-                Debugger.Write("trying " + name);
+                //Debugger.Write("trying " + name);
                 //  Console.WriteLine(Convert.ToString(tickDiff) + ": " + this.ToString() + " DAQ half-load event.");
                 recoveryFlag = PopulateBufferAppending(true, false, recoveryFlag );
                 
             }
             else
             {
-                Debugger.Write("zeroing " + name);
+                //Debugger.Write("zeroing " + name);
                 //if the buffer is no longer running, then write out a bunch of zeros
                 recoveryFlag = ZeroOut();
                
@@ -705,7 +705,7 @@ namespace NeuroRighter.Output
                     digitalTasks[i].Start();
                 }
                 numBuffLoadsThisRun = numBuffLoadsCompleted;
-                Debugger.Write("restart");
+                //Debugger.Write("restart");
             
         }
 
@@ -748,12 +748,12 @@ namespace NeuroRighter.Output
                 try
                 {
 
-                    Debugger.Write("samples out: " + GetCurrentSamplePrivate());
+                    //Debugger.Write("samples out: " + GetCurrentSamplePrivate());
                     
                 }
                 catch (Exception me)
                 { }
-                Debugger.Write(this.ToString() + " start");
+                //Debugger.Write(this.ToString() + " start");
                 
                 //double start;
                 //if (running)
@@ -792,7 +792,7 @@ namespace NeuroRighter.Output
                     else
                         analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
                 }
-                Debugger.Write(this.ToString() + " analog written");
+                //Debugger.Write(this.ToString() + " analog written");
 
                 for (int i = 0; i < digitalWriters.Length; i++)
                 {
@@ -801,7 +801,7 @@ namespace NeuroRighter.Output
                     else
                         digitalWriters[i].BeginWriteMultiSamplePort(false, dbuffs.ElementAt(i), null, null);// WriteMultiSamplePort(false, dbuffs.ElementAt(i));
                 }
-                Debugger.Write(this.ToString() + " digital written");
+                //Debugger.Write(this.ToString() + " digital written");
                 #endregion
               //  Console.WriteLine(this.ToString() + " tick " + Debugger.GetTimeMS() + ": applied nblc " + numBuffLoadsCompleted);
                        
@@ -823,7 +823,7 @@ namespace NeuroRighter.Output
                    // Console.WriteLine(this.ToString() + " recover at " + Debugger.GetTimeMS().ToString());
                         Recover();
                       //  Console.WriteLine(this.ToString() + " recovered at " + Debugger.GetTimeMS().ToString());
-                    Debugger.Write("tasks reset, waiting on start");
+                    //Debugger.Write("tasks reset, waiting on start");
                     recoveryFlag = true;
                 }
                 else
@@ -1144,13 +1144,13 @@ namespace NeuroRighter.Output
             {
                 running = false;
                 immortal = false;//if we aren't doing this in a robust manner, then we should just stop now.
-                Debugger.Write(this.ToString() + " FAIL " + message);
+                //Debugger.Write(this.ToString() + " FAIL " + message);
                 MessageBox.Show("unhandled daq exception on " + this.ToString() +
                     ": " + message + ".  Check log to figure out why.");
             }
             else
             {
-                Debugger.Write(this.ToString() + " FAIL " + message);
+                //Debugger.Write(this.ToString() + " FAIL " + message);
             }
         }
 

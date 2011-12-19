@@ -13,7 +13,7 @@ namespace simoc.targetfunc
     class OneMinuteSteps : TargetFunc
     {
         private double[] muliplierTargets = { 1.0, 1.2915, 1.6680, 2.1542, 2.7821, 3.5931, 4.6405, 5.9932, 7.7403, 10 };
-        private double estimationTime = 30; // seconds before steps to estimate nominal obs
+        private double estimationTime = 300; // seconds before steps to estimate nominal obs
         private double stepTime = 60; // seconds
         private double pauseTime = 30; // seconds
 

@@ -96,7 +96,7 @@ namespace NeuroRighter.SpikeDetection
             this.enterSpikeIndex = new int[numChannels];
             this.exitSpikeIndex = new int[numChannels];
 
-            this.carryOverLength = numPre + maxSpikeWidth + numPost + 20;
+            this.carryOverLength = numPre + maxSpikeWidth + numPost;
 
             //if (deadTime != 0)
             //    this.carryOverLength = numPre + 2 * maxSpikeWidth + deadTime + numPost;

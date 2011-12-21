@@ -4,6 +4,29 @@
         <name>Accord.MachineLearning</name>
     </assembly>
     <members>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning">
+            <summary>
+              Common interface for Support Machine Vector learning algorithms.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run">
+            <summary>
+              Runs the learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run(System.Boolean)">
+            <summary>
+              Runs the learning algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise.
+            </param>
+            
+        </member>
         <member name="T:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine">
              <summary>
                One-against-one Multi-class Kernel Support Vector Machine Classifier.
@@ -156,6 +179,721 @@
             <summary>
               Gets the subproblems classifiers.
             </summary>
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SupportVectorMachineLearningConfigurationFunction">
+            <summary>
+              Configuration function to configure the learning algorithms
+              for each of the Kernel Support Vector Machines used in this
+              Multi-class Support Vector Machine.
+            </summary>
+            
+            <param name="inputs">The input data for the learning algorithm.</param>
+            <param name="outputs">The output data for the learning algorithm.</param>
+            <param name="machine">The machine for the learning algorithm.</param>
+            <param name="class1">The class index corresponding to the negative values
+                in the output values contained in <paramref name="outputs"/>.</param>
+            <param name="class2">The class index corresponding to the positive values
+                in the output values contained in <paramref name="outputs"/>.</param>
+                
+            <returns>
+              The configured <see cref="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning"/> algorithm
+              to be used to train the given <see cref="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine"/>.
+            </returns>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning">
+             <summary>
+               One-against-one Multi-class Support Vector Machine Learning Algorithm
+             </summary>
+             
+             <remarks>
+               This class can be used to train Kernel Support Vector Machines with
+               any algorithm using a one-against-one strategy. The underlying training
+               algorithm can be configured by defining the Configure delegate.
+             </remarks>
+             
+             <example>
+               <code>
+               // Sample data
+               //   The following is simple auto association function
+               //   where each input correspond to its own class. This
+               //   problem should be easily solved by a Linear kernel.
+            
+               // Sample input data
+               double[][] inputs =
+               {
+                   new double[] { 0 },
+                   new double[] { 3 },
+                   new double[] { 1 },
+                   new double[] { 2 },
+               };
+               
+               // Output for each of the inputs
+               int[] outputs = { 0, 3, 1, 2 };
+               
+               
+               // Create a new Linear kernel
+               IKernel kernel = new Linear();
+               
+               // Create a new Multi-class Support Vector Machine with one input,
+               //  using the linear kernel and for four disjoint classes.
+               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
+               
+               // Create the Multi-class learning algorithm for the machine
+               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
+               
+               // Configure the learning algorithm to use SMO to train the
+               //  underlying SVMs in each of the binary class subproblems.
+               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =>
+                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
+               
+               // Run the learning algorithm
+               double error = teacher.Run();
+               </code>
+             </example>
+             
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.#ctor(Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine,System.Double[][],System.Int32[])">
+            <summary>
+              Constructs a new Multi-class Support Vector Learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run">
+            <summary>
+              Runs the one-against-one learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run(System.Boolean)">
+            <summary>
+              Runs the one-against-one learning algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise. Default is true.
+            </param>
+            
+            <returns>
+              The sum of squares error rate for
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.ComputeError(System.Double[][],System.Int32[])">
+            <summary>
+              Compute the error ratio.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Algorithm">
+            <summary>
+              Gets or sets the configuration function for the learning algorithm.
+            </summary>
+            
+            <remarks>
+              The configuration function should return a properly configured ISupportVectorMachineLearning
+              algorithm using the given support vector machine and the input and output data.
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.CrossvalidationFittingFunction`1">
+            <summary>
+              Fitting function delegate.
+            </summary>
+            <param name="trainingSamples">
+              The sample indexes to be used as training samples in
+              the model fitting procedure.
+            </param>
+            <param name="validationSamples">
+              The sample indexes to be used as validation samples in
+              the model fitting procedure.
+            </param>
+            <remarks>
+              The fitting function is called during the Cross-validation
+              procedure to fit a model with the given set of samples for
+              training and validation.
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.Crossvalidation`1">
+             <summary>
+               k-Fold Cross-Validation.
+             </summary>
+             <remarks>
+             <para>
+               Cross-validation is a technique for estimating the performance of a predictive
+               model. It can be used to measure how the results of a statistical analysis will
+               generalize to an independent data set. It is mainly used in settings where the
+               goal is prediction, and one wants to estimate how accurately a predictive model
+               will perform in practice.</para>
+             <para>
+               One round of cross-validation involves partitioning a sample of data into
+               complementary subsets, performing the analysis on one subset (called the
+               training set), and validating the analysis on the other subset (called the
+               validation set or testing set). To reduce variability, multiple rounds of 
+               cross-validation are performed using different partitions, and the validation 
+               results are averaged over the rounds.</para> 
+               
+             <para>
+               References:
+               <list type="bullet">
+                 <item><description><a href="http://en.wikipedia.org/wiki/Cross-validation_(statistics)">
+                   Wikipedia, The Free Encyclopedia. Cross-validation (statistics). Available on:
+                   http://en.wikipedia.org/wiki/Cross-validation_(statistics) </a></description></item>
+               </list></para> 
+             </remarks>
+             
+             <example>
+               <code>
+               //Example binary data
+               double[][] data =
+               {
+                    new double[] { -1, -1 }, new double[] {  1, -1 },
+                    new double[] { -1,  1 }, new double[] {  1,  1 },
+                    new double[] { -1, -1 }, new double[] {  1, -1 },
+                    new double[] { -1,  1 }, new double[] {  1,  1 },
+                    new double[] { -1, -1 }, new double[] {  1, -1 },
+                    new double[] { -1,  1 }, new double[] {  1,  1 },
+                    new double[] { -1, -1 }, new double[] {  1, -1 },
+                    new double[] { -1,  1 }, new double[] {  1,  1 },
+                };
+            
+                int[] xor = // result of xor
+                {
+                    -1,  1,
+                     1, -1,
+                    -1,  1,
+                     1, -1,
+                    -1,  1,
+                     1, -1,
+                    -1,  1,
+                     1, -1,
+                };
+            
+            
+                // Create a new Cross-validation algorithm passing the data set size and the number of folds
+                var crossvalidation = new Crossvalidation&lt;KernelSupportVectorMachine>(data.Length, 3);
+            
+                // Define a fitting function using Support Vector Machines
+                crossvalidation.Fitting = delegate(int[] trainingSet, int[] validationSet)
+                {
+                    // The trainingSet and validationSet arguments specifies the
+                    // indices of the original data set to be used as training and
+                    // validation sets, respectively.
+                    double[][] trainingInputs = data.Submatrix(trainingSet);
+                    int[] trainingOutputs = xor.Submatrix(trainingSet);
+            
+                    double[][] validationInputs = data.Submatrix(validationSet);
+                    int[] validationOutputs = xor.Submatrix(validationSet);
+            
+                    // Create a Kernel Support Vector Machine to operate on this set
+                    var svm = new KernelSupportVectorMachine(new Polynomial(2), 2);
+            
+                    // Create a training algorithm and learn this set
+                    var smo = new SequentialMinimalOptimization(svm, trainingInputs, trainingOutputs);
+            
+                    double trainingError = smo.Run();
+                    double validationError = smo.ComputeError(validationInputs, validationOutputs);
+            
+                    // Return a new information structure containing the model and the errors achieved.
+                    return new CrossvalidationInfo&lt;KernelSupportVectorMachine>(svm, trainingError, validationError);
+                };
+            
+             
+                // Compute the cross-validation
+                crossvalidation.Compute();
+            
+                // Get the average training and validation errors
+                double errorTraining   = crossvalidation.TrainingError;
+                double errorValidation = crossvalidation.ValidationError;
+               </code>
+             </example>
+             
+        </member>
+        <member name="M:Accord.MachineLearning.Crossvalidation`1.#ctor(System.Int32)">
+            <summary>
+              Creates a new k-fold cross-validation algorithm.
+            </summary>
+            
+            <param name="size">The complete dataset for training and testing.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.Crossvalidation`1.#ctor(System.Int32,System.Int32)">
+            <summary>
+              Creates a new k-fold cross-validation algorithm.
+            </summary>
+            
+            <param name="size">The complete dataset for training and testing.</param>
+            <param name="folds">The number of folds, usually denoted as <c>k</c> (default is 10).</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.Crossvalidation`1.Compute">
+            <summary>
+              Computes the cross validation algorithm.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.Fitting">
+            <summary>
+              Gets or sets the model fitting function.
+            </summary>
+            <remarks>
+              The fitting function should accept an array of integers containing the
+              indexes for the training samples, an array of integers containing the
+              indexes for the validation samples and should return information about
+              the model fitted using those two subsets of the available data.
+            </remarks>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.Models">
+            <summary>
+              Gets the models created for each fold of the cross validation.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.ValidationError">
+            <summary>
+              Gets the average validation error.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.TrainingError">
+            <summary>
+              Gets the average training error.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.Folds">
+            <summary>
+              Gets the array of indexes contained in each fold.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.Crossvalidation`1.K">
+            <summary>
+              Gets the number of folds in the k-fold cross validation.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.CrossvalidationInfo`1">
+            <summary>
+              Information class to store the training and validation errors of a model. 
+            </summary>
+            
+            <typeparam name="TModel">The type of the model.</typeparam>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.CrossvalidationInfo`1.#ctor(`0,System.Double,System.Double)">
+            <summary>
+              Creates a new CrossvalidationInfo class.
+            </summary>
+            
+            <param name="model">The fitted model.</param>
+            <param name="trainingError">The training error for the model.</param>
+            <param name="validationError">The validation error for the model.</param>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.Model">
+            <summary>
+              Gets the model.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.ValidationError">
+            <summary>
+              Gets the validation error for the model.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.TrainingError">
+            <summary>
+              Gets the training error for the model.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.Tag">
+            <summary>
+              Gets or sets a tag for user-defined information.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine">
+            <summary>
+             Sparse Kernel Support Vector Machine (kSVM)
+            </summary>
+            <remarks>
+            <para>
+              The original optimal hyperplane algorithm (SVM) proposed by Vladimir Vapnik in 1963 was a
+              linear classifier. However, in 1992, Bernhard Boser, Isabelle Guyon and Vapnik suggested
+              a way to create non-linear classifiers by applying the kernel trick (originally proposed
+              by Aizerman et al.) to maximum-margin hyperplanes. The resulting algorithm is formally
+              similar, except that every dot product is replaced by a non-linear kernel function.</para>
+            <para>
+              This allows the algorithm to fit the maximum-margin hyperplane in a transformed feature space.
+              The transformation may be non-linear and the transformed space high dimensional; thus though
+              the classifier is a hyperplane in the high-dimensional feature space, it may be non-linear in
+              the original input space.</para> 
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://en.wikipedia.org/wiki/Support_vector_machine">
+                  http://en.wikipedia.org/wiki/Support_vector_machine</a></description></item>
+                <item><description><a href="http://www.kernel-machines.org/">
+                  http://www.kernel-machines.org/</a></description></item>
+              </list></para>  
+            </remarks>
+            
+            <example>
+              <code>
+              // Example XOR problem
+              double[][] inputs =
+              {
+                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
+                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
+                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
+                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
+              };
+              
+              // Dichotomy SVM outputs should be given as [-1;+1]
+              int[] labels =
+              {
+                  // 1,  0,  0, 1
+                     1, -1, -1, 1
+              };
+              
+              // Create a Kernel Support Vector Machine for the given inputs
+              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
+              
+              // Instantiate a new learning algorithm for SVMs
+              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
+              
+              // Set up the learning algorithm
+              smo.Complexity = 1.0;
+              
+              // Run the learning algorithm
+              double error = smo.Run();
+              
+              // Compute the decision output for one of the input vectors
+              int decision = System.Math.Sign(svm.Compute(inputs[0]));
+              </code>
+            </example>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.SupportVectorMachine">
+            <summary>
+              Sparse Linear Support Vector Machine (SVM)
+            </summary>
+            <remarks>
+            <para>
+              Support vector machines (SVMs) are a set of related supervised learning methods
+              used for classification and regression. In simple words, given a set of training
+              examples, each marked as belonging to one of two categories, a SVM training algorithm
+              builds a model that predicts whether a new example falls into one category or the
+              other.</para>
+            <para>
+              Intuitively, an SVM model is a representation of the examples as points in space,
+              mapped so that the examples of the separate categories are divided by a clear gap
+              that is as wide as possible. New examples are then mapped into that same space and
+              predicted to belong to a category based on which side of the gap they fall on.</para>
+              
+            <para>
+              References:
+              <list type="bullet">
+                <item><description><a href="http://en.wikipedia.org/wiki/Support_vector_machine">
+                  http://en.wikipedia.org/wiki/Support_vector_machine</a></description></item>
+              </list></para>   
+            </remarks>
+            
+            <example>
+              <code>
+              // Example AND problem
+              double[][] inputs =
+              {
+                  new double[] { 0, 0 }, // 0 and 0: 0 (label -1)
+                  new double[] { 0, 1 }, // 0 and 1: 0 (label -1)
+                  new double[] { 1, 0 }, // 1 and 0: 0 (label -1)
+                  new double[] { 1, 1 }  // 1 and 1: 1 (label +1)
+              };
+              
+              // Dichotomy SVM outputs should be given as [-1;+1]
+              int[] labels =
+              {
+                  // 0,  0,  0, 1
+                    -1, -1, -1, 1
+              };
+              
+              // Create a Support Vector Machine for the given inputs
+              SupportVectorMachine machine = new SupportVectorMachine(inputs[0].Length);
+              
+              // Instantiate a new learning algorithm for SVMs
+              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
+              
+              // Set up the learning algorithm
+              smo.Complexity = 1.0;
+              
+              // Run the learning algorithm
+              double error = smo.Run();
+            
+              // Compute the decision output for one of the input vectors
+              int decision = System.Math.Sign(svm.Compute(inputs[0]));
+              </code>
+            </example>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.#ctor(System.Int32)">
+            <summary>
+              Creates a new Support Vector Machine
+            </summary>
+            <param name="inputs">The number of inputs for the machine.</param>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Compute(System.Double[])">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <remarks>
+              For a binary decision problem, the decision for the negative
+              or positive class is typically computed by taking the sign of
+              the machine's output.
+            </remarks>
+            <param name="inputs">An input vector.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Compute(System.Double[][])">
+            <summary>
+              Computes the given inputs to produce the corresponding outputs.
+            </summary>
+            <remarks>
+              For a binary decision problem, the decision for the negative
+              or positive class is typically computed by taking the sign of
+              the machine's output.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Inputs">
+            <summary>
+              Gets the number of inputs accepted by this machine.
+            </summary>
+            <remarks>
+              If the number of inputs is zero, this means the machine
+              accepts a indefinite number of inputs. This is often the
+              case for kernel vector machines using a sequence kernel.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.SupportVectors">
+            <summary>
+              Gets or sets the collection of support vectors used by this machine.
+            </summary>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Weights">
+            <summary>
+              Gets or sets the collection of weights used by this machine.
+            </summary>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Threshold">
+            <summary>
+              Gets or sets the threshold (bias) term for this machine.
+            </summary>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.#ctor(Accord.Statistics.Kernels.IKernel,System.Int32)">
+            <summary>
+              Creates a new Kernel Support Vector Machine.
+            </summary>
+            <param name="kernel">The chosen kernel for the machine.</param>
+            <param name="inputs">The number of inputs for the machine.</param>
+            <remarks>
+              If the number of inputs is zero, this means the machine
+              accepts a indefinite number of inputs. This is often the
+              case for kernel vector machines using a sequence kernel.
+            </remarks>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.Compute(System.Double[])">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <remarks>
+              For a binary decision problem, the decision for the negative
+              or positive class is typically computed by taking the sign of
+              the machine's output.
+            </remarks>
+            <param name="inputs">An input vector.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.Kernel">
+            <summary>
+              Gets or sets the kernel used by this machine.
+            </summary>
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization">
+            <summary>
+              Sequential Minimal Optimization (SMO) Algorithm
+            </summary>
+            
+            <remarks>
+            <para>
+              The SMO algorithm is an algorithm for solving large quadratic programming (QP)
+              optimization problems, widely used for the training of support vector machines.
+              First developed by John C. Platt in 1998, SMO breaks up large QP problems into
+              a series of smallest possible QP problems, which are then solved analytically.</para>
+            <para>
+              This class follows the original algorithm by Platt as strictly as possible.</para>
+             
+            <para>
+              References:
+              <list type="bullet">
+                <item><description>
+                  <a href="http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization">
+                  Wikipedia, The Free Encyclopedia. Sequential Minimal Optimization. Available on:
+                  http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization </a></description></item>
+                <item><description>
+                  <a href="http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf">
+                  John C. Platt, Sequential Minimal Optimization: A Fast Algorithm for Training Support
+                  Vector Machines. 1998. Available on: http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf </a></description></item>
+                <item><description>
+                  <a href="http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf">
+                  J. P. Lewis. A Short SVM (Support Vector Machine) Tutorial. Available on:
+                  http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf </a></description></item>
+                </list></para>  
+            </remarks>
+            
+            <example>
+              <code>
+              // Example XOR problem
+              double[][] inputs =
+              {
+                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
+                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
+                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
+                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
+              };
+               
+              // Dichotomy SVM outputs should be given as [-1;+1]
+              int[] labels =
+              {
+                     1, -1, -1, 1
+              };
+             
+              // Create a Kernel Support Vector Machine for the given inputs
+              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
+            
+              // Instantiate a new learning algorithm for SVMs
+              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
+            
+              // Set up the learning algorithm
+              smo.Complexity = 1.0;
+            
+              // Run the learning algorithm
+              double error = smo.Run();
+              
+              // Compute the decision output for one of the input vectors
+              int decision = System.Math.Sign(svm.Compute(inputs[0]));
+             </code>
+            </example>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.#ctor(Accord.MachineLearning.VectorMachines.SupportVectorMachine,System.Double[][],System.Int32[])">
+            <summary>
+              Initializes a new instance of a Sequential Minimal Optimization (SMO) algorithm.
+            </summary>
+            
+            <param name="machine">A Support Vector Machine.</param>
+            <param name="inputs">The input data points as row vectors.</param>
+            <param name="outputs">The classification label for each data point in the range [-1;+1].</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run(System.Boolean)">
+            <summary>
+              Runs the SMO algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise. Default is true.
+            </param>
+            
+            <returns>
+              The misclassification error rate of
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run">
+            <summary>
+              Runs the SMO algorithm.
+            </summary>
+            
+            <returns>
+              The misclassification error rate of
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.ComputeError(System.Double[][],System.Int32[])">
+            <summary>
+              Computes the error rate for a given set of input and outputs.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.examineExample(System.Int32)">
+            <summary>
+             Chooses which multipliers to optimize using heuristics.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.takeStep(System.Int32,System.Int32)">
+            <summary>
+              Analytically solves the optimization problem for two Lagrange multipliers.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.compute(System.Double[])">
+            <summary>
+              Computes the SVM output for a given point.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Complexity">
+            <summary>
+              Complexity (cost) parameter C. Increasing the value of C forces the creation
+              of a more accurate model that may not generalize well. Default value is the
+              number of examples divided by the trace of the kernel matrix.
+            </summary>
+            <remarks>
+              The cost parameter C controls the trade off between allowing training
+              errors and forcing rigid margins. It creates a soft margin that permits
+              some misclassifications. Increasing the value of C increases the cost of
+              misclassifying points and forces the creation of a more accurate model
+              that may not generalize well.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.UseComplexityHeuristic">
+            <summary>
+              Gets or sets a value indicating whether the Complexity parameter C
+              should be computed automatically by employing an heuristic rule.
+            </summary>
+            <value>
+            	<c>true</c> if complexity should be computed automatically; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Epsilon">
+            <summary>
+              Insensitivity zone ε. Increasing the value of ε can result in fewer support
+              vectors in the created model. Default value is 1e-3.
+            </summary>
+            <remarks>
+              Parameter ε controls the width of the ε-insensitive zone, used to fit the training
+              data. The value of ε can affect the number of support vectors used to construct the
+              regression function. The bigger ε, the fewer support vectors are selected. On the
+              other hand, bigger ε-values results in more flat estimates.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Tolerance">
+            <summary>
+              Convergence tolerance. Default value is 1e-3.
+            </summary>
+            <remarks>
+              The criterion for completing the model training process. The default is 0.001.
+            </remarks>
         </member>
         <member name="T:Accord.MachineLearning.GaussianMixtureModel">
             <summary>
@@ -425,145 +1163,265 @@
             </summary>
             
         </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SupportVectorMachineLearningConfigurationFunction">
+        <member name="T:Accord.MachineLearning.GridSearchFittingFunction`1">
             <summary>
-              Configuration function to configure the learning algorithms
-              for each of the Kernel Support Vector Machines used in this
-              Multi-class Support Vector Machine.
+              Delegate for Grid search fitting function.
             </summary>
             
-            <param name="inputs">The input data for the learning algorithm.</param>
-            <param name="outputs">The output data for the learning algorithm.</param>
-            <param name="machine">The machine for the learning algorithm.</param>
-            <param name="class1">The class index corresponding to the negative values
-                in the output values contained in <paramref name="outputs"/>.</param>
-            <param name="class2">The class index corresponding to the positive values
-                in the output values contained in <paramref name="outputs"/>.</param>
-                
-            <returns>
-              The configured <see cref="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning"/> algorithm
-              to be used to train the given <see cref="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine"/>.
-            </returns>
+            <typeparam name="TModel">The type of the model to fit.</typeparam>
+            
+            <param name="parameters">The collection of parameters to be used in the fitting process.</param>
+            <param name="error">The error (or any other performance measure) returned by the model.</param>
+            <returns>The model fitted to the data using the given parameters.</returns>
             
         </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning">
+        <member name="T:Accord.MachineLearning.GridSearch`1">
              <summary>
-               One-against-one Multi-class Support Vector Machine Learning Algorithm
+               Grid Search for automatic parameter tuning.
              </summary>
-             
              <remarks>
-               This class can be used to train Kernel Support Vector Machines with
-               any algorithm using a one-against-one strategy. The underlying training
-               algorithm can be configured by defining the Configure delegate.
+               Grid Search tries to find the best combination of parameters across
+               a range of possible values that produces the best fit model. If there
+               are two parameters, each with 10 possible values, Grid Search will try
+               an exhaustive evaluation of the model using every combination of points,
+               resulting in 100 model fits.
              </remarks>
              
+             <typeparam name="TModel">The type of the model to be tuned.</typeparam>
+             
              <example>
+               How to fit a Kernel Support Vector Machine using Grid Search.
                <code>
-               // Sample data
-               //   The following is simple auto association function
-               //   where each input correspond to its own class. This
-               //   problem should be easily solved by a Linear kernel.
-            
-               // Sample input data
+               // Example binary data
                double[][] inputs =
                {
-                   new double[] { 0 },
-                   new double[] { 3 },
-                   new double[] { 1 },
-                   new double[] { 2 },
+                   new double[] { -1, -1 },
+                   new double[] { -1,  1 },
+                   new double[] {  1, -1 },
+                   new double[] {  1,  1 }
                };
-               
-               // Output for each of the inputs
-               int[] outputs = { 0, 3, 1, 2 };
-               
-               
-               // Create a new Linear kernel
-               IKernel kernel = new Linear();
-               
-               // Create a new Multi-class Support Vector Machine with one input,
-               //  using the linear kernel and for four disjoint classes.
-               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
-               
-               // Create the Multi-class learning algorithm for the machine
-               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
-               
-               // Configure the learning algorithm to use SMO to train the
-               //  underlying SVMs in each of the binary class subproblems.
-               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =>
-                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
-               
-               // Run the learning algorithm
-               double error = teacher.Run();
+            
+               int[] xor = // xor labels
+               {
+                   -1, 1, 1, -1
+               };
+            
+               // Declare the parameters and ranges to be searched
+               GridSearchRange[] ranges = 
+               {
+                   new GridSearchRange("complexity", new double[] { 0.00000001, 5.20, 0.30, 0.50 } ),
+                   new GridSearchRange("degree",     new double[] { 1, 10, 2, 3, 4, 5 } ),
+                   new GridSearchRange("constant",   new double[] { 0, 1, 2 } )
+               };
+            
+            
+               // Instantiate a new Grid Search algorithm for Kernel Support Vector Machines
+               var gridsearch = new GridSearch&lt;KernelSupportVectorMachine>(ranges);
+            
+               // Set the fitting function for the algorithm
+               gridsearch.Fitting = delegate(GridSearchParameterCollection parameters, out double error)
+               {
+                   // The parameters to be tried will be passed as a function parameter.
+                   int degree = (int)parameters["degree"].Value;
+                   double constant = parameters["constant"].Value;
+                   double complexity = parameters["complexity"].Value;
+            
+                   // Use the parameters to build the SVM model
+                   Polynomial kernel = new Polynomial(degree, constant);
+                   KernelSupportVectorMachine ksvm = new KernelSupportVectorMachine(kernel, 2);
+            
+                   // Create a new learning algorithm for SVMs
+                   SequentialMinimalOptimization smo = new SequentialMinimalOptimization(ksvm, inputs, xor);
+                   smo.Complexity = complexity;
+            
+                   // Measure the model performance to return as an out parameter
+                   error = smo.Run();
+            
+                   return ksvm; // Return the current model
+               };
+            
+            
+               // Declare some out variables to pass to the grid search algorithm
+               GridSearchParameterCollection bestParameters; double minError;
+            
+               // Compute the grid search to find the best Support Vector Machine
+               KernelSupportVectorMachine bestModel = gridsearch.Compute(out bestParameters, out minError);
                </code>
              </example>
              
         </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning">
+        <member name="M:Accord.MachineLearning.GridSearch`1.#ctor(Accord.MachineLearning.GridSearchRange[])">
             <summary>
-              Common interface for Support Machine Vector learning algorithms.
+              Constructs a new Grid search algorithm.
+            </summary>
+            
+            <param name="parameterRanges">The range of parameters to search.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearch`1.Compute(Accord.MachineLearning.GridSearchParameterCollection@,System.Double@)">
+            <summary>
+              Searches for the best combination of parameters that results in the most accurate model.
+            </summary>
+            
+            <param name="bestParameters">The best combination of parameters found by the grid search.</param>
+            <param name="error">The minimum error of the best model found by the grid search.</param>
+            <returns>The best model found during the grid search.</returns>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GridSearch`1.Fitting">
+            <summary>
+              A function that fits a model using the given parameters.
             </summary>
             
         </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run">
+        <member name="P:Accord.MachineLearning.GridSearch`1.ParameterRanges">
             <summary>
-              Runs the learning algorithm.
+              The range of parameters to consider during search.
             </summary>
             
         </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run(System.Boolean)">
+        <member name="T:Accord.MachineLearning.GridSearchParameter">
             <summary>
-              Runs the learning algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise.
-            </param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.#ctor(Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine,System.Double[][],System.Int32[])">
-            <summary>
-              Constructs a new Multi-class Support Vector Learning algorithm.
+              Contains the name and value of a parameter that should be used during fitting.
             </summary>
             
         </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run">
+        <member name="M:Accord.MachineLearning.GridSearchParameter.#ctor(System.String,System.Double)">
             <summary>
-              Runs the one-against-one learning algorithm.
+              Constructs a new parameter.
+            </summary>
+            
+            <param name="name">The name for the parameter.</param>
+            <param name="value">The value for the parameter.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchParameter.Equals(System.Object)">
+            <summary>
+              Determines whether the specified object is equal
+              to the current GridSearchParameter object.
             </summary>
             
         </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run(System.Boolean)">
+        <member name="M:Accord.MachineLearning.GridSearchParameter.GetHashCode">
             <summary>
-              Runs the one-against-one learning algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise. Default is true.
-            </param>
-            
-            <returns>
-              The sum of squares error rate for
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.ComputeError(System.Double[][],System.Int32[])">
-            <summary>
-              Compute the error ratio.
+              Returns the hash code for this GridSearchParameter
             </summary>
             
         </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Algorithm">
+        <member name="M:Accord.MachineLearning.GridSearchParameter.op_Equality(Accord.MachineLearning.GridSearchParameter,Accord.MachineLearning.GridSearchParameter)">
             <summary>
-              Gets or sets the configuration function for the learning algorithm.
+              Compares two GridSearchParameters for equality.
             </summary>
             
-            <remarks>
-              The configuration function should return a properly configured ISupportVectorMachineLearning
-              algorithm using the given support vector machine and the input and output data.
-            </remarks>
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchParameter.op_Inequality(Accord.MachineLearning.GridSearchParameter,Accord.MachineLearning.GridSearchParameter)">
+            <summary>
+              Compares two GridSearchParameters for inequality.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GridSearchParameter.Name">
+            <summary>
+              Gets the name of the parameter
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GridSearchParameter.Value">
+            <summary>
+              Gets the value of the parameter.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GridSearchRange">
+            <summary>
+              Represents a range of parameters to be tried during a grid search.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRange.#ctor(System.String,System.Double,System.Double,System.Double)">
+            <summary>
+              Constructs a new GridsearchRange object.
+            </summary>
+            
+            <param name="name">The name for this parameter.</param>
+            <param name="start">The starting value for this range.</param>
+            <param name="end">The end value for this range.</param>
+            <param name="step">The step size for this range.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRange.#ctor(System.String,System.Double[])">
+            <summary>
+              Constructs a new GridSearchRange object.
+            </summary>
+            
+            <param name="name">The name for this parameter.</param>
+            <param name="values">The array of values to try.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRange.GetParameters">
+            <summary>
+              Gets the array of GridSearchParameters to try.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GridSearchRange.Name">
+            <summary>
+              Gets or sets the name of the parameter from which the range belongs to.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GridSearchRange.Values">
+            <summary>
+              Gets or sets the range of values that should be tested for this parameter.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GridSearchRangeCollection">
+            <summary>
+              GridSearchRange collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.#ctor(Accord.MachineLearning.GridSearchRange[])">
+            <summary>
+              Constructs a new collection of GridsearchRange objects.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.GetKeyForItem(Accord.MachineLearning.GridSearchRange)">
+            <summary>
+              Returns the identifying value for an item on this collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.Add(System.String,System.Double[])">
+            <summary>
+              Adds a parameter range to the end of the GridsearchRangeCollection.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GridSearchParameterCollection">
+            <summary>
+              GridsearchParameter collection.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.#ctor(Accord.MachineLearning.GridSearchParameter[])">
+            <summary>
+              Constructs a new collection of GridsearchParameter objects.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.#ctor(System.Collections.Generic.IEnumerable{Accord.MachineLearning.GridSearchParameter})">
+            <summary>
+              Constructs a new collection of GridsearchParameter objects.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.GetKeyForItem(Accord.MachineLearning.GridSearchParameter)">
+            <summary>
+              Returns the identifying value for an item on this collection.
+            </summary>
             
         </member>
         <member name="T:Accord.MachineLearning.RANSAC`1">
@@ -718,211 +1576,6 @@
               sample of the input points that contains no outliers.
             </summary>
             
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.SupportVectorMachine">
-            <summary>
-              Sparse Linear Support Vector Machine (SVM)
-            </summary>
-            <remarks>
-            <para>
-              Support vector machines (SVMs) are a set of related supervised learning methods
-              used for classification and regression. In simple words, given a set of training
-              examples, each marked as belonging to one of two categories, a SVM training algorithm
-              builds a model that predicts whether a new example falls into one category or the
-              other.</para>
-            <para>
-              Intuitively, an SVM model is a representation of the examples as points in space,
-              mapped so that the examples of the separate categories are divided by a clear gap
-              that is as wide as possible. New examples are then mapped into that same space and
-              predicted to belong to a category based on which side of the gap they fall on.</para>
-              
-            <para>
-              References:
-              <list type="bullet">
-                <item><description><a href="http://en.wikipedia.org/wiki/Support_vector_machine">
-                  http://en.wikipedia.org/wiki/Support_vector_machine</a></description></item>
-              </list></para>   
-            </remarks>
-            
-            <example>
-              <code>
-              // Example AND problem
-              double[][] inputs =
-              {
-                  new double[] { 0, 0 }, // 0 and 0: 0 (label -1)
-                  new double[] { 0, 1 }, // 0 and 1: 0 (label -1)
-                  new double[] { 1, 0 }, // 1 and 0: 0 (label -1)
-                  new double[] { 1, 1 }  // 1 and 1: 1 (label +1)
-              };
-              
-              // Dichotomy SVM outputs should be given as [-1;+1]
-              int[] labels =
-              {
-                  // 0,  0,  0, 1
-                    -1, -1, -1, 1
-              };
-              
-              // Create a Support Vector Machine for the given inputs
-              SupportVectorMachine machine = new SupportVectorMachine(inputs[0].Length);
-              
-              // Instantiate a new learning algorithm for SVMs
-              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
-              
-              // Set up the learning algorithm
-              smo.Complexity = 1.0;
-              
-              // Run the learning algorithm
-              double error = smo.Run();
-            
-              // Compute the decision output for one of the input vectors
-              int decision = System.Math.Sign(svm.Compute(inputs[0]));
-              </code>
-            </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.#ctor(System.Int32)">
-            <summary>
-              Creates a new Support Vector Machine
-            </summary>
-            <param name="inputs">The number of inputs for the machine.</param>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Compute(System.Double[])">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <remarks>
-              For a binary decision problem, the decision for the negative
-              or positive class is typically computed by taking the sign of
-              the machine's output.
-            </remarks>
-            <param name="inputs">An input vector.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Compute(System.Double[][])">
-            <summary>
-              Computes the given inputs to produce the corresponding outputs.
-            </summary>
-            <remarks>
-              For a binary decision problem, the decision for the negative
-              or positive class is typically computed by taking the sign of
-              the machine's output.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Inputs">
-            <summary>
-              Gets the number of inputs accepted by this machine.
-            </summary>
-            <remarks>
-              If the number of inputs is zero, this means the machine
-              accepts a indefinite number of inputs. This is often the
-              case for kernel vector machines using a sequence kernel.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.SupportVectors">
-            <summary>
-              Gets or sets the collection of support vectors used by this machine.
-            </summary>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Weights">
-            <summary>
-              Gets or sets the collection of weights used by this machine.
-            </summary>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.SupportVectorMachine.Threshold">
-            <summary>
-              Gets or sets the threshold (bias) term for this machine.
-            </summary>
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine">
-            <summary>
-             Sparse Kernel Support Vector Machine (kSVM)
-            </summary>
-            <remarks>
-            <para>
-              The original optimal hyperplane algorithm (SVM) proposed by Vladimir Vapnik in 1963 was a
-              linear classifier. However, in 1992, Bernhard Boser, Isabelle Guyon and Vapnik suggested
-              a way to create non-linear classifiers by applying the kernel trick (originally proposed
-              by Aizerman et al.) to maximum-margin hyperplanes. The resulting algorithm is formally
-              similar, except that every dot product is replaced by a non-linear kernel function.</para>
-            <para>
-              This allows the algorithm to fit the maximum-margin hyperplane in a transformed feature space.
-              The transformation may be non-linear and the transformed space high dimensional; thus though
-              the classifier is a hyperplane in the high-dimensional feature space, it may be non-linear in
-              the original input space.</para> 
-            <para>
-              References:
-              <list type="bullet">
-                <item><description><a href="http://en.wikipedia.org/wiki/Support_vector_machine">
-                  http://en.wikipedia.org/wiki/Support_vector_machine</a></description></item>
-                <item><description><a href="http://www.kernel-machines.org/">
-                  http://www.kernel-machines.org/</a></description></item>
-              </list></para>  
-            </remarks>
-            
-            <example>
-              <code>
-              // Example XOR problem
-              double[][] inputs =
-              {
-                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
-                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
-                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
-                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
-              };
-              
-              // Dichotomy SVM outputs should be given as [-1;+1]
-              int[] labels =
-              {
-                  // 1,  0,  0, 1
-                     1, -1, -1, 1
-              };
-              
-              // Create a Kernel Support Vector Machine for the given inputs
-              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
-              
-              // Instantiate a new learning algorithm for SVMs
-              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
-              
-              // Set up the learning algorithm
-              smo.Complexity = 1.0;
-              
-              // Run the learning algorithm
-              double error = smo.Run();
-              
-              // Compute the decision output for one of the input vectors
-              int decision = System.Math.Sign(svm.Compute(inputs[0]));
-              </code>
-            </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.#ctor(Accord.Statistics.Kernels.IKernel,System.Int32)">
-            <summary>
-              Creates a new Kernel Support Vector Machine.
-            </summary>
-            <param name="kernel">The chosen kernel for the machine.</param>
-            <param name="inputs">The number of inputs for the machine.</param>
-            <remarks>
-              If the number of inputs is zero, this means the machine
-              accepts a indefinite number of inputs. This is often the
-              case for kernel vector machines using a sequence kernel.
-            </remarks>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.Compute(System.Double[])">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <remarks>
-              For a binary decision problem, the decision for the negative
-              or positive class is typically computed by taking the sign of
-              the machine's output.
-            </remarks>
-            <param name="inputs">An input vector.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine.Kernel">
-            <summary>
-              Gets or sets the kernel used by this machine.
-            </summary>
         </member>
         <member name="T:Accord.MachineLearning.KMeans">
              <summary>
@@ -1234,659 +1887,6 @@
               Gets the proportion of samples in each cluster.
             </summary>
             
-        </member>
-        <member name="T:Accord.MachineLearning.CrossvalidationFittingFunction`1">
-            <summary>
-              Fitting function delegate.
-            </summary>
-            <param name="trainingSamples">
-              The sample indexes to be used as training samples in
-              the model fitting procedure.
-            </param>
-            <param name="validationSamples">
-              The sample indexes to be used as validation samples in
-              the model fitting procedure.
-            </param>
-            <remarks>
-              The fitting function is called during the Cross-validation
-              procedure to fit a model with the given set of samples for
-              training and validation.
-            </remarks>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.Crossvalidation`1">
-             <summary>
-               k-Fold Cross-Validation.
-             </summary>
-             <remarks>
-             <para>
-               Cross-validation is a technique for estimating the performance of a predictive
-               model. It can be used to measure how the results of a statistical analysis will
-               generalize to an independent data set. It is mainly used in settings where the
-               goal is prediction, and one wants to estimate how accurately a predictive model
-               will perform in practice.</para>
-             <para>
-               One round of cross-validation involves partitioning a sample of data into
-               complementary subsets, performing the analysis on one subset (called the
-               training set), and validating the analysis on the other subset (called the
-               validation set or testing set). To reduce variability, multiple rounds of 
-               cross-validation are performed using different partitions, and the validation 
-               results are averaged over the rounds.</para> 
-               
-             <para>
-               References:
-               <list type="bullet">
-                 <item><description><a href="http://en.wikipedia.org/wiki/Cross-validation_(statistics)">
-                   Wikipedia, The Free Encyclopedia. Cross-validation (statistics). Available on:
-                   http://en.wikipedia.org/wiki/Cross-validation_(statistics) </a></description></item>
-               </list></para> 
-             </remarks>
-             
-             <example>
-               <code>
-               //Example binary data
-               double[][] data =
-               {
-                    new double[] { -1, -1 }, new double[] {  1, -1 },
-                    new double[] { -1,  1 }, new double[] {  1,  1 },
-                    new double[] { -1, -1 }, new double[] {  1, -1 },
-                    new double[] { -1,  1 }, new double[] {  1,  1 },
-                    new double[] { -1, -1 }, new double[] {  1, -1 },
-                    new double[] { -1,  1 }, new double[] {  1,  1 },
-                    new double[] { -1, -1 }, new double[] {  1, -1 },
-                    new double[] { -1,  1 }, new double[] {  1,  1 },
-                };
-            
-                int[] xor = // result of xor
-                {
-                    -1,  1,
-                     1, -1,
-                    -1,  1,
-                     1, -1,
-                    -1,  1,
-                     1, -1,
-                    -1,  1,
-                     1, -1,
-                };
-            
-            
-                // Create a new Cross-validation algorithm passing the data set size and the number of folds
-                var crossvalidation = new Crossvalidation&lt;KernelSupportVectorMachine>(data.Length, 3);
-            
-                // Define a fitting function using Support Vector Machines
-                crossvalidation.Fitting = delegate(int[] trainingSet, int[] validationSet)
-                {
-                    // The trainingSet and validationSet arguments specifies the
-                    // indices of the original data set to be used as training and
-                    // validation sets, respectively.
-                    double[][] trainingInputs = data.Submatrix(trainingSet);
-                    int[] trainingOutputs = xor.Submatrix(trainingSet);
-            
-                    double[][] validationInputs = data.Submatrix(validationSet);
-                    int[] validationOutputs = xor.Submatrix(validationSet);
-            
-                    // Create a Kernel Support Vector Machine to operate on this set
-                    var svm = new KernelSupportVectorMachine(new Polynomial(2), 2);
-            
-                    // Create a training algorithm and learn this set
-                    var smo = new SequentialMinimalOptimization(svm, trainingInputs, trainingOutputs);
-            
-                    double trainingError = smo.Run();
-                    double validationError = smo.ComputeError(validationInputs, validationOutputs);
-            
-                    // Return a new information structure containing the model and the errors achieved.
-                    return new CrossvalidationInfo&lt;KernelSupportVectorMachine>(svm, trainingError, validationError);
-                };
-            
-             
-                // Compute the cross-validation
-                crossvalidation.Compute();
-            
-                // Get the average training and validation errors
-                double errorTraining   = crossvalidation.TrainingError;
-                double errorValidation = crossvalidation.ValidationError;
-               </code>
-             </example>
-             
-        </member>
-        <member name="M:Accord.MachineLearning.Crossvalidation`1.#ctor(System.Int32)">
-            <summary>
-              Creates a new k-fold cross-validation algorithm.
-            </summary>
-            
-            <param name="size">The complete dataset for training and testing.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.Crossvalidation`1.#ctor(System.Int32,System.Int32)">
-            <summary>
-              Creates a new k-fold cross-validation algorithm.
-            </summary>
-            
-            <param name="size">The complete dataset for training and testing.</param>
-            <param name="folds">The number of folds, usually denoted as <c>k</c> (default is 10).</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.Crossvalidation`1.Compute">
-            <summary>
-              Computes the cross validation algorithm.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.Fitting">
-            <summary>
-              Gets or sets the model fitting function.
-            </summary>
-            <remarks>
-              The fitting function should accept an array of integers containing the
-              indexes for the training samples, an array of integers containing the
-              indexes for the validation samples and should return information about
-              the model fitted using those two subsets of the available data.
-            </remarks>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.Models">
-            <summary>
-              Gets the models created for each fold of the cross validation.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.ValidationError">
-            <summary>
-              Gets the average validation error.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.TrainingError">
-            <summary>
-              Gets the average training error.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.Folds">
-            <summary>
-              Gets the array of indexes contained in each fold.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.Crossvalidation`1.K">
-            <summary>
-              Gets the number of folds in the k-fold cross validation.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.CrossvalidationInfo`1">
-            <summary>
-              Information class to store the training and validation errors of a model. 
-            </summary>
-            
-            <typeparam name="TModel">The type of the model.</typeparam>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.CrossvalidationInfo`1.#ctor(`0,System.Double,System.Double)">
-            <summary>
-              Creates a new CrossvalidationInfo class.
-            </summary>
-            
-            <param name="model">The fitted model.</param>
-            <param name="trainingError">The training error for the model.</param>
-            <param name="validationError">The validation error for the model.</param>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.Model">
-            <summary>
-              Gets the model.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.ValidationError">
-            <summary>
-              Gets the validation error for the model.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.TrainingError">
-            <summary>
-              Gets the training error for the model.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.Tag">
-            <summary>
-              Gets or sets a tag for user-defined information.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearchFittingFunction`1">
-            <summary>
-              Delegate for Grid search fitting function.
-            </summary>
-            
-            <typeparam name="TModel">The type of the model to fit.</typeparam>
-            
-            <param name="parameters">The collection of parameters to be used in the fitting process.</param>
-            <param name="error">The error (or any other performance measure) returned by the model.</param>
-            <returns>The model fitted to the data using the given parameters.</returns>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearch`1">
-             <summary>
-               Grid Search for automatic parameter tuning.
-             </summary>
-             <remarks>
-               Grid Search tries to find the best combination of parameters across
-               a range of possible values that produces the best fit model. If there
-               are two parameters, each with 10 possible values, Grid Search will try
-               an exhaustive evaluation of the model using every combination of points,
-               resulting in 100 model fits.
-             </remarks>
-             
-             <typeparam name="TModel">The type of the model to be tuned.</typeparam>
-             
-             <example>
-               How to fit a Kernel Support Vector Machine using Grid Search.
-               <code>
-               // Example binary data
-               double[][] inputs =
-               {
-                   new double[] { -1, -1 },
-                   new double[] { -1,  1 },
-                   new double[] {  1, -1 },
-                   new double[] {  1,  1 }
-               };
-            
-               int[] xor = // xor labels
-               {
-                   -1, 1, 1, -1
-               };
-            
-               // Declare the parameters and ranges to be searched
-               GridSearchRange[] ranges = 
-               {
-                   new GridSearchRange("complexity", new double[] { 0.00000001, 5.20, 0.30, 0.50 } ),
-                   new GridSearchRange("degree",     new double[] { 1, 10, 2, 3, 4, 5 } ),
-                   new GridSearchRange("constant",   new double[] { 0, 1, 2 } )
-               };
-            
-            
-               // Instantiate a new Grid Search algorithm for Kernel Support Vector Machines
-               var gridsearch = new GridSearch&lt;KernelSupportVectorMachine>(ranges);
-            
-               // Set the fitting function for the algorithm
-               gridsearch.Fitting = delegate(GridSearchParameterCollection parameters, out double error)
-               {
-                   // The parameters to be tried will be passed as a function parameter.
-                   int degree = (int)parameters["degree"].Value;
-                   double constant = parameters["constant"].Value;
-                   double complexity = parameters["complexity"].Value;
-            
-                   // Use the parameters to build the SVM model
-                   Polynomial kernel = new Polynomial(degree, constant);
-                   KernelSupportVectorMachine ksvm = new KernelSupportVectorMachine(kernel, 2);
-            
-                   // Create a new learning algorithm for SVMs
-                   SequentialMinimalOptimization smo = new SequentialMinimalOptimization(ksvm, inputs, xor);
-                   smo.Complexity = complexity;
-            
-                   // Measure the model performance to return as an out parameter
-                   error = smo.Run();
-            
-                   return ksvm; // Return the current model
-               };
-            
-            
-               // Declare some out variables to pass to the grid search algorithm
-               GridSearchParameterCollection bestParameters; double minError;
-            
-               // Compute the grid search to find the best Support Vector Machine
-               KernelSupportVectorMachine bestModel = gridsearch.Compute(out bestParameters, out minError);
-               </code>
-             </example>
-             
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearch`1.#ctor(Accord.MachineLearning.GridSearchRange[])">
-            <summary>
-              Constructs a new Grid search algorithm.
-            </summary>
-            
-            <param name="parameterRanges">The range of parameters to search.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearch`1.Compute(Accord.MachineLearning.GridSearchParameterCollection@,System.Double@)">
-            <summary>
-              Searches for the best combination of parameters that results in the most accurate model.
-            </summary>
-            
-            <param name="bestParameters">The best combination of parameters found by the grid search.</param>
-            <param name="error">The minimum error of the best model found by the grid search.</param>
-            <returns>The best model found during the grid search.</returns>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearch`1.Fitting">
-            <summary>
-              A function that fits a model using the given parameters.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearch`1.ParameterRanges">
-            <summary>
-              The range of parameters to consider during search.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearchParameter">
-            <summary>
-              Contains the name and value of a parameter that should be used during fitting.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameter.#ctor(System.String,System.Double)">
-            <summary>
-              Constructs a new parameter.
-            </summary>
-            
-            <param name="name">The name for the parameter.</param>
-            <param name="value">The value for the parameter.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameter.Equals(System.Object)">
-            <summary>
-              Determines whether the specified object is equal
-              to the current GridSearchParameter object.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameter.GetHashCode">
-            <summary>
-              Returns the hash code for this GridSearchParameter
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameter.op_Equality(Accord.MachineLearning.GridSearchParameter,Accord.MachineLearning.GridSearchParameter)">
-            <summary>
-              Compares two GridSearchParameters for equality.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameter.op_Inequality(Accord.MachineLearning.GridSearchParameter,Accord.MachineLearning.GridSearchParameter)">
-            <summary>
-              Compares two GridSearchParameters for inequality.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearchParameter.Name">
-            <summary>
-              Gets the name of the parameter
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearchParameter.Value">
-            <summary>
-              Gets the value of the parameter.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearchRange">
-            <summary>
-              Represents a range of parameters to be tried during a grid search.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRange.#ctor(System.String,System.Double,System.Double,System.Double)">
-            <summary>
-              Constructs a new GridsearchRange object.
-            </summary>
-            
-            <param name="name">The name for this parameter.</param>
-            <param name="start">The starting value for this range.</param>
-            <param name="end">The end value for this range.</param>
-            <param name="step">The step size for this range.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRange.#ctor(System.String,System.Double[])">
-            <summary>
-              Constructs a new GridSearchRange object.
-            </summary>
-            
-            <param name="name">The name for this parameter.</param>
-            <param name="values">The array of values to try.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRange.GetParameters">
-            <summary>
-              Gets the array of GridSearchParameters to try.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearchRange.Name">
-            <summary>
-              Gets or sets the name of the parameter from which the range belongs to.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GridSearchRange.Values">
-            <summary>
-              Gets or sets the range of values that should be tested for this parameter.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearchRangeCollection">
-            <summary>
-              GridSearchRange collection.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.#ctor(Accord.MachineLearning.GridSearchRange[])">
-            <summary>
-              Constructs a new collection of GridsearchRange objects.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.GetKeyForItem(Accord.MachineLearning.GridSearchRange)">
-            <summary>
-              Returns the identifying value for an item on this collection.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchRangeCollection.Add(System.String,System.Double[])">
-            <summary>
-              Adds a parameter range to the end of the GridsearchRangeCollection.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GridSearchParameterCollection">
-            <summary>
-              GridsearchParameter collection.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.#ctor(Accord.MachineLearning.GridSearchParameter[])">
-            <summary>
-              Constructs a new collection of GridsearchParameter objects.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.#ctor(System.Collections.Generic.IEnumerable{Accord.MachineLearning.GridSearchParameter})">
-            <summary>
-              Constructs a new collection of GridsearchParameter objects.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GridSearchParameterCollection.GetKeyForItem(Accord.MachineLearning.GridSearchParameter)">
-            <summary>
-              Returns the identifying value for an item on this collection.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization">
-            <summary>
-              Sequential Minimal Optimization (SMO) Algorithm
-            </summary>
-            
-            <remarks>
-            <para>
-              The SMO algorithm is an algorithm for solving large quadratic programming (QP)
-              optimization problems, widely used for the training of support vector machines.
-              First developed by John C. Platt in 1998, SMO breaks up large QP problems into
-              a series of smallest possible QP problems, which are then solved analytically.</para>
-            <para>
-              This class follows the original algorithm by Platt as strictly as possible.</para>
-             
-            <para>
-              References:
-              <list type="bullet">
-                <item><description>
-                  <a href="http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization">
-                  Wikipedia, The Free Encyclopedia. Sequential Minimal Optimization. Available on:
-                  http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization </a></description></item>
-                <item><description>
-                  <a href="http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf">
-                  John C. Platt, Sequential Minimal Optimization: A Fast Algorithm for Training Support
-                  Vector Machines. 1998. Available on: http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf </a></description></item>
-                <item><description>
-                  <a href="http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf">
-                  J. P. Lewis. A Short SVM (Support Vector Machine) Tutorial. Available on:
-                  http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf </a></description></item>
-                </list></para>  
-            </remarks>
-            
-            <example>
-              <code>
-              // Example XOR problem
-              double[][] inputs =
-              {
-                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
-                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
-                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
-                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
-              };
-               
-              // Dichotomy SVM outputs should be given as [-1;+1]
-              int[] labels =
-              {
-                     1, -1, -1, 1
-              };
-             
-              // Create a Kernel Support Vector Machine for the given inputs
-              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
-            
-              // Instantiate a new learning algorithm for SVMs
-              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
-            
-              // Set up the learning algorithm
-              smo.Complexity = 1.0;
-            
-              // Run the learning algorithm
-              double error = smo.Run();
-              
-              // Compute the decision output for one of the input vectors
-              int decision = System.Math.Sign(svm.Compute(inputs[0]));
-             </code>
-            </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.#ctor(Accord.MachineLearning.VectorMachines.SupportVectorMachine,System.Double[][],System.Int32[])">
-            <summary>
-              Initializes a new instance of a Sequential Minimal Optimization (SMO) algorithm.
-            </summary>
-            
-            <param name="machine">A Support Vector Machine.</param>
-            <param name="inputs">The input data points as row vectors.</param>
-            <param name="outputs">The classification label for each data point in the range [-1;+1].</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run(System.Boolean)">
-            <summary>
-              Runs the SMO algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise. Default is true.
-            </param>
-            
-            <returns>
-              The misclassification error rate of
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run">
-            <summary>
-              Runs the SMO algorithm.
-            </summary>
-            
-            <returns>
-              The misclassification error rate of
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.ComputeError(System.Double[][],System.Int32[])">
-            <summary>
-              Computes the error rate for a given set of input and outputs.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.examineExample(System.Int32)">
-            <summary>
-             Chooses which multipliers to optimize using heuristics.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.takeStep(System.Int32,System.Int32)">
-            <summary>
-              Analytically solves the optimization problem for two Lagrange multipliers.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.compute(System.Double[])">
-            <summary>
-              Computes the SVM output for a given point.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Complexity">
-            <summary>
-              Complexity (cost) parameter C. Increasing the value of C forces the creation
-              of a more accurate model that may not generalize well. Default value is the
-              number of examples divided by the trace of the kernel matrix.
-            </summary>
-            <remarks>
-              The cost parameter C controls the trade off between allowing training
-              errors and forcing rigid margins. It creates a soft margin that permits
-              some misclassifications. Increasing the value of C increases the cost of
-              misclassifying points and forces the creation of a more accurate model
-              that may not generalize well.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.UseComplexityHeuristic">
-            <summary>
-              Gets or sets a value indicating whether the Complexity parameter C
-              should be computed automatically by employing an heuristic rule.
-            </summary>
-            <value>
-            	<c>true</c> if complexity should be computed automatically; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Epsilon">
-            <summary>
-              Insensitivity zone ε. Increasing the value of ε can result in fewer support
-              vectors in the created model. Default value is 1e-3.
-            </summary>
-            <remarks>
-              Parameter ε controls the width of the ε-insensitive zone, used to fit the training
-              data. The value of ε can affect the number of support vectors used to construct the
-              regression function. The bigger ε, the fewer support vectors are selected. On the
-              other hand, bigger ε-values results in more flat estimates.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Tolerance">
-            <summary>
-              Convergence tolerance. Default value is 1e-3.
-            </summary>
-            <remarks>
-              The criterion for completing the model training process. The default is 0.001.
-            </remarks>
         </member>
     </members>
 </doc>

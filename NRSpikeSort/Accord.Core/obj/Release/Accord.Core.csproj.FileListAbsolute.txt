@@ -114,3 +114,9 @@ C:\Documents and Settings\Lab\Desktop\neurorighter-415\NRSpikeSort\Accord.Core\b
 C:\Documents and Settings\Lab\Desktop\neurorighter-415\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\neurorighter-415\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
 C:\Documents and Settings\Lab\Desktop\neurorighter-415\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\bin\Release\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\bin\Release\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\bin\Release\Accord.xml
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Release\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Release\Accord.pdb

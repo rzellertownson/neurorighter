@@ -13,3 +13,8 @@ C:\Users\Jon\Desktop\neurorighter-410\NRSpikeSort\Accord.Core\bin\Debug\Accord.p
 C:\Users\Jon\Desktop\neurorighter-410\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-410\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
 C:\Users\Jon\Desktop\neurorighter-410\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
+C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb

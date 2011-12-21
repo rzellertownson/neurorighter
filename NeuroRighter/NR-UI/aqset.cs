@@ -238,7 +238,10 @@ namespace NeuroRighter
                     data[c++] = ArrayOperation.CopyRow(tempData, j);
             }
             for (int i = 0; i < numChannels; ++i)
-                thrSALPA[i] = 9 * 5 * (rawType)Statistics.Variance(data[i]);
+            {
+                thrSALPA[i] = 9 * (rawType)Statistics.Variance(data[i]) / Math.Pow(Properties.Settings.Default.PreAmpGain, 2);
+                Console.Out.WriteLine("channel " + i + ": thr = " + thrSALPA[i]);
+            }
 
 
             //Now, destroy the objects we made

@@ -196,6 +196,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     if (!suppressText) {
         mexPrintf("#chs: %i\nsampling rate: %i\ngain: %i\n", numChannels, freq, gain);
         mexPrintf("date/time: %i-%i-%i %i:%i:%i:%i\n", dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], dt[6]);
+		 mexPrintf("scaling coefficients: %f +%f *x + %f*x^2 + %f*x^3 \n", scalingCoeffs[0], scalingCoeffs[1], scalingCoeffs[2], scalingCoeffs[3]);
         mexPrintf("\nTotal num. samples per channel: %i\n", numRecs);
     }
 
@@ -258,8 +259,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
             for (j = 0; j < numChannels; ++j) {
                 fread(&val,2,1,fp); /* Read digital value */
                 V[i*numChannels+j] = scalingCoeffs[0] + scalingCoeffs[1] * (double)val +
-                    scalingCoeffs[2] * scalingCoeffs[2] * (double)val +
-                    scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)val;
+                    scalingCoeffs[2] * (double)val * (double)val +
+                    scalingCoeffs[3] * (double)val * (double)val * (double)val;
             } /* NB: Matlab's indices go down each column, then to the next row */
         }
         else { /* just extract one channel */
@@ -269,8 +270,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
             /*fseek(fp, 2*ch, SEEK_CUR); /* advance to next time channel appears */
             fread(&val,2,1,fp); /* Read value */
             V[i] = scalingCoeffs[0] + scalingCoeffs[1] * (double)val +
-                scalingCoeffs[2] * scalingCoeffs[2] * (double)val +
-                scalingCoeffs[3] * scalingCoeffs[3] * scalingCoeffs[3] * (double)val;
+                scalingCoeffs[2] * (double)val * (double)val +
+                scalingCoeffs[3] * (double)val * (double)val * (double)val;
             getFilePos(fp, (fpos_T*) &position);
             offset = position + (int64_T)(2*(numChannels - 1 - (ch-1)));
             setFilePos(fp, (fpos_T*) &offset);

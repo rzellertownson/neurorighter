@@ -83,7 +83,7 @@ namespace NeuroRighter.Filters
             this.railLow = railLow;
             this.forcepegsamples = forcepegsamples;
             //this code in the init_t section of DAW's MB
-            my_thresh = 3.92 * t_chi2 * y_threshold * y_threshold;
+            my_thresh = 3.92 * t_chi2 * y_threshold;
 
             //a bunch of terms that get used repeatedly:
             tau_plus_1 = tau + 1;

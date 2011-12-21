@@ -278,3 +278,45 @@ C:\Users\Jon\Desktop\neurorighter-head3\simoc\bin\Release\AForge.xml
 C:\Users\Jon\Desktop\neurorighter-head3\simoc\bin\Release\Accord.pdb
 C:\Users\Jon\Desktop\neurorighter-head3\simoc\bin\Release\Accord.xml
 C:\Users\Jon\Desktop\neurorighter-head3\simoc\bin\Release\AForge.Math.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\simoc.Properties.Resources.resources
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\simoc.UI.ControlPanel.resources
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\GenerateResource.read.1.tlog
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\ResGen.read.1.tlog
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\GenerateResource.write.1.tlog
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\ResGen.write.1.tlog
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\simoc.dll.licenses
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\simoc.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\obj\Release\simoc.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Miscellaneous\gpl.txt
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NeuroRighter_v04.ico
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\simoc.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\simoc.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NeuroRighter.exe
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Mowog.PersistWindowState.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\ZedGraph.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NRSpikeSort.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.MachineLearning.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Statistics.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Math.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\AForge.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\AForge.Math.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NeuroRighter.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NeuroRighter.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.MachineLearning.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.MachineLearning.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Statistics.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Math.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.Math.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\AForge.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\Accord.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-415\simoc\bin\Release\AForge.Math.xml

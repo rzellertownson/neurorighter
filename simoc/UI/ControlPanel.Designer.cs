@@ -259,6 +259,7 @@
             "Sine Wave",
             "Multiple of Average Observable",
             "1 Minute Steps",
+            "1 Minute Abs UNFRSteps",
             "5 Minute Steps",
             "12 Hour Step"});
             this.comboBox_Target.Location = new System.Drawing.Point(92, 28);

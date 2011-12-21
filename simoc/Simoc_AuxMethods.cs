@@ -134,6 +134,12 @@ namespace simoc
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
+                    case "1 Minute Abs UNFRSteps":
+                        {
+                            OneMinuteStepsUNFRAbs target = new OneMinuteStepsUNFRAbs(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
                     case "Multiple of Average Observable":
                         {
                             MulipleOfAverageObs target = new MulipleOfAverageObs(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);

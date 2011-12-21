@@ -73,8 +73,9 @@ namespace simoc.filt2out
                 simocVariableStorage.GenericDouble4 = K * ((Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble4 -
                     (K * Td * N) / (Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs));
 
-                // Tustin's Integral approximation
-                simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
+                // Tustin's Integral approximation w/ anti-windup
+                if (simocVariableStorage.GenericDouble1 != 1 && simocVariableStorage.GenericDouble1 != 0)
+                    simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
 
                 // Proportional Term
                 simocVariableStorage.GenericDouble2 = K * currentErrorIntenal;
@@ -113,10 +114,10 @@ namespace simoc.filt2out
             currentFeedbackSignals[0] = simocVariableStorage.GenericDouble1;
             currentFeedbackSignals[1] = simocVariableStorage.GenericDouble2;
             currentFeedbackSignals[2] = simocVariableStorage.GenericDouble3;
-            currentFeedbackSignals[3] = simocVariableStorage.GenericDouble4; 
+            currentFeedbackSignals[3] = simocVariableStorage.GenericDouble4;
             currentFeedbackSignals[4] = stimFreqHz;
             currentFeedbackSignals[5] = stimPulseWidthMSec;
-            currentFeedbackSignals[6] = stimPowerVolts; 
+            currentFeedbackSignals[6] = stimPowerVolts;
 
             // Create the output buffer
             List<AuxOutEvent> toAppendAux = new List<AuxOutEvent>();
@@ -131,7 +132,7 @@ namespace simoc.filt2out
             }
 
             // Make periodic stimulation
-            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + 2*(ulong)stimSrv.GetBuffSize()))
+            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + 2 * (ulong)stimSrv.GetBuffSize()))
             {
                 // Send a V_ctl = simocVariableStorage.GenericDouble1 volt pulse to channel 0 for c2 milliseconds.
                 toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), 0, stimPowerVolts));

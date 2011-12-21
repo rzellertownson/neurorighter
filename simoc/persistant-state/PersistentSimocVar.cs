@@ -27,6 +27,7 @@ namespace simoc.persistantstate
         private double lastErrorValue = 0;
         private double cumulativeAverageObs = 0;
         private double frozenCumulativeAverageObs = 0;
+        private double lastTargetValue = 0;
         private int lastTargetIndex = 0;
         private double lastTargetSwitchSec;
         private bool targetOn;
@@ -39,7 +40,7 @@ namespace simoc.persistantstate
         private List<double> errorUpStateAmpList = new List<double>();
         private List<double> errorDownStateAmpList = new List<double>();
         private List<double> errorSignalAmplitudeList = new List<double>();
-        
+
         // Generic storage
         private double genericDouble1 = 0;
         private double genericDouble2 = 0;
@@ -272,7 +273,7 @@ namespace simoc.persistantstate
                 frozenCumulativeAverageObs = value;
             }
         }
-        
+
         /// <summary>
         /// Stores the last target index for custum, multistep target functions
         /// </summary>
@@ -306,7 +307,7 @@ namespace simoc.persistantstate
         /// <summary>
         /// Are we tracking a target?
         /// </summary>
-        public bool TargetOn 
+        public bool TargetOn
         {
             get
             {
@@ -317,6 +318,22 @@ namespace simoc.persistantstate
                 targetOn = value;
             }
         }
+
+        /// <summary>
+        /// Last Target value
+        /// </summary>
+        public double LastTargetValue
+        {
+            get
+            {
+                return lastTargetValue;
+            }
+            set
+            {
+                lastTargetValue = value;
+            }
+        }
+
 
         /// <summary>
         /// Ultimate period estimate
@@ -581,7 +598,7 @@ namespace simoc.persistantstate
         /// <param name="currentObservation"></param>
         internal void UpdateRunningObsAverage(double currentObservation)
         {
-            cumulativeAverageObs = (currentObservation + ((double)numberOfLoopsCompleted - 1.0)*cumulativeAverageObs) / (double)numberOfLoopsCompleted;
+            cumulativeAverageObs = (currentObservation + ((double)numberOfLoopsCompleted - 1.0) * cumulativeAverageObs) / (double)numberOfLoopsCompleted;
         }
 
         /// <summary>

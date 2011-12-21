@@ -71,7 +71,7 @@ namespace NeuroRighter.Output
         protected override void SetupTasksSpecific(ref Task[] analogTasks,ref  Task[] digitalTasks)
         {
             if (analogTasks != null)
-                clearTasks();
+                ClearTasks();
 
             string dev = Properties.Settings.Default.SigOutDev;
             int bufferSize = (int)BUFFSIZE;

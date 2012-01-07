@@ -12,7 +12,7 @@ using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
 
 namespace NeuroRighter.Output
-{   
+{
     // called when the 2+requested number of buffer loads have occured
     internal delegate void StimulationCompleteHandler(object sender, EventArgs e);
     // called when the Queue falls below a user defined threshold
@@ -29,7 +29,7 @@ namespace NeuroRighter.Output
         private const int BLANKING_BIT_8bitPort = 7;
         private const int PORT_OFFSET_32bitPort = 7;
         private const int PORT_OFFSET_8bitPort = 0;
-        
+
 
         // Constants for different systems
         private int NUM_SAMPLES_BLANKING;
@@ -43,11 +43,11 @@ namespace NeuroRighter.Output
         private uint BUFFSIZE;
         private uint LengthWave;
 
-        
-        internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold,bool robust)
-            :base( INNERBUFFSIZE, STIM_SAMPLING_FREQ,  queueThreshold,robust)
+
+        internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold, bool robust)
+            : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust)
         {
-            
+
             this.NUM_SAMPLES_BLANKING = NUM_SAMPLES_BLANKING;
             // What are the buffer offset settings for this system?
             NumAOChannels = 2;
@@ -58,9 +58,9 @@ namespace NeuroRighter.Output
                 RowOffset = 2;
             }
 
-            
-            }
-        
+
+        }
+
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {
 
@@ -144,7 +144,7 @@ namespace NeuroRighter.Output
             anEventValues = new List<double[,]>();
             anEventValues.Add(new double[NumAOChannels, stimDuration]);
             digEventValues = new List<uint[]>();
-            digEventValues.Add(new uint[ stimDuration]);
+            digEventValues.Add(new uint[stimDuration]);
             for (uint i = 0; i < stimDuration; i++)
             {
                 digEventValues.ElementAt(0)[(int)i] = CalculateDigPointAppending(Sout, i);
@@ -162,36 +162,36 @@ namespace NeuroRighter.Output
 
 
         internal void Append(ulong[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
-       {
-             //okay, passed the tests, start appending
-            
+        {
+            //okay, passed the tests, start appending
+
             List<StimulusOutEvent> stimToPass = new List<StimulusOutEvent>(0);
-            
-            
-                for (int i = 0; i < WaveMatrix.GetLength(0); i++)
+
+
+            for (int i = 0; i < WaveMatrix.GetLength(0); i++)
+            {
+                double[] wave = new double[WaveMatrix.GetLength(1)];
+                //this.TimeVector[outerIndexWrite] = TimeVector[i];
+                for (int j = 0; j < WaveMatrix.GetLength(1); j++)
                 {
-                    double[] wave = new double[WaveMatrix.GetLength(1)];
-                    //this.TimeVector[outerIndexWrite] = TimeVector[i];
-                    for (int j = 0; j < WaveMatrix.GetLength(1); j++)
-                    {
-                        wave[j] = WaveMatrix[i, j];
-                    }
-                    // MessageBox.Show("finished a wave");
-                    // double[] w = {1.0,1.0};
-                    // stim = new StimulusData(1,1.0,w);
-                    StimulusOutEvent tmp = new StimulusOutEvent(ChannelVector[i], TimeVector[i], wave);
-                    tmp.sampleDuration = tmp.sampleDuration + (uint)NUM_SAMPLES_BLANKING * 2;
-                    stimToPass.Add(tmp);
-
-                    
+                    wave[j] = WaveMatrix[i, j];
                 }
-                this.WriteToBuffer(stimToPass);
-            
-            //  MessageBox.Show("finished Append");
-       }
-        
+                // MessageBox.Show("finished a wave");
+                // double[] w = {1.0,1.0};
+                // stim = new StimulusData(1,1.0,w);
+                StimulusOutEvent tmp = new StimulusOutEvent(ChannelVector[i], TimeVector[i], wave);
+                tmp.sampleDuration = tmp.sampleDuration + (uint)NUM_SAMPLES_BLANKING * 2;
+                stimToPass.Add(tmp);
 
-        
+
+            }
+            this.WriteToBuffer(stimToPass);
+
+            //  MessageBox.Show("finished Append");
+        }
+
+
+
 
         //appending versions
         internal uint CalculateDigPointAppending(StimulusOutEvent currentStim, uint NumSampLoadedForCurr)
@@ -241,7 +241,7 @@ namespace NeuroRighter.Output
                     voltageOut = currentStim.waveform[NumSamplesLoadedForWave];
                 else
                     voltageOut = 0;
-                
+
                 // NeuroWronger's crazy analog simulus encoding scheme
                 if (NumSamplesLoadedForWave < 20)
                 {
@@ -256,7 +256,7 @@ namespace NeuroRighter.Output
                 else if (NumSamplesLoadedForWave < 60)
                 {
                     AnalogPoint[0] = voltageOut;
-                    AnalogPoint[1] = 0;
+                    AnalogPoint[1] = currentStim.waveform.Max();
                 }
                 else if (NumSamplesLoadedForWave < 80)
                 {
@@ -265,7 +265,7 @@ namespace NeuroRighter.Output
                 }
                 else
                 {
-                    AnalogPoint[0] = currentStim.waveform[NumSamplesLoadedForWave]; 
+                    AnalogPoint[0] = currentStim.waveform[NumSamplesLoadedForWave];
                     AnalogPoint[1] = 0;
                 }
 
@@ -274,7 +274,7 @@ namespace NeuroRighter.Output
 
         }
 
-       
+
 
         #region MUX conversion Functions
         internal static UInt32 channel2MUX(double channel)

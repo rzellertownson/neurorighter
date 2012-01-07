@@ -12,8 +12,8 @@ namespace simoc.targetfunc
 {
     class TwelveHourStep : TargetFunc
     {
-        private double estimationTime = 3 * 60 *60; // seconds before steps to estimate nominal obs
-        private double stepTime = 12 *60 * 60; // seconds
+        private double estimationTime = 3 * 60 * 60; // seconds before steps to estimate nominal obs
+        private double stepTime = 12 * 60 * 60; // seconds
 
         public TwelveHourStep(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref  NRDataSrv datSrv)
             : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref datSrv) { }
@@ -31,10 +31,10 @@ namespace simoc.targetfunc
                 simocVariableStorage.ResetRunningObsAverage();
             }
 
-            if (secondsSinceStart > estimationTime + 0 * stepTime  && secondsSinceStart <= estimationTime + 1 * stepTime )
+            if (secondsSinceStart > estimationTime + 0 * stepTime && secondsSinceStart <= estimationTime + 1 * stepTime)
             {
                 simocVariableStorage.TargetOn = true;
-                currentTargetValue = targetMultiplier * simocVariableStorage.FrozenCumulativeAverageObs;
+                currentTargetValue = meanValue;
             }
             else
             {

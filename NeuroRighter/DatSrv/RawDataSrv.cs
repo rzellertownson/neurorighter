@@ -198,16 +198,7 @@ namespace NeuroRighter.DatSrv
         /// <returns>RawMultiChannelBuffer</returns>
         public RawMultiChannelBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
-            // Make sure the desiredSampleRange is correctly formatted
-            if (desiredStartIndex > desiredStopIndex)
-            {
-                throw new FormatException("The first element of desiredSampleRange must be smaller or equal to the last element.");
-            }
 
-            // Make space for the returnBuffer
-            int startIndex; // Where to start taking samples
-            int stopIndex; // where to stop taking samples
-            RawMultiChannelBuffer returnBuffer = null;
 
             // Enforce a read lock
             //bufferLock.EnterReadLock();
@@ -215,6 +206,17 @@ namespace NeuroRighter.DatSrv
             //{
             lock (lockObj)
             {
+                // Make sure the desiredSampleRange is correctly formatted
+                if (desiredStartIndex > desiredStopIndex)
+                {
+                    throw new FormatException("The first element of desiredSampleRange must be smaller or equal to the last element.");
+                }
+
+                // Make space for the returnBuffer
+                int startIndex; // Where to start taking samples
+                int stopIndex; // where to stop taking samples
+                RawMultiChannelBuffer returnBuffer = null;
+
                 // First make sure that there are samples available within the desired range
                 if (dataBuffer.startAndEndSample[0] <= desiredStartIndex ||
                    dataBuffer.startAndEndSample[1] >= desiredStopIndex)

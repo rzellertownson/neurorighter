@@ -115,7 +115,7 @@ namespace NeuroRighter.DatSrv
                     ADCPollingPeriodSamples,
                     2);
 
-                spikeLag += salpaWidth;
+                spikeLag += 2*salpaWidth;
             }
 
             //3. Spike Filter data
@@ -168,7 +168,7 @@ namespace NeuroRighter.DatSrv
             spikeSrv = new EventDataSrv<SpikeEvent>(
                 Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                 ADCPollingPeriodSamples,
-                2, spikeDetlag, Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
+                2, spikeLag, Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
 
             //8. Auxiliary Digital data
             if (Properties.Settings.Default.useAuxDigitalInput)

@@ -109,7 +109,7 @@ namespace NeuroRighter.DatSrv
         internal ulong[] EstimateAvailableTimeRange()
         {
 
-            ulong[] timeRange = new ulong[2];
+            
 
             // Enforce a read lock
             //bufferLock.EnterReadLock();
@@ -117,6 +117,8 @@ namespace NeuroRighter.DatSrv
             //{
             lock (lockObj)
             {
+                ulong[] timeRange = new ulong[2];
+
                 timeRange[0] = dataBuffer.sampleBuffer.Min();
                 timeRange[1] = dataBuffer.sampleBuffer.Max();
 

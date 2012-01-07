@@ -613,8 +613,6 @@ namespace NeuroRighter.Output
 
         }
 
-
-
         //populates the buffers with commands based on the named buffer load, but only if we are generating output
         private bool AttemptLoad(int name, bool recoveryFlag)
         {

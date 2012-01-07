@@ -101,7 +101,10 @@ namespace NeuroRighter.DatSrv
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
-                minCurrentSample = currentSample.Min() - serverLagSamples;
+                if (serverLagSamples < currentSample.Min())
+                    minCurrentSample = currentSample.Min() - serverLagSamples;
+                else
+                    minCurrentSample = 0;
             }
 
             //}
@@ -146,7 +149,10 @@ namespace NeuroRighter.DatSrv
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
-                minCurrentSample = currentSample.Min() - serverLagSamples;
+                if (serverLagSamples < currentSample.Min())
+                    minCurrentSample = currentSample.Min() - serverLagSamples;
+                else
+                    minCurrentSample = 0;
             }
             //}
             //finally
@@ -164,7 +170,7 @@ namespace NeuroRighter.DatSrv
         /// <returns>timeRange</returns>
         public ulong[] EstimateAvailableTimeRange()
         {
-            ulong[] timeRange = new ulong[2];
+            
 
             //// Enforce a read lock
             //bufferLock.EnterWriteLock();
@@ -172,6 +178,8 @@ namespace NeuroRighter.DatSrv
             //{
             lock (lockObj)
             {
+                ulong[] timeRange = new ulong[2];
+
                 if (minCurrentSample < bufferSizeInSamples)
                     timeRange[0] = 0;
                 else
@@ -202,7 +210,7 @@ namespace NeuroRighter.DatSrv
         /// <returns>EventBuffer</returns>
         public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
-            EventBuffer<T> returnBuffer = new EventBuffer<T>(sampleFrequencyHz);
+            
 
             //// Enforce a read lock
             //bufferLock.EnterWriteLock();
@@ -210,6 +218,8 @@ namespace NeuroRighter.DatSrv
             //{
             lock (lockObj)
             {
+                EventBuffer<T> returnBuffer = new EventBuffer<T>(sampleFrequencyHz);
+
                 // Collect all the data within the desired sample range and add to the returnBuffer object
                 //returnBuffer = dataBuffer.DeepClone();
                 returnBuffer.eventBuffer.AddRange(

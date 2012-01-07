@@ -556,3 +556,24 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\NRSpikeSort.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\NRSpikeSort.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\AForge.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\AForge.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb

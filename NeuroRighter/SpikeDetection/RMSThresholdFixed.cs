@@ -55,7 +55,13 @@ namespace NeuroRighter.SpikeDetection
         {
             rawType tempData = 0;
             for (int j = 0; j < spikeBufferLength / downsample; ++j)
-                tempData += data[j * downsample] * data[j * downsample]; //Square data
+            {
+                double dd = data[j * downsample] * data[j * downsample];
+                if (dd > 0) // Don't include blanked samples
+                {
+                    tempData += dd; //Square data
+                }
+            }
             tempData /= (spikeBufferLength / downsample);
             rawType thresholdTemp = (rawType)(Math.Sqrt(tempData) * _thresholdMultiplier);
             RMSList[channel, idx] = thresholdTemp;

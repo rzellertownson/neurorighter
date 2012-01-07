@@ -20,6 +20,7 @@ namespace NeuroRighter.Output
     // called when the stimBuffer finishes a DAQ load
     internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
+
     public class StimBuffer : NROutBuffer<StimulusOutEvent>
     {
 
@@ -83,13 +84,13 @@ namespace NeuroRighter.Output
             digitalTasks[0] = stimTaskMaker.digitalTask;
 
 
-            //    //configure stim
-            //    // Refresh DAQ tasks as they are needed for file2stim
-            //    if (stimTaskMaker != null)
-            //    {
-            //        stimTaskMaker.Dispose();
-            //        stimTaskMaker = null;
-            //    }
+            //configure stim
+            // Refresh DAQ tasks as they are needed for file2stim
+            //if (stimTaskMaker != null)
+            //{
+            //    stimTaskMaker.Dispose();
+            //    stimTaskMaker = null;
+            //}
 
             //    // Create new DAQ tasks and corresponding writers
             //    stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice, 

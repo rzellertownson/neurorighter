@@ -583,10 +583,10 @@ namespace NeuroRighter.Output
                     lock (taskLock)
                     {
                         recoveryFlag = AttemptLoad(currentCount, recoveryFlag);
-                        //execute the current name
                     }
                 }
             }
+
             notDead = false;
             //we are no longer trying to load to the DAQ.  Wait for output generation to finish, and then clear everything.
             //Debugger.Write("ending buffer calculation processing queue thread for " + this.ToString());
@@ -597,17 +597,18 @@ namespace NeuroRighter.Output
                 {
                     if (analogTasks != null)
                         if (analogTasks[0] != null)
-                            analogTasks[0].WaitUntilDone();
+                            analogTasks[0].WaitUntilDone(1000);
                         else
                         {
                             if (digitalTasks != null)
                                 if (digitalTasks[0] != null)
-                                    digitalTasks[0].WaitUntilDone();
+                                    digitalTasks[0].WaitUntilDone(1000);
                         }
                 }
-                catch (Exception me) { }
-
-                ClearTasks();
+                catch (Exception me) 
+                {
+                    ClearTasks();
+                }
             }
             FinishStimulation(new DoWorkEventArgs(null));
 

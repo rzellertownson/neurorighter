@@ -258,7 +258,7 @@ namespace NeuroRighter
                             }
 
                             // If the user is just doing repeated recordings
-                            if (checkbox_repeatRecord.Checked)
+                            if (checkbox_repeatRecord.Checked || Properties.Settings.Default.useFidTimeStamp)
                             {
                                 DateTime nowDate = DateTime.Now;//Get current time (local to computer);
                                 string datePrefix = nowDate.ToString("'-'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss");

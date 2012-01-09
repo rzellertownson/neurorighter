@@ -65,6 +65,9 @@
             this.checkBox_RecordSALPA = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.Streams = new System.Windows.Forms.TabPage();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.checkBox_UseFidTimeStamp = new System.Windows.Forms.CheckBox();
             this.Electrodes = new System.Windows.Forms.TabPage();
             this.label24 = new System.Windows.Forms.Label();
             this.checkedListBox_Electrodes = new System.Windows.Forms.CheckedListBox();
@@ -79,7 +82,7 @@
             // 
             this.checkBox_RecordRaw.AutoSize = true;
             this.checkBox_RecordRaw.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.checkBox_RecordRaw.Location = new System.Drawing.Point(161, 65);
+            this.checkBox_RecordRaw.Location = new System.Drawing.Point(166, 65);
             this.checkBox_RecordRaw.Name = "checkBox_RecordRaw";
             this.checkBox_RecordRaw.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordRaw.TabIndex = 0;
@@ -119,7 +122,7 @@
             this.checkBox_RecordSpikeFilt.AutoSize = true;
             this.checkBox_RecordSpikeFilt.Enabled = false;
             this.checkBox_RecordSpikeFilt.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordSpikeFilt.Location = new System.Drawing.Point(161, 116);
+            this.checkBox_RecordSpikeFilt.Location = new System.Drawing.Point(166, 116);
             this.checkBox_RecordSpikeFilt.Name = "checkBox_RecordSpikeFilt";
             this.checkBox_RecordSpikeFilt.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordSpikeFilt.TabIndex = 77;
@@ -155,7 +158,7 @@
             // 
             // button_MakeRawSelections
             // 
-            this.button_MakeRawSelections.Location = new System.Drawing.Point(107, 360);
+            this.button_MakeRawSelections.Location = new System.Drawing.Point(107, 384);
             this.button_MakeRawSelections.Name = "button_MakeRawSelections";
             this.button_MakeRawSelections.Size = new System.Drawing.Size(79, 23);
             this.button_MakeRawSelections.TabIndex = 83;
@@ -224,7 +227,7 @@
             // 
             this.checkBox_RecordLFP.AutoSize = true;
             this.checkBox_RecordLFP.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordLFP.Location = new System.Drawing.Point(161, 140);
+            this.checkBox_RecordLFP.Location = new System.Drawing.Point(166, 140);
             this.checkBox_RecordLFP.Name = "checkBox_RecordLFP";
             this.checkBox_RecordLFP.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordLFP.TabIndex = 91;
@@ -244,7 +247,7 @@
             // 
             this.checkBox_RecordEEG.AutoSize = true;
             this.checkBox_RecordEEG.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordEEG.Location = new System.Drawing.Point(161, 164);
+            this.checkBox_RecordEEG.Location = new System.Drawing.Point(166, 164);
             this.checkBox_RecordEEG.Name = "checkBox_RecordEEG";
             this.checkBox_RecordEEG.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordEEG.TabIndex = 93;
@@ -265,7 +268,7 @@
             this.checkBox_RecordMUA.AutoSize = true;
             this.checkBox_RecordMUA.Enabled = false;
             this.checkBox_RecordMUA.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordMUA.Location = new System.Drawing.Point(161, 188);
+            this.checkBox_RecordMUA.Location = new System.Drawing.Point(166, 188);
             this.checkBox_RecordMUA.Name = "checkBox_RecordMUA";
             this.checkBox_RecordMUA.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordMUA.TabIndex = 95;
@@ -285,7 +288,7 @@
             // 
             this.checkBox_RecordStim.AutoSize = true;
             this.checkBox_RecordStim.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.checkBox_RecordStim.Location = new System.Drawing.Point(161, 217);
+            this.checkBox_RecordStim.Location = new System.Drawing.Point(166, 217);
             this.checkBox_RecordStim.Name = "checkBox_RecordStim";
             this.checkBox_RecordStim.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordStim.TabIndex = 97;
@@ -348,7 +351,7 @@
             this.checkBox_RecordAuxAnalog.AutoSize = true;
             this.checkBox_RecordAuxAnalog.Enabled = false;
             this.checkBox_RecordAuxAnalog.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordAuxAnalog.Location = new System.Drawing.Point(161, 296);
+            this.checkBox_RecordAuxAnalog.Location = new System.Drawing.Point(166, 296);
             this.checkBox_RecordAuxAnalog.Name = "checkBox_RecordAuxAnalog";
             this.checkBox_RecordAuxAnalog.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordAuxAnalog.TabIndex = 107;
@@ -359,7 +362,7 @@
             this.checkBox_RecordAuxDig.AutoSize = true;
             this.checkBox_RecordAuxDig.Enabled = false;
             this.checkBox_RecordAuxDig.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordAuxDig.Location = new System.Drawing.Point(161, 272);
+            this.checkBox_RecordAuxDig.Location = new System.Drawing.Point(166, 272);
             this.checkBox_RecordAuxDig.Name = "checkBox_RecordAuxDig";
             this.checkBox_RecordAuxDig.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordAuxDig.TabIndex = 106;
@@ -381,7 +384,7 @@
             this.checkBox_RecordSpikes.Checked = true;
             this.checkBox_RecordSpikes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_RecordSpikes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.checkBox_RecordSpikes.Location = new System.Drawing.Point(161, 38);
+            this.checkBox_RecordSpikes.Location = new System.Drawing.Point(166, 38);
             this.checkBox_RecordSpikes.Name = "checkBox_RecordSpikes";
             this.checkBox_RecordSpikes.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordSpikes.TabIndex = 108;
@@ -390,7 +393,7 @@
             // 
             // button_Cancel
             // 
-            this.button_Cancel.Location = new System.Drawing.Point(22, 360);
+            this.button_Cancel.Location = new System.Drawing.Point(22, 384);
             this.button_Cancel.Name = "button_Cancel";
             this.button_Cancel.Size = new System.Drawing.Size(79, 23);
             this.button_Cancel.TabIndex = 110;
@@ -403,7 +406,7 @@
             this.checkBox_RecordSALPA.AutoSize = true;
             this.checkBox_RecordSALPA.Enabled = false;
             this.checkBox_RecordSALPA.ForeColor = System.Drawing.Color.Yellow;
-            this.checkBox_RecordSALPA.Location = new System.Drawing.Point(161, 92);
+            this.checkBox_RecordSALPA.Location = new System.Drawing.Point(166, 92);
             this.checkBox_RecordSALPA.Name = "checkBox_RecordSALPA";
             this.checkBox_RecordSALPA.Size = new System.Drawing.Size(15, 14);
             this.checkBox_RecordSALPA.TabIndex = 111;
@@ -416,12 +419,15 @@
             this.tabControl1.Location = new System.Drawing.Point(1, 1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(204, 353);
+            this.tabControl1.Size = new System.Drawing.Size(204, 377);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 112;
             // 
             // Streams
             // 
+            this.Streams.Controls.Add(this.label26);
+            this.Streams.Controls.Add(this.label25);
+            this.Streams.Controls.Add(this.checkBox_UseFidTimeStamp);
             this.Streams.Controls.Add(this.label8);
             this.Streams.Controls.Add(this.checkBox_RecordSALPA);
             this.Streams.Controls.Add(this.checkBox_RecordRaw);
@@ -458,10 +464,37 @@
             this.Streams.Location = new System.Drawing.Point(4, 22);
             this.Streams.Name = "Streams";
             this.Streams.Padding = new System.Windows.Forms.Padding(3);
-            this.Streams.Size = new System.Drawing.Size(196, 327);
+            this.Streams.Size = new System.Drawing.Size(196, 351);
             this.Streams.TabIndex = 0;
             this.Streams.Text = "Data Streams";
             this.Streams.UseVisualStyleBackColor = true;
+            // 
+            // label26
+            // 
+            this.label26.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label26.Location = new System.Drawing.Point(8, 321);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(180, 2);
+            this.label26.TabIndex = 114;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(7, 329);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(157, 13);
+            this.label25.TabIndex = 113;
+            this.label25.Text = "Append time stamp on file name";
+            // 
+            // checkBox_UseFidTimeStamp
+            // 
+            this.checkBox_UseFidTimeStamp.AutoSize = true;
+            this.checkBox_UseFidTimeStamp.ForeColor = System.Drawing.Color.Yellow;
+            this.checkBox_UseFidTimeStamp.Location = new System.Drawing.Point(166, 329);
+            this.checkBox_UseFidTimeStamp.Name = "checkBox_UseFidTimeStamp";
+            this.checkBox_UseFidTimeStamp.Size = new System.Drawing.Size(15, 14);
+            this.checkBox_UseFidTimeStamp.TabIndex = 112;
+            this.checkBox_UseFidTimeStamp.UseVisualStyleBackColor = true;
             // 
             // Electrodes
             // 
@@ -472,7 +505,7 @@
             this.Electrodes.Location = new System.Drawing.Point(4, 22);
             this.Electrodes.Name = "Electrodes";
             this.Electrodes.Padding = new System.Windows.Forms.Padding(3);
-            this.Electrodes.Size = new System.Drawing.Size(196, 327);
+            this.Electrodes.Size = new System.Drawing.Size(196, 351);
             this.Electrodes.TabIndex = 1;
             this.Electrodes.Text = "Electrodes";
             this.Electrodes.UseVisualStyleBackColor = true;
@@ -584,7 +617,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(204, 391);
+            this.ClientSize = new System.Drawing.Size(204, 415);
             this.ControlBox = false;
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.button_Cancel);
@@ -646,5 +679,8 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckedListBox checkedListBox_Electrodes;
         private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.CheckBox checkBox_UseFidTimeStamp;
     }
 }

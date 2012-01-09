@@ -29,6 +29,7 @@ namespace NeuroRighter.FileWriting
         internal bool recordStim;
         internal bool recordAuxDig;
         internal bool recordAuxAnalog;
+        internal bool useFidTimeStamp;
 
         // List of electrodes to write to file
         internal List<int> electrodesToRecord;
@@ -87,6 +88,9 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordAuxDig.Enabled = Properties.Settings.Default.useAuxDigitalInput;
             if (!checkBox_RecordAuxDig.Enabled)
                 checkBox_RecordAuxDig.Checked = false;
+
+            // Time stamp option
+            checkBox_UseFidTimeStamp.Checked = Properties.Settings.Default.useFidTimeStamp;
 
             // Set recording parameters
             ResetStreams2Record();
@@ -315,6 +319,9 @@ namespace NeuroRighter.FileWriting
             if (checkBox_RecordAuxDig.Enabled)
                 checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
 
+            // Recall whether to use time stamp
+            checkBox_UseFidTimeStamp.Checked = Properties.Settings.Default.useFidTimeStamp;
+
             //Recall default electrode settings
             //ResetElectrodeCheckBox();
             //int[] e2R = Properties.Settings.Default.electrodesToRecord.Split(',').Select(s => Int32.Parse(s)).ToArray();
@@ -463,6 +470,7 @@ namespace NeuroRighter.FileWriting
             Properties.Settings.Default.recordStim = checkBox_RecordStim.Checked;
             Properties.Settings.Default.recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
             Properties.Settings.Default.recordAuxDigital = checkBox_RecordAuxDig.Checked;
+            Properties.Settings.Default.useFidTimeStamp = checkBox_UseFidTimeStamp.Checked;
 
             // Electrodes
             //SetElectrodes();
@@ -489,6 +497,7 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordStim.Checked = Properties.Settings.Default.recordStim;
             checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.recordAuxAnalog;
             checkBox_RecordAuxDig.Checked = Properties.Settings.Default.recordAuxDigital;
+            checkBox_UseFidTimeStamp.Checked = Properties.Settings.Default.useFidTimeStamp;
 
             //Recall default electrode settings
             //ResetElectrodeCheckBox();
@@ -508,16 +517,6 @@ namespace NeuroRighter.FileWriting
             this.Hide();
 
         }
-
-        //private void button1_Click(object sender, EventArgs e)
-        //{
-        //    ResetElectrodeCheckBox();
-        //}
-
-        //private void button2_Click(object sender, EventArgs e)
-        //{
-        //    SelectAllElectrodes();
-        //}
 
     }
 }

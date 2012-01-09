@@ -346,7 +346,7 @@ namespace NeuroRighter
             stimDigitalTask.Control(TaskAction.Verify);
 
             stim_params sp = (stim_params)e.Argument;
-             
+
             //Create randomized list of channels
             int numStimChannels = sp.stimChannelList.GetLength(0);
             ArrayList chListSorted = new ArrayList(numStimChannels);
@@ -531,7 +531,7 @@ namespace NeuroRighter
             // Display Save File Dialog (Windows forms control)
             DialogResult result = OLFileDialog.ShowDialog();
 
-            
+
 
             if (result == DialogResult.OK)
             {
@@ -560,7 +560,7 @@ namespace NeuroRighter
                 Properties.Settings.Default.Save();
                 filenameOutput = OLFileDialog.FileName;
                 textBox_digitalProtocolFileLocation.Text = filenameOutput;
-            } 
+            }
         }
 
         private void button_browseAuxFile_Click(object sender, EventArgs e)
@@ -615,7 +615,7 @@ namespace NeuroRighter
             if (checkBox_useManStimWaveform.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0],Debugger,stimWaveform);
+                openLoopSynchronizedOutput = new OpenLoopOut(stimFile, digFile, auxFile, STIM_SAMPLING_FREQ, spikeTask[0], Debugger, stimWaveform);
             }
             else
             {
@@ -624,7 +624,7 @@ namespace NeuroRighter
 
             // Subscribe the stopStimFromFile Click to the event raised when
             // OpenLoopOut is finsihed
-            openLoopSynchronizedOutput.OpenLoopOutIsFinished += 
+            openLoopSynchronizedOutput.OpenLoopOutIsFinished +=
                 new OpenLoopOut.OpenLoopOutFinishedEventHandler(FinishOutputFromFile);
 
             // Start the OL Output exp
@@ -711,7 +711,7 @@ namespace NeuroRighter
                     System.Threading.Thread.Sleep((int)(Properties.Settings.Default.DACPollingPeriodSec * 2000));
                     openLoopSynchronizedOutput.KillTasks();
                     //openLoopSynchronizedOutput.KillAllAODOTasks();
-                    
+
                 }
 
                 //ZeroOutput zeroOpenLoopOutput = new ZeroOutput();
@@ -732,7 +732,7 @@ namespace NeuroRighter
                     reset();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
@@ -749,7 +749,7 @@ namespace NeuroRighter
             {
                 this.Invoke((MethodInvoker)delegate//this code is executed on the main thread
                 {
-                   // NROutputShutdown();
+                    // NROutputShutdown();
                     ResetUIAfterOpenLoopOut(false);
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
@@ -761,51 +761,94 @@ namespace NeuroRighter
         #endregion
 
         #region Closed Loop Output
-        private Assembly ClosedLoopLibrary;
+        Assembly ClosedLoopLibrary;
+        System.AppDomain NewAppDomain;
         //private List<ClosedLoopExperiment> experimentList;
         private void button_BrowseCLStimFile_Click(object sender, EventArgs e)
         {
-            // Set dialog's default properties
-            OpenFileDialog CLFileDialog = new OpenFileDialog();
-            CLFileDialog.DefaultExt = "*.dll";         //default extension is for olstim files
-            CLFileDialog.Filter = "library files|*.dll|All Files|*.*";
-            CLFileDialog.InitialDirectory = Properties.Settings.Default.CLstimdirectory;
-
-            // Display Save File Dialog (Windows forms control)
-            DialogResult result = CLFileDialog.ShowDialog();
-            
-            if (result == DialogResult.OK)
+            try
             {
-                string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
-                Properties.Settings.Default.CLstimdirectory = tmp;
-                Properties.Settings.Default.Save();
-                filenameOutput = CLFileDialog.FileName;
-                
-                textBox_ClosedLoopProtocolFile.Text = filenameOutput;
+                // Set dialog's default properties
+                OpenFileDialog CLFileDialog = new OpenFileDialog();
+                CLFileDialog.DefaultExt = "*.dll";         //default extension is for olstim files
+                CLFileDialog.Filter = "library files|*.dll|All Files|*.*";
+                CLFileDialog.InitialDirectory = Properties.Settings.Default.CLstimdirectory;
 
-                //grab the plugins
-                ClosedLoopLibrary = Assembly.LoadFile(filenameOutput);//load the dll as an assembly
-                Type[] types = ClosedLoopLibrary.GetTypes();//find the invidual classes in the assembly
-                //experimentList = new List<ClosedLoopExperiment>();
-                comboBox_closedLoopProtocol.Items.Clear();
-                for (int i = 0; i < types.Length; i++)
+                // Display Save File Dialog (Windows forms control)
+                DialogResult result = CLFileDialog.ShowDialog();
+
+                if (result == DialogResult.OK)
                 {
                     
-                    if (types[i].BaseType.Equals(typeof(ClosedLoopExperiment)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
-                    {
-                        ClosedLoopExperiment tmpcl = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
-                        //experimentList.Add(tmp);//and activated them as such.
-                        Console.WriteLine(tmpcl.ToString());
-                        comboBox_closedLoopProtocol.Enabled = true;
-                        comboBox_closedLoopProtocol.Items.Add(tmpcl);
-                    }
-                }
 
-                //add the choices to the GUI
+                    // copy the cl dll to local directory
+                    File.Delete("LOCAL_CL_EXP1.dll");
+                    File.Copy(CLFileDialog.FileName, "LOCAL_CL_EXP1.dll");
+
+                    string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
+                    Properties.Settings.Default.CLstimdirectory = tmp;
+                    Properties.Settings.Default.Save();
+                    textBox_ClosedLoopProtocolFile.Text = CLFileDialog.FileName;
+
+                    FileInfo tmpFi = new FileInfo("LOCAL_CL_EXP1.dll");
+                    filenameOutput = tmpFi.FullName;
+                    tmpFi = null;
+
+                    // Create a new application domain for the assembly
+                    //System.AppDomain NewAppDomain = System.AppDomain.CreateDomain("CLDllDomain",null);
+                    //NewAppDomain.Load(filenameOutput);
+
+                    //List<Type> types = new List<Type>();
+                    //Type ti = typeof(ClosedLoopExperiment);
+                    //foreach (Assembly asm in NewAppDomain.GetAssemblies())
+                    //{
+                    //    foreach (Type t in asm.GetTypes())
+                    //    {
+                    //        if (ti.IsAssignableFrom(t))
+                    //        {
+                    //            types.Add(t);
+                    //        }
+                    //    }
+                    //}
+
+
+                    //grab the plugins
+                    ClosedLoopLibrary = Assembly.LoadFile(filenameOutput);//load the dll as an assembly
+                   
+                    // Refresh the CL combobox
+                    RefreshCLComboBox();
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Invalid closed loop DLL selection. Please try again: " + ex.Message);
+
             }
         }
 
+        private void RefreshCLComboBox()
+        {
 
+            Type[] types = ClosedLoopLibrary.GetTypes();//find the invidual classes in the assembly
+
+            // Repopulate the combobox
+            comboBox_closedLoopProtocol.Items.Clear();
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (types[i].BaseType.Equals(typeof(ClosedLoopExperiment)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
+                {
+                    ClosedLoopExperiment tmpcl = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
+                    //experimentList.Add(tmp);//and activated them as such.
+                    Console.WriteLine(tmpcl.ToString());
+                    comboBox_closedLoopProtocol.Enabled = true;
+                    comboBox_closedLoopProtocol.Items.Add(tmpcl);
+                }
+
+                // Clear the text
+                comboBox_closedLoopProtocol.Text = "";
+            }
+
+        }
 
         private void button_startClosedLoopStim_Click(object sender, EventArgs e)
         {
@@ -817,8 +860,9 @@ namespace NeuroRighter
 
             // Start the protocol
             startClosedLoopStim();
-            
+
         }
+
         private void startClosedLoopStim()
         {
             if (comboBox_closedLoopProtocol.SelectedItem == null)
@@ -826,28 +870,28 @@ namespace NeuroRighter
                 MessageBox.Show("Please select a protocol");
                 return;
             }
+
+            comboBox_closedLoopProtocol.Refresh();
             ClosedLoopExperiment CLE = (ClosedLoopExperiment)comboBox_closedLoopProtocol.SelectedItem;// ClosedLoopTest();//new SilentBarrageClosedLoop();//
 
             //setup
             NRAcquisitionSetup();
             Task BuffLoadTask = NROutputSetup();
             //create closed loop code, throw into it's own thread
-            
+
 
             if (checkBox_useManStimWaveformCL.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask,Debugger,filenameBase,switch_record.Value, stimWaveform);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value, stimWaveform);
             }
             else
             {
                 closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value);
             }
 
-
-            
             closedLoopSynchronizedOutput.Start();
-            
+
             NRStartRecording();
             //start everything
             //Console.WriteLine(stimSrv);
@@ -872,12 +916,15 @@ namespace NeuroRighter
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
                     Console.WriteLine("Closed loop stimulation closed mid process");
+
+                    // Get rid of old CL objects
+                    RefreshCLComboBox();
                 });
             }
-            //for (int i = 1; i < NationalInstruments.DAQmx.DaqSystem.Local.Tasks.Length; i++)
-            //{
-            //    Console.WriteLine(NationalInstruments.DAQmx.DaqSystem.Local.Tasks[i]);
-            //}
+            
+
+            //AppDomain.Unload(NewAppDomain);
+
         }
         #endregion
 

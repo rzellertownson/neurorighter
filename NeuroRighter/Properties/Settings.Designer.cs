@@ -1022,5 +1022,17 @@ namespace NeuroRighter.Properties {
                 this["useAuxDataBuffer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useFidTimeStamp {
+            get {
+                return ((bool)(this["useFidTimeStamp"]));
+            }
+            set {
+                this["useFidTimeStamp"] = value;
+            }
+        }
     }
 }

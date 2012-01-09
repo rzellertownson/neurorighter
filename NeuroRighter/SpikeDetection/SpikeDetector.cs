@@ -72,7 +72,7 @@ namespace NeuroRighter.SpikeDetection
         protected bool posCross; // polarity of inital threshold crossing
         protected int recIndexOffset;
         protected int[] deadWidth;
-        private double VOLTAGE_EPSILON = 1e-8;   // 1 uV
+        double VOLTAGE_EPSILON = 0.0000001; // 0.1 uV  
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
             int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,
@@ -430,7 +430,7 @@ namespace NeuroRighter.SpikeDetection
             double numBlanked = 0;
             for (int i = 0; i < absWave.Length; ++i)
             {
-                if (absWave[i] <= VOLTAGE_EPSILON)
+                if (absWave[i] < VOLTAGE_EPSILON)
                 {
                     numBlanked++;
                 }
@@ -439,7 +439,7 @@ namespace NeuroRighter.SpikeDetection
                     numBlanked = 0;
                 }
 
-                if (numBlanked > 4)
+                if (numBlanked > 5)
                     return false;
             }
 
@@ -466,7 +466,6 @@ namespace NeuroRighter.SpikeDetection
                 return spikeSlopeGood;
 
             //Ensure that part of the spike is not blanked
-            double VOLTAGE_EPSILON = 0.0000005; // 1 uV
             double numBlanked = 0;
             for (int i = 0; i < absWave.Length; ++i)
             {

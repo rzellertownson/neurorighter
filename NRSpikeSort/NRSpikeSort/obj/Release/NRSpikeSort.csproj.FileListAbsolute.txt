@@ -606,3 +606,11 @@ C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\NRSpikeSort\bin\Release\cs
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Mowog.PersistWindowState.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\AxInterop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\Interop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\zlib.net.dll
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.pdb
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.xml
+C:\Users\Jon\Desktop\neurorighter-JN\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.xml

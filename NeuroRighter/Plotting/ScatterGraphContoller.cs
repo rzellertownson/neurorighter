@@ -61,13 +61,13 @@ namespace NeuroRighter
         {
      
             // One over samplefreq
-            double oneOverSampleFreq = 1 / analogDataServer.sampleFrequencyHz;
+            double oneOverSampleFreq = 1 / analogDataServer.SampleFrequencyHz;
 
             // First retrieve the data thats in the range of the users request
             ulong[] availableDataRange = analogDataServer.EstimateAvailableTimeRange();
 
             // Plot bound settings
-            ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
+            ulong historySamples = (ulong)(analogDataServer.SampleFrequencyHz * requestedHistorySec);
             double minUpdateTimeSec = 0.05; //seconds
             int downSampleFactor = (int)(historySamples/numSampToPlot);
             if (historySamples < numSampToPlot)
@@ -91,7 +91,7 @@ namespace NeuroRighter
                 if (historySamples > availableDataRange[1])
                 {
                     analogData = analogDataServer.ReadFromBuffer(0, availableDataRange[1]);
-                    newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
+                    newDataLength = analogData.Buffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
                     xDat = new double[newDataLength];
@@ -104,7 +104,7 @@ namespace NeuroRighter
                 else if(availableDataRange[1] - lastSampleRead > historySamples)
                 {
                     analogData = analogDataServer.ReadFromBuffer(availableDataRange[1] - historySamples, availableDataRange[1]);
-                    newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
+                    newDataLength = analogData.Buffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
                     xDat = new double[numSampToPlot];
@@ -117,7 +117,7 @@ namespace NeuroRighter
                 else
                 {
                     analogData = analogDataServer.ReadFromBuffer(lastSampleRead, availableDataRange[1]);
-                    newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
+                    newDataLength = analogData.Buffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
                     xDat = new double[numSampToPlot];
@@ -129,7 +129,7 @@ namespace NeuroRighter
                 }
 
                 // Update last sample read
-                lastSampleRead = analogData.startAndEndSample[1];
+                lastSampleRead = analogData.StartAndEndSample[1];
 
                 // Get plot range
                 Range plotYRange = new Range(-peakVoltage + shift, peakVoltage + shift);
@@ -138,7 +138,7 @@ namespace NeuroRighter
                 // Update the scatter plot
                 for (int i = 0; i < analogScatterGraph.Plots.Count; ++i)
                 {
-                    double[] yDatTmp = analogData.rawMultiChannelBuffer[i];
+                    double[] yDatTmp = analogData.Buffer[i];
                     double[] yDatDS = new double[newDataLength];
 
                     // Make y data

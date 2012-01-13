@@ -19,7 +19,7 @@ namespace NeuroRighter.DataTypes
         // User accessible
         private double sampleFrequencyHz;
         private ulong[] startAndEndSample;
-        private double[][] rawMultiChannelBuffer;
+        private double[][] buffer;
         private int numChannels;
         private int bufferLengthInSamples;
 
@@ -51,7 +51,7 @@ namespace NeuroRighter.DataTypes
             this.startAndEndSample = new ulong[2];
             this.startAndEndSample[0] = 0;
             this.startAndEndSample[1] = 0;
-            this.rawMultiChannelBuffer = new double[numChannels * numDataCollectionTasks][];
+            this.buffer = new double[numChannels * numDataCollectionTasks][];
             this.leastCurrentCircularSample = new int[numDataCollectionTasks];
             this.mostCurrentCircularSample = new int[numDataCollectionTasks]; ;
             this.totalNumSamplesWritten = new ulong[numDataCollectionTasks]; ;
@@ -60,11 +60,11 @@ namespace NeuroRighter.DataTypes
             for (int i = 0; i < numChannels * numDataCollectionTasks; ++i)
             {
 
-                rawMultiChannelBuffer[i] = new double[bufferLengthInSamples];
+                buffer[i] = new double[bufferLengthInSamples];
 
                 for (int j = 0; j < bufferLengthInSamples; ++j)
                 {
-                    rawMultiChannelBuffer[i][j] = 0;
+                    buffer[i][j] = 0;
                 }
             }
         }
@@ -144,11 +144,11 @@ namespace NeuroRighter.DataTypes
         /// <summary>
         /// The sample buffer itself.
         /// </summary>
-        public double[][] RawMultiChannelBuffer
+        public double[][] Buffer
         {
             get
             {
-                return rawMultiChannelBuffer;
+                return buffer;
             }
         }
 

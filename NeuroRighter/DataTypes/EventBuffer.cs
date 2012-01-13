@@ -30,7 +30,7 @@ namespace NeuroRighter.DataTypes
     public class EventBuffer<T> where T : NREvent
     {
         private double sampleFrequencyHz;
-        private List<T> eventBuffer = new List<T>();
+        private List<T> buffer = new List<T>();
 
         /// <summary>
         /// Standard NR buffer class for generic event data
@@ -55,11 +55,11 @@ namespace NeuroRighter.DataTypes
         /// <summary>
         /// The event buffer.
         /// </summary>
-        public List<T> EventBuffer
+        public List<T> Buffer
         {
             get
             {
-                return eventBuffer;
+                return buffer;
             }
         }
     }

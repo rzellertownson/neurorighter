@@ -32,7 +32,7 @@ namespace NeuroRighter.DataTypes
             /// <summary>
             /// Sampling frequency of data in the buffer</param>
             /// </summary>
-            public uint SampleFrequencyHz
+            public double SampleFrequencyHz
             {
                 get
                 {

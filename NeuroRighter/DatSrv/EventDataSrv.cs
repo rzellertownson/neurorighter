@@ -88,11 +88,11 @@ namespace NeuroRighter.DatSrv
                 // each 32 channel recording task)
                 if (minCurrentSample > bufferSizeInSamples)
                 {
-                    dataBuffer.EventBuffer.RemoveAll(x => x.SampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
+                    dataBuffer.Buffer.RemoveAll(x => x.SampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
                 }
 
                 // Add new data
-                dataBuffer.EventBuffer.AddRange(newData.EventBuffer);
+                dataBuffer.Buffer.AddRange(newData.Buffer);
                 //Console.WriteLine(newData.eventBuffer.Count);
 
                 // Update current read-head position
@@ -119,16 +119,16 @@ namespace NeuroRighter.DatSrv
                 // each 32 channel recording task)
                 if (minCurrentSample > bufferSizeInSamples)
                 {
-                    dataBuffer.EventBuffer.RemoveAll(x => x.SampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
+                    dataBuffer.Buffer.RemoveAll(x => x.SampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
                 }
 
                 // Move time stamps to absolute scheme
-                for (int i = 0; i < newData.EventBuffer.Count; ++i)
+                for (int i = 0; i < newData.Buffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
-                    T tmp = (T)newData.EventBuffer[i].DeepClone();
+                    T tmp = (T)newData.Buffer[i].DeepClone();
                     tmp.SampleIndex = tmp.SampleIndex + currentSample[taskNo];
-                    dataBuffer.EventBuffer.Add(tmp);
+                    dataBuffer.Buffer.Add(tmp);
                 }
 
                 // Update current read-head position
@@ -193,8 +193,8 @@ namespace NeuroRighter.DatSrv
 
                 // Collect all the data within the desired sample range and add to the returnBuffer object
                 //returnBuffer = dataBuffer.DeepClone();
-                returnBuffer.EventBuffer.AddRange(
-                    dataBuffer.EventBuffer.Where(
+                returnBuffer.Buffer.AddRange(
+                    dataBuffer.Buffer.Where(
                         x => (x.SampleIndex > desiredStartIndex
                         && x.SampleIndex <= desiredStopIndex)).ToList());
 

@@ -54,5 +54,20 @@ namespace NeuroRighter.DataTypes
                 value = sampleIndex;
             }
         }
+
+        /// <summary>
+        /// Specifies sample duration
+        /// </summary>
+        public uint SampleDuration
+        {
+            get
+            {
+                return sampleDuration;
+            }
+            set
+            {
+                value = sampleDuration;
+            }
+        }
     }
 }

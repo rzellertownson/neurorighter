@@ -82,6 +82,10 @@ namespace NeuroRighter.DataTypes
             {
                 return channel;
             }
+            set
+            {
+                channel = value;
+            }
         }
 
         /// <summary>
@@ -109,7 +113,7 @@ namespace NeuroRighter.DataTypes
         /// <summary>
         /// A voltage vector specifying a spike snippet
         /// </summary>
-        public double Waveform
+        public double[] Waveform
         {
             get
             {

@@ -58,7 +58,7 @@ namespace NeuroRighter.DatSrv
                 {
                     for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.RawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
+                        dataBuffer.Buffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
@@ -82,7 +82,7 @@ namespace NeuroRighter.DatSrv
                 {
                     for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.RawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j, i];
+                        dataBuffer.Buffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j, i];
                     }
 
                     // Increment start, end and write markers
@@ -104,7 +104,7 @@ namespace NeuroRighter.DatSrv
                 {
                     for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.RawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j][i];
+                        dataBuffer.Buffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
@@ -126,7 +126,7 @@ namespace NeuroRighter.DatSrv
                 {
                     for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.RawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j, i];
+                        dataBuffer.Buffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j, i];
                     }
 
                     // Increment start, end and write markers
@@ -218,19 +218,13 @@ namespace NeuroRighter.DatSrv
                         int circSample = dataBuffer.FindSampleIndex(j);
                         for (int i = 0; i < dataBuffer.NumChannels; ++i)
                         {
-                            returnBuffer.RawMultiChannelBuffer[i][j - absStart] = dataBuffer.RawMultiChannelBuffer[i][circSample];
+                            returnBuffer.Buffer[i][j - absStart] = dataBuffer.Buffer[i][circSample];
                         }
                     }
                 }
                 // Return the data
                 return returnBuffer;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitReadLock();
-            //}
 
         }
 

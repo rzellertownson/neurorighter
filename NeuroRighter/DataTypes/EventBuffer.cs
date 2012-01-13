@@ -29,15 +29,8 @@ namespace NeuroRighter.DataTypes
     [Serializable]
     public class EventBuffer<T> where T : NREvent
     {
-        /// <summary>
-        /// Sampling frequency of data in the buffer</param>
-        /// </summary>
-        public double sampleFrequencyHz;
-
-        /// <summary>
-        /// The event buffer.
-        /// </summary>
-        public List<T> eventBuffer = new List<T>();
+        private double sampleFrequencyHz;
+        private List<T> eventBuffer = new List<T>();
 
         /// <summary>
         /// Standard NR buffer class for generic event data
@@ -46,6 +39,28 @@ namespace NeuroRighter.DataTypes
         public EventBuffer(double sampleFrequencyHz)
         {
             this.sampleFrequencyHz = sampleFrequencyHz;
+        }
+
+        /// <summary>
+        /// Sampling frequency of data in the buffer</param>
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+        }
+
+        /// <summary>
+        /// The event buffer.
+        /// </summary>
+        public List<T> EventBuffer
+        {
+            get
+            {
+                return eventBuffer;
+            }
         }
     }
 

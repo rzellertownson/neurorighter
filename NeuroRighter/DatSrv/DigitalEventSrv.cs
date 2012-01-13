@@ -31,11 +31,7 @@ namespace NeuroRighter.DatSrv
     /// </summary>
     public class DigitalEventSrv
     {
-
-        /// <summary>
-        ///  The mutex class for concurrent read and write access to data buffers
-        /// </summary>
-        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        // Locking object for thread-safe access to the internal data buffer
         protected static readonly object lockObj = new object();
 
         // Main storage buffer
@@ -63,42 +59,35 @@ namespace NeuroRighter.DatSrv
             this.bufferSizeInSamples = (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
         }
 
+        /// <summary>
+        /// Write data to the Digital Event Server
+        /// </summary>
+        /// <param name="newData"> A digital event buffer containing the digital events to be added to the buffer.</param>
         internal void WriteToBuffer(DigitalEventBuffer newData)
         {
-            // Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // First we must remove the expired samples (we cannot assume these are
                 // in temporal order since for 64 channels, we have to write 2x, once for
                 // each 32 channel recording task)
                 int i = 0;
-                while (i < dataBuffer.sampleBuffer.Count)
+                while (i < dataBuffer.SampleBuffer.Count)
                 {
                     // Remove expired data
-                    if (dataBuffer.sampleBuffer.ElementAt(i) + (ulong)bufferSizeInSamples < currentSample)
+                    if (dataBuffer.SampleBuffer.ElementAt(i) + (ulong)bufferSizeInSamples < currentSample)
                     {
-                        dataBuffer.sampleBuffer.RemoveAt(i);
-                        dataBuffer.portStateBuffer.RemoveAt(i);
+                        dataBuffer.SampleBuffer.RemoveAt(i);
+                        dataBuffer.PortStateBuffer.RemoveAt(i);
                     }
                 }
 
                 // Add new data
-                dataBuffer.sampleBuffer.AddRange(newData.sampleBuffer);
-                dataBuffer.portStateBuffer.AddRange(newData.portStateBuffer);
+                dataBuffer.SampleBuffer.AddRange(newData.SampleBuffer);
+                dataBuffer.PortStateBuffer.AddRange(newData.PortStateBuffer);
 
                 // Update the most current sample read
                 currentSample += (ulong)numSamplesPerWrite;
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
-
         }
 
         /// <summary>
@@ -108,30 +97,15 @@ namespace NeuroRighter.DatSrv
         /// <returns>timeRange</returns>
         internal ulong[] EstimateAvailableTimeRange()
         {
-
-            
-
-            // Enforce a read lock
-            //bufferLock.EnterReadLock();
-            //try
-            //{
             lock (lockObj)
             {
                 ulong[] timeRange = new ulong[2];
 
-                timeRange[0] = dataBuffer.sampleBuffer.Min();
-                timeRange[1] = dataBuffer.sampleBuffer.Max();
+                timeRange[0] = dataBuffer.SampleBuffer.Min();
+                timeRange[1] = dataBuffer.SampleBuffer.Max();
 
                 return timeRange;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitReadLock();
-            //}
-
-
         }
 
         /// <summary>
@@ -145,39 +119,26 @@ namespace NeuroRighter.DatSrv
         /// <returns>DigitalEventBuffer</returns>
         internal DigitalEventBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
-            DigitalEventBuffer returnBuffer = new DigitalEventBuffer(dataBuffer.sampleFrequencyHz);
-
-            // Enforce a read lock
-            //bufferLock.EnterReadLock();
-            //try
-            //{
             lock (lockObj)
             {
+                DigitalEventBuffer returnBuffer = new DigitalEventBuffer(dataBuffer.SampleFrequencyHz);
+
                 // Collect all the data within the desired sample range and add to the returnBuffer
                 // object
                 int i = 0;
-                while (i < dataBuffer.sampleBuffer.Count)
+                while (i < dataBuffer.SampleBuffer.Count)
                 {
-                    if (dataBuffer.sampleBuffer.ElementAt(i) > desiredStartIndex &&
-                        dataBuffer.sampleBuffer.ElementAt(i) <= desiredStopIndex)
+                    if (dataBuffer.SampleBuffer.ElementAt(i) > desiredStartIndex &&
+                        dataBuffer.SampleBuffer.ElementAt(i) <= desiredStopIndex)
                     {
-                        returnBuffer.sampleBuffer.Add(dataBuffer.sampleBuffer.ElementAt(i));
-                        returnBuffer.portStateBuffer.Add(dataBuffer.portStateBuffer.ElementAt(i));
+                        returnBuffer.SampleBuffer.Add(dataBuffer.SampleBuffer.ElementAt(i));
+                        returnBuffer.PortStateBuffer.Add(dataBuffer.PortStateBuffer.ElementAt(i));
                     }
                 }
 
                 // Return the data
                 return returnBuffer;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitReadLock();
-            //}
-
-
-
         }
 
         # region Public Accessors

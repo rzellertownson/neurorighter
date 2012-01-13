@@ -31,25 +31,28 @@ namespace NeuroRighter.DataTypes
     public abstract class NREvent 
 
     {
+        protected ulong sampleIndex;
+        protected uint sampleDuration;
+
         /// <summary>
         /// Base class for event type data wrapper classes in NR.
         /// <author>Jon Newman </author>
         /// </summary> 
-        
-        /// <summary>
-        /// Specifys when event occured relative to recording start
-        /// </summary>
-        public ulong sampleIndex;
-
-        //how long is it.  0 is the default, used for state change events
-        internal uint sampleDuration=0;
-
-        //internal double samplingFrequency;//a sample index can be very confusing 
-        //if we don't know what sampling rate it corresponds to- especially if we 
-        //are looking a similar events (recorded vs applied stimuli) with different
-        //sampling frequencies
-
         public NREvent() {}
 
+        /// <summary>
+        /// Specifies when event occured relative to recording start
+        /// </summary>
+        public ulong SampleIndex
+        {
+            get
+            {
+                return sampleIndex;
+            }
+            set
+            {
+                value = sampleIndex;
+            }
+        }
     }
 }

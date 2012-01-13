@@ -13,31 +13,67 @@ namespace NeuroRighter.DataTypes
         /// </summary>
         class DigitalEventBuffer
         {
-            /// <summary>
-            /// Sampling frequency of data in the buffer</param>
-            /// </summary>
-            public double sampleFrequencyHz;
 
-            /// <summary>
-            /// The time stamp buffer.
-            /// </summary>
-            public List<ulong> sampleBuffer;
-
-            /// <summary>
-            /// The port state buffer.
-            /// </summary>
-            public List<int> portStateBuffer;
+            private double sampleFrequencyHz;
+            private List<ulong> sampleBuffer;
+            private List<int> portStateBuffer;
 
             /// <summary>
             /// Standard NR buffer class for digital event type data
             /// </summary>
-            /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
-            public DigitalEventBuffer(double sampleFrequencyHz)
+            /// <param name="SampleFrequencyHz"> Sampling frequency of data in the buffer</param>
+            public DigitalEventBuffer(double SampleFrequencyHz)
             {
-                this.sampleFrequencyHz = sampleFrequencyHz;
+                this.sampleFrequencyHz = SampleFrequencyHz;
                 this.sampleBuffer = new List<ulong>();
                 this.portStateBuffer = new List<int>();
             }
+
+            /// <summary>
+            /// Sampling frequency of data in the buffer</param>
+            /// </summary>
+            public uint SampleFrequencyHz
+            {
+                get
+                {
+                    return sampleFrequencyHz;
+                }
+                //set
+                //{
+                //    sampleFrequencyHz = value;
+                //}
+            }
+
+            /// <summary>
+            /// The time stamp buffer.
+            /// </summary>
+            public List<ulong> SampleBuffer
+            {
+                get
+                {
+                    return sampleBuffer;
+                }
+                //set
+                //{
+                //    sampleBuffer = value;
+                //}
+            }
+
+            /// <summary>
+            /// The port state buffer.
+            /// </summary>
+            public List<int> PortStateBuffer
+            {
+                get
+                {
+                    return portStateBuffer;
+                }
+                //set
+                //{
+                //    portStateBuffer = value;
+                //}
+            }
+
         }
    
 }

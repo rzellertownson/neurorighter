@@ -17,11 +17,11 @@ namespace NeuroRighter.DataTypes
     public class RawMultiChannelBuffer
     {
         // User accessible
-        public double sampleFrequencyHz;
-        public ulong[] startAndEndSample;
-        public double[][] rawMultiChannelBuffer;
-        public int numChannels;
-        public int bufferLengthInSamples;
+        private double sampleFrequencyHz;
+        private ulong[] startAndEndSample;
+        private double[][] rawMultiChannelBuffer;
+        private int numChannels;
+        private int bufferLengthInSamples;
 
         // NeuroRighter accessible
         internal int[] leastCurrentCircularSample;//one for each task
@@ -105,6 +105,65 @@ namespace NeuroRighter.DataTypes
         internal int FindSampleIndex(ulong absoluteSampleIndex)
         {
             return (int)(absoluteSampleIndex % (ulong)bufferLengthInSamples);
+        }
+
+        /// <summary>
+        /// The sampling frequency of this data stream in Hz.
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+        }
+
+        /// <summary>
+        /// The oldest and newest sample that are current members of this data buffer.
+        /// </summary>
+        public ulong[] StartAndEndSample
+        {
+            get
+            {
+                return startAndEndSample;
+            }
+            set
+            {
+                value = startAndEndSample;
+            }
+        }
+
+        /// <summary>
+        /// The sample buffer itself.
+        /// </summary>
+        public double[][] RawMultiChannelBuffer
+        {
+            get
+            {
+                return rawMultiChannelBuffer;
+            }
+        }
+
+        /// <summary>
+        /// The number channels stored in this buffer.
+        /// </summary>
+        public int NumChannels
+        {
+            get
+            {
+                return NumChannels;
+            }
+        }
+
+        /// <summary>
+        /// The history of the this buffer, measured in the amount of past samples it stores for eachc channel.
+        /// </summary>
+        public int BufferLengthInSamples
+        {
+            get
+            {
+                return BufferLengthInSamples;
+            }
         }
     }
 }

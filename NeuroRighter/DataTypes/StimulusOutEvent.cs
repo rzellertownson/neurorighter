@@ -16,13 +16,11 @@ namespace NeuroRighter.DataTypes
         private const int PORT_OFFSET_32bitPort = 7;
         private const int PORT_OFFSET_8bitPort = 0;
 
+        // Internal to NR
         internal Int16 channel; //1 based
-        //public ulong time; // write time (in 100ths of ms)
         internal double[] waveform; //Stim voltage
- 
-        public double[] AnalogEncode;
-        public UInt32[] DigitalEncode;
-
+        internal double[] AnalogEncode;
+        internal UInt32[] DigitalEncode;
 
         public StimulusOutEvent(int channel, ulong time, double[] waveform)
         {
@@ -36,9 +34,6 @@ namespace NeuroRighter.DataTypes
                 {
                     this.waveform[i] = waveform[i];
                 }
-
-
-                //need to include PreCompute functions in here- parallel list with analog, digital encode data.
 
                 //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
                 this.AnalogEncode = new double[2];

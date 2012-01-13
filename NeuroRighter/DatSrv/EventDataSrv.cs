@@ -31,10 +31,7 @@ namespace NeuroRighter.DatSrv
     /// </summary>
     public class EventDataSrv<T> where T : NREvent
     {
-        /// <summary>
-        ///  The mutex class for concurrent read and write access to data buffers
-        /// </summary>
-        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        // Locking object for thread-safe access to the internal data buffer
         protected static readonly object lockObj = new object();
 
         // Main storage buffer
@@ -45,13 +42,11 @@ namespace NeuroRighter.DatSrv
         private int numSamplesPerWrite;  // The number of samples for each buffer that events could have been detected in
         private ulong minCurrentSample;
         private ulong serverLagSamples;
-
+        private double sampleFrequencyHz;
+        private int channelCount;
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
-
-        private double sampleFrequencyHz;
-        private int channelCount;
 
         /// <summary>
         /// Generic event-type data server (e.g. spikes). The main data buffer that this class updates
@@ -79,12 +74,13 @@ namespace NeuroRighter.DatSrv
             this.channelCount = channelCount;
         }
 
+        /// <summary>
+        /// Write data to the Event Server
+        /// </summary>
+        /// <param name="newData">An event buffer containing the events to add to the server</param>
+        /// <param name="taskNo"> The NI task that created these new data</param>
         internal void WriteToBuffer(EventBuffer<T> newData, int taskNo)
         {
-            // Lock out other threads 
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // First we must remove the expired samples (we cannot assume these are
@@ -92,11 +88,11 @@ namespace NeuroRighter.DatSrv
                 // each 32 channel recording task)
                 if (minCurrentSample > bufferSizeInSamples)
                 {
-                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
+                    dataBuffer.EventBuffer.RemoveAll(x => x.SampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
                 }
 
                 // Add new data
-                dataBuffer.eventBuffer.AddRange(newData.eventBuffer);
+                dataBuffer.EventBuffer.AddRange(newData.EventBuffer);
                 //Console.WriteLine(newData.eventBuffer.Count);
 
                 // Update current read-head position
@@ -106,27 +102,16 @@ namespace NeuroRighter.DatSrv
                 else
                     minCurrentSample = 0;
             }
-
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
-
         }
 
+        /// <summary>
+        /// Write data to the Event Server. This write operation is used when the sampleIndicies in the newData buffer
+        /// correspond to the start of a DAQ buffer poll rather than the start of the recording.
+        /// </summary>
+        /// <param name="newData"></param>
+        /// <param name="taskNo"></param>
         internal void WriteToBufferRelative(EventBuffer<T> newData, int taskNo)
         {
-            // This write operation is used when the sampleIndicies in the newData buffer
-            // correspond to the start of a DAQ buffer poll rather than the start of the record
-
-            //string times = "";
-
-            //// Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // First we must remove the expired samples (we cannot assume these are
@@ -134,17 +119,16 @@ namespace NeuroRighter.DatSrv
                 // each 32 channel recording task)
                 if (minCurrentSample > bufferSizeInSamples)
                 {
-                    dataBuffer.eventBuffer.RemoveAll(x => x.sampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
+                    dataBuffer.EventBuffer.RemoveAll(x => x.SampleIndex < minCurrentSample - (ulong)bufferSizeInSamples);
                 }
 
                 // Move time stamps to absolute scheme
-                for (int i = 0; i < newData.eventBuffer.Count; ++i)
+                for (int i = 0; i < newData.EventBuffer.Count; ++i)
                 {
                     // Convert time stamps to absolute scheme
-                    T tmp = (T)newData.eventBuffer[i].DeepClone();
-                    tmp.sampleIndex = tmp.sampleIndex + currentSample[taskNo];
-                    dataBuffer.eventBuffer.Add(tmp);
-                    //times += tmp.sampleIndex.ToString() + ", ";
+                    T tmp = (T)newData.EventBuffer[i].DeepClone();
+                    tmp.SampleIndex = tmp.SampleIndex + currentSample[taskNo];
+                    dataBuffer.EventBuffer.Add(tmp);
                 }
 
                 // Update current read-head position
@@ -154,13 +138,6 @@ namespace NeuroRighter.DatSrv
                 else
                     minCurrentSample = 0;
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
-
         }
 
         /// <summary>
@@ -210,36 +187,20 @@ namespace NeuroRighter.DatSrv
         /// <returns>EventBuffer</returns>
         public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
-            
-
-            //// Enforce a read lock
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 EventBuffer<T> returnBuffer = new EventBuffer<T>(sampleFrequencyHz);
 
                 // Collect all the data within the desired sample range and add to the returnBuffer object
                 //returnBuffer = dataBuffer.DeepClone();
-                returnBuffer.eventBuffer.AddRange(
-                    dataBuffer.eventBuffer.Where(
-                        x => (x.sampleIndex > desiredStartIndex
-                        && x.sampleIndex <= desiredStopIndex)).ToList());
+                returnBuffer.EventBuffer.AddRange(
+                    dataBuffer.EventBuffer.Where(
+                        x => (x.SampleIndex > desiredStartIndex
+                        && x.SampleIndex <= desiredStopIndex)).ToList());
 
                 // Return the data
                 return returnBuffer;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitWriteLock();
-            //}
-
-            //// Return the data
-            //return returnBuffer;
-
         }
 
         # region Public Accessors
@@ -271,7 +232,5 @@ namespace NeuroRighter.DatSrv
         }
 
         # endregion
-
-
     }
 }

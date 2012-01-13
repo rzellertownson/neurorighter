@@ -24,22 +24,37 @@ using System.Text;
 namespace NeuroRighter.DataTypes
 {
     /// <summary>
-    /// Generic class for holding digial events. That is, those that are defined
-    /// by a discrete point in time, but also can have a port state, represented
-    /// by an 32 bit integer, associated with them.
+
     /// <author> Jon Newman </author>
     /// </summary>
     [Serializable]
     public sealed class DigitalPortEvent : NREvent
     {
-        
         //internal ulong sampleIndex;
         internal uint portState;
 
+        /// <summary>
+        /// Generic class for holding digial events. That is, those that are defined
+        /// by a discrete point in time, but also can have a port state, represented
+        /// by an 32 bit integer, associated with them.
+        /// </summary>
+        /// <param name="sampleIndex">Event sample index</param>
+        /// <param name="portState">32 bit integer representing the port state at the corresponding sample index</param>
         public DigitalPortEvent(ulong sampleIndex, uint portState)
         {
             this.sampleIndex = sampleIndex;
             this.portState = portState;
+        }
+
+        /// <summary>
+        /// The 32 bit integer state of the digital port.
+        /// </summary>
+        public uint PortState
+        {
+            get
+            {
+                return portState; 
+            }
         }
 
     }

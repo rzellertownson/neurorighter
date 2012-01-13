@@ -12,24 +12,15 @@ namespace NeuroRighter.DatSrv
     /// </summary>
     public class RawDataSrv
     {
-        // The mutex class for concurrent read and write access to data buffers
-        //protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        // Locking object for thread-safe access to the internal data buffer
         protected static readonly object lockObj = new object();
 
         // Main storage buffer
         private RawMultiChannelBuffer dataBuffer;
         private int numSamplesPerWrite; // The number of samples to be writen for each channel during a write operations
         private int numTasks;
-
-        /// <summary>
-        /// Sampling frequency for data collected for this server.
-        /// </summary>
-        public double sampleFrequencyHz;
-
-        /// <summary>
-        ///  Number of channels belonging to this server
-        /// </summary>
-        public int channelCount;
+        private double sampleFrequencyHz;
+        private int channelCount;
 
         /// <summary>
         /// Generic raw data server for multichannel data streams. The main data buffer that this class updates i
@@ -52,116 +43,96 @@ namespace NeuroRighter.DatSrv
             this.channelCount = numChannels;
         }
 
+        /// <summary>
+        /// Write data to the Raw Data Server.
+        /// </summary>
+        /// <param name="newData"> Data block to be added to the server's data buffer.</param>
+        /// <param name="task"> The NI task that created these new data</param>
+        /// <param name="offset"> Sample offset incurred due to acausal filtering</param>
         internal void WriteToBuffer(double[][] newData, int task, int offset)
         {
-            // Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
-                    for (int j = 0; j < dataBuffer.numChannels; ++j)
+                    for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
+                        dataBuffer.RawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
         }
 
+        /// <summary>
+        /// Write data to the Raw Data Server.
+        /// </summary>
+        /// <param name="newData"> Data block to be added to the server's data buffer.</param>
+        /// <param name="task"> The NI task that created these new data</param>
+        /// <param name="offset"> Sample offset incurred due to acausal filtering</param>
         internal void WriteToBuffer(double[,] newData, int task, int offset)
         {
-            // Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
-                    for (int j = 0; j < dataBuffer.numChannels; ++j)
+                    for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j, i];
+                        dataBuffer.RawMultiChannelBuffer[offset * task + j][dataBuffer.leastCurrentCircularSample[task]] = newData[j, i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
         }
 
+        /// <summary>
+        /// Write data to the Raw Data Server.
+        /// </summary>
+        /// <param name="newData"> Data block to be added to the server's data buffer.</param>
         internal void WriteToBuffer(double[][] newData)
         {
-            // Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
-                    for (int j = 0; j < dataBuffer.numChannels; ++j)
+                    for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j][i];
+                        dataBuffer.RawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j][i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(0);
                 }
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
         }
 
+        /// <summary>
+        /// Write data to the Raw Data Server.
+        /// </summary>
+        /// <param name="newData"> Data block to be added to the server's data buffer.</param>
         internal void WriteToBuffer(double[,] newData)
         {
-            // Lock out other write operations
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 // Overwrite expired samples.
                 for (int i = 0; i < numSamplesPerWrite; ++i)
                 {
-                    for (int j = 0; j < dataBuffer.numChannels; ++j)
+                    for (int j = 0; j < dataBuffer.NumChannels; ++j)
                     {
-                        dataBuffer.rawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j, i];
+                        dataBuffer.RawMultiChannelBuffer[j][dataBuffer.leastCurrentCircularSample[0]] = newData[j, i];
                     }
 
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(0);
                 }
             }
-            //}
-            //finally
-            //{
-            //    // release the write lock
-            //    bufferLock.ExitWriteLock();
-            //}
         }
 
         /// <summary>
@@ -171,20 +142,10 @@ namespace NeuroRighter.DatSrv
         /// <returns>timeRange</returns>
         public ulong[] EstimateAvailableTimeRange()
         {
-            // Enforce a read lock
-            //bufferLock.EnterReadLock();
-            //try
-            //{
             lock (lockObj)
             {
-                return dataBuffer.startAndEndSample;
+                return dataBuffer.StartAndEndSample;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitReadLock();
-            //}
         }
 
         /// <summary>
@@ -218,17 +179,17 @@ namespace NeuroRighter.DatSrv
                 RawMultiChannelBuffer returnBuffer = null;
 
                 // First make sure that there are samples available within the desired range
-                if (dataBuffer.startAndEndSample[0] <= desiredStartIndex ||
-                   dataBuffer.startAndEndSample[1] >= desiredStopIndex)
+                if (dataBuffer.StartAndEndSample[0] <= desiredStartIndex ||
+                   dataBuffer.StartAndEndSample[1] >= desiredStopIndex)
                 {
                     // Figure out what part of the buffer we want in reference to the leastCurrentSample
                     // Lower bound
                     ulong absStart;
                     ulong absStop;
-                    if (desiredStartIndex <= dataBuffer.startAndEndSample[0])
+                    if (desiredStartIndex <= dataBuffer.StartAndEndSample[0])
                     {
                         startIndex = dataBuffer.netLeastAndMostCurrentCircular[0];
-                        absStart = dataBuffer.startAndEndSample[0];
+                        absStart = dataBuffer.StartAndEndSample[0];
                     }
                     else
                     {
@@ -237,10 +198,10 @@ namespace NeuroRighter.DatSrv
                     }
 
                     // Upper bound
-                    if (desiredStopIndex >= dataBuffer.startAndEndSample[1])
+                    if (desiredStopIndex >= dataBuffer.StartAndEndSample[1])
                     {
                         stopIndex = dataBuffer.netLeastAndMostCurrentCircular[1];
-                        absStop = dataBuffer.startAndEndSample[1];
+                        absStop = dataBuffer.StartAndEndSample[1];
                     }
                     else
                     {
@@ -249,15 +210,15 @@ namespace NeuroRighter.DatSrv
                     }
 
                     // Instantiate the returnBuffer
-                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.sampleFrequencyHz, dataBuffer.numChannels, (int)(absStop - absStart + 1), numTasks);
-                    returnBuffer.startAndEndSample = new ulong[] { absStart, absStop };
+                    returnBuffer = new RawMultiChannelBuffer(dataBuffer.SampleFrequencyHz, dataBuffer.NumChannels, (int)(absStop - absStart + 1), numTasks);
+                    returnBuffer.StartAndEndSample = new ulong[] { absStart, absStop };
 
                     for (ulong j = absStart; j < absStop + 1; ++j)
                     {
                         int circSample = dataBuffer.FindSampleIndex(j);
-                        for (int i = 0; i < dataBuffer.numChannels; ++i)
+                        for (int i = 0; i < dataBuffer.NumChannels; ++i)
                         {
-                            returnBuffer.rawMultiChannelBuffer[i][j - absStart] = dataBuffer.rawMultiChannelBuffer[i][circSample];
+                            returnBuffer.RawMultiChannelBuffer[i][j - absStart] = dataBuffer.RawMultiChannelBuffer[i][circSample];
                         }
                     }
                 }
@@ -271,6 +232,28 @@ namespace NeuroRighter.DatSrv
             //    bufferLock.ExitReadLock();
             //}
 
+        }
+
+        /// <summary>
+        /// Sampling frequency for data collected for this server.
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+        }
+
+        /// <summary>
+        ///  Number of channels belonging to this server
+        /// </summary>
+        public int ChannelCount
+        {
+            get
+            {
+                return channelCount;
+            }
         }
 
     }

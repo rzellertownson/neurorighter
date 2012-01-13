@@ -25,7 +25,6 @@ namespace NeuroRighter.DataTypes
     /// <summary>
     /// Generic class for holding Analog Output events. That is, those that are defined
     /// by a discrete point in time, but also have a channel and voltage
-    /// <author> Riley Zeller-Townson </author>
     /// </summary>
     
     [Serializable]
@@ -35,16 +34,18 @@ namespace NeuroRighter.DataTypes
         internal uint channel;
         internal double voltage;
 
+        /// <summary>
+        /// Generic class for holding Analog Output events. That is, those that are defined
+        /// by a discrete point in time, but also have a channel and voltage
+        /// </summary>
+        /// <param name="time"> event time (in 100ths of ms)</param>
+        /// <param name="channel">the analog channel (0-3), corresponding to the event time</param>
+        /// <param name="voltage">analog voltage state, -10 to 10 volts, corresponding to the event time</param>
         public AnalogOutEvent(ulong sampleIndex, uint channel, double voltage)
         {
             this.sampleIndex = sampleIndex;
             this.channel = channel;
             this.voltage = voltage;
         }
-
-        //internal override NREvent Copy()
-        //{
-        //    return new AnalogOutEvent(this.sampleIndex, this.channel, this.voltage);
-        //}
     }
 }

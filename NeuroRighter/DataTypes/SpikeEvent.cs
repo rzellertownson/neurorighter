@@ -34,26 +34,10 @@ namespace NeuroRighter.DataTypes
     [Serializable]
     public sealed class SpikeEvent : NREvent
     {
-
-        /// <summary>
-        /// HW Channel that the spike occured on
-        /// </summary>
-        public Int16 channel;
-
-        /// <summary>
-        /// The voltage threshold at which the spike was detected
-        /// </summary>
-        public double threshold;
-
-        /// <summary>
-        /// The unit number of the spikes.
-        /// </summary>
-        public Int16 unit;
-
-        /// <summary>
-        /// A voltage vector specifying a spike snippet
-        /// </summary>
-        public double[] waveform;
+        private Int16 channel;
+        private double threshold;
+        private Int16 unit;
+        private double[] waveform;
 
         /// <summary>
         /// Generic class for holding spike events generated within NR.
@@ -71,7 +55,6 @@ namespace NeuroRighter.DataTypes
             this.unit = 0;
         }
 
-
         /// <summary>
         /// Set the unit number of waveform after sorting
         /// </summary>
@@ -88,6 +71,50 @@ namespace NeuroRighter.DataTypes
         public void SetUnit(int unit)
         {
             this.unit = (short)unit;
+        }
+
+        /// <summary>
+        /// HW Channel that the spike occured on
+        /// </summary>
+        public Int16 Channel
+        {
+            get
+            {
+                return channel;
+            }
+        }
+
+        /// <summary>
+        /// The voltage threshold at which the spike was detected
+        /// </summary>
+        public double Threshold
+        {
+            get
+            {
+                return threshold;
+            }
+        }
+
+        /// <summary>
+        /// The unit number of the spikes.
+        /// </summary>
+        public short Unit
+        {
+            get
+            {
+                return unit;
+            }
+        }
+
+        /// <summary>
+        /// A voltage vector specifying a spike snippet
+        /// </summary>
+        public double Waveform
+        {
+            get
+            {
+                return waveform;
+            }
         }
     }
 }

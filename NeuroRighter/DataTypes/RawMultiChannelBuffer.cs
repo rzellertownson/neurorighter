@@ -30,12 +30,12 @@ namespace NeuroRighter.DataTypes
         internal int[] netLeastAndMostCurrentCircular;
 
         /// <summary>
-        /// Standard NR buffer class for raw analog data coming from
-        /// multiple input channels. It has a startAndEndSample property that specifies
-        /// the start and end sample indicies, relative to the start of data collection
-        /// contained in the data buffer corresponding to the first and last positions
+        /// This is the standard NeuroRighter buffer class for buffering raw analog data coming from
+        /// multiple input channels. It has a StartAndEndSample property that specifies
+        /// the  newest and oldest sample indicies, relative to the start of data collection
+        /// contained in the data buffer, which correspond to the first and last positions
         /// of the rawMultichannelBuffer array (one channel's worth of data along each row).
-        /// The samplePeriodSecond property allows client classes to determine the absolute
+        /// The SamplePeriodSecond property allows clients to determine the absolute
         /// time stamp of each sample in seconds.
         /// </summary>
         /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
@@ -69,6 +69,10 @@ namespace NeuroRighter.DataTypes
             }
         }
 
+        /// <summary>
+        /// Icrement the current-most sample for each task that is providing data to the buffer.
+        /// </summary>
+        /// <param name="task"></param>
         internal void IncrementCurrentPosition(int task)
         {
             totalNumSamplesWritten[task]++;
@@ -101,7 +105,11 @@ namespace NeuroRighter.DataTypes
 
         }
 
-        //used for reading only.  this means that we care about the 'youngest' of the two oldest samples and the 
+        /// <summary>
+        /// used for reading only.  this means that we care about the 'youngest' of the two oldest samples and the 
+        /// </summary>
+        /// <param name="absoluteSampleIndex"> The absolute sample index</param>
+        /// <returns>Relative sample index, based relative to the start of the last buffer load.</returns>
         internal int FindSampleIndex(ulong absoluteSampleIndex)
         {
             return (int)(absoluteSampleIndex % (ulong)bufferLengthInSamples);

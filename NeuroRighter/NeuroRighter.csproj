@@ -66,6 +66,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="ConsoleWidget">
+      <HintPath>lib\ConsoleWidget.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
@@ -106,6 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aquisition\AIChannelCollection.cs" />
+    <Compile Include="ConsoleOut\NRConsole.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConsoleOut\NRConsole.Designer.cs">
+      <DependentUpon>NRConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataTypes\AnalogOutEvent.cs" />
     <Compile Include="DataTypes\DigitalEventBuffer.cs" />
     <Compile Include="DataTypes\DigitalPortEvent.cs" />
@@ -306,6 +315,9 @@
     <Compile Include="StimSrv\NRStimSrv.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ConsoleOut\NRConsole.resx">
+      <DependentUpon>NRConsole.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FileWriting\RecordingSetup.resx">
       <DependentUpon>RecordingSetup.cs</DependentUpon>
       <SubType>Designer</SubType>

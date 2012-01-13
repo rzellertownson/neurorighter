@@ -52,6 +52,7 @@ using NeuroRighter.DatSrv;
 using NeuroRighter.StimSrv;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
+using ConsoleWidget;
 
 namespace NeuroRighter
 {
@@ -81,6 +82,10 @@ namespace NeuroRighter
             this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             this.currentRef = new int[2];
+
+            // Set up console output
+            NRConsole nrConsole = new NRConsole();
+            ConsoleStream nrConsoleStream = new ConsoleStream(nrConsole.richTextBox_NRConsole);
 
             //Ensure that sampling rates are okay
             button_lfpSamplingRate_Click(null, null);

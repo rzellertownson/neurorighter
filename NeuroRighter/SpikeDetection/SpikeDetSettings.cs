@@ -172,7 +172,7 @@ namespace NeuroRighter.SpikeDetection
                 }
                 else
                 {
-                    int spikesCollected = spikeSorter.trainingSpikes.EventBuffer.Count;
+                    int spikesCollected = spikeSorter.trainingSpikes.Buffer.Count;
                     this.label_NumSpikesCollected.Text = spikesCollected.ToString();
                     UpdateSpikeCollectionPlot();
                 }

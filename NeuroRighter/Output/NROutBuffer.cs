@@ -303,13 +303,13 @@ namespace NeuroRighter.Output
             {
                 foreach (T n in addtobuffer)
                 {
-                    if (n.sampleIndex < currentSample)
-                        throw new Exception(this.ToString() + ": Attempted to stimulate in the past (sample " + n.sampleIndex + " at sample " + currentSample + ")");
+                    if (n.SampleIndex < currentSample)
+                        throw new Exception(this.ToString() + ": Attempted to stimulate in the past (sample " + n.SampleIndex + " at sample " + currentSample + ")");
                     outerbuffer.Add(n);
                 }
 
                 // Sort the list
-                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
+                outerbuffer = outerbuffer.OrderBy(x => x.SampleIndex).ToList();
             }
             finally
             {
@@ -330,12 +330,12 @@ namespace NeuroRighter.Output
             {
                 for (int i = outerbuffer.Count() - 1; i >= 0; --i)
                 {
-                    if (outerbuffer.ElementAt(i).sampleIndex > startSample && outerbuffer.ElementAt(i).sampleIndex >= endSample)
+                    if (outerbuffer.ElementAt(i).SampleIndex > startSample && outerbuffer.ElementAt(i).SampleIndex >= endSample)
                         outerbuffer.RemoveAt(i);
                 }
 
                 // Sort the list
-                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
+                outerbuffer = outerbuffer.OrderBy(x => x.SampleIndex).ToList();
             }
             finally
             {
@@ -354,12 +354,12 @@ namespace NeuroRighter.Output
             {
                 for (int i = outerbuffer.Count() - 1; i >= 0; --i)
                 {
-                    if (outerbuffer.ElementAt(i).sampleIndex > startSample)
+                    if (outerbuffer.ElementAt(i).SampleIndex > startSample)
                         outerbuffer.RemoveAt(i);
                 }
 
                 // Sort the list
-                outerbuffer = outerbuffer.OrderBy(x => x.sampleIndex).ToList();
+                outerbuffer = outerbuffer.OrderBy(x => x.SampleIndex).ToList();
             }
             finally
             {
@@ -964,14 +964,14 @@ namespace NeuroRighter.Output
 
             //how many samples should we write, including blanking?
             int samples2Finish;
-            if (currentStim.sampleDuration > 0)//this is a non-instantaneous event
-                samples2Finish = (int)currentStim.sampleDuration - (int)numSampWrittenForCurrentStim;
+            if (currentStim.SampleDuration > 0)//this is a non-instantaneous event
+                samples2Finish = (int)currentStim.SampleDuration - (int)numSampWrittenForCurrentStim;
             else//this is an instantaneous event, ie a state change
             {
                 //if we have another event on deck, and we aren't done with events
                 if ((nextStim != null) & ((numEventsWritten < totalEvents) || immortal))
 
-                    samples2Finish = (int)nextStim.sampleIndex - (int)currentStim.sampleIndex - (int)numSampWrittenForCurrentStim;
+                    samples2Finish = (int)nextStim.SampleIndex - (int)currentStim.SampleIndex - (int)numSampWrittenForCurrentStim;
                 else
                 {
                     //if not, than hold this state change throughout the duration of the buffer
@@ -979,8 +979,8 @@ namespace NeuroRighter.Output
                 }
             }
             if (nextStim != null)
-                if (currentStim.sampleIndex > nextStim.sampleIndex)
-                    throw new Exception("NROutBuffer exception: trying to stimulate starting at sample " + currentStim.sampleIndex.ToString() + " and ending at sample " + nextStim.sampleIndex.ToString());
+                if (currentStim.SampleIndex > nextStim.SampleIndex)
+                    throw new Exception("NROutBuffer exception: trying to stimulate starting at sample " + currentStim.SampleIndex.ToString() + " and ending at sample " + nextStim.SampleIndex.ToString());
             //  Console.WriteLine(outst+ samples2Finish.ToString());
 
             //write samples to the buffer
@@ -1006,7 +1006,7 @@ namespace NeuroRighter.Output
                 while (outerbuffer.Count > 0)//buffer isn't empty
                 {
                     //if we have a stimulus within range
-                    if (outerbuffer.ElementAt(0).sampleIndex < (numBuffLoadsCompleted) * BUFFSIZE)
+                    if (outerbuffer.ElementAt(0).SampleIndex < (numBuffLoadsCompleted) * BUFFSIZE)
                     {
 
                         currentStim = (T)outerbuffer.ElementAt(0).DeepClone();
@@ -1030,8 +1030,8 @@ namespace NeuroRighter.Output
                             OnThreshold(EventArgs.Empty);
 
                         numSampWrittenForCurrentStim = 0;
-                        bufferIndex = currentStim.sampleIndex - (numBuffLoadsCompleted - 1) * BUFFSIZE;//move to beginning of this stimulus
-                        if (currentStim.sampleIndex < (numBuffLoadsCompleted - 1) * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
+                        bufferIndex = currentStim.SampleIndex - (numBuffLoadsCompleted - 1) * BUFFSIZE;//move to beginning of this stimulus
+                        if (currentStim.SampleIndex < (numBuffLoadsCompleted - 1) * BUFFSIZE)//check to make sure we aren't attempting to stimulate in the past
                         {
                             //MessageBox.Show("trying to write an expired stimulus: stimulation at sample no " + currentStim.StimSample + " was written at time " + numBuffLoadsCompleted * BUFFSIZE + ", on channel " + currentStim.channel);
                             if (robust)
@@ -1041,7 +1041,7 @@ namespace NeuroRighter.Output
                             }
                             else
                             {
-                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.sampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
+                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.SampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
                             }
                         }
 
@@ -1105,7 +1105,7 @@ namespace NeuroRighter.Output
                 for (int i = 0; i < abuffs.Count; i++)
                 {
                     for (int j = 0; j < abuffs.ElementAt(i).GetLength(0); j++)
-                        if (currentStim.sampleDuration > 0)
+                        if (currentStim.SampleDuration > 0)
                             abuffs.ElementAt(i)[j, (int)bufferIndex] = anEventValues.ElementAt(i)[j, numSampWrittenForCurrentStim];
                         else//state change mode
                             abuffs.ElementAt(i)[j, (int)bufferIndex] = anEventValues.ElementAt(i)[j, 0];
@@ -1114,7 +1114,7 @@ namespace NeuroRighter.Output
                 for (int i = 0; i < dbuffs.Count; i++)
                 {
                     //for (int j = 0; j < dbuffs.ElementAt(i).GetLength(1); j++)
-                    if (currentStim.sampleDuration > 0)
+                    if (currentStim.SampleDuration > 0)
                         dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[numSampWrittenForCurrentStim];
                     else//state change mode
                         dbuffs.ElementAt(i)[(int)bufferIndex] = digEventValues.ElementAt(i)[0];

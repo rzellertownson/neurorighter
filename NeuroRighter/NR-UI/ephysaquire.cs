@@ -158,7 +158,7 @@ namespace NeuroRighter
                                                 Convert.ToInt16((prependedData[i + (int)(2 * stimJump) + 1] + prependedData[i + (int)(3 * stimJump)]) / 2)),
                                                 prependedData[i + (int)(5 * stimJump)], //Stim voltage
                                                 prependedData[i + (int)(7 * stimJump)]);
-                                            tempStimBuff.eventBuffer.Add(tempStimEvent);
+                                            tempStimBuff.Buffer.Add(tempStimEvent);
 
                                             // send to datSrv
 
@@ -518,7 +518,7 @@ namespace NeuroRighter
                                 {
                                     DigitalPortEvent thisPortEvent = new DigitalPortEvent((ulong)i, lastDigState);
                                     EventBuffer<DigitalPortEvent> thisDigitalEventBuffer = new EventBuffer<DigitalPortEvent>(Properties.Settings.Default.RawSampleFrequency);
-                                    thisDigitalEventBuffer.eventBuffer.Add(thisPortEvent);
+                                    thisDigitalEventBuffer.Buffer.Add(thisPortEvent);
 
                                     // send to datSrv
                                     datSrv.AuxDigitalSrv.WriteToBufferRelative(thisDigitalEventBuffer, 0);

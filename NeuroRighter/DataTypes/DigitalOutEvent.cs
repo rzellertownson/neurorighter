@@ -10,7 +10,7 @@ namespace NeuroRighter.DataTypes
     public sealed class DigitalOutEvent : NREvent
     {   
         //internal ulong EventTime; // digital time (in 100ths of ms)
-        internal UInt32 portInt32; // Integer specifying output Byte corresponding to event time
+        protected UInt32 portInt32; // Integer specifying output Byte corresponding to event time
 
         /// <summary>
         /// Data stucture for holding digital output events
@@ -21,6 +21,17 @@ namespace NeuroRighter.DataTypes
         {
             this.sampleIndex = EventTime;
             this.portInt32 = PortInt32;
+        }
+
+        /// <summary>
+        /// The port state represented as a 32 bit unsigned integer.
+        /// </summary>
+        public UInt32 PortInt32
+        {
+            get
+            {
+                return portInt32;
+            }
         }
 
 

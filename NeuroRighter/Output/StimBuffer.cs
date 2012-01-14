@@ -181,7 +181,7 @@ namespace NeuroRighter.Output
                 // double[] w = {1.0,1.0};
                 // stim = new StimulusData(1,1.0,w);
                 StimulusOutEvent tmp = new StimulusOutEvent(ChannelVector[i], TimeVector[i], wave);
-                tmp.sampleDuration = tmp.sampleDuration + (uint)NUM_SAMPLES_BLANKING * 2;
+                tmp.SampleDuration = tmp.SampleDuration + (uint)NUM_SAMPLES_BLANKING * 2;
                 stimToPass.Add(tmp);
 
 

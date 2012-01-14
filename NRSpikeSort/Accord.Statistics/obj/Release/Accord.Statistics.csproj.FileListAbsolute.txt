@@ -196,3 +196,15 @@ C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\Accord.Statistics\bin\Rele
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Documents and Settings\Lab\Desktop\Jon\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Statistics.XML
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Statistics.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Math.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Math.pdb
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Math.xml
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
+C:\Documents and Settings\Lab\Desktop\neurorighter-jHEAD\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb

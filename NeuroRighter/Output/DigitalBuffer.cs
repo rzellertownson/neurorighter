@@ -79,7 +79,7 @@ namespace NeuroRighter.Output
             anEventValues = null;
             digEventValues = new List<uint[]>();
             digEventValues.Add(new uint[1]);
-            digEventValues.ElementAt(0)[0] = stim.Byte;
+            digEventValues.ElementAt(0)[0] = stim.PortInt32;
         }
     }
 

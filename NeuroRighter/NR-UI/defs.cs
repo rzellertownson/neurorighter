@@ -45,6 +45,7 @@ using NeuroRighter.DatSrv;
 using NeuroRighter.DataTypes;
 using NeuroRighter.StimSrv;
 using NeuroRighter.dbg;
+using ConsoleWidget;
 
 namespace NeuroRighter
 {
@@ -207,6 +208,8 @@ namespace NeuroRighter
         // Closed-loop AO/DO
         private ClosedLoopOut closedLoopSynchronizedOutput;
         
+        // Console Control
+        private ConsoleControl nrConsole;
 
         #endregion
 

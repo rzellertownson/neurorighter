@@ -109,12 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aquisition\AIChannelCollection.cs" />
-    <Compile Include="ConsoleOut\NRConsole.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ConsoleOut\NRConsole.Designer.cs">
-      <DependentUpon>NRConsole.cs</DependentUpon>
-    </Compile>
+    <Compile Include="ConsoleOut\ConsoleControl.cs" />
     <Compile Include="DataTypes\AnalogOutEvent.cs" />
     <Compile Include="DataTypes\DigitalEventBuffer.cs" />
     <Compile Include="DataTypes\DigitalPortEvent.cs" />
@@ -151,6 +146,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="NR-UI\elesion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NR-UI\web.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="NR-UI\formcont.cs">
@@ -315,9 +313,6 @@
     <Compile Include="StimSrv\NRStimSrv.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ConsoleOut\NRConsole.resx">
-      <DependentUpon>NRConsole.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FileWriting\RecordingSetup.resx">
       <DependentUpon>RecordingSetup.cs</DependentUpon>
       <SubType>Designer</SubType>

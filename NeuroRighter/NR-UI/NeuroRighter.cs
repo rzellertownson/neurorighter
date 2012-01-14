@@ -84,8 +84,7 @@ namespace NeuroRighter
             this.currentRef = new int[2];
 
             // Set up console output
-            NRConsole nrConsole = new NRConsole();
-            ConsoleStream nrConsoleStream = new ConsoleStream(nrConsole.richTextBox_NRConsole);
+            nrConsole = new ConsoleControl();
 
             //Ensure that sampling rates are okay
             button_lfpSamplingRate_Click(null, null);
@@ -1109,6 +1108,11 @@ namespace NeuroRighter
             Thread.Sleep(200); // Let file writing etc. finish
             reset();
             UpdateRecordingSettings();
+        }
+
+        private void showConsoleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            nrConsole.ShowConsole();
         }
         
     }

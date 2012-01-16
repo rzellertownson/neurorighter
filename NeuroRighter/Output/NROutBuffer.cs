@@ -31,12 +31,11 @@ namespace NeuroRighter.Output
         //events
         internal bool recoveryFlag = false;
         private int queueThreshold = 0;//how many NREvents do you want to have 'on deck' before asking for more?
-        internal event QueueLessThanThresholdHandler QueueLessThanThreshold;//event thrown when there are less than that many events
+        internal event QueueLessThanThresholdHandler QueueLessThanThreshold;// fire when there are less than that many events
         internal event StimulationCompleteHandler StimulationComplete;
         internal event DAQLoadCompletedHandler DAQLoadCompleted;
 
         // Internal Properties
-
         internal bool StillWritting = false;
         internal ulong numBuffLoadsCompleted = 0;
         internal ulong numBuffLoadsThisRun = 0;
@@ -304,7 +303,7 @@ namespace NeuroRighter.Output
                 foreach (T n in addtobuffer)
                 {
                     if (n.SampleIndex < currentSample)
-                        throw new Exception(this.ToString() + ": Attempted to stimulate in the past (sample " + n.SampleIndex + " at sample " + currentSample + ")");
+                        Console.WriteLine("WARNING. "+ this.ToString() + ": Attempted to stimulate in the past (sample " + n.SampleIndex + " at sample " + currentSample + ")");
                     outerbuffer.Add(n);
                 }
 
@@ -343,10 +342,11 @@ namespace NeuroRighter.Output
                 bufferLock.ExitWriteLock();
             }
         }
+
         /// <summary>
-        /// This method attempts to delete events within NR's outer output buffer that are slated to be executed in the future.
+        /// Attempts to delete events within NR's outer output buffer that are slated to be executed in the future.
         /// </summary>
-        /// <param name="startSample"> Events greater than the start sample </param>
+        /// <param name="startSample"> Events greater than the start sample will be deleted. </param>
         public void DeleteSamplesFromBuffer(ulong startSample)
         {
             bufferLock.EnterWriteLock();
@@ -369,9 +369,8 @@ namespace NeuroRighter.Output
         }
 
         /// <summary>
-        /// Get rid of all pending output events in the outer buffer.
+        /// Dispose of all pending output events in the outer buffer.
         /// </summary>
-        /// <param name="startSample"></param>
         public void EmptyOuterBuffer()
         {
             bufferLock.EnterWriteLock();
@@ -1041,7 +1040,7 @@ namespace NeuroRighter.Output
                             }
                             else
                             {
-                                throw new Exception("trying to write an expired stimulus: stimulation at sample no " + currentStim.SampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
+                                Console.WriteLine("WARNING. Trying to write an expired stimulus: stimulation at sample no " + currentStim.SampleIndex + " was written at time " + numBuffLoadsCompleted * BUFFSIZE);
                             }
                         }
 

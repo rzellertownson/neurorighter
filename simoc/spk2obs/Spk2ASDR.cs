@@ -25,7 +25,7 @@ namespace simoc.spk2obs
         internal override void MeasureObservable()
         {
             // Estimate the ASDR
-            currentObservation = (double)newSpikes.eventBuffer.Count() / dacPollingPeriodSec;
+            currentObservation = (double)newSpikes.Buffer.Count() / dacPollingPeriodSec;
         }
 
 

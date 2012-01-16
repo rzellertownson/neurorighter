@@ -74,7 +74,7 @@ namespace NeuroRighter.Output
 
             try
             {
-                //pnpcl = new pnpClosedLoop();
+
                 bw_returned = false;
                 CLE.Grab(DatSrv, StimSrv, Debugger, outputSampFreq, NRFilePath, NRRecording);
 

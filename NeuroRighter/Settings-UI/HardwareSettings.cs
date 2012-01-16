@@ -46,10 +46,10 @@ namespace NeuroRighter
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)
             {
-                int idx=0;
-                if (Properties.Settings.Default.AnalogInDevice!=null)
+                int idx = 0;
+                if (Properties.Settings.Default.AnalogInDevice != null)
                     idx = comboBox_analogInputDevice1.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[0]);
-                
+
                 if (idx >= 0)
                     comboBox_analogInputDevice1.SelectedIndex = idx;
                 else
@@ -59,11 +59,11 @@ namespace NeuroRighter
             if (comboBox_analogInputDevice2.Items.Count > 0)
             {
                 int idx = -1;
-                if (Properties.Settings.Default.AnalogInDevice!=null)
+                if (Properties.Settings.Default.AnalogInDevice != null)
                     if (Properties.Settings.Default.AnalogInDevice.Count > 1)
                         idx = comboBox_analogInputDevice2.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[1]);
-                
-                    
+
+
                 if (idx >= 0)
                     comboBox_analogInputDevice2.SelectedIndex = idx;
                 else
@@ -129,7 +129,7 @@ namespace NeuroRighter
                 int idx = comboBox_EEG.Items.IndexOf(Properties.Settings.Default.EEGDevice);
                 if (idx >= 0)
                     comboBox_EEG.SelectedIndex = idx;
-                else 
+                else
                     comboBox_EEG.SelectedIndex = 0;
             }
             comboBox_impedanceDevice.Items.AddRange(DaqSystem.Local.Devices);
@@ -182,8 +182,8 @@ namespace NeuroRighter
             }
 
             listBox_AuxAnalogInChan.Items.AddRange
-                (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI,PhysicalChannelAccess.External));
-            for (int i = listBox_AuxAnalogInChan.Items.Count-1; i >= 0 ; --i)
+                (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.AI, PhysicalChannelAccess.External));
+            for (int i = listBox_AuxAnalogInChan.Items.Count - 1; i >= 0; --i)
             {
                 string tempChan = listBox_AuxAnalogInChan.Items[i].ToString();
                 string[] whatDev = tempChan.Split('/');
@@ -196,7 +196,7 @@ namespace NeuroRighter
                 for (int i = 0; i < Properties.Settings.Default.auxAnalogInChan.Count; ++i)
                 {
                     int idx = listBox_AuxAnalogInChan.Items.IndexOf(Properties.Settings.Default.auxAnalogInChan[i]);
-                    if (idx >=0)
+                    if (idx >= 0)
                         listBox_AuxAnalogInChan.SetSelected(idx, true);
                     else
                         listBox_AuxAnalogInChan.SetSelected(0, true);
@@ -205,15 +205,15 @@ namespace NeuroRighter
 
             comboBox_AuxDigInputPort.Items.AddRange
                 (DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.DIPort, PhysicalChannelAccess.External));
-            
+
             // Remove ports 1 and 2
             for (int i = comboBox_AuxDigInputPort.Items.Count - 1; i >= 0; --i)
             {
                 string tempChan = comboBox_AuxDigInputPort.Items[i].ToString();
                 string[] splitPort = tempChan.Split('/');
                 string whatPort = splitPort[1];
-                char portNo = whatPort[whatPort.Length-1];
-                if (! (portNo == '0'))
+                char portNo = whatPort[whatPort.Length - 1];
+                if (!(portNo == '0'))
                     comboBox_AuxDigInputPort.Items.RemoveAt(i);
             }
 
@@ -297,8 +297,31 @@ namespace NeuroRighter
             }
         }
 
+        /// <summary>
+        /// Call this method to make sure that the change that was just made is ok.
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckHardwareSettings()
+        {
+            bool settingsPass = true;
+
+            if (comboBox_analogInputDevice1.SelectedItem.ToString() == comboBox_analogInputDevice2.SelectedItem.ToString())
+            {
+                MessageBox.Show("You cannot use the same device for both Electrode Input streams. Please change one of them to a different device.");
+                settingsPass = false;
+            }
+
+
+            return settingsPass;
+        }
+
         private void button_accept_Click(object sender, EventArgs e)
         {
+            // Check hardware settings
+            bool pass = CheckHardwareSettings();
+            if (!pass)
+                return;
+
             // Recording selections
             Properties.Settings.Default.datSrvBufferSizeSec = (double)numericUpDown_datSrvBufferSizeSec.Value;
             Properties.Settings.Default.DACPollingPeriodSec = (double)numericUpDown_DACPollingPeriodSec.Value;
@@ -322,14 +345,14 @@ namespace NeuroRighter
             Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
-            
+
             // Set up devices
             if (checkBox_useSecondBoard.Checked)
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
             if (checkBox_useChannelPlayback.Checked)
                 Properties.Settings.Default.SingleChannelPlaybackDevice = Convert.ToString(comboBox_singleChannelPlaybackDevice.SelectedItem);
             if (checkBox_sepLFPBoard1.Checked)
-                Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);   
+                Properties.Settings.Default.LFPDevice = Convert.ToString(comboBox_LFPDevice1.SelectedItem);
             if (checkBox_useCineplex.Checked)
                 Properties.Settings.Default.CineplexDevice = Convert.ToString(comboBox_cineplexDevice.SelectedItem);
             if (checkBox_useStimulator.Checked)
@@ -344,9 +367,9 @@ namespace NeuroRighter
                 Properties.Settings.Default.MUXChannels = 8;
             else
                 Properties.Settings.Default.MUXChannels = 16;
-            if (radioButton_8bit.Checked) 
+            if (radioButton_8bit.Checked)
                 Properties.Settings.Default.StimPortBandwidth = 8;
-            else 
+            else
                 Properties.Settings.Default.StimPortBandwidth = 32;
             if (checkBox_UseAODO.Checked)
                 Properties.Settings.Default.SigOutDev = Convert.ToString(comboBox_SigOutDev.SelectedItem);
@@ -554,6 +577,7 @@ namespace NeuroRighter
         private void numericUpDown_ADCPollingPeriodSec_ValueChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.ADCPollingPeriodSec = (double)numericUpDown_ADCPollingPeriodSec.Value;
+            numericUpDown_datSrvBufferSizeSec.Minimum = (decimal)(2 * Properties.Settings.Default.ADCPollingPeriodSec);
         }
 
         private void numericUpDown_DACPollingPeriodSec_ValueChanged(object sender, EventArgs e)

@@ -29,7 +29,7 @@ namespace simoc.spk2obs
         {
             // Estimate the USDR
             if (numberOfDetectedUnits > 0)
-                currentObservation = (double)newSpikes.eventBuffer.Where(x => x.unit != 0).Count() / (double)numberOfDetectedUnits / dacPollingPeriodSec; 
+                currentObservation = (double)newSpikes.Buffer.Where(x => x.Unit != 0).Count() / (double)numberOfDetectedUnits / dacPollingPeriodSec; 
             else
                 currentObservation = 0;
         }

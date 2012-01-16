@@ -176,7 +176,7 @@ namespace NeuroRighter.StimSrv
 
             // Trigger a buffer load event off every edge of this channel
             buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.AnalogInDevice[0] + "/ctr1",
-                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)INNERBUFFSIZE) / 2.0, 0.5);
+                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)INNERBUFFSIZE)/2.0, 0.5);
             buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
             buffLoadTask.SynchronizeCallbacks = false;
             buffLoadTask.Timing.ReferenceClockSource = "OnboardClock";
@@ -185,14 +185,7 @@ namespace NeuroRighter.StimSrv
             // Syncronize the start to the master recording task
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
-            //buffLoadTask.CounterOutput += new CounterOutputEventHandler(delegate
-            //    {
-            //        Thread thrd = Thread.CurrentThread;
-            //        thrd.Priority = ThreadPriority.Highest;
-            //        debugger.Write("output counter tick " + buffloadcount.ToString());
-            //        buffloadcount++;
-            //    }
-            //);
+         
         }
 
         //private void ConfigureStim(Task masterTask)

@@ -123,8 +123,8 @@ namespace NRSpikeSort
             for (int i = 0; i < numObs; ++i)
             {
                 currentProjection[i] = new double[2];
-                currentProjection[i][0] = 10000000000 * spikes[i].waveform[maxInflectionIndex];
-                currentProjection[i][1] = 10000000000 * spikes[i].waveform[secondInflectionIndex];
+                currentProjection[i][0] = 10000000000 * spikes[i].Waveform[maxInflectionIndex];
+                currentProjection[i][1] = 10000000000 * spikes[i].Waveform[secondInflectionIndex];
             }
 
         }
@@ -137,7 +137,7 @@ namespace NRSpikeSort
             for (int i = 0; i < numObs; ++i)
             {
                 currentProjection[i] = new double[1];
-                currentProjection[i][0] = 10000000000 * spikes[i].waveform[maxInflectionIndex];
+                currentProjection[i][0] = 10000000000 * spikes[i].Waveform[maxInflectionIndex];
             }
         }
 
@@ -145,7 +145,7 @@ namespace NRSpikeSort
         {
             // Matrix dimensions
             int numObs = spikes.Count;
-            int wavelength = spikes[0].waveform.Length;
+            int wavelength = spikes[0].Waveform.Length;
 
             // Create waveform matrix
             double[,] waveforms = new double[numObs, wavelength];
@@ -154,7 +154,7 @@ namespace NRSpikeSort
             {
                 for (int j = 0; j < wavelength; ++j)
                 {
-                    waveforms[i, j] = spikes[i].waveform[j];
+                    waveforms[i, j] = spikes[i].Waveform[j];
                 }
             }
 
@@ -207,7 +207,7 @@ namespace NRSpikeSort
         {
             // Matrix dimensions
             int numObs = spikes.Count;
-            int wavelength = spikes[0].waveform.Length;
+            int wavelength = spikes[0].Waveform.Length;
 
             // Create waveform matrix
             double[,] waveforms = new double[numObs, wavelength];
@@ -216,7 +216,7 @@ namespace NRSpikeSort
             {
                 for (int j = 0; j < wavelength; ++j)
                 {
-                    waveforms[i, j] = spikes[i].waveform[j];
+                    waveforms[i, j] = spikes[i].Waveform[j];
                 }
             }
 
@@ -241,7 +241,7 @@ namespace NRSpikeSort
             for (int i = 0; i < numObs; ++i)
             {
                 // Project into spike wavelet space
-                double[] tmp = HaarProject1D(spikes[i].waveform);
+                double[] tmp = HaarProject1D(spikes[i].Waveform);
 
                 currentProjection[i] = new double[projectionDimension];
                 for (int j = 0; j < projectionDimension; ++j)
@@ -261,7 +261,7 @@ namespace NRSpikeSort
             for (int i = 0; i < numObs; ++i)
             {
                 // Project into spike wavelet space
-                double[] tmp = HaarProject1D(spikes[i].waveform);
+                double[] tmp = HaarProject1D(spikes[i].Waveform);
 
                 // Use the whole projection this time
                 currentProjection[i] = tmp;
@@ -305,7 +305,7 @@ namespace NRSpikeSort
             for (int i = 0; i < numObs; ++i)
             {
                 // Project into spike wavelet space
-                double[] tmp = HaarProject1D(spikes[i].waveform, 5);
+                double[] tmp = HaarProject1D(spikes[i].Waveform, 5);
 
                 currentProjection[i] = new double[projectionDimension];
                 for (int j = 0; j < projectionDimension; ++j)

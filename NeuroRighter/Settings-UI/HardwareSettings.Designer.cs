@@ -251,7 +251,7 @@ namespace NeuroRighter
             this.checkBox_useProgRef.AutoSize = true;
             this.checkBox_useProgRef.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useProgRef.Name = "checkBox_useProgRef";
-            this.checkBox_useProgRef.Size = new System.Drawing.Size(283, 20);
+            this.checkBox_useProgRef.Size = new System.Drawing.Size(225, 17);
             this.checkBox_useProgRef.TabIndex = 7;
             this.checkBox_useProgRef.Text = "Enable Plexon Programmable Referencing";
             this.checkBox_useProgRef.UseVisualStyleBackColor = true;
@@ -292,7 +292,7 @@ namespace NeuroRighter
             this.checkBox_useCineplex.AutoSize = true;
             this.checkBox_useCineplex.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useCineplex.Name = "checkBox_useCineplex";
-            this.checkBox_useCineplex.Size = new System.Drawing.Size(212, 20);
+            this.checkBox_useCineplex.Size = new System.Drawing.Size(170, 17);
             this.checkBox_useCineplex.TabIndex = 0;
             this.checkBox_useCineplex.Text = "Use Cineplex (video recording)";
             this.checkBox_useCineplex.UseVisualStyleBackColor = true;
@@ -419,7 +419,7 @@ namespace NeuroRighter
             this.checkBox_useStimulator.AutoSize = true;
             this.checkBox_useStimulator.Location = new System.Drawing.Point(14, 6);
             this.checkBox_useStimulator.Name = "checkBox_useStimulator";
-            this.checkBox_useStimulator.Size = new System.Drawing.Size(114, 20);
+            this.checkBox_useStimulator.Size = new System.Drawing.Size(94, 17);
             this.checkBox_useStimulator.TabIndex = 7;
             this.checkBox_useStimulator.Text = "Use Stimulator";
             this.checkBox_useStimulator.UseVisualStyleBackColor = true;
@@ -1083,6 +1083,7 @@ namespace NeuroRighter
             // 
             // numericUpDown_DACPollingPeriodSec
             // 
+            this.numericUpDown_DACPollingPeriodSec.CausesValidation = false;
             this.numericUpDown_DACPollingPeriodSec.DecimalPlaces = 3;
             this.numericUpDown_DACPollingPeriodSec.Increment = new decimal(new int[] {
             1,

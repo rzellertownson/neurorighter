@@ -167,12 +167,12 @@ namespace NRSpikeSort
         /// <param name="newSpikes"> An EventBuffer contain spikes to add to the training buffer</param>
         public void HoardSpikes(EventBuffer<SpikeEvent> newSpikes)
         {
-            for (int i = 0; i < newSpikes.eventBuffer.Count; ++i)
+            for (int i = 0; i < newSpikes.Buffer.Count; ++i)
             {
-                if (!((int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] >= maxTrainingSpikesPerChannel))
+                if (!((int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] >= maxTrainingSpikesPerChannel))
                 {
-                    spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] = (int)spikesCollectedPerChannel[newSpikes.eventBuffer[i].channel + 1] + 1;
-                    trainingSpikes.eventBuffer.Add(newSpikes.eventBuffer[i]);
+                    spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] = (int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] + 1;
+                    trainingSpikes.Buffer.Add(newSpikes.Buffer[i]);
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace NRSpikeSort
             secondInflectionIndex = peakSample + (int)(sampleFreqHz*(mSecToSecondSample / 1000));
 
             // Make sure we have something in the training matrix
-            if (trainingSpikes.eventBuffer.Count == 0)
+            if (trainingSpikes.Buffer.Count == 0)
             {
                 throw new InvalidOperationException("The training data set was empty");
             }
@@ -215,7 +215,7 @@ namespace NRSpikeSort
                 int currentChannel = i;
 
                 // Get the spikes that belong to this channel
-                List<SpikeEvent> spikesOnChan = trainingSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+                List<SpikeEvent> spikesOnChan = trainingSpikes.Buffer.Where(x => x.Channel == currentChannel).ToList();
 
                 // Project channel data
                 if (spikesOnChan.Count >= minSpikes)
@@ -277,7 +277,7 @@ namespace NRSpikeSort
             inflectionSample = peakSample;
 
             // Make sure we have something in the training matrix
-            if (trainingSpikes.eventBuffer.Count == 0)
+            if (trainingSpikes.Buffer.Count == 0)
             {
                 throw new InvalidOperationException("The training data set was empty");
             }
@@ -288,7 +288,7 @@ namespace NRSpikeSort
                 int currentChannel = i;
 
                 // Get the spikes that belong to this channel
-                List<SpikeEvent> spikesOnChan = trainingSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+                List<SpikeEvent> spikesOnChan = trainingSpikes.Buffer.Where(x => x.Channel == currentChannel).ToList();
 
                 // Project channel data
                 if (spikesOnChan.Count >= minSpikes)
@@ -346,7 +346,7 @@ namespace NRSpikeSort
             unitDictionary.Add(0, 0);
 
             // Make sure we have something in the training matrix
-            if (trainingSpikes.eventBuffer.Count == 0)
+            if (trainingSpikes.Buffer.Count == 0)
             {
                 throw new InvalidOperationException("The training data set was empty");
             }
@@ -357,7 +357,7 @@ namespace NRSpikeSort
                 int currentChannel = i;
 
                 // Get the spikes that belong to this channel
-                List<SpikeEvent> spikesOnChan = trainingSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+                List<SpikeEvent> spikesOnChan = trainingSpikes.Buffer.Where(x => x.Channel == currentChannel).ToList();
 
                 // Project channel data
                 if (spikesOnChan.Count >= minSpikes)
@@ -419,7 +419,7 @@ namespace NRSpikeSort
                 int currentChannel = channelsToSort[i];
 
                 // Get the spikes that belong to this channel 
-                List<SpikeEvent> spikesOnChan = newSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+                List<SpikeEvent> spikesOnChan = newSpikes.Buffer.Where(x => x.Channel == currentChannel).ToList();
 
                 // If there are no spikes on this channel
                 if (spikesOnChan.Count == 0)
@@ -475,7 +475,7 @@ namespace NRSpikeSort
                 int currentChannel = channelsToSort[i];
 
                 // Get the spikes that belong to this channel 
-                List<SpikeEvent> spikesOnChan = newSpikes.eventBuffer.Where(x => x.channel == currentChannel).ToList();
+                List<SpikeEvent> spikesOnChan = newSpikes.Buffer.Where(x => x.Channel == currentChannel).ToList();
 
                 // If there are no spikes on this channel
                 if (spikesOnChan.Count == 0)

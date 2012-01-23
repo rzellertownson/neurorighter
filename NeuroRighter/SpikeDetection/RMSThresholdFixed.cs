@@ -27,7 +27,7 @@ namespace NeuroRighter.SpikeDetection
     using rawType = System.Double;
 
 
-    /// <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
+    [Serializable]
     class RMSThresholdFixed : SpikeDetector
     {
 

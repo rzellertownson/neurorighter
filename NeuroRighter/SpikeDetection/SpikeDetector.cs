@@ -30,9 +30,9 @@ namespace NeuroRighter.SpikeDetection
 {
     /// <summary>
     /// Base clase for spike detection. All spike detectors should inherit this
-    /// virtual class. 
-    /// <author> Jon Newman</author>
+    /// abstract class. 
     /// </summary>
+    [Serializable]
     internal abstract class SpikeDetector
     {
         // Parameters for spike detection

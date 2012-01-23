@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using rawType = System.Double;
 using NRSpikeSort;
 using ZedGraph;
+using ExtensionMethods;
 
 namespace NeuroRighter.SpikeDetection
 {
@@ -24,6 +25,8 @@ namespace NeuroRighter.SpikeDetection
         // Detector
         internal SpikeDetectorParameters detectorParameters = new SpikeDetectorParameters();
         internal SpikeDetector spikeDetector;
+        internal SpikeDetector spikeDetectorRaw;
+        internal SpikeDetector spikeDetectorSalpa;
         private int numPre; // num smaples to save pre-spike
         private int numPost; // num samples to save post-spike
         internal int spikeDetectionLag; // number of samples that spike detector will cause buffers to lag
@@ -127,16 +130,28 @@ namespace NeuroRighter.SpikeDetection
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
+
+                    spikeDetectorRaw = spikeDetector.DeepClone();
+                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+
                     break;
                 case 1:  //RMS Adaptive
                     spikeDetector = new AdaptiveRMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
+
+                    spikeDetectorRaw = spikeDetector.DeepClone();
+                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+
                     break;
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency));
+
+                    spikeDetectorRaw = spikeDetector.DeepClone();
+                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+
                     break;
                 default:
                     break;
@@ -187,6 +202,8 @@ namespace NeuroRighter.SpikeDetection
         private void thresholdMultiplier_ValueChanged(object sender, EventArgs e)
         {
             spikeDetector.thresholdMultiplier = (double)thresholdMultiplier.Value;
+            spikeDetectorRaw.thresholdMultiplier = (double)thresholdMultiplier.Value;
+            spikeDetectorSalpa.thresholdMultiplier = (double)thresholdMultiplier.Value;
             detectorParameters.Threshold = thresholdMultiplier.Value;
             SettingsHaveChanged(this, e);
         }
@@ -702,8 +719,6 @@ namespace NeuroRighter.SpikeDetection
                     numericUpDown_MaxSpikeWidth.Value = detectorParameters.MaxSpikeWidth;
                     numPreSamples.Value = detectorParameters.NumPre;
                     numPostSamples.Value = detectorParameters.NumPost;
-                    //numPreSamples_ValueChanged(null, null);
-                    //numPostSamples_ValueChanged(null, null);
 
                     if (detectorParameters.SS != null)
                     {

@@ -9,7 +9,7 @@ using NRSpikeSort;
 namespace NeuroRighter.SpikeDetection
 {
     /// <summary>
-    /// Wrapper for spike detector settings.
+    /// Wrapper class for spike detector settings.
     /// </summary>
     [Serializable]
     public class SpikeDetectorParameters
@@ -29,10 +29,12 @@ namespace NeuroRighter.SpikeDetection
         private decimal maxSpikeAmp;
         private SpikeSorter ss;
 
-
+        /// <summary>
+        /// Wrapper for spike detection and sorting parameters. Allows serialization of spike sorters and detectors.
+        /// </summary>
         public SpikeDetectorParameters() { }
 
-        public SpikeSorter SS
+        internal SpikeSorter SS
         {
             get
             {
@@ -44,7 +46,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal Threshold
+        internal decimal Threshold
         {
             get
             {
@@ -56,7 +58,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal DeadTime
+        internal decimal DeadTime
         {
             get
             {
@@ -68,7 +70,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal MaxSpikeAmp
+        internal decimal MaxSpikeAmp
         {
             get
             {
@@ -80,7 +82,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal MinSpikeWidth
+        internal decimal MinSpikeWidth
         {
             get
             {
@@ -92,7 +94,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal MaxSpikeWidth
+        internal decimal MaxSpikeWidth
         {
             get
             {
@@ -104,7 +106,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal MinSpikeSlope
+        internal decimal MinSpikeSlope
         {
             get
             {
@@ -116,7 +118,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal NumPre
+        internal decimal NumPre
         {
             get
             {
@@ -128,7 +130,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal NumPost
+        internal decimal NumPost
         {
             get
             {
@@ -140,7 +142,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public decimal SpikeDetectionLag
+        internal decimal SpikeDetectionLag
         {
             get
             {
@@ -152,7 +154,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public int DetectorType
+        internal int DetectorType
         {
             get
             {
@@ -164,7 +166,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public int NoiseAlgType
+        internal int NoiseAlgType
         {
             get
             {
@@ -176,7 +178,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        public SpikeDetectorParameters(SerializationInfo info, StreamingContext ctxt)
+        internal SpikeDetectorParameters(SerializationInfo info, StreamingContext ctxt)
         {
             this.ss = (SpikeSorter)info.GetValue("ss", typeof(SpikeSorter));
             this.threshold = (decimal)info.GetValue("threshold", typeof(decimal));
@@ -193,7 +195,7 @@ namespace NeuroRighter.SpikeDetection
 
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+        internal void GetObjectData(SerializationInfo info, StreamingContext ctxt)
         {
             info.AddValue("numPre", this.numPre);
             info.AddValue("numPost", this.numPost);

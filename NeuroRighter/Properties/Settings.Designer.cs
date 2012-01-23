@@ -761,7 +761,7 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.05")]
         public double ADCPollingPeriodSec {
             get {
                 return ((double)(this["ADCPollingPeriodSec"]));
@@ -773,7 +773,7 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2.5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public double datSrvBufferSizeSec {
             get {
                 return ((double)(this["datSrvBufferSizeSec"]));
@@ -785,7 +785,7 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.05")]
         public double DACPollingPeriodSec {
             get {
                 return ((double)(this["DACPollingPeriodSec"]));
@@ -1032,6 +1032,30 @@ namespace NeuroRighter.Properties {
             }
             set {
                 this["useFidTimeStamp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordRawSpikes {
+            get {
+                return ((bool)(this["recordRawSpikes"]));
+            }
+            set {
+                this["recordRawSpikes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool recordSalpaSpikes {
+            get {
+                return ((bool)(this["recordSalpaSpikes"]));
+            }
+            set {
+                this["recordSalpaSpikes"] = value;
             }
         }
     }

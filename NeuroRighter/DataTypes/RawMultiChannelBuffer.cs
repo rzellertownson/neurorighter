@@ -159,7 +159,7 @@ namespace NeuroRighter.DataTypes
         {
             get
             {
-                return NumChannels;
+                return numChannels;
             }
         }
 
@@ -170,7 +170,7 @@ namespace NeuroRighter.DataTypes
         {
             get
             {
-                return BufferLengthInSamples;
+                return bufferLengthInSamples;
             }
         }
     }

@@ -184,6 +184,9 @@ namespace NeuroRighter
 
         // Spike detection
         private SpikeDetSettings spikeDet;
+        private static readonly object rawSpikeObj = new object();
+        private static readonly object salpaSpikeObj = new object();
+        private static readonly object finalSpikeObj = new object();
 
         // File Writing
         private bool recordingCancelled;

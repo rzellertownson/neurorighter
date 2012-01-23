@@ -50,11 +50,8 @@ using ExtensionMethods;
 
 namespace NeuroRighter
 {
-
-
     ///<summary>Methods for processing raw data streams. This includes filtering (bandpass and SALPA) and the creation of EEG,LFP and MUA data streams
     ///and, if appropriate, sending those raw streams to file.</summary>
-    ///<author>John Rolston</author>
     sealed internal partial class NeuroRighter : Form
     {
 
@@ -64,7 +61,6 @@ namespace NeuroRighter
         {
 
             //spkClk = DateTime.Now;
-            bool test = Properties.Settings.Default.recordSpikes;
             Object[] state = (Object[])e.Argument;
             int taskNumber = (int)state[0];
             //Debugger.Write(taskNumber.ToString() + ": dowork begin");
@@ -74,6 +70,12 @@ namespace NeuroRighter
             for (int i = 0; i < numChannelsPerDev; ++i)
                 spikeData[taskNumber][i].GetRawData(0, spikeBufferLength, filtSpikeData[taskNumber * numChannelsPerDev + i], 0);
             //Debugger.Write(taskNumber.ToString() + ": raw data read");
+
+            // Increment the number of times the DAQ has been polled for spike data
+            ++(numSpikeReads[taskNumber]);
+            ulong startTime = (ulong)(numSpikeReads[taskNumber] - 1) * (ulong)spikeBufferLength; //Used to mark spike time for *.spk file
+
+
             //Account for Pre-amp gain
             double ampdec = (1 / Properties.Settings.Default.PreAmpGain);
             for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
@@ -114,6 +116,87 @@ namespace NeuroRighter
             #endregion
 
             // Debugger.Write(taskNumber.ToString() + ": raw written");
+
+            #region Raw Spike Detection
+
+            if (recordingSettings.recordRawSpike)
+            {
+                lock (rawSpikeObj)
+                {
+                    //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
+                    EventBuffer<SpikeEvent> newWaveformsRaw = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
+                    switch (spikeDet.detectorType)
+                    {
+                        case 0:
+                            for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                                newWaveformsRaw.Buffer.AddRange(spikeDet.spikeDetectorRaw.DetectSpikes(filtSpikeData[i], i, startTime));
+                            break;
+                        case 1:
+                            for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                                newWaveformsRaw.Buffer.AddRange(spikeDet.spikeDetectorRaw.DetectSpikesSimple(filtSpikeData[i], i, startTime));
+                            break;
+                    }
+
+                    //Extract waveforms
+                    //toRawsrv: 0 index, includes timing offsets, channel remapping
+                    //saved: 1 index
+                    EventBuffer<SpikeEvent> toRawsrvRaw = new EventBuffer<SpikeEvent>(spikeSamplingRate);
+                    if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
+                    {
+                        //for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
+                        //{
+                        //    SpikeEvent tmp = (SpikeEvent)newWaveformsRaw.Buffer[j].DeepClone();
+                        //    if (checkBox_SALPA.Checked)
+                        //        if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                        //            tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                        //        else
+                        //            continue; //skip that one
+
+                        //    toRawsrvRaw.Buffer.Add(tmp);
+                        //}
+
+                        toRawsrvRaw = newWaveformsRaw;
+                    }
+                    else //in vitro mappings
+                    {
+                        for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = (SpikeEvent)newWaveformsRaw.Buffer[j].DeepClone();
+
+                            //if (checkBox_SALPA.Checked)
+                            //    if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                            //        tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                            //    else
+                            //        continue; //skip that one
+
+                            tmp.Channel = MEAChannelMappings.channel2LinearCR(tmp.Channel);
+                            toRawsrvRaw.Buffer.Add(tmp);
+                        }
+                    }
+
+                    // Record spike waveforms 
+                    if (switch_record.Value)
+                    {
+                        for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = toRawsrvRaw.Buffer[j];
+
+                            lock (recordingSettings.spkOutRaw) //Lock so another NI card doesn't try writing at the same time
+                            {
+                                recordingSettings.spkOutRaw.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                                    tmp.Threshold, tmp.Waveform, tmp.Unit);
+                            }
+                        }
+                    }
+                
+                }
+
+                
+            }
+
+                #endregion
+
+            // Debugger.Write(taskNumber.ToString() + ": raw spikes filtered");
 
             #region LFP_Filtering
             //Filter for LFPs
@@ -255,7 +338,85 @@ namespace NeuroRighter
 
             //  Debugger.Write(taskNumber.ToString() + ": salpa filtered");
 
-            #region SpikeFiltering
+            #region SALPA Spike Detection
+            if (recordingSettings.recordSalpaSpike)
+            {
+                object salpaSpike = new object();
+
+                lock (salpaSpikeObj)
+                {
+                    
+                    //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
+                    EventBuffer<SpikeEvent> newWaveformsSalpa = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
+                    switch (spikeDet.detectorType)
+                    {
+                        case 0:
+                            for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                                newWaveformsSalpa.Buffer.AddRange(spikeDet.spikeDetectorSalpa.DetectSpikes(filtSpikeData[i], i, startTime));
+                            break;
+                        case 1:
+                            for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                                newWaveformsSalpa.Buffer.AddRange(spikeDet.spikeDetectorSalpa.DetectSpikesSimple(filtSpikeData[i], i, startTime));
+                            break;
+                    }
+
+                    //Extract waveforms
+                    //toRawsrv: 0 index, includes timing offsets, channel remapping
+                    //saved: 1 index
+                    EventBuffer<SpikeEvent> toRawsrvSalpa = new EventBuffer<SpikeEvent>(spikeSamplingRate);
+                    if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
+                    {
+                        for (int j = 0; j < newWaveformsSalpa.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = (SpikeEvent)newWaveformsSalpa.Buffer[j].DeepClone();
+                            if (checkBox_SALPA.Checked)
+                                if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                                    tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                                else
+                                    continue; //skip that one
+
+                            toRawsrvSalpa.Buffer.Add(tmp);
+                        }
+                    }
+                    else //in vitro mappings
+                    {
+                        for (int j = 0; j < newWaveformsSalpa.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = (SpikeEvent)newWaveformsSalpa.Buffer[j].DeepClone();
+
+                            if (checkBox_SALPA.Checked)
+                                if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                                    tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                                else
+                                    continue; //skip that one
+
+                            tmp.Channel = MEAChannelMappings.channel2LinearCR(tmp.Channel);
+                            toRawsrvSalpa.Buffer.Add(tmp);
+                        }
+                    }
+
+                    // Record spike waveforms 
+                    if (switch_record.Value)
+                    {
+                        for (int j = 0; j < newWaveformsSalpa.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = toRawsrvSalpa.Buffer[j];
+
+                            lock (recordingSettings.spkOutSalpa) //Lock so another NI card doesn't try writing at the same time
+                            {
+                                recordingSettings.spkOutSalpa.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                                    tmp.Threshold, tmp.Waveform, tmp.Unit);
+                            }
+                        }
+                    }
+                    
+                }
+            }
+            #endregion
+
+            // Debugger.Write(taskNumber.ToString() + ": salpa spikes filtered");
+
+            #region Band Pass Filtering
             //Filter spike data
             if (checkBox_spikesFilter.Checked)
             {
@@ -331,113 +492,118 @@ namespace NeuroRighter
 
             //   Debugger.Write(taskNumber.ToString() + ": digital referencing spikes");
 
-            #region SpikeDetection
-            ++(numSpikeReads[taskNumber]);
-
-            SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
-
-            ulong startTime = (ulong)(numSpikeReads[taskNumber] - 1) * (ulong)spikeBufferLength; //Used to mark spike time for *.spk file
-
-
-            //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
-            EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
-            switch (spikeDet.detectorType)
+            lock (finalSpikeObj)
             {
-                case 0:
-                    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                        newWaveforms.Buffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i, startTime));
-                    break;
-                case 1:
-                    for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
-                        newWaveforms.Buffer.AddRange(spikeDet.spikeDetector.DetectSpikesSimple(filtSpikeData[i], i, startTime));
-                    break;
-            }
+                #region Final Spike Detection
+                //SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
-            //Extract waveforms
-            //toRawsrv: 0 index, includes timing offsets, channel remapping
-            //saved: 1 index
-            test = Properties.Settings.Default.recordSpikes;
-            EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
-            if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
-            {
-                for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
+                //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
+                EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);
+                switch (spikeDet.detectorType)
                 {
-                    SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
-                    if (checkBox_SALPA.Checked)
-                        if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
-                            tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
-                        else
-                            continue; //skip that one
-
-                    toRawsrv.Buffer.Add(tmp);
+                    case 0:
+                        for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                            newWaveforms.Buffer.AddRange(spikeDet.spikeDetector.DetectSpikes(filtSpikeData[i], i, startTime));
+                        break;
+                    case 1:
+                        for (int i = taskNumber * numChannelsPerDev; i < (taskNumber + 1) * numChannelsPerDev; ++i)
+                            newWaveforms.Buffer.AddRange(spikeDet.spikeDetector.DetectSpikesSimple(filtSpikeData[i], i, startTime));
+                        break;
                 }
-            }
-            else //in vitro mappings
-            {
-                test = Properties.Settings.Default.recordSpikes;
-                for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
+
+                //Extract waveforms
+                //toRawsrv: 0 index, includes timing offsets, channel remapping
+                //saved: 1 index
+                EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
+                if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
                 {
-                    SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
-
-                    if (checkBox_SALPA.Checked)
-                        if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
-                            tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
-                        else
-                            continue; //skip that one
-
-                    tmp.Channel = MEAChannelMappings.channel2LinearCR(tmp.Channel);
-                    toRawsrv.Buffer.Add(tmp);
-                }
-            }
-
-            // Spike Detection - Hoarding
-            if (spikeDet.IsHoarding)
-            {
-                // Send spikes to the sorter's internal buffer
-                spikeDet.spikeSorter.HoardSpikes(toRawsrv);
-                spikeDet.UpdateCollectionBar();
-            }
-
-            // Spike Detection - Classification
-            if (spikeDet.IsEngaged)
-            {
-                spikeDet.spikeSorter.Classify(ref toRawsrv);
-            }
-
-            // Provide new spike data to persistent buffer
-            if (Properties.Settings.Default.useSpikeDataBuffer)
-                datSrv.SpikeSrv.WriteToBuffer(toRawsrv, taskNumber);
-
-            // Record spike waveforms 
-            if (switch_record.Value && Properties.Settings.Default.recordSpikes)
-            {
-                for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
-                {
-                    SpikeEvent tmp = toRawsrv.Buffer[j];
-
-                    lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
+                    for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
                     {
-                        recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
-                            tmp.Threshold, tmp.Waveform, tmp.Unit);
+                        SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
+                        if (checkBox_SALPA.Checked)
+                            if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                                tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                            else
+                                continue; //skip that one
+
+                        toRawsrv.Buffer.Add(tmp);
                     }
                 }
-            }
+                else //in vitro mappings
+                {
+                    for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
+                    {
+                        SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
 
+                        if (checkBox_SALPA.Checked)
+                            if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                                tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
+                            else
+                                continue; //skip that one
 
-            //Post to PlotData
-            if (spikeDet.IsEngaged)
-            {
-                waveformPlotData.write(toRawsrv.Buffer, spikeDet.spikeSorter.unitDictionary);
-            }
-            else
-            {
-                waveformPlotData.write(toRawsrv.Buffer, null);
-            }
-            //Clear new ones, since we're done with them.
-            newWaveforms.Buffer.Clear();
-            #endregion
+                        tmp.Channel = MEAChannelMappings.channel2LinearCR(tmp.Channel);
+                        toRawsrv.Buffer.Add(tmp);
+                    }
+                }
 
-            //  Debugger.Write(taskNumber.ToString() + ": spikes detected");
+                #endregion
+
+                //  Debugger.Write(taskNumber.ToString() + ": spikes detected");
+
+                # region Spike Sorting
+                // Spike Sorting - Hoarding
+                if (spikeDet.IsHoarding)
+                {
+                    // Send spikes to the sorter's internal buffer
+                    spikeDet.spikeSorter.HoardSpikes(toRawsrv);
+                    spikeDet.UpdateCollectionBar();
+                }
+
+                // Spike Detection - Classification
+                if (spikeDet.IsEngaged)
+                {
+                    spikeDet.spikeSorter.Classify(ref toRawsrv);
+                }
+
+                // Provide new spike data to persistent buffer
+                if (Properties.Settings.Default.useSpikeDataBuffer)
+                    datSrv.SpikeSrv.WriteToBuffer(toRawsrv, taskNumber);
+
+                // Record spike waveforms 
+                if (switch_record.Value && Properties.Settings.Default.recordSpikes)
+                {
+                    for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
+                    {
+                        SpikeEvent tmp = toRawsrv.Buffer[j];
+
+                        lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
+                        {
+                            recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                                tmp.Threshold, tmp.Waveform, tmp.Unit);
+                        }
+                    }
+                }
+                # endregion
+
+                //  Debugger.Write(taskNumber.ToString() + ": spikes sorted");
+
+                # region Spike Plotting
+                //Post to PlotData
+                if (spikeDet.IsEngaged)
+                {
+                    waveformPlotData.write(toRawsrv.Buffer, spikeDet.spikeSorter.unitDictionary);
+                }
+                else
+                {
+                    waveformPlotData.write(toRawsrv.Buffer, null);
+                }
+                //Clear new ones, since we're done with them.
+                newWaveforms.Buffer.Clear();
+
+                # endregion
+
+                //  Debugger.Write(taskNumber.ToString() + ": spikes plotted");
+            }
 
             #region BNC_Output
             //Send selected channel to BNC

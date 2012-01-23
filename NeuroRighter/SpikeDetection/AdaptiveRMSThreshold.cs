@@ -22,12 +22,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
+
 namespace NeuroRighter.SpikeDetection
 {
     using rawType = System.Double;
 
-
-    /// <author>John Rolston (rolston2@gmail.com) and Jon Newman</author>
+    [Serializable]
     class AdaptiveRMSThreshold : SpikeDetector
     {
 

@@ -270,7 +270,15 @@ namespace NeuroRighter
                             }
 
                             // Look for old files with same name
-                            string[] matchFiles = Directory.GetFiles(currentSaveDir, currentSaveFile + "*");
+                            string[] matchFiles;
+                            try
+                            {
+                                matchFiles = Directory.GetFiles(currentSaveDir, currentSaveFile + "*");
+                            }
+                            catch
+                            {
+                                matchFiles = new string[0];
+                            }
 
                             if (matchFiles.Length > 0)
                             {
@@ -1071,7 +1079,9 @@ namespace NeuroRighter
                             firstRawWrite[i] = true;
                         }
 
-                        // 1. spk stream
+                        // 1. spk streams
+                        recordingSettings.Setup("rawspk", spikeTask[0], spikeDet.NumPre, spikeDet.NumPost, false);
+                        recordingSettings.Setup("salpaspk", spikeTask[0], spikeDet.NumPre, spikeDet.NumPost, false);
                         if (spikeDet.spikeSorter != null && spikeDet.IsEngaged)
                             recordingSettings.Setup("spk", spikeTask[0], spikeDet.NumPre, spikeDet.NumPost, true);
                         else

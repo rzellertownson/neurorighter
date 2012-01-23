@@ -18,8 +18,14 @@ namespace NeuroRighter.FileWriting
         private string fid;
         private int numElectrodes;
 
+        // These bits determine which filters are being used
+        private bool salpaOn;
+        private bool spkFiltOn;
+
         // These bits determine the streams to be recorded
         internal bool recordSpike;
+        internal bool recordRawSpike;
+        internal bool recordSalpaSpike;
         internal bool recordRaw;
         internal bool recordSALPA;
         internal bool recordSpikeFilt;
@@ -36,6 +42,8 @@ namespace NeuroRighter.FileWriting
 
         // The file writers
         internal SpikeFileOutput spkOut;
+        internal SpikeFileOutput spkOutSalpa;
+        internal SpikeFileOutput spkOutRaw;
         internal FileOutput rawOut;
         internal FileOutput salpaOut;
         internal FileOutput spkFiltOut;
@@ -123,6 +131,25 @@ namespace NeuroRighter.FileWriting
                             dataTask, "." + dataType, recordingUnits);
                     }
                     break;
+                case "salpaspk" :
+                    if (recordSalpaSpike)
+                    {
+                        spkOutSalpa = new SpikeFileOutput(fid, numElectrodes,
+                            (int)dataTask.Timing.SampleClockRate,
+                            Convert.ToInt32(numPreSamp + numPostSamp) + 1,
+                            dataTask, "." + dataType, recordingUnits);
+                    }
+                    break;
+                case "rawspk":
+                    if (recordRawSpike)
+                    {
+                        spkOutRaw = new SpikeFileOutput(fid, numElectrodes,
+                            (int)dataTask.Timing.SampleClockRate,
+                            Convert.ToInt32(numPreSamp + numPostSamp) + 1,
+                            dataTask, "." + dataType, recordingUnits);
+                    }
+                    break;
+
                 default:
                     Console.WriteLine("Unknown data type specified during RecordingSetup.Setup()");
                     break;
@@ -269,6 +296,8 @@ namespace NeuroRighter.FileWriting
         internal void Flush()
         {
             if (spkOut != null) { spkOut.flush(); spkOut = null; }
+            if (spkOutRaw != null) { spkOutRaw.flush(); spkOutRaw = null; }
+            if (spkOutSalpa != null) { spkOutSalpa.flush(); spkOutSalpa = null; }
             if (rawOut != null) { rawOut.flush(); rawOut = null; }
             if (salpaOut != null) { salpaOut.flush(); salpaOut = null; }
             if (spkFiltOut != null) { spkFiltOut.flush(); spkFiltOut = null; }
@@ -281,16 +310,34 @@ namespace NeuroRighter.FileWriting
 
         internal void SetSalpaAccess(bool recSalpaEnable)
         {
-            if (!recSalpaEnable)
+
+            salpaOn = recSalpaEnable;
+            if (!salpaOn)
                 checkBox_RecordSALPA.Checked = false;
+
+            // Set the available spike streams
+            if (salpaOn)
+                checkBox_RecordRawSpikes.Enabled = true;
+            if (salpaOn && spkFiltOn)
+                checkBox_RecordSalpaSpikes.Enabled = true;
+
             checkBox_RecordSALPA.Enabled = recSalpaEnable;
+            
         }
 
         internal void SetSpikeFiltAccess(bool recSpikeEnable)
         {
-            if (!recSpikeEnable)
+            spkFiltOn = recSpikeEnable;
+
+            if (!spkFiltOn)
                 checkBox_RecordSpikeFilt.Checked = false;
             checkBox_RecordSpikeFilt.Enabled = recSpikeEnable;
+
+            // Set the available spike streams
+            if (spkFiltOn)
+                checkBox_RecordRawSpikes.Enabled = true;
+            if (salpaOn && spkFiltOn)
+                checkBox_RecordSalpaSpikes.Enabled = true;
         }
 
         internal void RecallDefaultSettings()
@@ -300,6 +347,12 @@ namespace NeuroRighter.FileWriting
             this.Location = Properties.Settings.Default.recSetFormLoc;
 
             // Load defaults
+            if (checkBox_RecordSpikes.Enabled)
+                checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
+            if (checkBox_RecordRawSpikes.Enabled)
+                checkBox_RecordRawSpikes.Checked = Properties.Settings.Default.recordRawSpikes;
+            if (checkBox_RecordSalpaSpikes.Enabled)
+                checkBox_RecordSalpaSpikes.Checked = Properties.Settings.Default.recordSalpaSpikes;
             if (checkBox_RecordSpikes.Enabled)
                 checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
             if (checkBox_RecordSALPA.Enabled)
@@ -411,10 +464,26 @@ namespace NeuroRighter.FileWriting
             SettingsHaveChanged(this, e);
         }
 
+        private void checkBox_RecordRawSpikes_CheckedChanged(object sender, EventArgs e)
+        {
+            // Set recording parameters
+            ResetStreams2Record();
+            SettingsHaveChanged(this, e);
+        }
+
+        private void checkBox_RecordSalpaSpikes_CheckedChanged(object sender, EventArgs e)
+        {
+            // Set recording parameters
+            ResetStreams2Record();
+            SettingsHaveChanged(this, e);
+        }
+
         private void ResetStreams2Record()
         {
             // Set recording parameters
             recordSpike = checkBox_RecordSpikes.Checked;
+            recordRawSpike = checkBox_RecordRawSpikes.Checked;
+            recordSalpaSpike = checkBox_RecordSalpaSpikes.Checked;
             recordRaw = checkBox_RecordRaw.Checked;
             recordSALPA = checkBox_RecordSALPA.Checked;
             recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
@@ -462,6 +531,8 @@ namespace NeuroRighter.FileWriting
         {
             // Streams
             Properties.Settings.Default.recordSpikes = checkBox_RecordSpikes.Checked;
+            Properties.Settings.Default.recordRawSpikes = checkBox_RecordRawSpikes.Checked;
+            Properties.Settings.Default.recordSalpaSpikes = checkBox_RecordSalpaSpikes.Checked;
             Properties.Settings.Default.recordSalpa = checkBox_RecordSALPA.Checked;
             Properties.Settings.Default.recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
             Properties.Settings.Default.recordLFP = checkBox_RecordLFP.Checked;
@@ -489,6 +560,8 @@ namespace NeuroRighter.FileWriting
         {
             // Load defaults
             checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
+            checkBox_RecordRawSpikes.Checked = Properties.Settings.Default.recordRawSpikes;
+            checkBox_RecordSalpaSpikes.Checked = Properties.Settings.Default.recordSalpaSpikes;
             checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
             checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
             checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
@@ -517,6 +590,5 @@ namespace NeuroRighter.FileWriting
             this.Hide();
 
         }
-
     }
 }

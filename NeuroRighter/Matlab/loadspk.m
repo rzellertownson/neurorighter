@@ -1,4 +1,5 @@
-% LOADSPK Load NeuroRighter .spk files for NR v0.7.0.0 and up
+% LOADSPK Load NeuroRighter .spk,.rawspk, and .salpaspk files for NR
+% v0.7.0.0 and up
 %
 % SPK = LAODSPK(FID) fid is the fully qualified path to a NeuroRighter .spk
 % file. The field that is returned contains information about the spike
@@ -117,9 +118,9 @@ fprintf(['\tADC Polling period (sec): ' num2str(adcpoll) '\n']);
 fprintf(['\tNumber of channels: ' num2str(nochannels) '\n']);
 fprintf(['\tDigital gain: ' num2str(gain) '\n']);
 if (recunit)
-    fprintf('\tThis file contain unit information\n');
+    fprintf('\tThis file contains unit information\n');
 else
-    fprintf('\tThis file does not contains unit information\n');
+    fprintf('\tThis file does not contain unit information\n');
 end
 fprintf(['\tSamples per waveform: ' num2str(waveSamples) '\n']);
 fprintf(['\tRecording time (yr-mo-dy-hr-mi-sc-ms): ' ...

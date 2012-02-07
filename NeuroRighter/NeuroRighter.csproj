@@ -123,7 +123,9 @@
     <Compile Include="DatSrv\EventDataSrv.cs" />
     <Compile Include="dbg\ExecptDBG.cs" />
     <Compile Include="dbg\RealTimeDebugger.cs" />
+    <Compile Include="ExtentionMethods\ClassLoader.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
+    <Compile Include="ExtentionMethods\Loader.cs" />
     <Compile Include="FileWriting\DigFileOutput.cs" />
     <Compile Include="FileWriting\RawScale.cs" />
     <Compile Include="FileWriting\RecordingSetup.cs">

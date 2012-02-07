@@ -431,8 +431,7 @@ namespace NeuroRighter
 
             if (updateAuxGraph)
             {
-                ;
-                auxInputGraphController.updateScatterGraph(datSrv.AuxAnalogSrv,
+                auxInputGraphController.UpdateScatterGraph(datSrv.AuxAnalogSrv,
                         slide_AnalogDispWidth.Value,
                         slide_AnalogDispMaxVoltage.Value,
                         slide_AuxShift.Value);
@@ -474,7 +473,7 @@ namespace NeuroRighter
 
                         if (updateAuxGraph && !checkBox_FreezeAuxPlot.Checked)
                         {
-                            auxInputGraphController.updateScatterGraph(datSrv.AuxAnalogSrv,
+                            auxInputGraphController.UpdateScatterGraph(datSrv.AuxAnalogSrv,
                                     slide_AnalogDispWidth.Value,
                                     slide_AnalogDispMaxVoltage.Value,
                                     slide_AuxShift.Value);

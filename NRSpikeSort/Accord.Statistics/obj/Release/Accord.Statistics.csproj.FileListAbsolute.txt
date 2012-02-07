@@ -230,4 +230,3 @@ C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Stat
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Statistics\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.dll
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Statistics\obj\Release\Accord.Statistics.pdb
-C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Statistics\bin\Release\Accord.Statistics.XML

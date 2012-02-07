@@ -33,7 +33,8 @@ namespace NeuroRighter
 
         private ScatterGraph analogScatterGraph;
         private ulong lastSampleRead ;
-        private ulong numSampToPlot = 1500; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private const ulong _numSampToPlot = 1000; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private ulong numSampToPlot;
         private ulong points2Remove;
 
         /// <summary>
@@ -52,12 +53,12 @@ namespace NeuroRighter
                      analogScatterGraph.Plots[i].AntiAliased = true;
 
                      // Set capacity
-                     analogScatterGraph.Plots[i].HistoryCapacity = (int)numSampToPlot;
+                     analogScatterGraph.Plots[i].HistoryCapacity = (int)_numSampToPlot;
                 }
 
         }
 
-        internal void updateScatterGraph(RawDataSrv analogDataServer, double requestedHistorySec, double peakVoltage, double shift)
+        internal void UpdateScatterGraph(RawDataSrv analogDataServer, double requestedHistorySec, double peakVoltage, double shift)
         {
      
             // One over samplefreq
@@ -69,15 +70,15 @@ namespace NeuroRighter
             // Plot bound settings
             ulong historySamples = (ulong)(analogDataServer.SampleFrequencyHz * requestedHistorySec);
             double minUpdateTimeSec = 0.05; //seconds
-            int downSampleFactor = (int)(historySamples/numSampToPlot);
-            if (historySamples < numSampToPlot)
+            int downSampleFactor = (int)(historySamples/_numSampToPlot);
+            if (historySamples < _numSampToPlot)
             {
                 downSampleFactor = 1;
                 numSampToPlot = historySamples;
             }
             else
             {
-                numSampToPlot = 1500;
+                numSampToPlot = _numSampToPlot;
             }
             int newDataLength;
 
@@ -86,6 +87,7 @@ namespace NeuroRighter
                 // x-data storage
                 double[] xDat;
                 int k = 0;
+
                 // Get data in requested history
                 RawMultiChannelBuffer analogData;
                 if (historySamples > availableDataRange[1])
@@ -101,6 +103,7 @@ namespace NeuroRighter
                         k = k + downSampleFactor;
                     }
                 }
+
                 else if(availableDataRange[1] - lastSampleRead > historySamples)
                 {
                     analogData = analogDataServer.ReadFromBuffer(availableDataRange[1] - historySamples, availableDataRange[1]);
@@ -158,8 +161,10 @@ namespace NeuroRighter
                         --k;
                         if (j <= yDatDS.Length)
                             yDat[k] = yDatDS[yDatDS.Length - j];
-                        else if(oldYDat.Length != 0)
+                        else if (oldYDat.Length + yDatDS.Length - j >= 0)
                             yDat[k] = oldYDat[oldYDat.Length + yDatDS.Length - j];
+                        else
+                            yDat[k] = 0.0;
                     }
 
                     // set plot range

@@ -299,4 +299,3 @@ C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.Mach
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
-C:\Users\Jon\Desktop\neurorighter-separate-spike-streams\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.XML

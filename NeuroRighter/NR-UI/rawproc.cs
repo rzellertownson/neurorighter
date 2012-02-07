@@ -495,7 +495,6 @@ namespace NeuroRighter
             lock (finalSpikeObj)
             {
                 #region Final Spike Detection
-                //SALPA_WIDTH = Convert.ToInt32(numericUpDown_salpa_halfwidth.Value);
 
                 //newWaveforms: 0 based indexing for internal NR processing (datSrv, plotData)
                 EventBuffer<SpikeEvent> newWaveforms = new EventBuffer<SpikeEvent>(Properties.Settings.Default.RawSampleFrequency);

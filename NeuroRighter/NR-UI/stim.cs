@@ -45,6 +45,7 @@ using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
 using NeuroRighter.Output;
+using ExtensionMethods;
 
 
 
@@ -762,8 +763,8 @@ namespace NeuroRighter
 
         #region Closed Loop Output
         Assembly ClosedLoopLibrary;
-        System.AppDomain NewAppDomain;
-        //private List<ClosedLoopExperiment> experimentList;
+        ClassLoader clLoader = new ClassLoader();
+
         private void button_BrowseCLStimFile_Click(object sender, EventArgs e)
         {
             try
@@ -780,40 +781,22 @@ namespace NeuroRighter
                 if (result == DialogResult.OK)
                 {
                     
-
                     // copy the cl dll to local directory
-                    File.Delete("LOCAL_CL_EXP1.dll");
-                    File.Copy(CLFileDialog.FileName, "LOCAL_CL_EXP1.dll");
+                    //File.Delete("LOCAL_CL_EXP1.dll");
+                    //File.Copy(CLFileDialog.FileName, "LOCAL_CL_EXP1.dll");
 
                     string tmp = new FileInfo(CLFileDialog.FileName).DirectoryName;
                     Properties.Settings.Default.CLstimdirectory = tmp;
                     Properties.Settings.Default.Save();
                     textBox_ClosedLoopProtocolFile.Text = CLFileDialog.FileName;
-
-                    FileInfo tmpFi = new FileInfo("LOCAL_CL_EXP1.dll");
-                    filenameOutput = tmpFi.FullName;
-                    tmpFi = null;
-
-                    // Create a new application domain for the assembly
-                    //System.AppDomain NewAppDomain = System.AppDomain.CreateDomain("CLDllDomain",null);
-                    //NewAppDomain.Load(filenameOutput);
-
-                    //List<Type> types = new List<Type>();
-                    //Type ti = typeof(ClosedLoopExperiment);
-                    //foreach (Assembly asm in NewAppDomain.GetAssemblies())
-                    //{
-                    //    foreach (Type t in asm.GetTypes())
-                    //    {
-                    //        if (ti.IsAssignableFrom(t))
-                    //        {
-                    //            types.Add(t);
-                    //        }
-                    //    }
-                    //}
-
+                    filenameOutput = CLFileDialog.FileName;
+                    byte[] rawAssembly = NRExtensionMethods.LoadFile(filenameOutput);
+                    //FileInfo tmpFi = new FileInfo("LOCAL_CL_EXP1.dll");
+                    //filenameOutput = tmpFi.FullName;
+                    //tmpFi = null;
 
                     //grab the plugins
-                    ClosedLoopLibrary = Assembly.LoadFile(filenameOutput);//load the dll as an assembly
+                    ClosedLoopLibrary = Assembly.Load(rawAssembly);  //load the dll as an assembly
                    
                     // Refresh the CL combobox
                     RefreshCLComboBox();
@@ -829,7 +812,7 @@ namespace NeuroRighter
         private void RefreshCLComboBox()
         {
 
-            Type[] types = ClosedLoopLibrary.GetTypes();//find the invidual classes in the assembly
+            Type[] types =  ClosedLoopLibrary.GetTypes();//find the invidual classes in the assembly
 
             // Repopulate the combobox
             comboBox_closedLoopProtocol.Items.Clear();
@@ -839,7 +822,7 @@ namespace NeuroRighter
                 {
                     ClosedLoopExperiment tmpcl = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
                     //experimentList.Add(tmp);//and activated them as such.
-                    Console.WriteLine(tmpcl.ToString());
+                    Console.WriteLine("Successfully Loaded: " + tmpcl.ToString());
                     comboBox_closedLoopProtocol.Enabled = true;
                     comboBox_closedLoopProtocol.Items.Add(tmpcl);
                 }
@@ -855,7 +838,7 @@ namespace NeuroRighter
             // Update all the recording/stim settings
             updateSettings();
 
-            // Set the recording type to non-normal since this is a OL protocol
+            // Set the recording type to non-normal since this is a CL protocol
             isNormalRecording = false;
 
             // Start the protocol
@@ -867,7 +850,7 @@ namespace NeuroRighter
         {
             if (comboBox_closedLoopProtocol.SelectedItem == null)
             {
-                MessageBox.Show("Please select a protocol");
+                MessageBox.Show("Please select a closed-loop protocol.");
                 return;
             }
 
@@ -893,14 +876,13 @@ namespace NeuroRighter
             closedLoopSynchronizedOutput.Start();
 
             NRStartRecording();
-            //start everything
-            //Console.WriteLine(stimSrv);
 
             //gui stuff
             button_startClosedLoopStim.Enabled = false;
             button_stopClosedLoopStim.Enabled = true;
             buttonStop.Enabled = false;
         }
+
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
         {
             lock (this)

@@ -862,7 +862,7 @@
             0,
             0});
             this.numericUpDown_maxK.Minimum = new decimal(new int[] {
-            2,
+            1,
             0,
             0,
             0});

@@ -282,5 +282,20 @@ namespace ExtensionMethods
             return NRColorMap;
         }
 
+        /// <summary>
+        /// Load a file into a byte array to prevent file locking.
+        /// </summary>
+        /// <param name="filename">Path to file to be loaded.</param>
+        /// <returns>Byte array containing the file.</returns>
+        public static byte[] LoadFile(string filename)
+        {
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            byte[] buffer = new byte[(int)fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+            fs.Dispose();
+            return buffer;
+        }
+
     }
 }

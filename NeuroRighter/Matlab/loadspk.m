@@ -1,12 +1,12 @@
 % LOADSPK Load NeuroRighter .spk,.rawspk, and .salpaspk files for NR
 % v0.7.0.0 and up
 %
-% SPK = LAODSPK(FID) fid is the fully qualified path to a NeuroRighter .spk
-% file. The field that is returned contains information about the spike
+% SPK = LOADSPK(FID) fid is the fully qualified path to a NeuroRighter .spk
+% file. The structure that is returned contains metadata about the spike
 % data and the spike data itself.
 %
 % SPK = LOADSPK(FID,TIME,WAVE) loads the .spk file for spikes that occured
-% between time = [t0 t1) on the channels specified in chan. wave is a
+% between time = [t0 t1) on the channels specified in chan. Wave is a
 % boolean that specifies whether waveforms should be returned. Use empty
 % brackets, [], to specify defaults.
 %

@@ -51,7 +51,7 @@ namespace NeuroRighter.DataTypes
             }
             set
             {
-                value = sampleIndex;
+                sampleIndex=value;
             }
         }
 

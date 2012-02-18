@@ -279,7 +279,8 @@ namespace NeuroRighter
 
             // Debugger.Write(taskNumber.ToString() + ": lfp filtered");
 
-            #region SALPA Filtering
+
+           #region SALPA Filtering
             lock (stimIndices)
                 if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
                 {
@@ -534,8 +535,9 @@ namespace NeuroRighter
                     {
                         SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
 
-                        if (checkBox_SALPA.Checked)
-                            if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                    //    if (checkBox_SALPA.Checked)
+                        
+                            if ( tmp.SampleIndex >= (ulong)SALPAFilter.offset() )
                                 tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
                             else
                                 continue; //skip that one
@@ -545,6 +547,8 @@ namespace NeuroRighter
                     }
                 }
 
+
+                
                 #endregion
 
                 //  Debugger.Write(taskNumber.ToString() + ": spikes detected");
@@ -568,11 +572,17 @@ namespace NeuroRighter
                 if (Properties.Settings.Default.useSpikeDataBuffer)
                     datSrv.SpikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
+               
+
                 // Record spike waveforms 
                 if (switch_record.Value && Properties.Settings.Default.recordSpikes)
                 {
-                    for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
+                    for (int j = 0; j < toRawsrv.Buffer.Count; ++j) //For each threshold crossing
                     {
+                        
+                           // toRawsrv.Buffer[j].SampleIndex = (ulong)((int)toRawsrv.Buffer[j].SampleIndex- SALPAFilter.offset());
+                            //SpikeEvent tmp = toRawsrv.Buffer[j];
+                        
                         SpikeEvent tmp = toRawsrv.Buffer[j];
 
                         lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time

@@ -191,7 +191,7 @@
     <Compile Include="Output\OpenLoopOut.cs" />
     <Compile Include="Output\NROutBuffer.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
-    <Compile Include="Plotting\ScatterGraphContoller.cs" />
+    <Compile Include="Plotting\ScatterGraphController.cs" />
     <Compile Include="Plotting\SpikeWaveformGraph.cs">
       <SubType>UserControl</SubType>
     </Compile>

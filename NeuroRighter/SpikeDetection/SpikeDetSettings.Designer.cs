@@ -827,6 +827,11 @@
             // 
             this.numericUpDown_MinSpikesToTrain.BackColor = System.Drawing.Color.Yellow;
             this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(221, 96);
+            this.numericUpDown_MinSpikesToTrain.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             this.numericUpDown_MinSpikesToTrain.Minimum = new decimal(new int[] {
             10,
             0,

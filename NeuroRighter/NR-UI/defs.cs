@@ -175,7 +175,7 @@ namespace NeuroRighter
         private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;
         private RowGraph muaGraph;
-        private ScatterGraphContoller auxInputGraphController;
+        private ScatterGraphController auxInputGraphController;
         private short recordingLEDState = 0;
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety
         private delegate void crossThreadFormUpdateDelegate(int item); //Used for making cross thread calls from stimbuffer, file2stim, etc to NR

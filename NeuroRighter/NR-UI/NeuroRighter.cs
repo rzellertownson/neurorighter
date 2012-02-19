@@ -730,7 +730,7 @@ namespace NeuroRighter
                             }
 
                             // Initialize the controller
-                            auxInputGraphController = new ScatterGraphContoller(ref scatterGraph_AuxAnalogData);
+                            auxInputGraphController = new ScatterGraphController(ref scatterGraph_AuxAnalogData);
 
                             // Make history selector reflect current limits on input
                             slide_AnalogDispMaxVoltage.Range = new Range(0.05, 10);

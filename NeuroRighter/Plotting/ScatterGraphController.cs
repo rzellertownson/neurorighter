@@ -28,21 +28,20 @@ using NeuroRighter.DatSrv;
 
 namespace NeuroRighter
 {
-    class ScatterGraphContoller
+    class ScatterGraphController
     {
 
         private ScatterGraph analogScatterGraph;
         private ulong lastSampleRead ;
         private const ulong _numSampToPlot = 1000; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
         private ulong numSampToPlot;
-        private ulong points2Remove;
 
         /// <summary>
         /// Generic controller for NI scatter graphs using datSrv as an input.
         /// <author> Jon Newman</author>
         /// </summary>
         /// <param name="analogScatterGraph"></param>
-        public ScatterGraphContoller(ref ScatterGraph analogScatterGraph)
+        public ScatterGraphController(ref ScatterGraph analogScatterGraph)
         {
             this.analogScatterGraph = analogScatterGraph;
             for (int i = 0; i < analogScatterGraph.Plots.Count; ++i)

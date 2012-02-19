@@ -136,6 +136,7 @@ namespace simoc.filt2out
 
                 // Encode light power as 10000*V_ctl = port-state
                 toAppendDig.Add(new DigitalOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), (uint)(10000.0 * simocVariableStorage.GenericDouble1)));
+                toAppendDig.Add(new DigitalOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset) + pulseWidthSamples, 0));
 
                 simocVariableStorage.LastAuxEventSample = simocVariableStorage.NextAuxEventSample;
                 simocVariableStorage.NextAuxEventSample += isi;

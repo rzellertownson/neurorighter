@@ -329,7 +329,7 @@ namespace simoc
                         break;
                    case "Integral Bang-Bang":
                         {
-                            Filt2IBangBangFB controller = new Filt2IBangBangFB(ref StimSrv, controlPanel);
+                            Filt2IBangBangFB2 controller = new Filt2IBangBangFB2(ref StimSrv, controlPanel);
                             controller.CalculateError(ref currentError, currentTarget, currentFilt);
                             controller.SendFeedBack(simocVariableStorage);
                             for (int i = 0; i < controller.numberOutStreams; ++i)

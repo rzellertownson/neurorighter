@@ -34,8 +34,9 @@ namespace simoc.plotting
     {
 
         private ScatterGraph analogScatterGraph;
-        private ulong lastSampleRead ;
-        private ulong numSampToPlot = 1500; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private ulong lastSampleRead;
+        private const ulong _numSampToPlot = 1000; //(ulong)Math.Floor(Properties.Settings.Default.RawSampleFrequency * Properties.Settings.Default.ADCPollingPeriodSec);
+        private ulong numSampToPlot;
 
         /// <summary>
         /// Generic controller for NI scatter graphs using datSrv as an input.
@@ -46,18 +47,21 @@ namespace simoc.plotting
         {
             this.analogScatterGraph = analogScatterGraph;
             for (int i = 0; i < analogScatterGraph.Plots.Count; ++i)
-                {
-                     // Plot options
-                     analogScatterGraph.Plots[i].CanScaleYAxis = false;
-                     analogScatterGraph.Plots[i].CanScaleXAxis = false;
-                     analogScatterGraph.Plots[i].AntiAliased = true;
-                }
+            {
+                // Plot options
+                analogScatterGraph.Plots[i].CanScaleYAxis = false;
+                analogScatterGraph.Plots[i].CanScaleXAxis = false;
+                analogScatterGraph.Plots[i].AntiAliased = true;
+
+                // Set capacity
+                analogScatterGraph.Plots[i].HistoryCapacity = (int)_numSampToPlot;
+            }
 
         }
 
-        internal void updateScatterGraph(SIMOCRawSrv analogDataServer, double requestedHistorySec, double peakVoltage, double shift)
+        internal void UpdateScatterGraph(SIMOCRawSrv analogDataServer, double requestedHistorySec, double peakVoltage, double shift)
         {
-     
+
             // One over samplefreq
             double oneOverSampleFreq = 1 / analogDataServer.sampleFrequencyHz;
 
@@ -66,26 +70,25 @@ namespace simoc.plotting
 
             // Plot bound settings
             ulong historySamples = (ulong)(analogDataServer.sampleFrequencyHz * requestedHistorySec);
-            double minUpdateTimeSec = 0.1; //seconds
-            int downSampleFactor;
-            //if (historySamples <= 1500)
-            //{
-                numSampToPlot = historySamples;
+            double minUpdateTimeSec = 0.05; //seconds
+            int downSampleFactor = (int)(historySamples / _numSampToPlot);
+            if (historySamples < _numSampToPlot)
+            {
                 downSampleFactor = 1;
-            //}
-            //else
-            //{
-            //    numSampToPlot = 1500;
-            //    downSampleFactor = (int)(historySamples / numSampToPlot);
-                
-            //}
+                numSampToPlot = historySamples;
+            }
+            else
+            {
+                numSampToPlot = _numSampToPlot;
+            }
             int newDataLength;
 
-            if ((availableDataRange[1]-lastSampleRead)*oneOverSampleFreq > minUpdateTimeSec)
+            if ((availableDataRange[1] - lastSampleRead) * oneOverSampleFreq > minUpdateTimeSec)
             {
                 // x-data storage
                 double[] xDat;
                 int k = 0;
+
                 // Get data in requested history
                 RawSimocBuffer analogData;
                 if (historySamples > availableDataRange[1])
@@ -101,9 +104,23 @@ namespace simoc.plotting
                         k = k + downSampleFactor;
                     }
                 }
-                else
+
+                else if (availableDataRange[1] - lastSampleRead > historySamples)
                 {
                     analogData = analogDataServer.ReadFromBuffer(availableDataRange[1] - historySamples, availableDataRange[1]);
+                    newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
+
+                    // Make X data, always 0 to whatever the plot width is
+                    xDat = new double[numSampToPlot];
+                    for (int j = 0; j < xDat.Length; ++j)
+                    {
+                        xDat[j] = k * oneOverSampleFreq;
+                        k = k + downSampleFactor;
+                    }
+                }
+                else
+                {
+                    analogData = analogDataServer.ReadFromBuffer(lastSampleRead, availableDataRange[1]);
                     newDataLength = analogData.rawMultiChannelBuffer[0].Length / downSampleFactor;
 
                     // Make X data, always 0 to whatever the plot width is
@@ -120,27 +137,41 @@ namespace simoc.plotting
 
                 // Get plot range
                 Range plotYRange = new Range(-peakVoltage + shift, peakVoltage + shift);
-                Range plotXRange = new Range(0, xDat[xDat.Length-1]);
+                Range plotXRange = new Range(0, xDat[xDat.Length - 1]);
 
                 // Update the scatter plot
                 for (int i = 0; i < analogScatterGraph.Plots.Count; ++i)
                 {
+                    double[] yDatTmp = analogData.rawMultiChannelBuffer[i];
+                    double[] yDatDS = new double[newDataLength];
+
                     // Make y data
                     k = 0;
-                    double[] yDat = new double[xDat.Length];
-                    for (int j = 0; j < xDat.Length; ++j)
+                    for (int j = 0; j < newDataLength; ++j)
                     {
-                        yDat[j] = analogData.rawMultiChannelBuffer[i][k];
+                        yDatDS[j] = yDatTmp[k];
                         k = k + downSampleFactor;
                     }
 
-                    // Set capacity
-                    analogScatterGraph.Plots[i].HistoryCapacity = (int)numSampToPlot;
+                    // Append new data to old data as needed
+                    double[] yDat = new double[xDat.Length];
+                    double[] oldYDat = analogScatterGraph.Plots[i].GetYData();
+                    k = xDat.Length;
+                    for (int j = 1; j <= xDat.Length; ++j)
+                    {
+                        --k;
+                        if (j <= yDatDS.Length)
+                            yDat[k] = yDatDS[yDatDS.Length - j];
+                        else if (oldYDat.Length + yDatDS.Length - j >= 0)
+                            yDat[k] = oldYDat[oldYDat.Length + yDatDS.Length - j];
+                        else
+                            yDat[k] = 0.0;
+                    }
 
                     // set plot range
                     analogScatterGraph.Plots[i].YAxis.Range = plotYRange;
                     analogScatterGraph.Plots[i].XAxis.Range = plotXRange;
-                    analogScatterGraph.Plots[i].PlotXY(xDat,yDat);
+                    analogScatterGraph.Plots[i].PlotXYAppend(xDat, yDat);
                 }
             }
 

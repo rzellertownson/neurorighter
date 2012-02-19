@@ -152,12 +152,12 @@ namespace simoc.UI
                 lock (lockObject)
                 {
                     // Update the plots
-                    obsScatterGraphController.updateScatterGraph(obsSrv,
+                    obsScatterGraphController.UpdateScatterGraph(obsSrv,
                             slide_PlotWidth.Value,
                             slide_ObsPlotScale.Value,
                             slide_ObsPlotShift.Value);
 
-                    filtScatterGraphController.updateScatterGraph(filtSrv,
+                    filtScatterGraphController.UpdateScatterGraph(filtSrv,
                             slide_PlotWidth.Value,
                             slide_FiltPlotScale.Value,
                             slide_FiltPlotShift.Value);

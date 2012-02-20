@@ -185,7 +185,7 @@ namespace NeuroRighter.DatSrv
                 stimSrv = new EventDataSrv<ElectricalStimEvent>(
                     Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    2, 0, 0);
+                   1, 0, 0);
             }
 
         }

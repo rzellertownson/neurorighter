@@ -138,6 +138,7 @@
     <Compile Include="Filters\filter.cs" />
     <Compile Include="Filters\LocalFit.cs" />
     <Compile Include="Filters\SALPA3.cs" />
+    <Compile Include="Network\TCP\TCPClient.cs" />
     <Compile Include="Note-UI\RecordingNote.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -462,6 +463,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Network\TCP\perl\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

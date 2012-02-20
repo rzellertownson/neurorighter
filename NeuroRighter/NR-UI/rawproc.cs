@@ -280,7 +280,7 @@ namespace NeuroRighter
             // Debugger.Write(taskNumber.ToString() + ": lfp filtered");
 
 
-           #region SALPA Filtering
+            #region SALPA Filtering
             lock (stimIndices)
                 if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
                 {
@@ -535,7 +535,7 @@ namespace NeuroRighter
                     {
                         SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
 
-                    //    if (checkBox_SALPA.Checked)
+                        if (checkBox_SALPA.Checked)
                         
                             if ( tmp.SampleIndex >= (ulong)SALPAFilter.offset() )
                                 tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter

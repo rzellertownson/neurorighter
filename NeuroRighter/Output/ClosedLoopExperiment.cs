@@ -61,6 +61,11 @@ namespace NeuroRighter.Output
         /// </summary>
         internal protected virtual void Loop(object sender, EventArgs e)
         { }
+
+        /// <summary>
+        /// This method must be overriden in a derived closed-loop class.
+        /// </summary>
+        internal protected virtual void Cleanup() {}
         
 
     }

@@ -104,6 +104,7 @@ namespace NeuroRighter.Output
                 System.Threading.Thread.Sleep(1000);
                 
             }
+            CLE.Cleanup();
             Console.WriteLine("Closed loop program has admitted that it's time has come");
         }
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

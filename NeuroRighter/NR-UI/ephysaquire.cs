@@ -176,7 +176,7 @@ namespace NeuroRighter
 
                                     }
 
-                                datSrv.StimSrv.WriteToBuffer(tempStimBuff, taskNumber);
+                                datSrv.StimSrv.WriteToBuffer(tempStimBuff, 0);
 
                                 if (!inTrigger) //Assumes trigger lasts longer than refresh time
                                 {

@@ -202,3 +202,5 @@ C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll
 C:\Documents and Settings\Lab\Desktop\rtzt3_temp\NR\neurorighter417\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll

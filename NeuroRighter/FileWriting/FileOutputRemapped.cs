@@ -20,7 +20,7 @@ namespace NeuroRighter.FileWriting
                     for (int c = startChannelData; c < startChannelData + numChannelsData; ++c)
                     {
                         int baseOfDimData = (c - startChannelData) * length; //BaseOfDim is in ref to input data, which has no channel offset
-                        int baseOfDimBuffer = MEAChannelMappings.channel2LinearCR(c) * BUFFER_LENGTH;
+                        int baseOfDimBuffer = (MEAChannelMappings.channel2LinearCR(c) -1)* BUFFER_LENGTH;
 
                         //Check to see if we'll loop back to front of buffer here, rather than wasting an if statement in the loop
                         if (_currentLocationRead[c] + length < BUFFER_LENGTH)
@@ -111,7 +111,7 @@ namespace NeuroRighter.FileWriting
 
         internal override void read(short data, int channel)
         {
-            _buffer[MEAChannelMappings.channel2LinearCR(channel), _currentLocationRead[channel]] = data;
+            _buffer[MEAChannelMappings.channel2LinearCR(channel)-1, _currentLocationRead[channel]] = data;
             if (++_currentLocationRead[channel] < BUFFER_LENGTH) { /* do nothing */ }
             else { _currentLocationRead[channel] = 0; }
             if (_currentLocationRead[channel] != _currentLocationWrite[channel]) { /*do nothing*/}

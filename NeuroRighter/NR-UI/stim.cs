@@ -866,11 +866,11 @@ namespace NeuroRighter
             if (checkBox_useManStimWaveformCL.Checked)
             {
                 double[] stimWaveform = ReturnOpenLoopStimPulse();
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value, stimWaveform);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value,this, stimWaveform);
             }
             else
             {
-                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value);
+                closedLoopSynchronizedOutput = new ClosedLoopOut(CLE, 100000, datSrv, stimSrv, BuffLoadTask, Debugger, filenameBase, switch_record.Value,this);
             }
 
             closedLoopSynchronizedOutput.Start();
@@ -885,16 +885,27 @@ namespace NeuroRighter
 
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
         {
+
+            killClosedLoop();
+
+            //AppDomain.Unload(NewAppDomain);
+
+        }
+
+        internal void killClosedLoop()
+        {
             lock (this)
             {
                 this.Invoke((MethodInvoker)delegate //this code is executed on the main thread
                 {
                     Console.WriteLine("Closed loop stimulation stop initiated");
+
+                    NROutputShutdown();
+                    Console.WriteLine("output buffers successfully shut down.  Goodbye.");
+
                     Debugger.Write("Closed loop stimulation stop initiated");
                     closedLoopSynchronizedOutput.Stop();
-                    Debugger.Write("closed loop code has indicated it has completed.");
-                    NROutputShutdown();
-                    Debugger.Write("output buffers successfully shut down.  Goodbye.");
+                    Console.WriteLine("closed loop code has indicated it has completed.");
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
                     Console.WriteLine("Closed loop stimulation closed mid process");
@@ -903,10 +914,6 @@ namespace NeuroRighter
                     RefreshCLComboBox();
                 });
             }
-            
-
-            //AppDomain.Unload(NewAppDomain);
-
         }
         #endregion
 

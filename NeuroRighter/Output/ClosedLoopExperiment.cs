@@ -18,13 +18,14 @@ namespace NeuroRighter.Output
         protected NRDataSrv DatSrv;
         protected NRStimSrv StimSrv;
         protected RealTimeDebugger Debugger;
-        public bool Running;
+        //public bool Running;
         protected double[] cannedWaveform;
         protected int fs;
         protected string NRFilePath;
         protected bool NRRecording;
+        private NeuroRighter NR;
 
-        internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv,RealTimeDebugger Debugger ,int fs,string NRFilePath,bool NRRecording)
+        internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv,RealTimeDebugger Debugger ,int fs,string NRFilePath,bool NRRecording, NeuroRighter NR)
         {
             this.DatSrv = DatSrv;
             this.StimSrv = StimSrv;
@@ -32,6 +33,7 @@ namespace NeuroRighter.Output
             this.fs = fs;
             this.NRFilePath = NRFilePath;
             this.NRRecording = NRRecording;
+            this.NR = NR;//we need a reference back to NR to initiate the stop sequence
         }
 
         internal void GrabWave(double[] waveform)
@@ -39,15 +41,12 @@ namespace NeuroRighter.Output
             cannedWaveform = waveform;
         }
 
-        internal void Stop()
+        internal protected void Stop()
         {
-            Running = false;
+            NR.killClosedLoop();
         }
 
-        internal void Start()
-        {
-            Running = true;
-        }
+        
 
         // USER OVERRIDEN CLOSED LOOP METHODS
 

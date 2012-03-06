@@ -109,7 +109,7 @@ namespace NeuroRighter.Output
             namesLock = new object();//prevents fighting over the names queue
             runningLock = new object();//prevents fighting over the 'running' boolean
             recoveryInProgress = new object();//prevents multiple threads from trying to restart simultaneously
-
+            taskLock = new object();
 
         }
 
@@ -129,7 +129,7 @@ namespace NeuroRighter.Output
             sem = new Semaphore(0, semSize);
 
             names = new Queue<int>();
-            taskLock = new object();
+            
             //initialize background worker to run responses to counter ticks
             bw = new BackgroundWorker();
             first = true;
@@ -234,7 +234,10 @@ namespace NeuroRighter.Output
         {
             // Debugger.Write("nroutbuffer attempted stop");
             lock (runningLock)
+            {
                 running = false;
+                ProcessTickThread(null, null);
+            }
         }
 
         //stops output generation as soon as possible
@@ -594,7 +597,7 @@ namespace NeuroRighter.Output
             {
                 try
                 {
-                    if (analogTasks != null)
+                    if ((analogTasks != null))
                         if (analogTasks[0] != null)
                             analogTasks[0].WaitUntilDone(1000);
                         else

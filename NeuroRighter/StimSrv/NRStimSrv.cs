@@ -128,6 +128,7 @@ namespace NeuroRighter.StimSrv
         {
             if (AuxOut != null)
                 AuxOut.Stop();
+
             if (DigitalOut != null)
                 DigitalOut.Stop();
             if (StimOut != null)

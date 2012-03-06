@@ -104,7 +104,7 @@ namespace simoc
 
         protected override void Loop(object sender, EventArgs e)
         {
-            if (Running && controlPanel.startButtonPressed)
+            if (controlPanel.startButtonPressed)
             {
 
                 if (!controlPanel.stopButtonPressed)
@@ -134,7 +134,7 @@ namespace simoc
                     Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString() + " seconds.");
 
                     // Release resources
-                    Running = false;
+                    Stop();
 
                     // Allow last loop to finish
                     Thread.Sleep(100);

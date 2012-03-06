@@ -120,15 +120,15 @@ namespace NeuroRighter
             {
                 for (int i = 0; i < newWaveforms.Count; ++i)
                 {
-                    if (numWfmsStored[newWaveforms[i].Channel] <= maxWaveforms)
+                    if (numWfmsStored[newWaveforms[i].Channel-1] <= maxWaveforms)
                     {
                         waveformLength = newWaveforms[i].Waveform.Length;
                         float[] wfmDataOffset = new float[waveformLength];
                         float offset;
                         if (numRows == 8 && channelMapping == "invitro")
-                            offset = -(MEAChannelMappings.ch2rcPreMapped[newWaveforms[i].Channel, 0] - 1) * boxHeight;
+                            offset = -(MEAChannelMappings.ch2rcPreMapped[newWaveforms[i].Channel-1, 0] - 1) * boxHeight;
                         else
-                            offset = -(newWaveforms[i].Channel / numRows) * boxHeight;
+                            offset = -((newWaveforms[i].Channel -1)/ numRows) * boxHeight;
                         for (int k = 0; k < waveformLength; ++k)
                         {
                             float temp = (float)(newWaveforms[i].Waveform[k]) * gain;
@@ -141,13 +141,13 @@ namespace NeuroRighter
                         // Create data to plot
                         if (unitMap == null)
                         {
-                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].Channel, wfmDataOffset, null));
+                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].Channel-1, wfmDataOffset, null));
                         }
                         else
                         {
-                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].Channel, wfmDataOffset, (int)unitMap[(int)newWaveforms[i].Unit]));
+                            waveforms.Add(new PlotSpikeWaveform(newWaveforms[i].Channel-1, wfmDataOffset, (int)unitMap[(int)newWaveforms[i].Unit]));
                         }
-                        ++numWfmsStored[newWaveforms[i].Channel];
+                        ++numWfmsStored[newWaveforms[i].Channel-1];
                     }
                 }
             }

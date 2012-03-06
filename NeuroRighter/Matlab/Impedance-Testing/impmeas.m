@@ -44,8 +44,7 @@ chan = setdiff(1:64,badchan);
 % plot log-log impedance measure if user requests
 col = jet(size(z,1));
 if pq == 1 || strcmp(pq,'y')
-    figure();
-    set(gcf,'Units','normalized','Position',[0 0 1 1]);
+    
     ty = [1];
     for i = 1:length(chan)
         
@@ -70,7 +69,7 @@ if pq == 1 || strcmp(pq,'y')
     subplot(1,5,1:4)
     ylabel('Impedance (Ohms)','fontsize',12)
     xlabel('Frequency (Hz)','fontsize',12)
-    title(figtitle,'fontsize',12)
+    title(figtitle,'fontsize',12,'Interpreter','none')
     
     subplot(1,5,5)
     title(['$Red \; \Rightarrow \; z_i \notin [' num2str(zbound(1)) '\;' num2str(zbound(2)) ']\;Ohms\;@\;' num2str(fstd) '\;Hz$'],'Interpreter','Latex');

@@ -15,8 +15,7 @@
 
 function spk = loadspk(fid, varargin)
 
-% Decode input arguments
-if nargin == 2
+if nargin > 1 % then we need to decode varargin
     if length(varargin) == 1 % time range specified
         if strcmp(varargin{1},'last')
             findlast = true;
@@ -26,6 +25,7 @@ if nargin == 2
             wave = 1;
         end
     elseif length(varargin) == 2 % time range and channels specified
+        findlast = false;
         time = varargin{1};
         wave = varargin{2};
     end

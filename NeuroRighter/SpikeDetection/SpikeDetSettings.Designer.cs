@@ -375,7 +375,7 @@
             // label_PreSampConv
             // 
             this.label_PreSampConv.AutoSize = true;
-            this.label_PreSampConv.Location = new System.Drawing.Point(255, 27);
+            this.label_PreSampConv.Location = new System.Drawing.Point(255, 25);
             this.label_PreSampConv.Name = "label_PreSampConv";
             this.label_PreSampConv.Size = new System.Drawing.Size(17, 13);
             this.label_PreSampConv.TabIndex = 66;
@@ -472,7 +472,7 @@
             // label_MinWidthSamp
             // 
             this.label_MinWidthSamp.AutoSize = true;
-            this.label_MinWidthSamp.Location = new System.Drawing.Point(256, 104);
+            this.label_MinWidthSamp.Location = new System.Drawing.Point(255, 102);
             this.label_MinWidthSamp.Name = "label_MinWidthSamp";
             this.label_MinWidthSamp.Size = new System.Drawing.Size(17, 13);
             this.label_MinWidthSamp.TabIndex = 62;
@@ -481,7 +481,7 @@
             // label_MaxWidthSamp
             // 
             this.label_MaxWidthSamp.AutoSize = true;
-            this.label_MaxWidthSamp.Location = new System.Drawing.Point(256, 136);
+            this.label_MaxWidthSamp.Location = new System.Drawing.Point(255, 134);
             this.label_MaxWidthSamp.Name = "label_MaxWidthSamp";
             this.label_MaxWidthSamp.Size = new System.Drawing.Size(17, 13);
             this.label_MaxWidthSamp.TabIndex = 63;
@@ -490,7 +490,7 @@
             // label_deadTimeSamp
             // 
             this.label_deadTimeSamp.AutoSize = true;
-            this.label_deadTimeSamp.Location = new System.Drawing.Point(256, 73);
+            this.label_deadTimeSamp.Location = new System.Drawing.Point(255, 68);
             this.label_deadTimeSamp.Name = "label_deadTimeSamp";
             this.label_deadTimeSamp.Size = new System.Drawing.Size(17, 13);
             this.label_deadTimeSamp.TabIndex = 64;
@@ -681,29 +681,29 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(9, 124);
+            this.label18.Location = new System.Drawing.Point(9, 141);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(97, 13);
+            this.label18.Size = new System.Drawing.Size(237, 13);
             this.label18.TabIndex = 81;
-            this.label18.Text = "P Value for Outliers";
+            this.label18.Text = "P-Value for Outliers (Pearson\'s Chi-Squared Test)";
             // 
             // numericUpDown_MinClassificationProb
             // 
             this.numericUpDown_MinClassificationProb.BackColor = System.Drawing.Color.LawnGreen;
-            this.numericUpDown_MinClassificationProb.DecimalPlaces = 6;
+            this.numericUpDown_MinClassificationProb.DecimalPlaces = 3;
             this.numericUpDown_MinClassificationProb.Increment = new decimal(new int[] {
             1,
             0,
             0,
-            327680});
-            this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(221, 122);
+            131072});
+            this.numericUpDown_MinClassificationProb.Location = new System.Drawing.Point(265, 139);
             this.numericUpDown_MinClassificationProb.Maximum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.numericUpDown_MinClassificationProb.Name = "numericUpDown_MinClassificationProb";
-            this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(115, 20);
+            this.numericUpDown_MinClassificationProb.Size = new System.Drawing.Size(71, 20);
             this.numericUpDown_MinClassificationProb.TabIndex = 82;
             this.numericUpDown_MinClassificationProb.TabStop = false;
             this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -711,7 +711,7 @@
             1,
             0,
             0,
-            327680});
+            131072});
             this.numericUpDown_MinClassificationProb.ValueChanged += new System.EventHandler(this.numericUpDown_MinClassificationProb_ValueChanged);
             // 
             // comboBox_ProjectionType
@@ -721,7 +721,7 @@
             "Maximum Voltage Inflection",
             "Double Voltage Inflection",
             "PCA"});
-            this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 14);
+            this.comboBox_ProjectionType.Location = new System.Drawing.Point(117, 18);
             this.comboBox_ProjectionType.Name = "comboBox_ProjectionType";
             this.comboBox_ProjectionType.Size = new System.Drawing.Size(219, 21);
             this.comboBox_ProjectionType.TabIndex = 80;
@@ -730,7 +730,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(9, 22);
+            this.label12.Location = new System.Drawing.Point(9, 21);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(93, 13);
             this.label12.TabIndex = 79;
@@ -739,7 +739,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 46);
+            this.label6.Location = new System.Drawing.Point(9, 51);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(118, 13);
             this.label6.TabIndex = 77;
@@ -749,7 +749,7 @@
             // 
             this.numericUpDown_ProjDim.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.numericUpDown_ProjDim.Enabled = false;
-            this.numericUpDown_ProjDim.Location = new System.Drawing.Point(221, 44);
+            this.numericUpDown_ProjDim.Location = new System.Drawing.Point(265, 49);
             this.numericUpDown_ProjDim.Maximum = new decimal(new int[] {
             3,
             0,
@@ -761,7 +761,7 @@
             0,
             0});
             this.numericUpDown_ProjDim.Name = "numericUpDown_ProjDim";
-            this.numericUpDown_ProjDim.Size = new System.Drawing.Size(115, 20);
+            this.numericUpDown_ProjDim.Size = new System.Drawing.Size(71, 20);
             this.numericUpDown_ProjDim.TabIndex = 78;
             this.numericUpDown_ProjDim.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_ProjDim.Value = new decimal(new int[] {
@@ -776,9 +776,9 @@
             this.groupBox8.Controls.Add(this.label_Trained);
             this.groupBox8.Controls.Add(this.textBox_Results);
             this.groupBox8.Controls.Add(this.button_TrainSorter);
-            this.groupBox8.Location = new System.Drawing.Point(6, 244);
+            this.groupBox8.Location = new System.Drawing.Point(6, 258);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(336, 247);
+            this.groupBox8.Size = new System.Drawing.Size(336, 233);
             this.groupBox8.TabIndex = 76;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "2. Train Classifier";
@@ -787,7 +787,7 @@
             // 
             this.label_Trained.AutoSize = true;
             this.label_Trained.ForeColor = System.Drawing.Color.Red;
-            this.label_Trained.Location = new System.Drawing.Point(83, 223);
+            this.label_Trained.Location = new System.Drawing.Point(83, 214);
             this.label_Trained.Name = "label_Trained";
             this.label_Trained.Size = new System.Drawing.Size(129, 13);
             this.label_Trained.TabIndex = 75;
@@ -800,13 +800,13 @@
             this.textBox_Results.Multiline = true;
             this.textBox_Results.Name = "textBox_Results";
             this.textBox_Results.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_Results.Size = new System.Drawing.Size(324, 193);
+            this.textBox_Results.Size = new System.Drawing.Size(324, 184);
             this.textBox_Results.TabIndex = 72;
             // 
             // button_TrainSorter
             // 
             this.button_TrainSorter.Enabled = false;
-            this.button_TrainSorter.Location = new System.Drawing.Point(6, 218);
+            this.button_TrainSorter.Location = new System.Drawing.Point(6, 209);
             this.button_TrainSorter.Name = "button_TrainSorter";
             this.button_TrainSorter.Size = new System.Drawing.Size(73, 23);
             this.button_TrainSorter.TabIndex = 71;
@@ -817,7 +817,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(9, 98);
+            this.label7.Location = new System.Drawing.Point(9, 111);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(172, 13);
             this.label7.TabIndex = 68;
@@ -826,7 +826,7 @@
             // numericUpDown_MinSpikesToTrain
             // 
             this.numericUpDown_MinSpikesToTrain.BackColor = System.Drawing.Color.Yellow;
-            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(221, 96);
+            this.numericUpDown_MinSpikesToTrain.Location = new System.Drawing.Point(265, 109);
             this.numericUpDown_MinSpikesToTrain.Maximum = new decimal(new int[] {
             200,
             0,
@@ -838,7 +838,7 @@
             0,
             0});
             this.numericUpDown_MinSpikesToTrain.Name = "numericUpDown_MinSpikesToTrain";
-            this.numericUpDown_MinSpikesToTrain.Size = new System.Drawing.Size(115, 20);
+            this.numericUpDown_MinSpikesToTrain.Size = new System.Drawing.Size(71, 20);
             this.numericUpDown_MinSpikesToTrain.TabIndex = 69;
             this.numericUpDown_MinSpikesToTrain.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_MinSpikesToTrain.Value = new decimal(new int[] {
@@ -851,7 +851,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 72);
+            this.label2.Location = new System.Drawing.Point(9, 81);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(124, 13);
             this.label2.TabIndex = 62;
@@ -860,7 +860,7 @@
             // numericUpDown_maxK
             // 
             this.numericUpDown_maxK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.numericUpDown_maxK.Location = new System.Drawing.Point(221, 70);
+            this.numericUpDown_maxK.Location = new System.Drawing.Point(265, 79);
             this.numericUpDown_maxK.Maximum = new decimal(new int[] {
             6,
             0,
@@ -872,7 +872,7 @@
             0,
             0});
             this.numericUpDown_maxK.Name = "numericUpDown_maxK";
-            this.numericUpDown_maxK.Size = new System.Drawing.Size(115, 20);
+            this.numericUpDown_maxK.Size = new System.Drawing.Size(71, 20);
             this.numericUpDown_maxK.TabIndex = 63;
             this.numericUpDown_maxK.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDown_maxK.Value = new decimal(new int[] {
@@ -891,7 +891,7 @@
             this.groupBox7.Controls.Add(this.label14);
             this.groupBox7.Controls.Add(this.label13);
             this.groupBox7.Controls.Add(this.button_HoardSpikes);
-            this.groupBox7.Location = new System.Drawing.Point(6, 148);
+            this.groupBox7.Location = new System.Drawing.Point(6, 162);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(336, 90);
             this.groupBox7.TabIndex = 75;
@@ -990,20 +990,20 @@
             this.saveSpikeFilterToolStripMenuItem,
             this.loadSpikeFilterToolStripMenuItem});
             this.saveDetectorToolStripMenuItem.Name = "saveDetectorToolStripMenuItem";
-            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.saveDetectorToolStripMenuItem.Text = "File";
             // 
             // saveSpikeFilterToolStripMenuItem
             // 
             this.saveSpikeFilterToolStripMenuItem.Name = "saveSpikeFilterToolStripMenuItem";
-            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.saveSpikeFilterToolStripMenuItem.Text = "Save Spike Filter";
             this.saveSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.saveSpikeFilterToolStripMenuItem_Click);
             // 
             // loadSpikeFilterToolStripMenuItem
             // 
             this.loadSpikeFilterToolStripMenuItem.Name = "loadSpikeFilterToolStripMenuItem";
-            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.loadSpikeFilterToolStripMenuItem.Text = "Load Spike Filter";
             this.loadSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.loadSpikeFilterToolStripMenuItem_Click);
             // 

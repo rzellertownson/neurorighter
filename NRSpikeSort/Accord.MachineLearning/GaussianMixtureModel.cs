@@ -436,7 +436,7 @@ namespace Accord.MachineLearning
             double[] qStat = Matrix.Multiply(tmp,centObs.Transpose());
 
             // Perform chi-squared test on the statistic
-            ChiSquareTest chiSqTest = new ChiSquareTest(qStat[0],obs.Length,pValue);
+            ChiSquareTest chiSqTest = new ChiSquareTest(Math.Sqrt(qStat[0]),obs.Length,pValue);
             return !chiSqTest.Significant;
         }
 

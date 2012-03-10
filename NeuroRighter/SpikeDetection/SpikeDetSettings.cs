@@ -322,6 +322,7 @@ namespace NeuroRighter.SpikeDetection
                 spikeSorter.minSpikes = (int)(numericUpDown_MinSpikesToTrain.Value);
                 detectorParameters.SS = spikeSorter;
             }
+            UpdateSpikeCollectionPlot();
         }
 
         private void button_HoardSpikes_Click(object sender, EventArgs e)
@@ -482,10 +483,16 @@ namespace NeuroRighter.SpikeDetection
             textBox_Results.Clear();
             textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
             textBox_Results.Text += "------------------------------------------\r\n";
-            textBox_Results.Text += "Projection Method: " + spikeSorter.projectionType + "\r\n";
-            textBox_Results.Text += "Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
-            textBox_Results.Text += "# channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
-            textBox_Results.Text += "# of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
+            textBox_Results.Text += "PARAMETERS " + "\r\n";
+            textBox_Results.Text += " Projection Method: " + spikeSorter.projectionType + "\r\n";
+            textBox_Results.Text += " Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
+            textBox_Results.Text += " Min. Spikes to Train: " + spikeSorter.minSpikes + "\r\n";
+            textBox_Results.Text += " Max. Spikes to Train: " + spikeSorter.maxTrainingSpikesPerChannel + "\r\n";
+            textBox_Results.Text += " Quantile for Outliers: " + (1.0 - spikeSorter.pValue) + "\r\n\r\n";
+
+            textBox_Results.Text += "ACROSS CHANNELS " + "\r\n";
+            textBox_Results.Text += " # channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
+            textBox_Results.Text += " # of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
 
 
             for (int i = 0; i < numChannels; ++i)
@@ -605,11 +612,14 @@ namespace NeuroRighter.SpikeDetection
             // Plot the spikes
             PointPairList ppl = new PointPairList();
             PointPairList pplThresh = new PointPairList();
-            for (int i = 0; i < numChannels; ++i)
+            if (spikeSorter != null)
             {
-                lock (this)
+                for (int i = 0; i < numChannels; ++i)
                 {
-                    ppl.Add((double)i + 1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i + 1]));
+                    lock (this)
+                    {
+                        ppl.Add((double)i + 1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i + 1]));
+                    }
                 }
             }
             pplThresh.Add(0, (double)numericUpDown_MinSpikesToTrain.Value);
@@ -648,7 +658,10 @@ namespace NeuroRighter.SpikeDetection
 
             // Manually set the axis range
             gp.YAxis.Scale.Min = 0;
-            gp.YAxis.Scale.Max = spikeSorter.maxTrainingSpikesPerChannel;
+            if (spikeSorter != null)
+                gp.YAxis.Scale.Max = spikeSorter.maxTrainingSpikesPerChannel;
+            else
+                gp.YAxis.Scale.Max = 200;
             gp.XAxis.Scale.Min = 1;
             gp.XAxis.Scale.Max = numChannels;
 

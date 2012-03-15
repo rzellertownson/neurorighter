@@ -39,7 +39,7 @@ namespace simoc
         private bool simocStarted = false;
         private bool firstLoop = true;
         private bool startTimeSet = false;
-
+       
         // Number of observables
         private int numberOfObs = 1;
 

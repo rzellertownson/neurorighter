@@ -122,9 +122,9 @@ namespace simoc
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
-                    case "5 Minute Steps":
+                    case "Multi-Steps":
                         {
-                            FiveMinuteSteps target = new FiveMinuteSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
+                            MultiSteps target = new MultiSteps(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;

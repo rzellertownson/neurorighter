@@ -681,10 +681,10 @@ namespace simoc.UI
 
                         label_CtlType.Text = "Controller 8";
 
-                        numericUpDown_ContC0.Value = 1.0m;
-                        numericUpDown_ContC1.Value = 1.0m;
-                        numericUpDown_ContC2.Value = 100.0m;
-                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC0.Value = 0.25m;
+                        numericUpDown_ContC1.Value = 0.5m;
+                        numericUpDown_ContC2.Value = 0.1m;
+                        numericUpDown_ContC3.Value = 20.0m;
                         numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }
@@ -703,7 +703,7 @@ namespace simoc.UI
                         numericUpDown_ContC0.Value = 1.0m;
                         numericUpDown_ContC1.Value = 1.0m;
                         numericUpDown_ContC2.Value = 100.0m;
-                        numericUpDown_ContC3.Value = 29.0m;
+                        numericUpDown_ContC3.Value = 10.0m;
                         numericUpDown_ContC4.Value = 5.0m;
                         numericUpDown_ContC5.Value = 5.0m;
                     }

@@ -54,6 +54,12 @@ namespace simoc.persistantstate
         private double genericUlong2 = 0;
         private double genericUlong3 = 0;
 
+        private int genericInt1 = 0;
+        
+        // Other
+        private Random randGen1 = new Random();
+        private int[] randPerm;
+
         /// <summary>
         /// This class holds onto variables that need to be stored outside of SIMOC's main loop without 
         /// being overwritten on each iteration.
@@ -590,6 +596,33 @@ namespace simoc.persistantstate
             }
         }
 
+        /// <summary>
+        /// A generic int.
+        /// </summary>
+        public int GenericInt1
+        {
+            get
+            {
+                return genericInt1;
+            }
+            set
+            {
+                genericInt1 = value;
+            }
+        }
+
+
+        /// <summary>
+        /// Random permutation of 1:N
+        /// </summary>
+        public int[] RandPerm
+        {
+            get
+            {
+                return randPerm;
+            }
+        }
+
         // Methods
 
         /// <summary>
@@ -610,7 +643,21 @@ namespace simoc.persistantstate
             cumulativeAverageObs = 0;
         }
 
+        /// <summary>
+        /// Generate random permutation of 1:N;
+        /// </summary>
+        /// <param name="N">Ordered array is 1:N</param>
+        internal void GenerateRandPerm(int N)
+        {
 
+            int[] tmp = new int[N];
+            for (int i = 0; i < tmp.Length; i++)
+            {
+                tmp[i] = i;
+            }
+
+            randPerm = tmp.OrderBy(x => randGen1.Next()).ToArray();
+        }
 
     }
 }

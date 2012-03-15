@@ -12,8 +12,9 @@ namespace simoc.targetfunc
 {
     class TwelveHourStep : TargetFunc
     {
-        private double estimationTime = 3 * 60 * 60; // seconds before steps to estimate nominal obs
-        private double stepTime = 12 * 60 * 60; // seconds
+        //private double estimationTime = 3 * 60 * 60; // seconds before steps to estimate nominal obs
+        private double estimationTime = 300; // seconds before clamping (amount of time for let CNQX take effect)
+        private double stepTime = 24 * 60 * 60; // seconds
 
         public TwelveHourStep(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref  NRDataSrv datSrv)
             : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref datSrv) { }

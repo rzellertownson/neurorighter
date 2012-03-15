@@ -74,6 +74,7 @@
     <Compile Include="spk2obs\Spk2UNFR.cs" />
     <Compile Include="targetfunc\FiveMinuteSteps.cs" />
     <Compile Include="targetfunc\CustomTarget2.cs" />
+    <Compile Include="targetfunc\MultiSteps.cs" />
     <Compile Include="targetfunc\MulipleOfAverageObs.cs" />
     <Compile Include="targetfunc\OneMinuteSteps.cs" />
     <Compile Include="targetfunc\OneMinuteStepsUNFRAbs.cs" />

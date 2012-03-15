@@ -105,7 +105,7 @@ namespace simoc.filt2out
             double stimPowerVolts = maxStimPowerVolts * simocVariableStorage.GenericDouble1;
 
             // Get stim frequency
-            double stimFreqHz = maxStimFreq * simocVariableStorage.GenericDouble1 + 1;
+            double stimFreqHz = maxStimFreq * simocVariableStorage.GenericDouble1 - 10 *(simocVariableStorage.GenericDouble1 - 1);
 
             // set the currentFeedback array
             currentFeedbackSignals = new double[numberOutStreams];
@@ -132,17 +132,29 @@ namespace simoc.filt2out
             }
 
             // Make periodic stimulation
-            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + 2 * (ulong)stimSrv.GetBuffSize()))
+            while (simocVariableStorage.NextAuxEventSample <= (nextAvailableSample + (ulong)stimSrv.GetBuffSize()))
             {
                 // Send a V_ctl = simocVariableStorage.GenericDouble1 volt pulse to channel 0 for c2 milliseconds.
-                toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), 0, stimPowerVolts));
-                toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset) + pulseWidthSamples, 0, offVoltage));
+                if (simocVariableStorage.GenericDouble1 > 0)
+                {
+                    // Raise LED control voltage
+                    toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), 0, stimPowerVolts));
+                    // Encode stimulus
+                    toAppendDig.Add(new DigitalOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), (uint)(10000.0 * simocVariableStorage.GenericDouble1)));
 
-                // Encode light power as 10000*V_ctl = port-state
-                toAppendDig.Add(new DigitalOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset), (uint)(10000.0 * simocVariableStorage.GenericDouble1)));
+                    // Drop control voltages
+                    toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset) + pulseWidthSamples, 0, offVoltage));
+                    toAppendDig.Add(new DigitalOutEvent((ulong)(simocVariableStorage.NextAuxEventSample + loadOffset) + pulseWidthSamples, 0));
 
-                simocVariableStorage.LastAuxEventSample = simocVariableStorage.NextAuxEventSample;
-                simocVariableStorage.NextAuxEventSample += isi;
+                    simocVariableStorage.LastAuxEventSample = simocVariableStorage.NextAuxEventSample;
+                    simocVariableStorage.NextAuxEventSample += isi;
+                }
+                else
+                {
+                    // Make sure LED is off
+                    toAppendAux.Add(new AuxOutEvent((ulong)(simocVariableStorage.NextAuxEventSample), 0, offVoltage));
+                    break;
+                }
             }
 
             // Send to bit 0 of the digital output port

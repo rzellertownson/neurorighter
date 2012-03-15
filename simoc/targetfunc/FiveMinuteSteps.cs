@@ -12,10 +12,10 @@ namespace simoc.targetfunc
 {
     class FiveMinuteSteps : TargetFunc
     {
-        private double[] muliplierTargets = { 1.0, 1.2915, 1.6680, 2.1542, 2.7821, 3.5931, 4.6405, 5.9932, 7.7403, 10 };
+        private double[] muliplierTargets = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 };
         private double estimationTime = 300; // seconds before steps to estimate nominal obs
         private double stepTime = 300; // seconds
-        private double pauseTime = 60; // seconds
+        private double pauseTime = 300; // seconds
 
         public FiveMinuteSteps(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref  NRDataSrv datSrv)
             : base(cp, DACPollingPeriodSec, numTargetSamplesGenerated, ref datSrv) { }

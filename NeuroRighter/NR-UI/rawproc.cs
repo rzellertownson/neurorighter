@@ -137,38 +137,22 @@ namespace NeuroRighter
                             break;
                     }
 
-                    //Extract waveforms
-                    //toRawsrv: 0 index, includes timing offsets, channel remapping
-                    //saved: 1 index
+                    //Extract waveforms, convert to 1 based indexing
                     EventBuffer<SpikeEvent> toRawsrvRaw = new EventBuffer<SpikeEvent>(spikeSamplingRate);
-                    if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
+                    if (Properties.Settings.Default.ChannelMapping != "invitro" )//|| numChannels != 64) //check this first, so we don't have to check it for each spike
                     {
-                        //for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
-                        //{
-                        //    SpikeEvent tmp = (SpikeEvent)newWaveformsRaw.Buffer[j].DeepClone();
-                        //    if (checkBox_SALPA.Checked)
-                        //        if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
-                        //            tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
-                        //        else
-                        //            continue; //skip that one
-
-                        //    toRawsrvRaw.Buffer.Add(tmp);
-                        //}
-
-                        toRawsrvRaw = newWaveformsRaw;
+                        for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
+                        {
+                            SpikeEvent tmp = (SpikeEvent)newWaveformsRaw.Buffer[j].DeepClone();
+                            tmp.Channel = InVivoChannelMappings.Channel2LinearCR(tmp.Channel);
+                            toRawsrvRaw.Buffer.Add(tmp);
+                        }
                     }
                     else //in vitro mappings
                     {
                         for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
                         {
                             SpikeEvent tmp = (SpikeEvent)newWaveformsRaw.Buffer[j].DeepClone();
-
-                            //if (checkBox_SALPA.Checked)
-                            //    if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
-                            //        tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
-                            //    else
-                            //        continue; //skip that one
-
                             tmp.Channel = MEAChannelMappings.channel2LinearCR(tmp.Channel);
                             toRawsrvRaw.Buffer.Add(tmp);
                         }
@@ -180,10 +164,9 @@ namespace NeuroRighter
                         for (int j = 0; j < newWaveformsRaw.Buffer.Count; ++j) //For each threshold crossing
                         {
                             SpikeEvent tmp = toRawsrvRaw.Buffer[j];
-
                             lock (recordingSettings.spkOutRaw) //Lock so another NI card doesn't try writing at the same time
                             {
-                                recordingSettings.spkOutRaw.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                                recordingSettings.spkOutRaw.WriteSpikeToFile((short)tmp.Channel, (int)tmp.SampleIndex,
                                     tmp.Threshold, tmp.Waveform, tmp.Unit);
                             }
                         }
@@ -361,21 +344,21 @@ namespace NeuroRighter
                             break;
                     }
 
-                    //Extract waveforms
-                    //toRawsrv: 0 index, includes timing offsets, channel remapping
-                    //saved: 1 index
+                    //Extract waveforms, convert to 1 based indexing
                     EventBuffer<SpikeEvent> toRawsrvSalpa = new EventBuffer<SpikeEvent>(spikeSamplingRate);
                     if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
                     {
                         for (int j = 0; j < newWaveformsSalpa.Buffer.Count; ++j) //For each threshold crossing
                         {
                             SpikeEvent tmp = (SpikeEvent)newWaveformsSalpa.Buffer[j].DeepClone();
+
                             if (checkBox_SALPA.Checked)
                                 if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
                                     tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
                                 else
                                     continue; //skip that one
 
+                            tmp.Channel = InVivoChannelMappings.Channel2LinearCR(tmp.Channel);
                             toRawsrvSalpa.Buffer.Add(tmp);
                         }
                     }
@@ -386,7 +369,7 @@ namespace NeuroRighter
                             SpikeEvent tmp = (SpikeEvent)newWaveformsSalpa.Buffer[j].DeepClone();
 
                             if (checkBox_SALPA.Checked)
-                                if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
+                                if (tmp.SampleIndex >= (ulong)SALPAFilter.offset() )
                                     tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
                                 else
                                     continue; //skip that one
@@ -405,7 +388,7 @@ namespace NeuroRighter
 
                             lock (recordingSettings.spkOutSalpa) //Lock so another NI card doesn't try writing at the same time
                             {
-                                recordingSettings.spkOutSalpa.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                                recordingSettings.spkOutSalpa.WriteSpikeToFile((short)tmp.Channel, (int)tmp.SampleIndex,
                                     tmp.Threshold, tmp.Waveform, tmp.Unit);
                             }
                         }
@@ -511,21 +494,21 @@ namespace NeuroRighter
                         break;
                 }
 
-                //Extract waveforms
-                //toRawsrv: 0 index, includes timing offsets, channel remapping
-                //saved: 1 index
+                //Extract waveforms, convert to 1 based indexing
                 EventBuffer<SpikeEvent> toRawsrv = new EventBuffer<SpikeEvent>(spikeSamplingRate);
                 if (Properties.Settings.Default.ChannelMapping != "invitro" || numChannels != 64) //check this first, so we don't have to check it for each spike
                 {
                     for (int j = 0; j < newWaveforms.Buffer.Count; ++j) //For each threshold crossing
                     {
                         SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
+
                         if (checkBox_SALPA.Checked)
                             if (tmp.SampleIndex >= (ulong)SALPAFilter.offset())
                                 tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
                             else
                                 continue; //skip that one
 
+                        tmp.Channel = InVivoChannelMappings.Channel2LinearCR(tmp.Channel);
                         toRawsrv.Buffer.Add(tmp);
                     }
                 }
@@ -536,8 +519,7 @@ namespace NeuroRighter
                         SpikeEvent tmp = (SpikeEvent)newWaveforms.Buffer[j].DeepClone();
 
                         if (checkBox_SALPA.Checked)
-                        
-                            if ( tmp.SampleIndex >= (ulong)SALPAFilter.offset() )
+                            if (tmp.SampleIndex >= (ulong)SALPAFilter.offset() )
                                 tmp.SampleIndex -= (ulong)SALPAFilter.offset(); //To account for delay of SALPA filter
                             else
                                 continue; //skip that one
@@ -547,8 +529,6 @@ namespace NeuroRighter
                     }
                 }
 
-
-                
                 #endregion
 
                 //  Debugger.Write(taskNumber.ToString() + ": spikes detected");
@@ -572,7 +552,6 @@ namespace NeuroRighter
                 if (Properties.Settings.Default.useSpikeDataBuffer)
                     datSrv.SpikeSrv.WriteToBuffer(toRawsrv, taskNumber);
 
-               
 
                 // Record spike waveforms 
                 if (switch_record.Value && Properties.Settings.Default.recordSpikes)
@@ -580,14 +559,11 @@ namespace NeuroRighter
                     for (int j = 0; j < toRawsrv.Buffer.Count; ++j) //For each threshold crossing
                     {
                         
-                           // toRawsrv.Buffer[j].SampleIndex = (ulong)((int)toRawsrv.Buffer[j].SampleIndex- SALPAFilter.offset());
-                            //SpikeEvent tmp = toRawsrv.Buffer[j];
-                        
                         SpikeEvent tmp = toRawsrv.Buffer[j];
 
                         lock (recordingSettings.spkOut) //Lock so another NI card doesn't try writing at the same time
                         {
-                            recordingSettings.spkOut.WriteSpikeToFile((short)((int)tmp.Channel + (int)CHAN_INDEX_START), (int)tmp.SampleIndex,
+                            recordingSettings.spkOut.WriteSpikeToFile((short)tmp.Channel, (int)tmp.SampleIndex,
                                 tmp.Threshold, tmp.Waveform, tmp.Unit);
                         }
                     }

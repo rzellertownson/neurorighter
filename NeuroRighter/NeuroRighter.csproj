@@ -125,6 +125,7 @@
     <Compile Include="dbg\RealTimeDebugger.cs" />
     <Compile Include="ExtentionMethods\ClassLoader.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
+    <Compile Include="ExtentionMethods\InVivoChannelMappings.cs" />
     <Compile Include="ExtentionMethods\Loader.cs" />
     <Compile Include="FileWriting\DigFileOutput.cs" />
     <Compile Include="FileWriting\RawScale.cs" />
@@ -231,7 +232,7 @@
     </Compile>
     <Compile Include="Impedance\ImpedanceMeasurer.cs" />
     <Compile Include="Matlab\NRLab.cs" />
-    <Compile Include="Miscellaneous\MEAChannelMappings.cs" />
+    <Compile Include="ExtentionMethods\MEAChannelMappings.cs" />
     <Compile Include="NR-UI\rawproc.cs">
       <SubType>Form</SubType>
     </Compile>

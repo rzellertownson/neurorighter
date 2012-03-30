@@ -107,3 +107,16 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Acc
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.xml
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
+using ExtensionMethods;
 
 namespace NeuroRighter.Output
 {

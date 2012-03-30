@@ -305,9 +305,9 @@ namespace NeuroRighter
         {
             bool settingsPass = true;
 
-            if (comboBox_analogInputDevice1.SelectedItem.ToString() == comboBox_analogInputDevice2.SelectedItem.ToString())
+            if (comboBox_analogInputDevice1.SelectedItem.ToString() == comboBox_analogInputDevice2.SelectedItem.ToString() && checkBox_useSecondBoard.Checked)
             {
-                MessageBox.Show("You cannot use the same device for both Electrode Input streams. Please change one of them to a different device.");
+                MessageBox.Show("You cannot use the same device for both of the Electrode Input streams. Please change one of them to a different device.");
                 settingsPass = false;
             }
 

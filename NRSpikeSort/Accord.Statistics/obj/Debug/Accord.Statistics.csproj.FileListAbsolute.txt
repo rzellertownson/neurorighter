@@ -78,3 +78,12 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Acc
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter446\NRSpikeSort\Accord.Statistics\obj\Debug\Accord.Statistics.pdb

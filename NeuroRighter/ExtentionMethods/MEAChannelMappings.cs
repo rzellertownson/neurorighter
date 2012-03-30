@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeuroRighter
+namespace ExtensionMethods
 {
-
-    /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class MEAChannelMappings
     {
         internal static short[] usedChannels = new short[] {0,1,2,3,4,5,6,7,8,9,

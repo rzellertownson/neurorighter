@@ -154,7 +154,7 @@ namespace NRSpikeSort
             this.spikesCollectedPerChannel = new Hashtable();
             for (int i = 0; i < numberChannels; ++i)
             {
-                spikesCollectedPerChannel.Add(i + 1, 0);
+                spikesCollectedPerChannel.Add((Int16)(i + 1), 0);
             }
             this.projectionType = projectionType;
             this.projectionDimension = projectionDim;
@@ -169,9 +169,9 @@ namespace NRSpikeSort
         {
             for (int i = 0; i < newSpikes.Buffer.Count; ++i)
             {
-                if (!((int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] >= maxTrainingSpikesPerChannel))
+                if ((int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] < maxTrainingSpikesPerChannel)
                 {
-                    spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] = (int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 1] + 1;
+                    spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] = (int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] + 1;
                     trainingSpikes.Buffer.Add(newSpikes.Buffer[i]);
                 }
             }

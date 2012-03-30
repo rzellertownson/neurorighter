@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Text;
 using NationalInstruments;
 using NationalInstruments.DAQmx;
+using ExtensionMethods;
 
 namespace NeuroRighter.Output
 {

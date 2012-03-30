@@ -41,6 +41,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
+using ExtensionMethods;
 
 
 namespace NeuroRighter

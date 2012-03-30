@@ -475,66 +475,6 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        private void ReportTrainingResults()
-        {
-            this.UseWaitCursor = true;
-            this.Cursor = Cursors.WaitCursor;
-
-            textBox_Results.Clear();
-            textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
-            textBox_Results.Text += "------------------------------------------\r\n";
-            textBox_Results.Text += "PARAMETERS " + "\r\n";
-            textBox_Results.Text += " Projection Method: " + spikeSorter.projectionType + "\r\n";
-            textBox_Results.Text += " Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
-            textBox_Results.Text += " Min. Spikes to Train: " + spikeSorter.minSpikes + "\r\n";
-            textBox_Results.Text += " Max. Spikes to Train: " + spikeSorter.maxTrainingSpikesPerChannel + "\r\n";
-            textBox_Results.Text += " Quantile for Outliers: " + (1.0 - spikeSorter.pValue) + "\r\n\r\n";
-
-            textBox_Results.Text += "ACROSS CHANNELS " + "\r\n";
-            textBox_Results.Text += " # channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
-            textBox_Results.Text += " # of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
-
-
-            for (int i = 0; i < numChannels; ++i)
-            {
-                List<ChannelModel> tmpCM = spikeSorter.channelModels.Where(x => x.channelNumber == i).ToList();
-
-                if (tmpCM.Count > 0)
-                {
-                    textBox_Results.Text += "CHANNEL " + (tmpCM[0].channelNumber + 1).ToString() + "\r\n";
-                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
-                    textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
-                    textBox_Results.Text += " Clustering Results:\r\n";
-
-                    for (int k = 0; k < spikeSorter.maxK; ++k)
-                    {
-                        textBox_Results.Text += "  K=" + tmpCM[0].kVals[k].ToString() + "\r\n";
-                        if (tmpCM[0].kVals[k] == tmpCM[0].K)
-                        {
-                            textBox_Results.Text += "   **Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
-                            textBox_Results.Text += "   **Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
-                        }
-                        else
-                        {
-                            textBox_Results.Text += "   Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
-                            textBox_Results.Text += "   Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
-                        }
-                    }
-
-                    textBox_Results.Text += "\r\n";
-                }
-                else
-                {
-                    textBox_Results.Text += "CHANNEL " + (i + 1).ToString() + "\r\n";
-                    textBox_Results.Text += " No Sorting" + "\r\n\r\n";
-                }
-
-            }
-
-            this.UseWaitCursor = false;
-            this.Cursor = Cursors.Default;
-        }
-
         private void Flush()
         {
             // Update the UI to reflect the state of things
@@ -796,6 +736,67 @@ namespace NeuroRighter.SpikeDetection
         internal void EnableFileMenu()
         {
             saveDetectorToolStripMenuItem.Enabled = true;
+        }
+
+
+        private void ReportTrainingResults()
+        {
+            this.UseWaitCursor = true;
+            this.Cursor = Cursors.WaitCursor;
+
+            textBox_Results.Clear();
+            textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
+            textBox_Results.Text += "------------------------------------------\r\n";
+            textBox_Results.Text += "PARAMETERS " + "\r\n";
+            textBox_Results.Text += " Projection Method: " + spikeSorter.projectionType + "\r\n";
+            textBox_Results.Text += " Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
+            textBox_Results.Text += " Min. Spikes to Train: " + spikeSorter.minSpikes + "\r\n";
+            textBox_Results.Text += " Max. Spikes to Train: " + spikeSorter.maxTrainingSpikesPerChannel + "\r\n";
+            textBox_Results.Text += " Quantile for Outliers: " + (1.0 - spikeSorter.pValue) + "\r\n\r\n";
+
+            textBox_Results.Text += "ACROSS CHANNELS " + "\r\n";
+            textBox_Results.Text += " # channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
+            textBox_Results.Text += " # of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
+
+
+            for (int i = 0; i < numChannels; ++i)
+            {
+                List<ChannelModel> tmpCM = spikeSorter.channelModels.Where(x => x.channelNumber == i + 1).ToList();
+
+                if (tmpCM.Count > 0)
+                {
+                    textBox_Results.Text += "CHANNEL " + ((short)tmpCM[0].channelNumber).ToString() + "\r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
+                    textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
+                    textBox_Results.Text += " Clustering Results:\r\n";
+
+                    for (int k = 0; k < spikeSorter.maxK; ++k)
+                    {
+                        textBox_Results.Text += "  K=" + tmpCM[0].kVals[k].ToString() + "\r\n";
+                        if (tmpCM[0].kVals[k] == tmpCM[0].K)
+                        {
+                            textBox_Results.Text += "   **Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
+                            textBox_Results.Text += "   **Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
+                        }
+                        else
+                        {
+                            textBox_Results.Text += "   Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
+                            textBox_Results.Text += "   Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
+                        }
+                    }
+
+                    textBox_Results.Text += "\r\n";
+                }
+                else
+                {
+                    textBox_Results.Text += "CHANNEL " + (i + 1).ToString() + "\r\n";
+                    textBox_Results.Text += " No Sorting" + "\r\n\r\n";
+                }
+
+            }
+
+            this.UseWaitCursor = false;
+            this.Cursor = Cursors.Default;
         }
 
         # region public accessors

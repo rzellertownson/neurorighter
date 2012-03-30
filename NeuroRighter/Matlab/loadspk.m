@@ -133,7 +133,7 @@ fprintf(['\tRecording time (yr-mo-dy-hr-mi-sc-ms): ' ...
 
 fprintf(['\tNumber of spikes: ' num2str(nospikes) '\n']);
 fprintf(['\trecording duration: ' num2str(lastspiketime) '\n\n']);
-fprintf('------------\n\n');
+fprintf('\t------------\n\n');
 
 % RZT: algorithm for getting intervals: estimate average firing rate- from
 % that, estimate the start and stop indices, with a maximum of 1000 spikes
@@ -266,7 +266,7 @@ spk.meta.date = [num2str(dt(1)) '-' ...
     num2str(dt(6)) '-' ...
     num2str(dt(7))];
 
-fprintf('\t...done\n\nLoad complete.\n\n');
+fprintf('\t...done\n\n\tLoad complete.\n\n');
 fclose(h);
 
     function spk = loadgroup(h, headersize, packetsize,fs ,start, stop)

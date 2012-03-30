@@ -611,6 +611,16 @@ namespace simoc.persistantstate
             }
         }
 
+        /// <summary>
+        /// The persistant randome number generator.
+        /// </summary>
+        public Random RandGen1
+        {
+            get
+            {
+                return randGen1;
+            }
+        }
 
         /// <summary>
         /// Random permutation of 1:N
@@ -658,6 +668,9 @@ namespace simoc.persistantstate
 
             randPerm = tmp.OrderBy(x => randGen1.Next()).ToArray();
         }
+
+
+        
 
     }
 }

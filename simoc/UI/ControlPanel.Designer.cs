@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlPanel));
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.checkBox_AllowTargetTracking = new System.Windows.Forms.CheckBox();
             this.numericUpDown_TargetMultiplier = new System.Windows.Forms.NumericUpDown();
             this.label11 = new System.Windows.Forms.Label();
             this.numericUpDown_TargetFreq = new System.Windows.Forms.NumericUpDown();
@@ -147,6 +148,7 @@
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.Color.Gold;
+            this.groupBox4.Controls.Add(this.checkBox_AllowTargetTracking);
             this.groupBox4.Controls.Add(this.numericUpDown_TargetMultiplier);
             this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.numericUpDown_TargetFreq);
@@ -163,6 +165,18 @@
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Target Function";
+            // 
+            // checkBox_AllowTargetTracking
+            // 
+            this.checkBox_AllowTargetTracking.AutoSize = true;
+            this.checkBox_AllowTargetTracking.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox_AllowTargetTracking.Location = new System.Drawing.Point(14, 56);
+            this.checkBox_AllowTargetTracking.Name = "checkBox_AllowTargetTracking";
+            this.checkBox_AllowTargetTracking.Size = new System.Drawing.Size(151, 17);
+            this.checkBox_AllowTargetTracking.TabIndex = 32;
+            this.checkBox_AllowTargetTracking.Text = "Allow Target Tracking";
+            this.checkBox_AllowTargetTracking.UseVisualStyleBackColor = true;
+            this.checkBox_AllowTargetTracking.CheckedChanged += new System.EventHandler(this.checkBox_AllowTargetTracking_CheckedChanged);
             // 
             // numericUpDown_TargetMultiplier
             // 
@@ -261,7 +275,8 @@
             "1 Minute Steps",
             "1 Minute Abs UNFRSteps",
             "Multi-Steps",
-            "12 Hour Step"});
+            "12 Hour Step",
+            "Random Blocks"});
             this.comboBox_Target.Location = new System.Drawing.Point(92, 28);
             this.comboBox_Target.Name = "comboBox_Target";
             this.comboBox_Target.Size = new System.Drawing.Size(164, 21);
@@ -886,12 +901,9 @@
             this.comboBox_FBAlg.FormattingEnabled = true;
             this.comboBox_FBAlg.Items.AddRange(new object[] {
             "None",
-            "Relay Irrad ",
-            "Filt Irrad",
-            "Relay DutyCycle",
-            "PID DutyCycle",
             "Relay Power",
             "PID Power",
+            "PID Power Multimodal",
             "Integral Bang-Bang"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(12, 34);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
@@ -1215,5 +1227,6 @@
         private System.Windows.Forms.Label label_CtlType;
         public System.Windows.Forms.NumericUpDown numericUpDown_TargetMultiplier;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox checkBox_AllowTargetTracking;
     }
 }

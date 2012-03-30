@@ -27,6 +27,7 @@ namespace simoc.targetfunc
 
         internal override void GetTargetValue(ref double currentTargetValue, PersistentSimocVar simocVariableStorage)
         {
+            simocVariableStorage.GenericInt1 = 0;
             currentTargetValue = meanValue;
         }
     }

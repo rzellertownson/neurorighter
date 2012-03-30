@@ -20,7 +20,6 @@ namespace simoc.targetfunc
         private double stepTime = 300; //60; // = 10;  // seconds
         private double pauseTime = 1500; //300; //= 20; // seconds
         
-        
         // Don't worry about me!
         private double prePulseTime = 120; // = 10; // Time that we warm up the culture
         private double prePulseWidth= 20; // = 5; //  

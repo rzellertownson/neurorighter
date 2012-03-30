@@ -22,14 +22,14 @@ namespace simoc.filt2out
         double stimPulseWidthMSec;
         double currentTargetIntenal;
         double lastErrorIntenal;
-        double N = 2;
+        double N = 10;
         double maxStimFreq;
         double maxStimPulseWidthMSec;
 
         public Filt2PIDPowerFB(ref NRStimSrv stimSrv, ControlPanel cp)
             : base(ref stimSrv, cp)
         {
-            numberOutStreams = 7; // P and I streams
+            numberOutStreams = 7; 
             K = c0;
             if (c1 != 0)
                 Ti = 1 / c1;
@@ -69,20 +69,22 @@ namespace simoc.filt2out
             // Generate output frequency
             if (currentTargetIntenal != 0)
             {
-                // Derivative Approx
-                simocVariableStorage.GenericDouble4 = K * ((Td / (Td + N * stimSrv.DACPollingPeriodSec)) * simocVariableStorage.GenericDouble4 -
-                    (K * Td * N) / (Td + N * stimSrv.DACPollingPeriodSec) * (currentFilteredValue - simocVariableStorage.LastFilteredObs));
-
-                // Tustin's Integral approximation w/ anti-windup
-                if (simocVariableStorage.GenericDouble1 != 1 && simocVariableStorage.GenericDouble1 != 0)
-                    simocVariableStorage.GenericDouble3 += K * Ti * stimSrv.DACPollingPeriodSec * currentErrorIntenal;
-
                 // Proportional Term
-                simocVariableStorage.GenericDouble2 = K * currentErrorIntenal;
+                simocVariableStorage.GenericDouble2 = 
+                    K * currentErrorIntenal;
+
+                // Derivative Approx
+                simocVariableStorage.GenericDouble4 =
+                    (Td / (Td + N * stimSrv.DACPollingPeriodSec)) * (simocVariableStorage.GenericDouble4 - K * N * (currentErrorIntenal - simocVariableStorage.LastErrorValue));
 
                 // PI feedback signal
                 simocVariableStorage.GenericDouble1 = simocVariableStorage.GenericDouble2 + simocVariableStorage.GenericDouble3 + simocVariableStorage.GenericDouble4;
-            }
+
+                // Tustin's Integral approximation w/ anti-windup
+                if (simocVariableStorage.GenericDouble1 != 1 && simocVariableStorage.GenericDouble1 != 0)
+                    simocVariableStorage.GenericDouble3 += (K * stimSrv.DACPollingPeriodSec)/Ti * currentErrorIntenal;
+                
+            } 
             else
             {
                 simocVariableStorage.GenericDouble4 = 0;

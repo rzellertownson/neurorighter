@@ -62,6 +62,7 @@ namespace simoc.UI
         private delegate void GetTextCallback();
         private double obsHistorySec;
         private double numUnits;
+        private bool trackTarget;
 
         private double filterWidthSec;
         private double filterC0;
@@ -511,6 +512,17 @@ namespace simoc.UI
             }
         }
 
+        /// <summary>
+        /// Bool telling whether to engage controller for tracking or not
+        /// </summary>
+        public bool TrackTarget
+        {
+            get
+            {
+                return trackTarget;
+            }
+        }
+
         # endregion
 
         # region private value changed event handlers
@@ -682,7 +694,26 @@ namespace simoc.UI
                         label_CtlType.Text = "Controller 8";
 
                         numericUpDown_ContC0.Value = 0.25m;
-                        numericUpDown_ContC1.Value = 0.5m;
+                        numericUpDown_ContC1.Value = 2.0m;
+                        numericUpDown_ContC2.Value = 0.1m;
+                        numericUpDown_ContC3.Value = 20.0m;
+                        numericUpDown_ContC4.Value = 5.0m;
+                        numericUpDown_ContC5.Value = 5.0m;
+                    }
+                    break;
+                case "PID Power Multimodal":
+                    {
+                        label_ContC0.Text = "K";
+                        label_ContC1.Text = "Ti";
+                        label_ContC2.Text = "Td";
+                        label_ContC3.Text = "Fmax (Hz)";
+                        label_ContC4.Text = "PWmax (mSec)";
+                        label_ContC5.Text = "Vimax (0-5)";
+
+                        label_CtlType.Text = "Controller 8";
+
+                        numericUpDown_ContC0.Value = 0.25m;
+                        numericUpDown_ContC1.Value = 2.0m;
                         numericUpDown_ContC2.Value = 0.1m;
                         numericUpDown_ContC3.Value = 20.0m;
                         numericUpDown_ContC4.Value = 5.0m;
@@ -783,7 +814,14 @@ namespace simoc.UI
             
         }
 
+        private void checkBox_AllowTargetTracking_CheckedChanged(object sender, EventArgs e)
+        {
+            trackTarget = checkBox_AllowTargetTracking.Checked;
+        }
         # endregion
+
+
+
 
 
 

@@ -43,6 +43,7 @@ namespace NeuroRighter.Output
             this.Debugger = Debugger;
             this.NRFilePath = NRFilePath;
             this.NRRecording = NRRecording;
+            this.NR = NR;
             
         }
 

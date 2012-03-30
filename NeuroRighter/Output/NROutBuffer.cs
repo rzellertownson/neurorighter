@@ -306,7 +306,10 @@ namespace NeuroRighter.Output
                 foreach (T n in addtobuffer)
                 {
                     if (n.SampleIndex < currentSample)
-                        Console.WriteLine("WARNING. "+ this.ToString() + ": Attempted to stimulate in the past (sample " + n.SampleIndex + " at sample " + currentSample + ")");
+                    {
+                        Console.WriteLine("WARNING. " + this.ToString() + ": Attempted to stimulate in the past (sample " + n.SampleIndex + " at sample " + currentSample + ")");
+                        continue;
+                    }
                     outerbuffer.Add(n);
                 }
 

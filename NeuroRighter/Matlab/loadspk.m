@@ -1,3 +1,4 @@
+function spk = loadspk(fid, varargin)
 % LOADSPK Load NeuroRighter .spk,.rawspk, and .salpaspk files for NR
 % v0.7.0.0 and up
 %
@@ -12,8 +13,6 @@
 %
 % T = LOADSPK(FID,'last') returns the final spike time in the file. This is
 % useful setting up a loop that parses the file into time chunks.
-
-function spk = loadspk(fid, varargin)
 
 if nargin > 1 % then we need to decode varargin
     if length(varargin) == 1 % time range specified

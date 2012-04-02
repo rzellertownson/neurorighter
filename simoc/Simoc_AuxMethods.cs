@@ -30,7 +30,7 @@ namespace simoc
         private void UpdateClock()
         {
             ulong[] tmp = DatSrv.SpikeSrv.EstimateAvailableTimeRange();
-            currentTime =  (double)tmp[1]/DatSrv.SpikeSrv.SampleFrequencyHz;
+            currentTime = (double)tmp[1] / DatSrv.SpikeSrv.SampleFrequencyHz;
         }
 
         private void UpdatePersistantState()
@@ -49,9 +49,9 @@ namespace simoc
                 {
                     case "ASDR":
                         {
-                            Spk2ASDR observer = new Spk2ASDR(StimSrv,DatSrv);
+                            Spk2ASDR observer = new Spk2ASDR(StimSrv, DatSrv);
                             numberOfObs = observer.numberOfObs;
-                            observer.GetNewSpikes(DatSrv,simocVariableStorage);
+                            observer.GetNewSpikes(DatSrv, simocVariableStorage);
                             observer.MeasureObservable();
                             observer.PopulateObsSrv(ref obsSrv);
                             currentObs = observer.currentObservation;
@@ -59,7 +59,7 @@ namespace simoc
                         break;
                     case "CSDR":
                         {
-                            Spk2CSDR observer = new Spk2CSDR(StimSrv,DatSrv);
+                            Spk2CSDR observer = new Spk2CSDR(StimSrv, DatSrv);
                             numberOfObs = observer.numberOfObs;
                             observer.GetNewSpikes(DatSrv, simocVariableStorage);
                             observer.MeasureObservable();
@@ -113,7 +113,7 @@ namespace simoc
                     case "Custom 1":
                         {
                             CustomTarget1 target = new CustomTarget1(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
-                            target.GetTargetValue(ref currentTarget,simocVariableStorage);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
                     case "Custom 2":
@@ -152,7 +152,12 @@ namespace simoc
                             target.GetTargetValue(ref currentTarget, simocVariableStorage);
                         }
                         break;
-                        
+                    case "Random Blocks":
+                        {
+                            RandomBlocks target = new RandomBlocks(controlPanel, DACPollingPeriodSec, numTargetSamplesGenerated, ref DatSrv);
+                            target.GetTargetValue(ref currentTarget, simocVariableStorage);
+                        }
+                        break;
                 }
                 numTargetSamplesGenerated++;
             }
@@ -224,127 +229,137 @@ namespace simoc
 
         private void CreateFeedback()
         {
-            // reset the currenFeedback array
+            // reset the currentFeedback array
             currentFeedBack = new double[8];
 
-            try
+            if (controlPanel.TrackTarget)
             {
-                switch (controlPanel.contAlg)
+                try
                 {
-                    case "None":
-                        {
-                            Filt2None controller = new Filt2None(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 0;
-                        }
-                        break;
-                    case "Filt2PropFreqFB":
-                        {
-                            Filt2PropFreqFB controller = new Filt2PropFreqFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 1;
-                        }
-                        break;
-                    case "Filt2PropPowerFB":
-                        {
-                            Filt2PropPowerFB controller = new Filt2PropPowerFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 2;
-                        }
-                        break;
-                    case "Relay Irrad":
-                        {
-                            Filt2RelayIrradFB controller = new Filt2RelayIrradFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 3;
-                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
-                            controlPanel.UpdateControllerTextbox();
-                        }
-                        break;
-                    case "PID Irrad":
-                        {
-                            Filt2PIDIrradFB controller = new Filt2PIDIrradFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 4;
-                        }
-                        break;
-                    case "Relay DutyCycle":
-                        {
-                            Filt2RelayDutyCycleFB controller = new Filt2RelayDutyCycleFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 5;
-                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
-                            controlPanel.UpdateControllerTextbox();
-                        }
-                        break;
-                    case "PID DutyCycle":
-                        {
-                            Filt2PIDDutyCycleFB controller = new Filt2PIDDutyCycleFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 6;
-                        }
-                        break;
-                    case "Relay Power":
-                        {
-                            Filt2RelayPowerFB controller = new Filt2RelayPowerFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 7;
-                            controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
-                            controlPanel.UpdateControllerTextbox();
-                        }
-                        break;
-                    case "PID Power":
-                        {
-                            Filt2PIDPowerFB controller = new Filt2PIDPowerFB(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 8;
-                        }
-                        break;
-                   case "Integral Bang-Bang":
-                        {
-                            Filt2IBangBangFB2 controller = new Filt2IBangBangFB2(ref StimSrv, controlPanel);
-                            controller.CalculateError(ref currentError, currentTarget, currentFilt);
-                            controller.SendFeedBack(simocVariableStorage);
-                            for (int i = 0; i < controller.numberOutStreams; ++i)
-                                currentFeedBack[i] = controller.currentFeedbackSignals[i];
-                            currentControllerType = 9;
-                        }
-                        break;
-                        
+                    switch (controlPanel.contAlg)
+                    {
+                        case "None":
+                            {
+                                Filt2None controller = new Filt2None(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 0;
+                            }
+                            break;
+                        case "Filt2PropFreqFB":
+                            {
+                                Filt2PropFreqFB controller = new Filt2PropFreqFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 1;
+                            }
+                            break;
+                        case "Filt2PropPowerFB":
+                            {
+                                Filt2PropPowerFB controller = new Filt2PropPowerFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 2;
+                            }
+                            break;
+                        case "Relay Irrad":
+                            {
+                                Filt2RelayIrradFB controller = new Filt2RelayIrradFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 3;
+                                controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                                controlPanel.UpdateControllerTextbox();
+                            }
+                            break;
+                        case "PID Irrad":
+                            {
+                                Filt2PIDIrradFB controller = new Filt2PIDIrradFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 4;
+                            }
+                            break;
+                        case "Relay DutyCycle":
+                            {
+                                Filt2RelayDutyCycleFB controller = new Filt2RelayDutyCycleFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 5;
+                                controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                                controlPanel.UpdateControllerTextbox();
+                            }
+                            break;
+                        case "PID DutyCycle":
+                            {
+                                Filt2PIDDutyCycleFB controller = new Filt2PIDDutyCycleFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 6;
+                            }
+                            break;
+                        case "Relay Power":
+                            {
+                                Filt2RelayPowerFB controller = new Filt2RelayPowerFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 7;
+                                controlPanel.SetControllerResultText(simocVariableStorage.UltimatePeriodEstimate, simocVariableStorage.UltimateGainEstimate);
+                                controlPanel.UpdateControllerTextbox();
+                            }
+                            break;
+                        case "PID Power":
+                            {
+                                Filt2PIDPowerFB controller = new Filt2PIDPowerFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 8;
+                            }
+                            break;
+                        case "PID Power Multimodal":
+                            {
+                                Filt2PIDPowerMultiFB controller = new Filt2PIDPowerMultiFB(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 10;
+                            }
+                            break;
+                        case "Integral Bang-Bang":
+                            {
+                                Filt2IBangBangFB2 controller = new Filt2IBangBangFB2(ref StimSrv, controlPanel);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 9;
+                            }
+                            break;
+                    }
                 }
-
-
-            }
-            catch (Exception sEx)
-            {
-                MessageBox.Show("SIMOC Failed at CreateFeedback(): \r\r" + sEx.Message);
+                catch (Exception sEx)
+                {
+                    MessageBox.Show("SIMOC Failed at CreateFeedback(): \r\r" + sEx.Message);
+                }
             }
         }
 

@@ -63,7 +63,8 @@
     <Compile Include="filt2out\Filt2IBangBangFB2.cs" />
     <Compile Include="filt2out\Filt2Out.cs" />
     <Compile Include="filt2out\Filt2PIDDutyCycleFB.cs" />
-    <Compile Include="filt2out\Filt2PIDPowerFB.cs" />
+    <Compile Include="filt2out\u_based_fb\Filt2PIDPowerFB.cs" />
+    <Compile Include="filt2out\u_based_fb\Filt2PIDPowerMultiFB.cs" />
     <Compile Include="filt2out\Filt2RelayDutyCycleFB.cs" />
     <Compile Include="filt2out\Filt2RelayIrradFB.cs" />
     <Compile Include="filt2out\Filt2RelayPowerFB.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="targetfunc\MulipleOfAverageObs.cs" />
     <Compile Include="targetfunc\OneMinuteSteps.cs" />
     <Compile Include="targetfunc\OneMinuteStepsUNFRAbs.cs" />
+    <Compile Include="targetfunc\RandomBlocks.cs" />
     <Compile Include="targetfunc\TwelveHourStep.cs" />
     <Compile Include="UI\ControlPanel.cs">
       <SubType>Form</SubType>

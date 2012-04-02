@@ -171,7 +171,7 @@ namespace NeuroRighter.Output
         internal void DigbuffComplete(object sender, EventArgs e)
         {
             Console.WriteLine("DIGITAL-OUTPUT STOP CALLED");
-            AlertAllFinished(this, e);
+            //AlertAllFinished(this, e);
         }
 
         internal void DigbuffDAQLoadCompleted(object sender, EventArgs e)

@@ -332,7 +332,7 @@ namespace NeuroRighter
                 stimDigitalTask.Timing.SamplesPerChannel = sizeSeq;
                 stimPulseTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples; //When these are set to continuous, the sampling is regenerative
                 stimDigitalTask.Timing.SampleQuantityMode = SampleQuantityMode.ContinuousSamples;
-
+                
                 bw_openLoop.RunWorkerAsync(sp);
             }
             else //Display error that no channels are selected
@@ -368,6 +368,8 @@ namespace NeuroRighter
                 stimDigitalWriter.WriteMultiSamplePort(true, spulse.digitalData);
             else if (Properties.Settings.Default.StimPortBandwidth == 8)
                 stimDigitalWriter.WriteMultiSamplePort(true, StimPulse.convertTo8Bit(spulse.digitalData));
+
+
         }
 
         private void bw_openLoop_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

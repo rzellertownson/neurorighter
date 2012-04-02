@@ -248,18 +248,18 @@
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(6, 56);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(100, 13);
+            this.label11.Size = new System.Drawing.Size(127, 13);
             this.label11.TabIndex = 40;
-            this.label11.Text = "Post-spike samples:";
+            this.label11.Text = "Post-spike microseconds:";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(6, 25);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(95, 13);
+            this.label10.Size = new System.Drawing.Size(119, 13);
             this.label10.TabIndex = 39;
-            this.label10.Text = "Pre-spike samples:";
+            this.label10.Text = "Pre-spike micoseconds:";
             // 
             // numPostSamples
             // 

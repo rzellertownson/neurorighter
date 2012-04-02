@@ -278,7 +278,7 @@ namespace NeuroRighter
                     else if (displayVoltage * 1E6 >= 1)
                         voltageTimeLabel = @"+-" + Math.Ceiling(displayVoltage * 1E6) + " uV, ";
 
-                    voltageTimeLabel += timeRange * 1000 + " ms";
+                    voltageTimeLabel += Math.Round(timeRange*10000)/10 + " ms";
 
                     Vector2 stringExtent = font.MeasureString(voltageTimeLabel);
                     voltageTimeLabelCoords = new Vector2(this.Width - stringExtent.X - HORIZONTAL_MARGIN, this.Height - stringExtent.Y - VERTICAL_MARGIN);

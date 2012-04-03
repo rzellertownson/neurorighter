@@ -1,4 +1,0 @@
-Jon Newman
-July 2011
-
-SIMOC = Spike In, Multiple Ouput Controller

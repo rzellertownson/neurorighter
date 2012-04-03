@@ -65,8 +65,8 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.comboBox_spikeDetAlg = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tabPage_SpikeDetection = new System.Windows.Forms.TabPage();
+            this.tabPage_Sorting = new System.Windows.Forms.TabPage();
             this.label_SorterEngaged = new System.Windows.Forms.Label();
             this.button_EngageSpikeSorter = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -109,8 +109,8 @@
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tabPage_SpikeDetection.SuspendLayout();
+            this.tabPage_Sorting.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_ProjDim)).BeginInit();
@@ -597,44 +597,44 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage_SpikeDetection);
+            this.tabControl1.Controls.Add(this.tabPage_Sorting);
             this.tabControl1.Location = new System.Drawing.Point(2, 26);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(369, 569);
             this.tabControl1.TabIndex = 72;
             // 
-            // tabPage1
+            // tabPage_SpikeDetection
             // 
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.groupBox4);
-            this.tabPage1.Controls.Add(this.label8);
-            this.tabPage1.Controls.Add(this.label15);
-            this.tabPage1.Controls.Add(this.label16);
-            this.tabPage1.Controls.Add(this.groupBox3);
-            this.tabPage1.Controls.Add(this.groupBox2);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(361, 543);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Detection";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPage_SpikeDetection.Controls.Add(this.groupBox1);
+            this.tabPage_SpikeDetection.Controls.Add(this.label5);
+            this.tabPage_SpikeDetection.Controls.Add(this.groupBox4);
+            this.tabPage_SpikeDetection.Controls.Add(this.label8);
+            this.tabPage_SpikeDetection.Controls.Add(this.label15);
+            this.tabPage_SpikeDetection.Controls.Add(this.label16);
+            this.tabPage_SpikeDetection.Controls.Add(this.groupBox3);
+            this.tabPage_SpikeDetection.Controls.Add(this.groupBox2);
+            this.tabPage_SpikeDetection.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_SpikeDetection.Name = "tabPage_SpikeDetection";
+            this.tabPage_SpikeDetection.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_SpikeDetection.Size = new System.Drawing.Size(361, 543);
+            this.tabPage_SpikeDetection.TabIndex = 0;
+            this.tabPage_SpikeDetection.Text = "Detection";
+            this.tabPage_SpikeDetection.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // tabPage_Sorting
             // 
-            this.tabPage2.Controls.Add(this.label_SorterEngaged);
-            this.tabPage2.Controls.Add(this.button_EngageSpikeSorter);
-            this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(361, 543);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Sorting";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPage_Sorting.Controls.Add(this.label_SorterEngaged);
+            this.tabPage_Sorting.Controls.Add(this.button_EngageSpikeSorter);
+            this.tabPage_Sorting.Controls.Add(this.groupBox5);
+            this.tabPage_Sorting.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Sorting.Name = "tabPage_Sorting";
+            this.tabPage_Sorting.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Sorting.Size = new System.Drawing.Size(361, 543);
+            this.tabPage_Sorting.TabIndex = 1;
+            this.tabPage_Sorting.Text = "Sorting";
+            this.tabPage_Sorting.UseVisualStyleBackColor = true;
             // 
             // label_SorterEngaged
             // 
@@ -1038,10 +1038,10 @@
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.tabPage_SpikeDetection.ResumeLayout(false);
+            this.tabPage_SpikeDetection.PerformLayout();
+            this.tabPage_Sorting.ResumeLayout(false);
+            this.tabPage_Sorting.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MinClassificationProb)).EndInit();
@@ -1095,8 +1095,8 @@
         private System.Windows.Forms.GroupBox groupBox4;
         protected System.Windows.Forms.ComboBox comboBox_noiseEstAlg;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage_SpikeDetection;
+        private System.Windows.Forms.TabPage tabPage_Sorting;
         private System.Windows.Forms.Label label_SorterEngaged;
         private System.Windows.Forms.Button button_EngageSpikeSorter;
         private System.Windows.Forms.GroupBox groupBox5;

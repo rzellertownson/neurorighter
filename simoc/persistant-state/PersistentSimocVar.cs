@@ -8,7 +8,7 @@ namespace simoc.persistantstate
     /// <summary>
     /// Persistant variable storage for SIMOC. Jon Newman.
     /// </summary>
-    class PersistentSimocVar
+    public class PersistentSimocVar
     {
         // Output
         private ulong simocStartSample = 0;
@@ -57,6 +57,7 @@ namespace simoc.persistantstate
         private int genericInt1 = 0;
         
         // Other
+        private bool trackTarget;
         private Random randGen1 = new Random();
         private int[] randPerm;
 
@@ -630,6 +631,21 @@ namespace simoc.persistantstate
             get
             {
                 return randPerm;
+            }
+        }
+
+        /// <summary>
+        /// Bool telling whether to engage controller for tracking or not
+        /// </summary>
+        public bool TrackTarget
+        {
+            get
+            {
+                return trackTarget;
+            }
+            set
+            {
+                trackTarget = value;
             }
         }
 

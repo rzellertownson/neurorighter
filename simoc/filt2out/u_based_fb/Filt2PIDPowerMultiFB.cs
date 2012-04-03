@@ -67,7 +67,6 @@ namespace simoc.filt2out
 
             simocVariableStorage.LastErrorValue = lastErrorIntenal;
 
-
             // Proportional Term
             simocVariableStorage.GenericDouble2 = 
                 K * currentErrorIntenal;
@@ -118,7 +117,7 @@ namespace simoc.filt2out
                 stimPowerVolts = maxStimPowerVolts * (0 - simocVariableStorage.GenericDouble1);
 
                 // Get stim frequency
-                stimFreqHz = 0; // maxStimFreq * (0 - simocVariableStorage.GenericDouble1) - 10 * (-1 - simocVariableStorage.GenericDouble1);
+                stimFreqHz = 0; 
 
                 // yellow channel
                 channel = 1;

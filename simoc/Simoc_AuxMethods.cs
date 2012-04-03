@@ -232,15 +232,16 @@ namespace simoc
             // reset the currentFeedback array
             currentFeedBack = new double[8];
 
-            if (controlPanel.TrackTarget)
+            try
             {
-                try
+                if (simocVariableStorage.TrackTarget)
                 {
+
                     switch (controlPanel.contAlg)
                     {
                         case "None":
                             {
-                                Filt2None controller = new Filt2None(ref StimSrv, controlPanel);
+                                Filt2Zero controller = new Filt2Zero(ref StimSrv, controlPanel);
                                 controller.CalculateError(ref currentError, currentTarget, currentFilt);
                                 controller.SendFeedBack(simocVariableStorage);
                                 for (int i = 0; i < controller.numberOutStreams; ++i)
@@ -356,10 +357,19 @@ namespace simoc
                             break;
                     }
                 }
-                catch (Exception sEx)
+                else
                 {
-                    MessageBox.Show("SIMOC Failed at CreateFeedback(): \r\r" + sEx.Message);
+                    Filt2Zero controller = new Filt2Zero(ref StimSrv, controlPanel);
+                    controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                    controller.SendFeedBack(simocVariableStorage);
+                    for (int i = 0; i < controller.numberOutStreams; ++i)
+                        currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                    currentControllerType = 0;
                 }
+            }
+            catch (Exception sEx)
+            {
+                MessageBox.Show("SIMOC Failed at CreateFeedback(): \r\r" + sEx.Message);
             }
         }
 

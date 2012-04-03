@@ -89,6 +89,7 @@ namespace simoc
 
                 // Set up persistant internal varaible storage
                 simocVariableStorage = new PersistentSimocVar();
+                controlPanel.GetStateVariables(ref simocVariableStorage);
 
                 // Create file writer
                 if (NRRecording)
@@ -99,8 +100,6 @@ namespace simoc
                 Console.WriteLine("SIMOC starting out at time " + startTime.ToString() + " seconds.");
             }
         }
-
-
 
         protected override void Loop(object sender, EventArgs e)
         {
@@ -129,12 +128,9 @@ namespace simoc
                     if (simocOut != null)
                         simocOut.Close();
 
-                    // Set up closed loop algorithm
+                    // Warn of impending closure
                     double stopTime = StimSrv.DigitalOut.GetTime() / 1000;
                     Console.WriteLine("SIMOC stopped out at time " + stopTime.ToString() + " seconds.");
-
-                    // Release resources
-                    Stop();
 
                     // Allow last loop to finish
                     Thread.Sleep(100);
@@ -201,11 +197,19 @@ namespace simoc
             simocVariableStorage.ResetRunningObsAverage();
         }
 
-        private void TargetFunctionSwitched()
+        private void TargetFunctionSwitched(object sender, TargetEventArgs e)
         {
+            //
             ulong[] now = DatSrv.SpikeSrv.EstimateAvailableTimeRange();
-            simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.SpikeSrv.SampleFrequencyHz;
-            simocVariableStorage.TargetOn = false;
+
+            if (e.ResetEventTime)
+            {
+                simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.SpikeSrv.SampleFrequencyHz;
+                simocVariableStorage.TargetOn = false;
+            }
+
+            // Reset integral error
+            simocVariableStorage.GenericDouble3 = 0;
         }
     }
 }

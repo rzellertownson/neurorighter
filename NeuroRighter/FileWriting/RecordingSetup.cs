@@ -65,7 +65,11 @@ namespace NeuroRighter.FileWriting
             Refresh();
 
             // Disable the electrodes tab since its non-functional right now
-            (this.tabControl1.TabPages[1] as Control).Enabled = false;
+            // Remove electrode selection tab because it is currently non-functional
+            if (tabControl1.TabPages.Contains(tabPage_Electrodes))
+            {
+                tabControl1.TabPages.Remove(tabPage_Electrodes);
+            }
 
             // Set SALPA access to false since the user has not trained yet
             SetSalpaAccess(false);

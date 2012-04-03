@@ -65,13 +65,13 @@ namespace NeuroRighter
             if (spikePlotData != null)
                 if (spikePlotData.getGain() != null)
                     Properties.Settings.Default.SpikeDisplayGain = spikePlotData.getGain();
-            if (Properties.Settings.Default.UseLFPs & (lfpPlotData!=null))
+            if (Properties.Settings.Default.UseLFPs & (lfpPlotData != null))
                 Properties.Settings.Default.LFPDisplayGain = lfpPlotData.getGain();
             if (waveformPlotData != null)
                 if (waveformPlotData.getGain() != null)
                     Properties.Settings.Default.SpkWfmDisplayGain = waveformPlotData.getGain();
             Console.WriteLine("reset: gains saved");
-            
+
             if (triggerWriter != null)
             {
                 byte[] b_array = new byte[3] { 0, 0, 0 };
@@ -97,7 +97,7 @@ namespace NeuroRighter
                             //block while bw finishes
                             if (bwSpikes[i] != null)
                             {
-                                Console.WriteLine("reset: " + bwSpikes[i].ToString() + " " +i.ToString() + "is busy");
+                                Console.WriteLine("reset: " + bwSpikes[i].ToString() + " " + i.ToString() + "is busy");
                                 while (bwSpikes[i].IsBusy)
                                 {
                                     Application.DoEvents();
@@ -150,7 +150,7 @@ namespace NeuroRighter
             button_stopClosedLoopStim.Enabled = false;
             button_startClosedLoopStim.Enabled = true;
             checkBox_SALPA.Enabled = true;
-            
+
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegNumChannels.Enabled = true;
@@ -233,7 +233,7 @@ namespace NeuroRighter
             // Refresh all the NI Tasks
             try
             {
-                
+
                 if (spikeTask != null)
                 {
                     bool cantReset = true;
@@ -286,7 +286,7 @@ namespace NeuroRighter
                     tabPage_LFPs = new TabPage("LFPs");
                     tabControl.TabPages.Insert(2, tabPage_LFPs);
                 }
-                else if (!Properties.Settings.Default.UseLFPs && tabControl.TabPages.Contains(tabPage_LFPs)) 
+                else if (!Properties.Settings.Default.UseLFPs && tabControl.TabPages.Contains(tabPage_LFPs))
                     tabControl.TabPages.Remove(tabPage_LFPs);
 
                 //Add MUA tab, if applicable
@@ -295,8 +295,60 @@ namespace NeuroRighter
                     tabPage_MUA = new TabPage("MUA");
                     tabControl.TabPages.Insert((Properties.Settings.Default.UseLFPs ? 3 : 2), tabPage_MUA);
                 }
-                else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA)) 
+                else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA))
                     tabControl.TabPages.Remove(tabPage_MUA);
+
+                //Add MUA tab, if applicable
+                if (Properties.Settings.Default.UseEEG && !tabControl.TabPages.Contains(tabPage_EEG))
+                {
+                    tabPage_EEG = new TabPage("EEG");
+                    int pageNum = 2;
+                    if (Properties.Settings.Default.UseLFPs)
+                        pageNum++;
+                    if (Properties.Settings.Default.ProcessMUA)
+                        pageNum++;
+                    tabControl.TabPages.Insert(pageNum, tabPage_EEG);
+                }
+                else if (!Properties.Settings.Default.UseEEG && tabControl.TabPages.Contains(tabPage_EEG))
+                    tabControl.TabPages.Remove(tabPage_EEG);
+
+                //Add Aux tab, if applicable
+                if ((Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                    && !tabControl.TabPages.Contains(tabPage_AuxInput))
+                {
+                    tabPage_EEG = new TabPage("Aux. Input");
+                    int pageNum = 2;
+                    if (Properties.Settings.Default.UseLFPs)
+                        pageNum++;
+                    if (Properties.Settings.Default.ProcessMUA)
+                        pageNum++;
+                    if (Properties.Settings.Default.UseEEG)
+                        pageNum++;
+                    tabControl.TabPages.Insert(pageNum, tabPage_AuxInput);
+                }
+                else if (!(Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                    && tabControl.TabPages.Contains(tabPage_AuxInput))
+                    tabControl.TabPages.Remove(tabPage_AuxInput);
+
+                //Add Impedance tab, if applicable
+                if (Properties.Settings.Default.useImpedanceMeasurer && !tabControl.TabPages.Contains(tabPage_impedance))
+                {
+                    tabPage_MUA = new TabPage("Impedance Measurement");
+                    tabControl.TabPages.Insert(tabControl.TabPages.Count, tabPage_impedance);
+                }
+
+                else if (!Properties.Settings.Default.useImpedanceMeasurer && tabControl.TabPages.Contains(tabPage_impedance))
+                    tabControl.TabPages.Remove(tabPage_impedance);
+
+                // Remove the Referencing and Diagnostics tabs since they are currently non functional
+                if (tabControl.TabPages.Contains(tabPage_ProgRef))
+                {
+                    tabControl.TabPages.Remove(tabPage_ProgRef);
+                }
+                if (tabControl.TabPages.Contains(tabPage_diagnostics))
+                {
+                    tabControl.TabPages.Remove(tabPage_diagnostics);
+                }
 
                 // Save sampling rates
                 Properties.Settings.Default.RawSampleFrequency = Convert.ToDouble(textBox_spikeSamplingRate.Text);
@@ -309,7 +361,7 @@ namespace NeuroRighter
                 MessageBox.Show(exception.Message); //Display Errors
                 reset();
             }
-        }            
+        }
         // Look at the stimulation hardware settings and create NI Tasks that reflect the user's choices
         private void UpdateStimulationSettings()
         {
@@ -545,7 +597,7 @@ namespace NeuroRighter
                     if (Properties.Settings.Default.UseStimulator)
                     {
                         stimIvsVTask = new Task("stimIvsV");
- 
+
                         stimIvsVTask.DOChannels.CreateChannel(Properties.Settings.Default.StimIvsVDevice + "/Port1/line0", "",
                             ChannelLineGrouping.OneChannelForAllLines);
                         stimIvsVWriter = new DigitalSingleChannelWriter(stimIvsVTask.Stream);

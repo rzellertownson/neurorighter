@@ -140,6 +140,7 @@ namespace NeuroRighter
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
+            this.checkBox_EnableImpedanceMeasurements = new System.Windows.Forms.CheckBox();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -207,11 +208,12 @@ namespace NeuroRighter
             // 
             // groupBox11
             // 
+            this.groupBox11.Controls.Add(this.checkBox_EnableImpedanceMeasurements);
             this.groupBox11.Controls.Add(this.label9);
             this.groupBox11.Controls.Add(this.comboBox_impedanceDevice);
-            this.groupBox11.Location = new System.Drawing.Point(3, 173);
+            this.groupBox11.Location = new System.Drawing.Point(3, 3);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(341, 79);
+            this.groupBox11.Size = new System.Drawing.Size(341, 102);
             this.groupBox11.TabIndex = 16;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Impedance Measurements";
@@ -219,16 +221,16 @@ namespace NeuroRighter
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 22);
+            this.label9.Location = new System.Drawing.Point(5, 52);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(284, 16);
+            this.label9.Size = new System.Drawing.Size(171, 32);
             this.label9.TabIndex = 8;
-            this.label9.Text = "NI-DAQ Device for Impedance Measurements:";
+            this.label9.Text = "NI-DAQ Device for \r\nImpedance Measurements:";
             // 
             // comboBox_impedanceDevice
             // 
             this.comboBox_impedanceDevice.FormattingEnabled = true;
-            this.comboBox_impedanceDevice.Location = new System.Drawing.Point(226, 41);
+            this.comboBox_impedanceDevice.Location = new System.Drawing.Point(226, 60);
             this.comboBox_impedanceDevice.Name = "comboBox_impedanceDevice";
             this.comboBox_impedanceDevice.Size = new System.Drawing.Size(97, 24);
             this.comboBox_impedanceDevice.TabIndex = 7;
@@ -239,19 +241,20 @@ namespace NeuroRighter
             this.groupBox5.Controls.Add(this.checkBox_useProgRef);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.comboBox_progRefSerialPort);
-            this.groupBox5.Location = new System.Drawing.Point(3, 88);
+            this.groupBox5.Location = new System.Drawing.Point(3, 111);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(341, 79);
             this.groupBox5.TabIndex = 15;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Plexon referencing";
+            this.groupBox5.Visible = false;
             // 
             // checkBox_useProgRef
             // 
             this.checkBox_useProgRef.AutoSize = true;
             this.checkBox_useProgRef.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useProgRef.Name = "checkBox_useProgRef";
-            this.checkBox_useProgRef.Size = new System.Drawing.Size(225, 17);
+            this.checkBox_useProgRef.Size = new System.Drawing.Size(283, 20);
             this.checkBox_useProgRef.TabIndex = 7;
             this.checkBox_useProgRef.Text = "Enable Plexon Programmable Referencing";
             this.checkBox_useProgRef.UseVisualStyleBackColor = true;
@@ -280,19 +283,20 @@ namespace NeuroRighter
             this.groupBox2.Controls.Add(this.checkBox_useCineplex);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.comboBox_cineplexDevice);
-            this.groupBox2.Location = new System.Drawing.Point(3, 3);
+            this.groupBox2.Location = new System.Drawing.Point(3, 196);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(341, 79);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Video";
+            this.groupBox2.Visible = false;
             // 
             // checkBox_useCineplex
             // 
             this.checkBox_useCineplex.AutoSize = true;
             this.checkBox_useCineplex.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useCineplex.Name = "checkBox_useCineplex";
-            this.checkBox_useCineplex.Size = new System.Drawing.Size(170, 17);
+            this.checkBox_useCineplex.Size = new System.Drawing.Size(212, 20);
             this.checkBox_useCineplex.TabIndex = 0;
             this.checkBox_useCineplex.Text = "Use Cineplex (video recording)";
             this.checkBox_useCineplex.UseVisualStyleBackColor = true;
@@ -349,7 +353,7 @@ namespace NeuroRighter
             this.checkBox3.AutoSize = true;
             this.checkBox3.Location = new System.Drawing.Point(6, 19);
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(217, 17);
+            this.checkBox3.Size = new System.Drawing.Size(265, 20);
             this.checkBox3.TabIndex = 9;
             this.checkBox3.Text = "Enable Single Channel Playback/Output";
             this.checkBox3.UseVisualStyleBackColor = true;
@@ -389,7 +393,7 @@ namespace NeuroRighter
             this.checkBox_UseAODO.AutoSize = true;
             this.checkBox_UseAODO.Location = new System.Drawing.Point(8, 19);
             this.checkBox_UseAODO.Name = "checkBox_UseAODO";
-            this.checkBox_UseAODO.Size = new System.Drawing.Size(166, 17);
+            this.checkBox_UseAODO.Size = new System.Drawing.Size(203, 20);
             this.checkBox_UseAODO.TabIndex = 24;
             this.checkBox_UseAODO.Text = "Use Analog and Digital Ouput";
             this.checkBox_UseAODO.UseVisualStyleBackColor = true;
@@ -419,7 +423,7 @@ namespace NeuroRighter
             this.checkBox_useStimulator.AutoSize = true;
             this.checkBox_useStimulator.Location = new System.Drawing.Point(14, 6);
             this.checkBox_useStimulator.Name = "checkBox_useStimulator";
-            this.checkBox_useStimulator.Size = new System.Drawing.Size(94, 17);
+            this.checkBox_useStimulator.Size = new System.Drawing.Size(114, 20);
             this.checkBox_useStimulator.TabIndex = 7;
             this.checkBox_useStimulator.Text = "Use Stimulator";
             this.checkBox_useStimulator.UseVisualStyleBackColor = true;
@@ -502,7 +506,7 @@ namespace NeuroRighter
             this.radioButton_32bit.Checked = true;
             this.radioButton_32bit.Location = new System.Drawing.Point(59, 19);
             this.radioButton_32bit.Name = "radioButton_32bit";
-            this.radioButton_32bit.Size = new System.Drawing.Size(51, 17);
+            this.radioButton_32bit.Size = new System.Drawing.Size(57, 20);
             this.radioButton_32bit.TabIndex = 12;
             this.radioButton_32bit.TabStop = true;
             this.radioButton_32bit.Text = "32 bit";
@@ -514,7 +518,7 @@ namespace NeuroRighter
             this.radioButton_8bit.AutoSize = true;
             this.radioButton_8bit.Location = new System.Drawing.Point(6, 19);
             this.radioButton_8bit.Name = "radioButton_8bit";
-            this.radioButton_8bit.Size = new System.Drawing.Size(45, 17);
+            this.radioButton_8bit.Size = new System.Drawing.Size(50, 20);
             this.radioButton_8bit.TabIndex = 11;
             this.radioButton_8bit.Text = "8 bit";
             this.radioButton_8bit.UseVisualStyleBackColor = true;
@@ -537,7 +541,7 @@ namespace NeuroRighter
             this.radioButton_16Mux.Checked = true;
             this.radioButton_16Mux.Location = new System.Drawing.Point(99, 19);
             this.radioButton_16Mux.Name = "radioButton_16Mux";
-            this.radioButton_16Mux.Size = new System.Drawing.Size(79, 17);
+            this.radioButton_16Mux.Size = new System.Drawing.Size(92, 20);
             this.radioButton_16Mux.TabIndex = 12;
             this.radioButton_16Mux.TabStop = true;
             this.radioButton_16Mux.Text = "16 Channel";
@@ -549,7 +553,7 @@ namespace NeuroRighter
             this.radioButton_8Mux.AutoSize = true;
             this.radioButton_8Mux.Location = new System.Drawing.Point(6, 19);
             this.radioButton_8Mux.Name = "radioButton_8Mux";
-            this.radioButton_8Mux.Size = new System.Drawing.Size(73, 17);
+            this.radioButton_8Mux.Size = new System.Drawing.Size(85, 20);
             this.radioButton_8Mux.TabIndex = 11;
             this.radioButton_8Mux.Text = "8 Channel";
             this.radioButton_8Mux.UseVisualStyleBackColor = true;
@@ -586,7 +590,7 @@ namespace NeuroRighter
             this.checkBox_processMUA.AutoSize = true;
             this.checkBox_processMUA.Location = new System.Drawing.Point(127, 19);
             this.checkBox_processMUA.Name = "checkBox_processMUA";
-            this.checkBox_processMUA.Size = new System.Drawing.Size(91, 17);
+            this.checkBox_processMUA.Size = new System.Drawing.Size(110, 20);
             this.checkBox_processMUA.TabIndex = 5;
             this.checkBox_processMUA.Text = "Process MUA";
             this.checkBox_processMUA.UseVisualStyleBackColor = true;
@@ -596,7 +600,7 @@ namespace NeuroRighter
             this.checkBox_processLFPs.AutoSize = true;
             this.checkBox_processLFPs.Location = new System.Drawing.Point(7, 19);
             this.checkBox_processLFPs.Name = "checkBox_processLFPs";
-            this.checkBox_processLFPs.Size = new System.Drawing.Size(94, 17);
+            this.checkBox_processLFPs.Size = new System.Drawing.Size(114, 20);
             this.checkBox_processLFPs.TabIndex = 4;
             this.checkBox_processLFPs.Text = "Process LFPs ";
             this.checkBox_processLFPs.UseVisualStyleBackColor = true;
@@ -666,7 +670,7 @@ namespace NeuroRighter
             this.checkBox_useSecondBoard.AutoSize = true;
             this.checkBox_useSecondBoard.Location = new System.Drawing.Point(9, 21);
             this.checkBox_useSecondBoard.Name = "checkBox_useSecondBoard";
-            this.checkBox_useSecondBoard.Size = new System.Drawing.Size(116, 17);
+            this.checkBox_useSecondBoard.Size = new System.Drawing.Size(142, 20);
             this.checkBox_useSecondBoard.TabIndex = 7;
             this.checkBox_useSecondBoard.Text = "Use Second Board";
             this.checkBox_useSecondBoard.UseVisualStyleBackColor = true;
@@ -698,7 +702,7 @@ namespace NeuroRighter
             this.checkBox_sepLFPBoard2.AutoSize = true;
             this.checkBox_sepLFPBoard2.Location = new System.Drawing.Point(6, 19);
             this.checkBox_sepLFPBoard2.Name = "checkBox_sepLFPBoard2";
-            this.checkBox_sepLFPBoard2.Size = new System.Drawing.Size(179, 17);
+            this.checkBox_sepLFPBoard2.Size = new System.Drawing.Size(219, 20);
             this.checkBox_sepLFPBoard2.TabIndex = 11;
             this.checkBox_sepLFPBoard2.Text = "Use Separate NI-DAQ for LFPs?";
             this.checkBox_sepLFPBoard2.UseVisualStyleBackColor = true;
@@ -748,7 +752,7 @@ namespace NeuroRighter
             this.checkBox_useEEG.AutoSize = true;
             this.checkBox_useEEG.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useEEG.Name = "checkBox_useEEG";
-            this.checkBox_useEEG.Size = new System.Drawing.Size(259, 17);
+            this.checkBox_useEEG.Size = new System.Drawing.Size(322, 20);
             this.checkBox_useEEG.TabIndex = 7;
             this.checkBox_useEEG.Text = "Use EEG Channels (separate analog in channels)";
             this.checkBox_useEEG.UseVisualStyleBackColor = true;
@@ -821,7 +825,7 @@ namespace NeuroRighter
             this.checkBox_sepLFPBoard1.AutoSize = true;
             this.checkBox_sepLFPBoard1.Location = new System.Drawing.Point(6, 19);
             this.checkBox_sepLFPBoard1.Name = "checkBox_sepLFPBoard1";
-            this.checkBox_sepLFPBoard1.Size = new System.Drawing.Size(179, 17);
+            this.checkBox_sepLFPBoard1.Size = new System.Drawing.Size(219, 20);
             this.checkBox_sepLFPBoard1.TabIndex = 11;
             this.checkBox_sepLFPBoard1.Text = "Use Separate NI-DAQ for LFPs?";
             this.checkBox_sepLFPBoard1.UseVisualStyleBackColor = true;
@@ -835,7 +839,6 @@ namespace NeuroRighter
             this.comboBox_LFPDevice1.Size = new System.Drawing.Size(97, 24);
             this.comboBox_LFPDevice1.TabIndex = 12;
             this.comboBox_LFPDevice1.Text = "Dev1";
-            this.comboBox_LFPDevice1.SelectedIndexChanged += new System.EventHandler(this.comboBox_LFPs_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -1404,6 +1407,17 @@ namespace NeuroRighter
             this.HWpersistWindowComponent.Form = this;
             this.HWpersistWindowComponent.XMLFilePath = "WindowState.xml";
             // 
+            // checkBox_EnableImpedanceMeasurements
+            // 
+            this.checkBox_EnableImpedanceMeasurements.AutoSize = true;
+            this.checkBox_EnableImpedanceMeasurements.Location = new System.Drawing.Point(6, 21);
+            this.checkBox_EnableImpedanceMeasurements.Name = "checkBox_EnableImpedanceMeasurements";
+            this.checkBox_EnableImpedanceMeasurements.Size = new System.Drawing.Size(233, 20);
+            this.checkBox_EnableImpedanceMeasurements.TabIndex = 10;
+            this.checkBox_EnableImpedanceMeasurements.Text = "Enable Impedance Measurements";
+            this.checkBox_EnableImpedanceMeasurements.UseVisualStyleBackColor = true;
+            this.checkBox_EnableImpedanceMeasurements.CheckedChanged += new System.EventHandler(this.checkBox_EnableImpedanceMeasurements_CheckedChanged);
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1589,5 +1603,6 @@ namespace NeuroRighter
         private System.Windows.Forms.NumericUpDown numericUpDown_DACPollingPeriodSec;
         private System.Windows.Forms.CheckBox checkBox_UseAuxDataBuffer;
         private System.Windows.Forms.CheckBox checkBox_UseDigDataBuffer;
+        private System.Windows.Forms.CheckBox checkBox_EnableImpedanceMeasurements;
     }
 }

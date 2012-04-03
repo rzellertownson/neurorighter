@@ -64,7 +64,7 @@
             this.button_Cancel = new System.Windows.Forms.Button();
             this.checkBox_RecordSALPA = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.Streams = new System.Windows.Forms.TabPage();
+            this.tabPage_Streams = new System.Windows.Forms.TabPage();
             this.label29 = new System.Windows.Forms.Label();
             this.label30 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
@@ -75,14 +75,14 @@
             this.label26 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.checkBox_UseFidTimeStamp = new System.Windows.Forms.CheckBox();
-            this.Electrodes = new System.Windows.Forms.TabPage();
+            this.tabPage_Electrodes = new System.Windows.Forms.TabPage();
             this.label24 = new System.Windows.Forms.Label();
             this.checkedListBox_Electrodes = new System.Windows.Forms.CheckedListBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
-            this.Streams.SuspendLayout();
-            this.Electrodes.SuspendLayout();
+            this.tabPage_Streams.SuspendLayout();
+            this.tabPage_Electrodes.SuspendLayout();
             this.SuspendLayout();
             // 
             // checkBox_RecordRaw
@@ -287,9 +287,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 272);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 13);
+            this.label2.Size = new System.Drawing.Size(92, 13);
             this.label2.TabIndex = 98;
-            this.label2.Text = "Stimulation data";
+            this.label2.Text = "Electrial stim. data";
             // 
             // checkBox_RecordStim
             // 
@@ -421,8 +421,8 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.Streams);
-            this.tabControl1.Controls.Add(this.Electrodes);
+            this.tabControl1.Controls.Add(this.tabPage_Streams);
+            this.tabControl1.Controls.Add(this.tabPage_Electrodes);
             this.tabControl1.Location = new System.Drawing.Point(1, 1);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -430,58 +430,58 @@
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 112;
             // 
-            // Streams
+            // tabPage_Streams
             // 
-            this.Streams.Controls.Add(this.label29);
-            this.Streams.Controls.Add(this.label30);
-            this.Streams.Controls.Add(this.label31);
-            this.Streams.Controls.Add(this.checkBox_RecordRawSpikes);
-            this.Streams.Controls.Add(this.checkBox_RecordSalpaSpikes);
-            this.Streams.Controls.Add(this.label28);
-            this.Streams.Controls.Add(this.label27);
-            this.Streams.Controls.Add(this.label26);
-            this.Streams.Controls.Add(this.label25);
-            this.Streams.Controls.Add(this.checkBox_UseFidTimeStamp);
-            this.Streams.Controls.Add(this.label8);
-            this.Streams.Controls.Add(this.checkBox_RecordSALPA);
-            this.Streams.Controls.Add(this.checkBox_RecordRaw);
-            this.Streams.Controls.Add(this.label15);
-            this.Streams.Controls.Add(this.label20);
-            this.Streams.Controls.Add(this.label5);
-            this.Streams.Controls.Add(this.checkBox_RecordSpikes);
-            this.Streams.Controls.Add(this.checkBox_RecordSpikeFilt);
-            this.Streams.Controls.Add(this.checkBox_RecordAuxAnalog);
-            this.Streams.Controls.Add(this.label1);
-            this.Streams.Controls.Add(this.checkBox_RecordAuxDig);
-            this.Streams.Controls.Add(this.label3);
-            this.Streams.Controls.Add(this.label18);
-            this.Streams.Controls.Add(this.label4);
-            this.Streams.Controls.Add(this.label19);
-            this.Streams.Controls.Add(this.label21);
-            this.Streams.Controls.Add(this.label6);
-            this.Streams.Controls.Add(this.label22);
-            this.Streams.Controls.Add(this.label9);
-            this.Streams.Controls.Add(this.label23);
-            this.Streams.Controls.Add(this.label10);
-            this.Streams.Controls.Add(this.label17);
-            this.Streams.Controls.Add(this.label11);
-            this.Streams.Controls.Add(this.label2);
-            this.Streams.Controls.Add(this.label12);
-            this.Streams.Controls.Add(this.checkBox_RecordStim);
-            this.Streams.Controls.Add(this.label13);
-            this.Streams.Controls.Add(this.label16);
-            this.Streams.Controls.Add(this.checkBox_RecordLFP);
-            this.Streams.Controls.Add(this.checkBox_RecordMUA);
-            this.Streams.Controls.Add(this.label7);
-            this.Streams.Controls.Add(this.label14);
-            this.Streams.Controls.Add(this.checkBox_RecordEEG);
-            this.Streams.Location = new System.Drawing.Point(4, 22);
-            this.Streams.Name = "Streams";
-            this.Streams.Padding = new System.Windows.Forms.Padding(3);
-            this.Streams.Size = new System.Drawing.Size(196, 413);
-            this.Streams.TabIndex = 0;
-            this.Streams.Text = "Data Streams";
-            this.Streams.UseVisualStyleBackColor = true;
+            this.tabPage_Streams.Controls.Add(this.label29);
+            this.tabPage_Streams.Controls.Add(this.label30);
+            this.tabPage_Streams.Controls.Add(this.label31);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordRawSpikes);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordSalpaSpikes);
+            this.tabPage_Streams.Controls.Add(this.label28);
+            this.tabPage_Streams.Controls.Add(this.label27);
+            this.tabPage_Streams.Controls.Add(this.label26);
+            this.tabPage_Streams.Controls.Add(this.label25);
+            this.tabPage_Streams.Controls.Add(this.checkBox_UseFidTimeStamp);
+            this.tabPage_Streams.Controls.Add(this.label8);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordSALPA);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordRaw);
+            this.tabPage_Streams.Controls.Add(this.label15);
+            this.tabPage_Streams.Controls.Add(this.label20);
+            this.tabPage_Streams.Controls.Add(this.label5);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordSpikes);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordSpikeFilt);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordAuxAnalog);
+            this.tabPage_Streams.Controls.Add(this.label1);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordAuxDig);
+            this.tabPage_Streams.Controls.Add(this.label3);
+            this.tabPage_Streams.Controls.Add(this.label18);
+            this.tabPage_Streams.Controls.Add(this.label4);
+            this.tabPage_Streams.Controls.Add(this.label19);
+            this.tabPage_Streams.Controls.Add(this.label21);
+            this.tabPage_Streams.Controls.Add(this.label6);
+            this.tabPage_Streams.Controls.Add(this.label22);
+            this.tabPage_Streams.Controls.Add(this.label9);
+            this.tabPage_Streams.Controls.Add(this.label23);
+            this.tabPage_Streams.Controls.Add(this.label10);
+            this.tabPage_Streams.Controls.Add(this.label17);
+            this.tabPage_Streams.Controls.Add(this.label11);
+            this.tabPage_Streams.Controls.Add(this.label2);
+            this.tabPage_Streams.Controls.Add(this.label12);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordStim);
+            this.tabPage_Streams.Controls.Add(this.label13);
+            this.tabPage_Streams.Controls.Add(this.label16);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordLFP);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordMUA);
+            this.tabPage_Streams.Controls.Add(this.label7);
+            this.tabPage_Streams.Controls.Add(this.label14);
+            this.tabPage_Streams.Controls.Add(this.checkBox_RecordEEG);
+            this.tabPage_Streams.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Streams.Name = "tabPage_Streams";
+            this.tabPage_Streams.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Streams.Size = new System.Drawing.Size(196, 413);
+            this.tabPage_Streams.TabIndex = 0;
+            this.tabPage_Streams.Text = "Data Streams";
+            this.tabPage_Streams.UseVisualStyleBackColor = true;
             // 
             // label29
             // 
@@ -576,19 +576,19 @@
             this.checkBox_UseFidTimeStamp.TabIndex = 112;
             this.checkBox_UseFidTimeStamp.UseVisualStyleBackColor = true;
             // 
-            // Electrodes
+            // tabPage_Electrodes
             // 
-            this.Electrodes.Controls.Add(this.label24);
-            this.Electrodes.Controls.Add(this.checkedListBox_Electrodes);
-            this.Electrodes.Controls.Add(this.button2);
-            this.Electrodes.Controls.Add(this.button1);
-            this.Electrodes.Location = new System.Drawing.Point(4, 22);
-            this.Electrodes.Name = "Electrodes";
-            this.Electrodes.Padding = new System.Windows.Forms.Padding(3);
-            this.Electrodes.Size = new System.Drawing.Size(196, 413);
-            this.Electrodes.TabIndex = 1;
-            this.Electrodes.Text = "Electrodes";
-            this.Electrodes.UseVisualStyleBackColor = true;
+            this.tabPage_Electrodes.Controls.Add(this.label24);
+            this.tabPage_Electrodes.Controls.Add(this.checkedListBox_Electrodes);
+            this.tabPage_Electrodes.Controls.Add(this.button2);
+            this.tabPage_Electrodes.Controls.Add(this.button1);
+            this.tabPage_Electrodes.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Electrodes.Name = "tabPage_Electrodes";
+            this.tabPage_Electrodes.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Electrodes.Size = new System.Drawing.Size(196, 413);
+            this.tabPage_Electrodes.TabIndex = 1;
+            this.tabPage_Electrodes.Text = "Electrodes";
+            this.tabPage_Electrodes.UseVisualStyleBackColor = true;
             // 
             // label24
             // 
@@ -707,10 +707,10 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Recording Stream Setup";
             this.tabControl1.ResumeLayout(false);
-            this.Streams.ResumeLayout(false);
-            this.Streams.PerformLayout();
-            this.Electrodes.ResumeLayout(false);
-            this.Electrodes.PerformLayout();
+            this.tabPage_Streams.ResumeLayout(false);
+            this.tabPage_Streams.PerformLayout();
+            this.tabPage_Electrodes.ResumeLayout(false);
+            this.tabPage_Electrodes.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -753,8 +753,8 @@
         private System.Windows.Forms.Button button_Cancel;
         private System.Windows.Forms.CheckBox checkBox_RecordSALPA;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage Streams;
-        private System.Windows.Forms.TabPage Electrodes;
+        private System.Windows.Forms.TabPage tabPage_Streams;
+        private System.Windows.Forms.TabPage tabPage_Electrodes;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckedListBox checkedListBox_Electrodes;

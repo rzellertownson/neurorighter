@@ -49,12 +49,13 @@ namespace simoc.UI
         private double ultimatePeriodSec;
         private double ultimateGain;
         bool fbParametersLocked = false;
+        public PersistentSimocVar simocState;
 
         // Stuff for telling simoc that we switched target functions
-        public delegate void TargetFunctionSwitchedEventHander();
+        public delegate void TargetFunctionSwitchedEventHander(object sender, TargetEventArgs targetEventArgs);
         public event TargetFunctionSwitchedEventHander TargetFunctionSwitchedEvent;
 
-        // Stuff for telling simoc that we observation type
+        // Stuff for telling simoc that we switched observation type
         public delegate void ObservableSwitchedEventHander();
         public event ObservableSwitchedEventHander ObservableSwitchedEvent;
 
@@ -214,7 +215,7 @@ namespace simoc.UI
             }
 
         }
-
+        
         internal void CloseSIMOC()
         {
             if (this.InvokeRequired)
@@ -229,6 +230,12 @@ namespace simoc.UI
             }
         }
 
+        internal void GetStateVariables(ref PersistentSimocVar simocPersistantState)
+        {
+            // Simoc state class
+            simocState = simocPersistantState;
+        }
+        
         private void SetDefaultProperties()
         {
 
@@ -512,17 +519,6 @@ namespace simoc.UI
             }
         }
 
-        /// <summary>
-        /// Bool telling whether to engage controller for tracking or not
-        /// </summary>
-        public bool TrackTarget
-        {
-            get
-            {
-                return trackTarget;
-            }
-        }
-
         # endregion
 
         # region private value changed event handlers
@@ -541,7 +537,7 @@ namespace simoc.UI
         {
             targetFunc = this.comboBox_Target.SelectedItem.ToString();
             if (TargetFunctionSwitchedEvent != null)
-                TargetFunctionSwitchedEvent();
+                OnTargetFunctionSwitchedEvent(new TargetEventArgs(true));
         }
 
         private void comboBox_TuningType_SelectedIndexChanged(object sender, EventArgs e)
@@ -816,11 +812,26 @@ namespace simoc.UI
 
         private void checkBox_AllowTargetTracking_CheckedChanged(object sender, EventArgs e)
         {
-            trackTarget = checkBox_AllowTargetTracking.Checked;
+            simocState.TrackTarget = checkBox_AllowTargetTracking.Checked;
         }
+
         # endregion
 
+        # region Event Handling
 
+
+        internal void TriggerTargetSwitch(bool resetTargetTime)
+        {
+            OnTargetFunctionSwitchedEvent(new TargetEventArgs(resetTargetTime));
+        }
+
+        protected virtual void OnTargetFunctionSwitchedEvent(TargetEventArgs e)
+        {
+            if (TargetFunctionSwitchedEvent != null) TargetFunctionSwitchedEvent(this, e);
+        }
+
+
+        # endregion
 
 
 

@@ -1058,5 +1058,17 @@ namespace NeuroRighter.Properties {
                 this["recordSalpaSpikes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useImpedanceMeasurer {
+            get {
+                return ((bool)(this["useImpedanceMeasurer"]));
+            }
+            set {
+                this["useImpedanceMeasurer"] = value;
+            }
+        }
     }
 }

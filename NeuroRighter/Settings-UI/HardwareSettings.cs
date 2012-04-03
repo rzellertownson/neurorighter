@@ -272,6 +272,7 @@ namespace NeuroRighter
             checkBox_UseStimDataBuffer.Checked = Properties.Settings.Default.useStimDataBuffer;
             checkBox_UseDigDataBuffer.Checked = Properties.Settings.Default.useDigDataBuffer;
             checkBox_UseAuxDataBuffer.Checked = Properties.Settings.Default.useAuxDataBuffer;
+            checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -311,6 +312,15 @@ namespace NeuroRighter
                 settingsPass = false;
             }
 
+            if ((checkBox_EnableImpedanceMeasurements.Checked &&
+                comboBox_analogInputDevice1.SelectedItem.ToString() == comboBox_impedanceDevice.SelectedItem.ToString())
+                ||
+                (checkBox_EnableImpedanceMeasurements.Checked && 
+                checkBox_useSecondBoard.Checked && 
+                comboBox_analogInputDevice2.SelectedItem.ToString() == comboBox_impedanceDevice.SelectedItem.ToString()))
+            {
+                MessageBox.Show("Warning: the device selected for impedance measurements may cause conflicts at the hardware level because it is on the same board as electrode input.");
+            }
 
             return settingsPass;
         }
@@ -345,6 +355,7 @@ namespace NeuroRighter
             Properties.Settings.Default.UseLFPs = checkBox_processLFPs.Checked;
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
+            Properties.Settings.Default.useImpedanceMeasurer = checkBox_EnableImpedanceMeasurements.Checked;
 
             // Set up devices
             if (checkBox_useSecondBoard.Checked)
@@ -396,10 +407,10 @@ namespace NeuroRighter
             }
             if (checkBox_UseAuxDigitalInput.Checked)
                 Properties.Settings.Default.auxDigitalInPort = Convert.ToString(comboBox_AuxDigInputPort.SelectedItem);
-
+            if (checkBox_EnableImpedanceMeasurements.Checked)
+                Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
 
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
-            Properties.Settings.Default.ImpedanceDevice = Convert.ToString(comboBox_impedanceDevice.SelectedItem);
             Properties.Settings.Default.StimIvsVDevice = Convert.ToString(comboBox_IVControlDevice.SelectedItem);
 
             Properties.Settings.Default.Save();
@@ -408,14 +419,12 @@ namespace NeuroRighter
 
         private void checkBox_useStimulator_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_useStimulator.Checked) comboBox_stimulatorDevice.Enabled = true;
-            else comboBox_stimulatorDevice.Enabled = false;
+            comboBox_stimulatorDevice.Enabled = checkBox_useStimulator.Checked;
         }
 
         private void checkBox_useCineplex_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_useCineplex.Checked) comboBox_cineplexDevice.Enabled = true;
-            else comboBox_cineplexDevice.Enabled = false;
+            comboBox_cineplexDevice.Enabled = checkBox_useCineplex.Checked;
         }
 
         private void button_cancel_Click(object sender, EventArgs e)
@@ -436,11 +445,6 @@ namespace NeuroRighter
         private void checkBox_useEEG_CheckedChanged(object sender, EventArgs e)
         {
             comboBox_EEG.Enabled = checkBox_useEEG.Checked;
-        }
-
-        private void comboBox_LFPs_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void radioButton_8Mux_CheckedChanged(object sender, EventArgs e)
@@ -593,6 +597,11 @@ namespace NeuroRighter
         private void checkBox_UseAuxDataBuffer_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.useAuxDataBuffer = checkBox_UseAuxDataBuffer.Checked;
+        }
+
+        private void checkBox_EnableImpedanceMeasurements_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox_impedanceDevice.Enabled = checkBox_EnableImpedanceMeasurements.Checked;
         }
     }
 }

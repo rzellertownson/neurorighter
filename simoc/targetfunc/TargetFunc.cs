@@ -21,16 +21,17 @@ namespace simoc.targetfunc
         protected double meanValue;
         protected double standardDev;
         protected double frequency;
-        protected int daqPollingPeriodSec;
         protected ulong numTargetSamplesGenerated;
         protected double DACPollingPeriodSec;
         protected ulong currentOutputSample;
         protected double outputSampleRateHz;
         protected double targetMultiplier;
+        protected ControlPanel cp;
 
         public TargetFunc(ControlPanel cp, double DACPollingPeriodSec, ulong numTargetSamplesGenerated, ref NRDataSrv datSrv)
         {
             // Grab parameters off the form
+            this.cp = cp;
             this.meanValue = cp.TargetMean;
             this.standardDev = cp.TargetStd;
             this.frequency = cp.TargetFreqHz;

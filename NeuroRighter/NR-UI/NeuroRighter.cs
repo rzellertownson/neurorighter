@@ -478,33 +478,7 @@ namespace NeuroRighter
                                 // Manually allocate buffer memory
                                 stimTimeTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
 
-                                //update gui at the end
-                                // Modify the UI, so user doesn't try running multiple instances of tasks
-                                this.Cursor = Cursors.WaitCursor;
-                                comboBox_numChannels.Enabled = false;
-                                spikeDet.numPreSamples.Enabled = false;
-                                spikeDet.numPostSamples.Enabled = false;
-                                settingsToolStripMenuItem.Enabled = false;
-                                comboBox_SpikeGain.Enabled = false;
-                                button_Train.Enabled = false;
-                                button_SetRecordingStreams.Enabled = false;
-                                switch_record.Enabled = false;
-                                //processingSettingsToolStripMenuItem.Enabled = false;
-                                button_spikeSamplingRate.PerformClick(); // updata samp freq
-                                textBox_spikeSamplingRate.Enabled = false;
-                                button_lfpSamplingRate.PerformClick();
-                                textBox_lfpSamplingRate.Enabled = false;
-                                textBox_MUASamplingRate.Enabled = false;
-                                button_startStimFromFile.Enabled = false;
-                                button_startClosedLoopStim.Enabled = false;
-                                checkBox_SALPA.Enabled = false;
-                                if (Properties.Settings.Default.SeparateLFPBoard)
-                                    comboBox_LFPGain.Enabled = false;
-                                numericUpDown_NumSnipsDisplayed.Enabled = false;
-                                button_startClosedLoopStim.Enabled = false;
-
-                                // Disable spike detector saving while running
-                                spikeDet.DisableFileMenu();
+                               
                                 Console.WriteLine("NRAcquisitionSetup complete");
                             }
                             catch (Exception e)
@@ -907,7 +881,7 @@ namespace NeuroRighter
 
 
                     }
-                    catch (DaqException exception)
+                    catch (Exception exception)
                     {
                         //Display Errors
                         this.Cursor = Cursors.Default;
@@ -946,6 +920,34 @@ namespace NeuroRighter
                     Console.WriteLine("NRAcquisitionSetup was called while a task was running, and therefore setup did not execute.  Perhaps this should have thrown an error");
                 }
             }
+
+            //update gui at the end
+            // Modify the UI, so user doesn't try running multiple instances of tasks
+            this.Cursor = Cursors.WaitCursor;
+            comboBox_numChannels.Enabled = false;
+            spikeDet.numPreSamples.Enabled = false;
+            spikeDet.numPostSamples.Enabled = false;
+            settingsToolStripMenuItem.Enabled = false;
+            comboBox_SpikeGain.Enabled = false;
+            button_Train.Enabled = false;
+            button_SetRecordingStreams.Enabled = false;
+            switch_record.Enabled = false;
+            //processingSettingsToolStripMenuItem.Enabled = false;
+            button_spikeSamplingRate.PerformClick(); // updata samp freq
+            textBox_spikeSamplingRate.Enabled = false;
+            button_lfpSamplingRate.PerformClick();
+            textBox_lfpSamplingRate.Enabled = false;
+            textBox_MUASamplingRate.Enabled = false;
+            button_startStimFromFile.Enabled = false;
+            button_startClosedLoopStim.Enabled = false;
+            checkBox_SALPA.Enabled = false;
+            if (Properties.Settings.Default.SeparateLFPBoard)
+                comboBox_LFPGain.Enabled = false;
+            numericUpDown_NumSnipsDisplayed.Enabled = false;
+            button_startClosedLoopStim.Enabled = false;
+
+            // Disable spike detector saving while running
+            spikeDet.DisableFileMenu();
             Console.WriteLine("NRAcquisitionSetup successfully executed");
             return false;
         }

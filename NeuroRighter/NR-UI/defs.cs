@@ -189,7 +189,7 @@ namespace NeuroRighter
         private static readonly object finalSpikeObj = new object();
 
         // File Writing
-        private bool recordingCancelled;
+        
         private int[] trackingReads;
         private int[] trackingProc;
         private int trackingDigReads;

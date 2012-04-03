@@ -194,11 +194,11 @@ namespace NeuroRighter
                 spikeDet.SetSpikeDetector(spikeBufferLength);
 
             // Call the recording setup/start functions
-            recordingCancelled = false;
+            bool recordingCancelled = true;
             if (!taskRunning)
             {
                 UpdateRecordingSettings();
-                NRAcquisitionSetup();
+                recordingCancelled=NRAcquisitionSetup();
             }
 
             if (!recordingCancelled)
@@ -213,7 +213,7 @@ namespace NeuroRighter
         }
 
         // Method to set up the recording side of neurorighter
-        private void NRAcquisitionSetup()
+        private bool NRAcquisitionSetup()
         {
             lock (this)
             {
@@ -221,34 +221,7 @@ namespace NeuroRighter
                 {
                     try
                     {
-                        // Modify the UI, so user doesn't try running multiple instances of tasks
-                        this.Cursor = Cursors.WaitCursor;
-                        comboBox_numChannels.Enabled = false;
-                        spikeDet.numPreSamples.Enabled = false;
-                        spikeDet.numPostSamples.Enabled = false;
-                        settingsToolStripMenuItem.Enabled = false;
-                        comboBox_SpikeGain.Enabled = false;
-                        button_Train.Enabled = false;
-                        button_SetRecordingStreams.Enabled = false;
-                        switch_record.Enabled = false;
-                        //processingSettingsToolStripMenuItem.Enabled = false;
-                        button_spikeSamplingRate.PerformClick(); // updata samp freq
-                        textBox_spikeSamplingRate.Enabled = false;
-                        button_lfpSamplingRate.PerformClick();
-                        textBox_lfpSamplingRate.Enabled = false;
-                        textBox_MUASamplingRate.Enabled = false;
-                        button_startStimFromFile.Enabled = false;
-                        button_startClosedLoopStim.Enabled = false;
-                        checkBox_SALPA.Enabled = false;
-                        if (Properties.Settings.Default.SeparateLFPBoard)
-                            comboBox_LFPGain.Enabled = false;
-                        numericUpDown_NumSnipsDisplayed.Enabled = false;
-                        button_startClosedLoopStim.Enabled = false;
-
-                        // Disable spike detector saving while running
-                        spikeDet.DisableFileMenu();
-
-                        if (switch_record.Value)
+                       if (switch_record.Value)
                         {
                             // Create file name
                             if (filenameBase == null) //user hasn't specified a file
@@ -256,9 +229,8 @@ namespace NeuroRighter
                             if (filenameBase == null) //this happens if the user pressed cancel for the dialog
                             {
                                 MessageBox.Show("An output file must be selected before recording."); //display an error message
-                                recordingCancelled = true;
                                 this.Cursor = Cursors.Default;
-                                return;
+                                return true;
                             }
 
                             // If the user is just doing repeated recordings
@@ -289,9 +261,8 @@ namespace NeuroRighter
                                     button_BrowseOutputFile_Click(null, null); //call file selection routine
                                 else if (dr == DialogResult.Cancel)
                                 {
-                                    recordingCancelled = true;
                                     this.Cursor = Cursors.Default;
-                                    return;
+                                    return true;
                                 }
                             }
 
@@ -507,6 +478,33 @@ namespace NeuroRighter
                                 // Manually allocate buffer memory
                                 stimTimeTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
 
+                                //update gui at the end
+                                // Modify the UI, so user doesn't try running multiple instances of tasks
+                                this.Cursor = Cursors.WaitCursor;
+                                comboBox_numChannels.Enabled = false;
+                                spikeDet.numPreSamples.Enabled = false;
+                                spikeDet.numPostSamples.Enabled = false;
+                                settingsToolStripMenuItem.Enabled = false;
+                                comboBox_SpikeGain.Enabled = false;
+                                button_Train.Enabled = false;
+                                button_SetRecordingStreams.Enabled = false;
+                                switch_record.Enabled = false;
+                                //processingSettingsToolStripMenuItem.Enabled = false;
+                                button_spikeSamplingRate.PerformClick(); // updata samp freq
+                                textBox_spikeSamplingRate.Enabled = false;
+                                button_lfpSamplingRate.PerformClick();
+                                textBox_lfpSamplingRate.Enabled = false;
+                                textBox_MUASamplingRate.Enabled = false;
+                                button_startStimFromFile.Enabled = false;
+                                button_startClosedLoopStim.Enabled = false;
+                                checkBox_SALPA.Enabled = false;
+                                if (Properties.Settings.Default.SeparateLFPBoard)
+                                    comboBox_LFPGain.Enabled = false;
+                                numericUpDown_NumSnipsDisplayed.Enabled = false;
+                                button_startClosedLoopStim.Enabled = false;
+
+                                // Disable spike detector saving while running
+                                spikeDet.DisableFileMenu();
                                 Console.WriteLine("NRAcquisitionSetup complete");
                             }
                             catch (Exception e)
@@ -949,7 +947,7 @@ namespace NeuroRighter
                 }
             }
             Console.WriteLine("NRAcquisitionSetup successfully executed");
-                
+            return false;
         }
 
         // Start all the tasks having to do with recording

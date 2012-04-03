@@ -607,8 +607,13 @@ namespace NeuroRighter
             // clock and start
             // Set the recording type to non-normal since this is a OL protocol
             isNormalRecording = false;
-            NRAcquisitionSetup();
-
+            
+            bool recordingCancelled = NRAcquisitionSetup();
+            if (recordingCancelled)
+            {
+                buttonStop_Click(null, null);
+                return;
+            }
             // Get OL filenames
             string stimFile = textBox_protocolFileLocations.Text;
             string digFile = textBox_digitalProtocolFileLocation.Text;

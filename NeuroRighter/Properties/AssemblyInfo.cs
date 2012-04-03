@@ -26,9 +26,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NeuroRighter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Temper, LLC")]
+[assembly: AssemblyCompany("Potter Lab, Georgia Tech")]
 [assembly: AssemblyProduct("NeuroRighter")]
-[assembly: AssemblyCopyright("Copyright John Rolston 2009")]
+[assembly: AssemblyCopyright("Copyright Potter Lab 2012")]
 [assembly: AssemblyTrademark("NeuroRighter")]
 [assembly: AssemblyCulture("")]
 
@@ -47,5 +47,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.7.1.0")]
-[assembly: AssemblyFileVersion("0.7.1.0")]
+[assembly: AssemblyVersion("1.0.0.460")]
+[assembly: AssemblyFileVersion("1.0.0.460")]

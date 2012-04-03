@@ -133,14 +133,14 @@ namespace NeuroRighter
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
                     if (muaGraph != null) muaGraph.Visible = false;
-                    eegGraph.Visible = true;
+                    if (eegGraph != null) eegGraph.Visible = true;
                     break;
                 case "MUA":
                     updateAuxGraph = false;
                     spikeGraph.Visible = false;
                     spkWfmGraph.Visible = false;
                     if (eegGraph != null) eegGraph.Visible = false;
-                    muaGraph.Visible = true;
+                    if (muaGraph != null) muaGraph.Visible = true;
                     break;
                 case "Aux Input":
                     updateAuxGraph = true;

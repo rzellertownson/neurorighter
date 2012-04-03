@@ -221,6 +221,7 @@ namespace NeuroRighter
                 {
                     try
                     {
+                        this.Cursor = Cursors.WaitCursor;
                        if (switch_record.Value)
                         {
                             // Create file name
@@ -875,7 +876,7 @@ namespace NeuroRighter
                             BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, Properties.Settings.Default.ADCPollingPeriodSec, spikeTask[0],
                                 Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
-                        this.Cursor = Cursors.Default;
+                        
 
 
 
@@ -923,7 +924,7 @@ namespace NeuroRighter
 
             //update gui at the end
             // Modify the UI, so user doesn't try running multiple instances of tasks
-            this.Cursor = Cursors.WaitCursor;
+            
             comboBox_numChannels.Enabled = false;
             spikeDet.numPreSamples.Enabled = false;
             spikeDet.numPostSamples.Enabled = false;
@@ -949,6 +950,7 @@ namespace NeuroRighter
             // Disable spike detector saving while running
             spikeDet.DisableFileMenu();
             Console.WriteLine("NRAcquisitionSetup successfully executed");
+            this.Cursor = Cursors.Default;
             return false;
         }
 

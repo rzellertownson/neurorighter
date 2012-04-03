@@ -355,6 +355,16 @@ namespace simoc
                                 currentControllerType = 9;
                             }
                             break;
+                        case "Integral Bang-Bang Arduino":
+                            {
+                                Filt2IBangBangArduino controller = new Filt2IBangBangArduino(ref StimSrv, controlPanel,serialPort1);
+                                controller.CalculateError(ref currentError, currentTarget, currentFilt);
+                                controller.SendFeedBack(simocVariableStorage);
+                                for (int i = 0; i < controller.numberOutStreams; ++i)
+                                    currentFeedBack[i] = controller.currentFeedbackSignals[i];
+                                currentControllerType = 11;
+                            }
+                            break;
                     }
                 }
                 else

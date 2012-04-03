@@ -53,8 +53,6 @@ namespace NeuroRighter.FileWriting
         internal FileOutput auxAnalogOut;
         internal DigFileOutput auxDigitalOut;
 
-        //
-
         // Delegates for informing mainform of settings change
         internal delegate void resetRecordingSettingsHandler(object sender, EventArgs e);
         internal event resetRecordingSettingsHandler SettingsHaveChanged;

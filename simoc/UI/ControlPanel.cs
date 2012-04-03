@@ -59,6 +59,14 @@ namespace simoc.UI
         public delegate void ObservableSwitchedEventHander();
         public event ObservableSwitchedEventHander ObservableSwitchedEvent;
 
+        // Setup serial port event
+        public delegate void SerialSetupEventHander();
+        public event SerialSetupEventHander SetupSerialEvent;
+
+        // Close serial port event
+        public delegate void SerialCloseEventHander();
+        public event SerialCloseEventHander CloseSerialEvent;
+
         // GUI parameters
         private delegate void GetTextCallback();
         private double obsHistorySec;
@@ -215,7 +223,7 @@ namespace simoc.UI
             }
 
         }
-        
+
         internal void CloseSIMOC()
         {
             if (this.InvokeRequired)
@@ -235,7 +243,7 @@ namespace simoc.UI
             // Simoc state class
             simocState = simocPersistantState;
         }
-        
+
         private void SetDefaultProperties()
         {
 
@@ -592,6 +600,9 @@ namespace simoc.UI
         {
             contAlg = this.comboBox_FBAlg.SelectedItem.ToString();
 
+            if (CloseSerialEvent != null)
+                CloseSerialEvent();
+
             switch (contAlg)
             {
                 case "None":
@@ -735,8 +746,24 @@ namespace simoc.UI
                         numericUpDown_ContC5.Value = 5.0m;
                     }
                     break;
+                case "Integral Bang-Bang Arduino":
+                    {
+                        if (SetupSerialEvent != null)
+                            SetupSerialEvent();
+
+                        label_ContC0.Text = "";
+                        label_ContC1.Text = "";
+                        label_ContC2.Text = "";
+                        label_ContC3.Text = "";
+                        label_ContC4.Text = "";
+                        label_ContC5.Text = "";
+
+                        label_CtlType.Text = "Controller 9";
+                    }
+                    break;
                 default:
                     {
+
                         label_ContC0.Text = "c0";
                         label_ContC1.Text = "c1";
                         label_ContC2.Text = "c2";
@@ -798,7 +825,7 @@ namespace simoc.UI
             {
                 lock (lockObject)
                 {
-                  // Set the range of the history slider
+                    // Set the range of the history slider
                     slide_PlotWidth.Range = new Range(1.0, obsHistorySec);
                 }
             }
@@ -807,7 +834,7 @@ namespace simoc.UI
                 MessageBox.Show("Could not update history slider for some reason: " + ex.Message);
             }
 
-            
+
         }
 
         private void checkBox_AllowTargetTracking_CheckedChanged(object sender, EventArgs e)

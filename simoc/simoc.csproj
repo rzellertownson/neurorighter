@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="filt2out\Filt2IBangBaingArduino.cs" />
+    <Compile Include="filt2out\Filt2IBangBangArduino.cs" />
     <Compile Include="filt2out\Filt2IBangBangFB2.cs" />
     <Compile Include="filt2out\Filt2Out.cs" />
     <Compile Include="filt2out\Filt2PIDDutyCycleFB.cs" />
@@ -74,6 +74,7 @@
     <Compile Include="Simoc.cs" />
     <Compile Include="plotting\ScatterGraphController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simoc_EventHandling.cs" />
     <Compile Include="spk2obs\Spk2UNFR.cs" />
     <Compile Include="targetfunc\FiveMinuteSteps.cs" />
     <Compile Include="targetfunc\CustomTarget2.cs" />

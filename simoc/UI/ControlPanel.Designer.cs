@@ -904,7 +904,8 @@
             "Relay Power",
             "PID Power",
             "PID Power Multimodal",
-            "Integral Bang-Bang"});
+            "Integral Bang-Bang",
+            "Integral Bang-Bang Arduino"});
             this.comboBox_FBAlg.Location = new System.Drawing.Point(12, 34);
             this.comboBox_FBAlg.Name = "comboBox_FBAlg";
             this.comboBox_FBAlg.Size = new System.Drawing.Size(196, 21);
@@ -1099,7 +1100,6 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
             this.Name = "ControlPanel";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "SIMOC Interface";

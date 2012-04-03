@@ -21,6 +21,7 @@ using simoc.filt2out;
 using simoc.extensionmethods;
 using simoc.filewriting;
 using simoc.persistantstate;
+using System.IO.Ports;
 
 namespace simoc
 {
@@ -42,6 +43,9 @@ namespace simoc
        
         // Number of observables
         private int numberOfObs = 1;
+
+        // Serial comm 
+        private SerialPort serialPort1;
 
         // Current state variables
         private double currentTarget;
@@ -82,6 +86,8 @@ namespace simoc
                 controlPanel.ResetRelayFBEstimateEvent += new ControlPanel.ResetRelayFBEstimateEventHander(UpdateRelayFBResults);
                 controlPanel.TargetFunctionSwitchedEvent += new ControlPanel.TargetFunctionSwitchedEventHander(TargetFunctionSwitched);
                 controlPanel.ObservableSwitchedEvent += new ControlPanel.ObservableSwitchedEventHander(ObservableSwitched);
+                controlPanel.SetupSerialEvent += new ControlPanel.SerialSetupEventHander(SetupSerialComm);
+                controlPanel.CloseSerialEvent += new ControlPanel.SerialCloseEventHander(CloseSerialEventHandler);
 
                 // Tell the assembly some parameters of the I/O 
                 DACPollingPeriodSec = StimSrv.DACPollingPeriodSec;
@@ -190,26 +196,6 @@ namespace simoc
             simocVariableStorage.UltimateGainEstimate = 0;
             simocVariableStorage.UltimatePeriodEstimate = 0;
 
-        }
-
-        private void ObservableSwitched()
-        {
-            simocVariableStorage.ResetRunningObsAverage();
-        }
-
-        private void TargetFunctionSwitched(object sender, TargetEventArgs e)
-        {
-            //
-            ulong[] now = DatSrv.SpikeSrv.EstimateAvailableTimeRange();
-
-            if (e.ResetEventTime)
-            {
-                simocVariableStorage.LastTargetSwitchedSec = (double)now[1] / DatSrv.SpikeSrv.SampleFrequencyHz;
-                simocVariableStorage.TargetOn = false;
-            }
-
-            // Reset integral error
-            simocVariableStorage.GenericDouble3 = 0;
         }
     }
 }

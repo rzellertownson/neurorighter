@@ -114,6 +114,7 @@ namespace NeuroRighter
         //Would benefit from not doing graphic alignment in 'write', but rather 'read'
         internal void write(List<SpikeEvent> newWaveforms, Hashtable unitMap)
         {
+            //assumes SpikeEvents are 1-indexed for channel
             //Only read first maxWaveforms for each channel
             
             lock (waveforms)

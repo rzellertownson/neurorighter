@@ -736,7 +736,6 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRS
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb
-C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.exe
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\bin\Release\ZedGraph.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter\NRSpikeSort\NRSpikeSort\bin\Release\ConsoleWidget.dll
 C:\Documents and Settings\Lab\Desktop\jon-crap\nr-441\NRSpikeSort\NRSpikeSort\bin\Release\NRSpikeSort.dll

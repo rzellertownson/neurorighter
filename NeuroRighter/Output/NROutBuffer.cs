@@ -236,7 +236,8 @@ namespace NeuroRighter.Output
             lock (runningLock)
             {
                 running = false;
-                ProcessTickThread(null, null);
+                TimerTick(null, null);
+                //ProcessTickThread(null, null);
             }
         }
 
@@ -797,7 +798,11 @@ namespace NeuroRighter.Output
                 for (int i = 0; i < analogWriters.Length; i++)
                 {
                     if (firstTime)
+                    {
                         analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
+                        if (zeroOnly)
+                            analogWriters[i].WriteMultiSample(false, abuffs.ElementAt(i));
+                    }
                     else
                         analogWriters[i].BeginWriteMultiSample(false, abuffs.ElementAt(i), null, null);// WriteMultiSample(false, abuffs.ElementAt(i));
                 }
@@ -806,7 +811,11 @@ namespace NeuroRighter.Output
                 for (int i = 0; i < digitalWriters.Length; i++)
                 {
                     if (firstTime)
+                    {
                         digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                        if (zeroOnly)
+                            digitalWriters[i].WriteMultiSamplePort(false, dbuffs.ElementAt(i));
+                    }
                     else
                         digitalWriters[i].BeginWriteMultiSamplePort(false, dbuffs.ElementAt(i), null, null);// WriteMultiSamplePort(false, dbuffs.ElementAt(i));
                 }

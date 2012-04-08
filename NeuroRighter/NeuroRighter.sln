@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accord.Statistics", "..\NRS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRSpikeSort", "..\NRSpikeSort\NRSpikeSort\NRSpikeSort.csproj", "{DB1F126A-30AB-4530-B328-1987DEB4AA52}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "NeuroRighter_Setup", "..\Setup\NeuroRighter_Setup\NeuroRighter_Setup.vdproj", "{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -133,6 +135,26 @@ Global
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|x86.ActiveCfg = Release|Any CPU
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|Zune.ActiveCfg = Release|Any CPU
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Any CPU.ActiveCfg = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Any CPU.Build.0 = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Mixed Platforms.Build.0 = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|x86.ActiveCfg = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|x86.Build.0 = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Xbox 360.ActiveCfg = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Xbox 360.Build.0 = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Zune.ActiveCfg = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Debug|Zune.Build.0 = Debug
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Any CPU.ActiveCfg = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Any CPU.Build.0 = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Mixed Platforms.ActiveCfg = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Mixed Platforms.Build.0 = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|x86.ActiveCfg = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|x86.Build.0 = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Xbox 360.ActiveCfg = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Xbox 360.Build.0 = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Zune.ActiveCfg = Release
+		{1A0CF487-0172-4457-83F7-82FAA7FBFEFC}.Release|Zune.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

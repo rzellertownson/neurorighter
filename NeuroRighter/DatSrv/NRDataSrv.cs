@@ -133,7 +133,7 @@ namespace NeuroRighter.DatSrv
             if (Properties.Settings.Default.UseLFPs)
             {
                 lfpSrv = new RawDataSrv(
-                    Properties.Settings.Default.RawSampleFrequency,
+                    Properties.Settings.Default.LFPSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
                     Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency *
@@ -145,7 +145,7 @@ namespace NeuroRighter.DatSrv
             if (Properties.Settings.Default.UseEEG)
             {
                 eegSrv = new RawDataSrv(
-                    Properties.Settings.Default.RawSampleFrequency,
+                    Properties.Settings.Default.EEGSamplingRate,
                     Properties.Settings.Default.EEGNumChannels,
                     bufferSizeSeconds,
                     Convert.ToInt32(Properties.Settings.Default.EEGSamplingRate *

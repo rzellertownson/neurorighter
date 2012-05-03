@@ -258,3 +258,31 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\NRSpikeSort.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\NRSpikeSort.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Math.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Statistics.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.Math.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\NeuroRighter.exe
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\AxInterop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Mowog.PersistWindowState.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\ZedGraph.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Interop.CWUIControlsLib.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\csmatio.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\zlib.net.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Math.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.Math.xml
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\NeuroRighter.pdb
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\NeuroRighter.xml
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\AForge.xml
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\ZedGraph.xml
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\bin\Debug\csmatio.xml
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.dll
+C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\NRSpikeSort\obj\Debug\NRSpikeSort.pdb

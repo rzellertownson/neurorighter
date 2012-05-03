@@ -89,8 +89,10 @@ namespace NeuroRighter.DataTypes
                 if (tmpi < totalNumSamplesWritten[i])
                     tmpi = totalNumSamplesWritten[i];
             }
+
             netLeastAndMostCurrentCircular[0] = (int)(tmpa % (ulong)bufferLengthInSamples);//least current circular index
-            if (tmpi>0)
+
+            if (tmpi > 0)
                 netLeastAndMostCurrentCircular[1] = (int)((tmpi - 1) % (ulong)bufferLengthInSamples);//most current circular index
 
             startAndEndSample[1] = tmpi - 1;
@@ -137,7 +139,7 @@ namespace NeuroRighter.DataTypes
             }
             set
             {
-                value = startAndEndSample;
+                startAndEndSample = value;
             }
         }
 

@@ -13,7 +13,7 @@ namespace NeuroRighter.StimSrv
     /// NeuroRighter's abstract class for user defined closed loop experiments.
     /// <author> Riley Zeller-Townson</author>
     /// </summary>
-    public abstract class AbstractNRTask
+    public abstract class NRTask
     {
         protected NRDataSrv DatSrv;
         protected NRStimSrv StimSrv;
@@ -54,14 +54,14 @@ namespace NeuroRighter.StimSrv
         // USER OVERRIDEN CLOSED LOOP METHODS
 
         /// <summary>
-        /// Method to initialize the closed-loop protocol.  Executes upon clicking the start button, and finishes execution before
+        /// Abstract method to initialize the closed-loop protocol.  Executes upon clicking the start button, and finishes execution before
         /// recording, stimulation or the Loop() method execute.  You probably want to use this for setting up a GUI, initializing
         /// data structures, and constructing larger objects/initializing secondary threads.
         /// </summary>
         internal protected abstract void Setup();
 
         /// <summary>
-        /// The meat.  This method gets called repeatedly, after Setup() has completed.  It is triggered off of a clock in the
+        /// The meat.  This abstract method gets called repeatedly, after Setup() has completed.  It is triggered off of a clock in the
         /// NI DAQ, and given high priority relative to other threads.  Use this method to update stimulation parameters, grab data
         /// off of the NR data streams, and alert GUIs that updates are available.  Try to offload really intensive processing to 
         /// secondary threads, and just use Loop() for the absolutely essential high-speed updates
@@ -70,7 +70,7 @@ namespace NeuroRighter.StimSrv
        
 
         /// <summary>
-        /// This method will be executed last out of the three overriden methods in this class.  It is called either by clicking the
+        /// This abstract method will be executed last out of the three overriden methods in this class.  It is called either by clicking the
         /// 'stop' button during closed loop execution, or by calling it directly through some other closed loop method (which will also
         /// force the closed loop protocol to close).  Use this method to close off file streams, dispose objects.
         /// </summary>

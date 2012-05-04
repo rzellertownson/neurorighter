@@ -185,7 +185,7 @@
     <Compile Include="StimSrv\AuxBuffer.cs" />
     <Compile Include="DataTypes\AuxOutEvent.cs" />
     <Compile Include="StimSrv\AODOPair\AuxOutTask.cs" />
-    <Compile Include="StimSrv\AbstractNRTask.cs" />
+    <Compile Include="StimSrv\NRTask.cs" />
     <Compile Include="StimSrv\ClosedLoopOut.cs" />
     <Compile Include="StimSrv\File2Aux.cs" />
     <Compile Include="StimSrv\AODOPair\ContStimTask.cs" />

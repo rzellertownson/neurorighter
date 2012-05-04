@@ -15,7 +15,7 @@ namespace NeuroRighter.StimSrv
 {
     class ClosedLoopOut
     {
-        private AbstractNRTask CLE;
+        private NRTask CLE;
         private int outputSampFreq;
         private NRDataSrv DatSrv;
         private NRStimSrv StimSrv;
@@ -32,7 +32,7 @@ namespace NeuroRighter.StimSrv
         private bool NRRecording;
         private NeuroRighter NR;
 
-        internal ClosedLoopOut(AbstractNRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
+        internal ClosedLoopOut(NRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
         {
             this.CLE = CLE;
             this.outputSampFreq = fs;
@@ -47,7 +47,7 @@ namespace NeuroRighter.StimSrv
             
         }
 
-        internal ClosedLoopOut(AbstractNRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR, double[] standardWave)
+        internal ClosedLoopOut(NRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR, double[] standardWave)
             : this(CLE, fs, DatSrv, StimSrv, buffLoadTask,Debugger,NRFilePath, NRRecording, NR)
         {
             this.guiWave = standardWave;

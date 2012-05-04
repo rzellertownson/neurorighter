@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NeuroRighter.DataTypes;
-using NeuroRighter.Output;
 using NationalInstruments.DAQmx;
 using System.Threading;
 using System.Diagnostics;
@@ -48,16 +47,24 @@ namespace NeuroRighter.StimSrv
         
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
-        internal ContStimTask stimTaskMaker;
-        internal AuxOutTask auxTaskMaker;
-
+       
         // Master timing and triggering task
         internal Task masterTask;
         private RealTimeDebugger debugger;
-
+        
         private int INNERBUFFSIZE;
         private int STIM_SAMPLING_FREQ;
-        private int buffloadcount;
+        
+
+        //public accessors
+        /// <summary>
+        /// grabs the size of the inner (array) buffer, in samples
+        /// </summary>
+        /// <returns>size of the inner buffer, in samples</returns>
+        public int GetBuffSize()
+        {
+            return INNERBUFFSIZE;
+        }
         
         /// <summary>
         /// Neurorighter's stimulus/generic output server. Used in open-loop and closed-loop experiments where just-in-time buffering of output signals is required.
@@ -66,7 +73,7 @@ namespace NeuroRighter.StimSrv
         /// <param name="STIM_SAMPLING_FREQ">The DAC sampling frequency in Hz for all forms of output</param>
         /// <param name="masterTask">The NI Task to which all of the output clocks are synchronized to</param>
         /// <param name="debugger"> NR's real-time debugger</param>
-        public NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger, bool robust)
+        internal NRStimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, RealTimeDebugger debugger, bool robust)
         {
             this.masterTask = masterTask;
             this.INNERBUFFSIZE = INNERBUFFSIZE;
@@ -80,7 +87,7 @@ namespace NeuroRighter.StimSrv
             DigitalOut.grabPartner(AuxOut);
             StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold, robust);
             this.debugger = debugger;
-            buffloadcount = 0;
+            
             this.sampleFrequencyHz = Convert.ToDouble(STIM_SAMPLING_FREQ);
             this.DACPollingPeriodSec = Properties.Settings.Default.DACPollingPeriodSec;
             this.DACPollingPeriodSamples = Convert.ToInt32(DACPollingPeriodSec * STIM_SAMPLING_FREQ);
@@ -159,10 +166,7 @@ namespace NeuroRighter.StimSrv
 
         }
 
-        public int GetBuffSize()
-        {
-            return INNERBUFFSIZE;
-        }
+       
 
         //the counter is a timing signal that goes off once per daq loading period.  It is used to time the start of different tasks, as well as the time
         // that the hardware buffers are filled with user commands. Lastly, the counter serves to trigger events created by the user for closed loop stuff.
@@ -189,75 +193,7 @@ namespace NeuroRighter.StimSrv
          
         }
 
-        //private void ConfigureStim(Task masterTask)
-        //{
-
-        //    //configure stim
-        //    // Refresh DAQ tasks as they are needed for file2stim
-        //    if (stimTaskMaker != null)
-        //    {
-        //        stimTaskMaker.Dispose();
-        //        stimTaskMaker = null;
-        //    }
-
-        //    // Create new DAQ tasks and corresponding writers
-        //    stimTaskMaker = new ContStimTask(Properties.Settings.Default.StimulatorDevice,
-        //        INNERBUFFSIZE);
-        //    stimTaskMaker.MakeAODOTasks("NeuralStim",
-        //        Properties.Settings.Default.StimPortBandwidth,
-        //        STIM_SAMPLING_FREQ);
-
-        //    // Verify
-        //    stimTaskMaker.VerifyTasks();
-
-        //    // Sync DO start to AO start
-        //    stimTaskMaker.SyncDOStartToAOStart();
-
-        //    // Syncronize stimulation with the master task
-        //    //stimTaskMaker.SyncTasksToMasterClock(masterTask);
-        //    //stimTaskMaker.SyncTasksToMasterStart(Properties.Settings.Default.SigOutDev + "/ctr1");
-        //    //buffLoadTask.Timing.ReferenceClockSource);//
-        //    // Create buffer writters
-        //    //stimTaskMaker.MakeWriters();
-
-        //    // Verify
-        //    //stimTaskMaker.VerifyTasks();
-        //}
-
-        //private void ConfigureAODO(bool digProvided, Task masterTask)
-        //{
-        //    //configure stim
-        //    // Refresh DAQ tasks as they are needed for file2stim
-        //    if (auxTaskMaker != null)
-        //    {
-        //        auxTaskMaker.Dispose();
-        //        auxTaskMaker = null;
-        //    }
-
-        //    // Create new DAQ tasks and corresponding writers
-        //    auxTaskMaker = new AuxOutTask(Properties.Settings.Default.SigOutDev,
-        //        INNERBUFFSIZE);
-        //    auxTaskMaker.MakeAODOTasks("auxOut",
-        //        STIM_SAMPLING_FREQ,
-        //        digProvided);
-
-        //    // Verify
-        //    auxTaskMaker.VerifyTasks();
-
-        //    // Sync DO start to AO start
-        //    if (digProvided)
-        //        auxTaskMaker.SyncDOStartToAOStart();
-
-        //    // Syncronize stimulation with the master task
-        //    auxTaskMaker.SyncTasksToMasterClock(masterTask);
-        //    auxTaskMaker.SyncTasksToMasterStart(Properties.Settings.Default.SigOutDev + "/ctr1");
-        //    //buffLoadTask.Timing.ReferenceClockSource);//
-        //    // Create buffer writters
-        //    auxTaskMaker.MakeWriters();
-
-        //    // Verify
-        //    auxTaskMaker.VerifyTasks();
-        //}
+     
 
     }
 }

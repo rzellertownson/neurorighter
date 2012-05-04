@@ -44,7 +44,7 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
-using NeuroRighter.Output;
+using NeuroRighter.StimSrv;
 using ExtensionMethods;
 
 
@@ -825,9 +825,9 @@ namespace NeuroRighter
             comboBox_closedLoopProtocol.Items.Clear();
             for (int i = 0; i < types.Length; i++)
             {
-                if (types[i].BaseType.Equals(typeof(ClosedLoopExperiment)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
+                if (types[i].BaseType.Equals(typeof(AbstractNRTask)))//find the classes that are implimenting the abstract ClosedLoopExperiment class
                 {
-                    ClosedLoopExperiment tmpcl = Activator.CreateInstance(types[i]) as ClosedLoopExperiment;
+                    AbstractNRTask tmpcl = Activator.CreateInstance(types[i]) as AbstractNRTask;
                     //experimentList.Add(tmp);//and activated them as such.
                     Console.WriteLine("Successfully Loaded: " + tmpcl.ToString());
                     comboBox_closedLoopProtocol.Enabled = true;
@@ -862,7 +862,7 @@ namespace NeuroRighter
             }
 
             comboBox_closedLoopProtocol.Refresh();
-            ClosedLoopExperiment CLE = (ClosedLoopExperiment)comboBox_closedLoopProtocol.SelectedItem;// ClosedLoopTest();//new SilentBarrageClosedLoop();//
+            AbstractNRTask CLE = (AbstractNRTask)comboBox_closedLoopProtocol.SelectedItem;// ClosedLoopTest();//new SilentBarrageClosedLoop();//
 
             //setup
             NRAcquisitionSetup();

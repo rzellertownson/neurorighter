@@ -35,7 +35,6 @@ using NationalInstruments.Analysis.Dsp.Filters;
 using csmatio.types;
 using NeuroRighter.Aquisition;
 using NeuroRighter.Filters;
-using NeuroRighter.Output;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
 using Microsoft.Xna.Framework;

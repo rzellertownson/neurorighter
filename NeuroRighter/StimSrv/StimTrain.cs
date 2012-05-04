@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
 
     /// <author>John Rolston (rolston2@gmail.com)</author>

@@ -28,3 +28,8 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter459\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.Core\bin\Debug\Accord.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.Core\bin\Debug\Accord.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.Core\obj\Debug\Accord.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.Core\obj\Debug\Accord.pdb

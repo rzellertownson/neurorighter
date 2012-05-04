@@ -11,7 +11,7 @@ using System.Diagnostics;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
 
     // called when the 2+requested number of buffer loads have occured
@@ -137,17 +137,7 @@ namespace NeuroRighter.Output
             digitalTasks = new Task[1];
             digitalTasks[0] = digitalTask;
         }
-        //internal void Setup(AnalogMultiChannelWriter auxOutputWriter, Task auxOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
-        //{
-        //    AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
-        //    analogWriters[0] = auxOutputWriter;
-
-        //    Task[] analogTasks = new Task[1];
-        //    analogTasks[0] = auxOutputTask;
-
-        //    base.Setup(analogWriters,new DigitalSingleChannelWriter[0], analogTasks, new Task[0],  buffLoadTask,Debugger);
-
-        //}
+       
 
         //with this version only one channel can have a non-zero voltage at a time-  eventually might want to switch to a version where keep voltages from previous
         protected override void WriteEvent(AuxOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)

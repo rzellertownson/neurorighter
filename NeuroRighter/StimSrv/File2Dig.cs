@@ -10,7 +10,7 @@ using System.Threading;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
     class File2Dig
     {

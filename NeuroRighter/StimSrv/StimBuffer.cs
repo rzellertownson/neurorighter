@@ -12,7 +12,7 @@ using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
 using ExtensionMethods;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
     // called when the 2+requested number of buffer loads have occured
     internal delegate void StimulationCompleteHandler(object sender, EventArgs e);

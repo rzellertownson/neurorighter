@@ -146,3 +146,16 @@ C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\Accord.MachineLearning\bin\Deb
 C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\neurorighter_462\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.MachineLearning.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Math.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\bin\Debug\AForge.Math.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Debug\Accord.MachineLearning.pdb

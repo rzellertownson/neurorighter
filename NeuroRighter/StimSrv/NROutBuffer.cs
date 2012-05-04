@@ -13,7 +13,7 @@ using NeuroRighter.dbg;
 using ExtensionMethods;
 
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
 
     /// <summary>
@@ -240,14 +240,6 @@ namespace NeuroRighter.Output
                 //ProcessTickThread(null, null);
             }
         }
-
-        //stops output generation as soon as possible
-        //internal void Kill()
-        //{
-        //  //  Debugger.Write("nroutbuffer attemped kill");
-        //    running = false;
-        //    clearTasks();
-        //}
 
         //inform the NROutBuffer how long it has to go for- used in open loop
         internal void CalculateLoadsRequired(double finalStimTime)

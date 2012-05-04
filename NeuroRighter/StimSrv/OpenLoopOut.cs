@@ -24,7 +24,7 @@ using NationalInstruments.DAQmx;
 using System.IO;
 using NeuroRighter.dbg;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
     /// <summary>
     /// <title> OpenLoopOutput</title>

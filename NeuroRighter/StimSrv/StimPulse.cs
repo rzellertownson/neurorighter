@@ -23,7 +23,7 @@ using NationalInstruments;
 using NationalInstruments.DAQmx;
 using ExtensionMethods;
 
-namespace NeuroRighter.Output
+namespace NeuroRighter.StimSrv
 {
     /// <author>John Rolston (rolston2@gmail.com)</author>
     class StimPulse

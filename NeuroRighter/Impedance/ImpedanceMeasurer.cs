@@ -11,7 +11,8 @@ using System.Windows.Forms;
 using csmatio.common;
 using csmatio.io;
 using csmatio.types;
-using NeuroRighter.Output;
+using NeuroRighter.StimSrv;
+
 
 namespace NeuroRighter.Impedance
 {

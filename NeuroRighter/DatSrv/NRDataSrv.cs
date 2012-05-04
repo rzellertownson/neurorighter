@@ -86,7 +86,7 @@ namespace NeuroRighter.DatSrv
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
         /// <param name="salpaAccess"> Using SALPA? </param>
         /// <param name="spikeFiltAccess"> Using spike filters? </param>
-        public NRDataSrv(double bufferSizeSeconds, bool salpaAccess, int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
+        internal NRDataSrv(double bufferSizeSeconds, bool salpaAccess, int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
         {
             // Set the polling periods
             aDCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;

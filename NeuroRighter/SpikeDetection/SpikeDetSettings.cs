@@ -194,6 +194,192 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
+        private void Flush()
+        {
+            // Update the UI to reflect the state of things
+            button_TrainSorter.Enabled = false;
+            button_EngageSpikeSorter.Enabled = false;
+            label_SorterEngaged.Text = "Sorter is not engaged";
+            label_SorterEngaged.ForeColor = Color.Red;
+            label_Trained.Text = "Spike sorter is not trained.";
+            label_Trained.ForeColor = Color.Red;
+            button_HoardSpikes.Text = "Hoard";
+            UpdateCollectionBar();
+
+            // Reset the plot
+            RefreshSpikeCollectionPlot();
+        }
+
+        internal void DisableFileMenu()
+        {
+            saveDetectorToolStripMenuItem.Enabled = false;
+        }
+
+        internal void EnableFileMenu()
+        {
+            saveDetectorToolStripMenuItem.Enabled = true;
+        }
+
+        private void ReportTrainingResults()
+        {
+            this.UseWaitCursor = true;
+            this.Cursor = Cursors.WaitCursor;
+
+            textBox_Results.Clear();
+            textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
+            textBox_Results.Text += "------------------------------------------\r\n";
+            textBox_Results.Text += "PARAMETERS " + "\r\n";
+            textBox_Results.Text += " Projection Method: " + spikeSorter.projectionType + "\r\n";
+            textBox_Results.Text += " Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
+            textBox_Results.Text += " Min. Spikes to Train: " + spikeSorter.minSpikes + "\r\n";
+            textBox_Results.Text += " Max. Spikes to Train: " + spikeSorter.maxTrainingSpikesPerChannel + "\r\n";
+            textBox_Results.Text += " Quantile for Outliers: " + (1.0 - spikeSorter.pValue) + "\r\n\r\n";
+
+            textBox_Results.Text += "ACROSS CHANNELS " + "\r\n";
+            textBox_Results.Text += " # channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
+            textBox_Results.Text += " # of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
+
+
+            for (int i = 0; i < numChannels; ++i)
+            {
+                List<ChannelModel> tmpCM = spikeSorter.channelModels.Where(x => x.channelNumber == i + 1).ToList();
+
+                if (tmpCM.Count > 0)
+                {
+                    textBox_Results.Text += "CHANNEL " + ((short)tmpCM[0].channelNumber).ToString() + "\r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
+                    textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
+                    textBox_Results.Text += " Clustering Results:\r\n";
+
+                    for (int k = 0; k < spikeSorter.maxK; ++k)
+                    {
+                        textBox_Results.Text += "  K=" + tmpCM[0].kVals[k].ToString() + "\r\n";
+                        if (tmpCM[0].kVals[k] == tmpCM[0].K)
+                        {
+                            textBox_Results.Text += "   **Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
+                            textBox_Results.Text += "   **Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
+                        }
+                        else
+                        {
+                            textBox_Results.Text += "   Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
+                            textBox_Results.Text += "   Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
+                        }
+                    }
+
+                    textBox_Results.Text += "\r\n";
+                }
+                else
+                {
+                    textBox_Results.Text += "CHANNEL " + (i + 1).ToString() + "\r\n";
+                    textBox_Results.Text += " No Sorting" + "\r\n\r\n";
+                }
+
+            }
+
+            this.UseWaitCursor = false;
+            this.Cursor = Cursors.Default;
+        }
+
+        private void ManageProjectionChange()
+        {
+            switch (spikeSorter.projectionType)
+            {
+                case "Maximum Voltage Inflection":
+                    spikeSorter.projectionDimension = 1;
+                    numericUpDown_ProjDim.Value = 1;
+                    numericUpDown_ProjDim.Enabled = false;
+                    break;
+                case "Double Voltage Inflection":
+                    spikeSorter.projectionDimension = 2;
+                    numericUpDown_ProjDim.Value = 2;
+                    numericUpDown_ProjDim.Enabled = false;
+                    break;
+                case "PCA":
+                    spikeSorter.projectionDimension = (int)numericUpDown_ProjDim.Value;
+                    numericUpDown_ProjDim.Enabled = true;
+                    break;
+            }
+        }
+
+        private void RefreshSpikeCollectionPlot()
+        {
+            // Create GraphPanes
+            zgc.GraphPane.CurveList.Clear();
+            GraphPane projPane = zgc.GraphPane;
+
+            // Show data
+            zgc.AxisChange();
+            zgc.Invalidate();
+        }
+
+        private void UpdateSpikeCollectionPlot()
+        {
+            // Create GraphPanes
+            zgc.GraphPane.CurveList.Clear();
+            GraphPane numSpikesPane = zgc.GraphPane;
+            List<LineItem> myCurves = new List<LineItem>();
+
+            // Plot the spikes
+            PointPairList ppl = new PointPairList();
+            PointPairList pplThresh = new PointPairList();
+            if (spikeSorter != null)
+            {
+                for (int i = 0; i < numChannels; ++i)
+                {
+                    lock (this)
+                    {
+                        ppl.Add((double)i + 1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[(short)(i + 1)]));
+                    }
+                }
+            }
+            pplThresh.Add(0, (double)numericUpDown_MinSpikesToTrain.Value);
+            pplThresh.Add(numChannels, (double)numericUpDown_MinSpikesToTrain.Value);
+
+            // Add data tp plot
+            myCurves.Add(numSpikesPane.AddCurve("numSpikes", ppl, Color.RoyalBlue, SymbolType.None));
+            myCurves.Add(numSpikesPane.AddCurve("trainThresh", pplThresh, Color.Red, SymbolType.None));
+
+            // Set plot parameteters
+            SetMinorPlotParameters(ref numSpikesPane);
+
+            // Show data
+            zgc.AxisChange();
+            zgc.Invalidate();
+
+        }
+
+        private void SetMinorPlotParameters(ref GraphPane gp)
+        {
+            // Text settings
+            gp.Legend.IsVisible = false;
+            gp.Title.IsVisible = false;
+            gp.XAxis.Title.IsVisible = false;
+            gp.YAxis.Title.IsVisible = false;
+
+            // turn off the opposite tics so the Y tics don't show up on the Y2 axis
+            gp.XAxis.IsVisible = false;
+            gp.YAxis.IsVisible = false;
+
+            // Display the Y zero line
+            gp.YAxis.MajorGrid.IsZeroLine = false;
+
+            // Align the Y axis labels so they are flush to the axis
+            gp.YAxis.Scale.Align = AlignP.Inside;
+
+            // Manually set the axis range
+            gp.YAxis.Scale.Min = 0;
+            if (spikeSorter != null)
+                gp.YAxis.Scale.Max = spikeSorter.maxTrainingSpikesPerChannel;
+            else
+                gp.YAxis.Scale.Max = 200;
+            gp.XAxis.Scale.Min = 1;
+            gp.XAxis.Scale.Max = numChannels;
+
+            // Fill the axis background with a gradient
+            gp.Chart.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
+        }
+
+        #region Form Event Handlers
         private void button_ForceDetectTrain_Click(object sender, EventArgs e)
         {
             SettingsHaveChanged(this, e);
@@ -285,6 +471,7 @@ namespace NeuroRighter.SpikeDetection
         {
             if (SettingsHaveChanged != null)
             {
+                detectorParameters.DetectorType = comboBox_spikeDetAlg.SelectedIndex;
                 SettingsHaveChanged(this, e);
             }
         }
@@ -293,6 +480,7 @@ namespace NeuroRighter.SpikeDetection
         {
             if (SettingsHaveChanged != null)
             {
+                detectorParameters.NoiseAlgType = comboBox_noiseEstAlg.SelectedIndex;
                 SettingsHaveChanged(this, e);
             }
         }
@@ -475,22 +663,6 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        private void Flush()
-        {
-            // Update the UI to reflect the state of things
-            button_TrainSorter.Enabled = false;
-            button_EngageSpikeSorter.Enabled = false;
-            label_SorterEngaged.Text = "Sorter is not engaged";
-            label_SorterEngaged.ForeColor = Color.Red;
-            label_Trained.Text = "Spike sorter is not trained.";
-            label_Trained.ForeColor = Color.Red;
-            button_HoardSpikes.Text = "Hoard";
-            UpdateCollectionBar();
-
-            // Reset the plot
-            RefreshSpikeCollectionPlot();
-        }
-
         private void numericUpDown_ProjDim_ValueChanged(object sender, EventArgs e)
         {
             if (spikeSorter != null)
@@ -508,105 +680,6 @@ namespace NeuroRighter.SpikeDetection
                 ManageProjectionChange();
             }
             detectorParameters.SS = spikeSorter;
-        }
-
-        private void ManageProjectionChange()
-        {
-            switch (spikeSorter.projectionType)
-            {
-                case "Maximum Voltage Inflection":
-                    spikeSorter.projectionDimension = 1;
-                    numericUpDown_ProjDim.Value = 1;
-                    numericUpDown_ProjDim.Enabled = false;
-                    break;
-                case "Double Voltage Inflection":
-                    spikeSorter.projectionDimension = 2;
-                    numericUpDown_ProjDim.Value = 2;
-                    numericUpDown_ProjDim.Enabled = false;
-                    break;
-                case "PCA":
-                    spikeSorter.projectionDimension = (int)numericUpDown_ProjDim.Value;
-                    numericUpDown_ProjDim.Enabled = true;
-                    break;
-            }
-        }
-
-        private void RefreshSpikeCollectionPlot()
-        {
-            // Create GraphPanes
-            zgc.GraphPane.CurveList.Clear();
-            GraphPane projPane = zgc.GraphPane;
-
-            // Show data
-            zgc.AxisChange();
-            zgc.Invalidate();
-        }
-
-        private void UpdateSpikeCollectionPlot()
-        {
-            // Create GraphPanes
-            zgc.GraphPane.CurveList.Clear();
-            GraphPane numSpikesPane = zgc.GraphPane;
-            List<LineItem> myCurves = new List<LineItem>();
-
-            // Plot the spikes
-            PointPairList ppl = new PointPairList();
-            PointPairList pplThresh = new PointPairList();
-            if (spikeSorter != null)
-            {
-                for (int i = 0; i < numChannels; ++i)
-                {
-                    lock (this)
-                    {
-                        ppl.Add((double)i + 1, Convert.ToDouble(spikeSorter.spikesCollectedPerChannel[i + 1]));
-                    }
-                }
-            }
-            pplThresh.Add(0, (double)numericUpDown_MinSpikesToTrain.Value);
-            pplThresh.Add(numChannels, (double)numericUpDown_MinSpikesToTrain.Value);
-
-            // Add data tp plot
-            myCurves.Add(numSpikesPane.AddCurve("numSpikes", ppl, Color.RoyalBlue, SymbolType.None));
-            myCurves.Add(numSpikesPane.AddCurve("trainThresh", pplThresh, Color.Red, SymbolType.None));
-
-            // Set plot parameteters
-            SetMinorPlotParameters(ref numSpikesPane);
-
-            // Show data
-            zgc.AxisChange();
-            zgc.Invalidate();
-
-        }
-
-        private void SetMinorPlotParameters(ref GraphPane gp)
-        {
-            // Text settings
-            gp.Legend.IsVisible = false;
-            gp.Title.IsVisible = false;
-            gp.XAxis.Title.IsVisible = false;
-            gp.YAxis.Title.IsVisible = false;
-
-            // turn off the opposite tics so the Y tics don't show up on the Y2 axis
-            gp.XAxis.IsVisible = false;
-            gp.YAxis.IsVisible = false;
-
-            // Display the Y zero line
-            gp.YAxis.MajorGrid.IsZeroLine = false;
-
-            // Align the Y axis labels so they are flush to the axis
-            gp.YAxis.Scale.Align = AlignP.Inside;
-
-            // Manually set the axis range
-            gp.YAxis.Scale.Min = 0;
-            if (spikeSorter != null)
-                gp.YAxis.Scale.Max = spikeSorter.maxTrainingSpikesPerChannel;
-            else
-                gp.YAxis.Scale.Max = 200;
-            gp.XAxis.Scale.Min = 1;
-            gp.XAxis.Scale.Max = numChannels;
-
-            // Fill the axis background with a gradient
-            gp.Chart.Fill = new Fill(Color.White, Color.LightGray, 45.0f);
         }
 
         private void saveSpikeFilterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -643,6 +716,7 @@ namespace NeuroRighter.SpikeDetection
 
             // Disengage any current sorter
             isEngaged = false;
+            button_EngageSpikeSorter.Text = "Engage Spike Sorter";
             label_SorterEngaged.Text = "Sorter is not engaged";
             label_SorterEngaged.ForeColor = Color.Red;
 
@@ -728,76 +802,7 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
-        internal void DisableFileMenu()
-        {
-            saveDetectorToolStripMenuItem.Enabled = false;
-        }
-
-        internal void EnableFileMenu()
-        {
-            saveDetectorToolStripMenuItem.Enabled = true;
-        }
-
-
-        private void ReportTrainingResults()
-        {
-            this.UseWaitCursor = true;
-            this.Cursor = Cursors.WaitCursor;
-
-            textBox_Results.Clear();
-            textBox_Results.Text += "NEURORIGHTER SPIKE SORTER - TRAINING STATS\r\n";
-            textBox_Results.Text += "------------------------------------------\r\n";
-            textBox_Results.Text += "PARAMETERS " + "\r\n";
-            textBox_Results.Text += " Projection Method: " + spikeSorter.projectionType + "\r\n";
-            textBox_Results.Text += " Projection Dimension: " + spikeSorter.projectionDimension + "\r\n";
-            textBox_Results.Text += " Min. Spikes to Train: " + spikeSorter.minSpikes + "\r\n";
-            textBox_Results.Text += " Max. Spikes to Train: " + spikeSorter.maxTrainingSpikesPerChannel + "\r\n";
-            textBox_Results.Text += " Quantile for Outliers: " + (1.0 - spikeSorter.pValue) + "\r\n\r\n";
-
-            textBox_Results.Text += "ACROSS CHANNELS " + "\r\n";
-            textBox_Results.Text += " # channels to sort on: " + spikeSorter.channelsToSort.Count + " / " + numChannels.ToString() + "\r\n";
-            textBox_Results.Text += " # of units identified: " + spikeSorter.totalNumberOfUnits.ToString() + "\r\n\r\n";
-
-
-            for (int i = 0; i < numChannels; ++i)
-            {
-                List<ChannelModel> tmpCM = spikeSorter.channelModels.Where(x => x.channelNumber == i + 1).ToList();
-
-                if (tmpCM.Count > 0)
-                {
-                    textBox_Results.Text += "CHANNEL " + ((short)tmpCM[0].channelNumber).ToString() + "\r\n";
-                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
-                    textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
-                    textBox_Results.Text += " Clustering Results:\r\n";
-
-                    for (int k = 0; k < spikeSorter.maxK; ++k)
-                    {
-                        textBox_Results.Text += "  K=" + tmpCM[0].kVals[k].ToString() + "\r\n";
-                        if (tmpCM[0].kVals[k] == tmpCM[0].K)
-                        {
-                            textBox_Results.Text += "   **Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
-                            textBox_Results.Text += "   **Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
-                        }
-                        else
-                        {
-                            textBox_Results.Text += "   Rissanen= " + tmpCM[0].mdl[k].ToString() + "\r\n";
-                            textBox_Results.Text += "   Log-likelihood= " + tmpCM[0].logLike[k].ToString() + "\r\n";
-                        }
-                    }
-
-                    textBox_Results.Text += "\r\n";
-                }
-                else
-                {
-                    textBox_Results.Text += "CHANNEL " + (i + 1).ToString() + "\r\n";
-                    textBox_Results.Text += " No Sorting" + "\r\n\r\n";
-                }
-
-            }
-
-            this.UseWaitCursor = false;
-            this.Cursor = Cursors.Default;
-        }
+        #endregion
 
         # region public accessors
 
@@ -842,7 +847,5 @@ namespace NeuroRighter.SpikeDetection
         }
 
         # endregion
-
-
     }
 }

@@ -122,7 +122,7 @@ namespace NRSpikeSort
             this.spikesCollectedPerChannel = new Hashtable();
             for (int i = 0; i < numberChannels; ++i)
             {
-                spikesCollectedPerChannel.Add(i + 1, 0);
+                spikesCollectedPerChannel.Add((Int16)(i + 1), 0);
             }
             this.projectionType = projectionType;
             switch (projectionType)
@@ -169,9 +169,10 @@ namespace NRSpikeSort
         {
             for (int i = 0; i < newSpikes.Buffer.Count; ++i)
             {
-                if ((int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] < maxTrainingSpikesPerChannel)
+
+                if ((int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel] < maxTrainingSpikesPerChannel)
                 {
-                    spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] = (int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel + 0] + 1;
+                    spikesCollectedPerChannel[newSpikes.Buffer[i].Channel] = (int)spikesCollectedPerChannel[newSpikes.Buffer[i].Channel] + 1;
                     trainingSpikes.Buffer.Add(newSpikes.Buffer[i]);
                 }
             }
@@ -551,6 +552,11 @@ namespace NRSpikeSort
             info.AddValue("pValue", this.pValue);
             info.AddValue("secondInflectionIndex", this.secondInflectionIndex);
         }
+
+        #endregion
+
+        #region Public Accessors
+
 
         #endregion
 

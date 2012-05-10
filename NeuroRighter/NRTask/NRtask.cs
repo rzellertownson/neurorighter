@@ -25,11 +25,11 @@ using NeuroRighter.DatSrv;
 using NeuroRighter.dbg;
 using NeuroRighter;
 
+
 namespace NeuroRighter.NeuroRighterTask
 {
     /// <summary>
     /// NeuroRighter's abstract class for user defined closed loop experiments.
-    /// <author> Riley Zeller-Townson</author>
     /// </summary>
     public abstract class NRTask
     {

@@ -8,6 +8,9 @@ using NationalInstruments.DAQmx;
 
 namespace NeuroRighter.dbg
 {
+    /// <summary>
+    /// Debugging tool usefule for fixing protocols created with NeuroRighter's API.
+    /// </summary>
     public class RealTimeDebugger
     {
 
@@ -16,10 +19,12 @@ namespace NeuroRighter.dbg
         long reference;
         int index;
         object debuggerlock = new object();
-        internal RealTimeDebugger() 
-        {
-            
-        }
+
+        /// <summary>
+        /// Real-time debugger for fixing protocols created with NeuroRighter's API.
+        /// </summary>
+        internal RealTimeDebugger() {}
+
         internal void SetPath(string path)
         {
             debugOut = new FileStream(path, FileMode.Create);
@@ -29,12 +34,17 @@ namespace NeuroRighter.dbg
             byte[] bytedata = Encoding.ASCII.GetBytes(header);
             debugOut.Write(bytedata, 0, bytedata.Length);
         }
+
         internal void GrabTimer(Task timekeeper)
         {
             this.timekeeper = timekeeper;
             timekeeper.Control(TaskAction.Commit);
         }
 
+        /// <summary>
+        /// Write to the debug log file.
+        /// </summary>
+        /// <param name="input">String to write to file.</param>
         public void Write(string input)
         {
 //#ifdef debug
@@ -53,9 +63,7 @@ namespace NeuroRighter.dbg
                 {
                     debugOut.Write(bytedata, 0, bytedata.Length);
                 }
-                catch (Exception me)
-                { }
-                //index += bytedata.Length;
+                catch (Exception me) { }
             }
         }
 
@@ -71,7 +79,6 @@ namespace NeuroRighter.dbg
                 reference = timekeeper.Stream.TotalSamplesAcquiredPerChannel;
                 byte[] bytedata = Encoding.ASCII.GetBytes("\r\n"+((double)(reference) / 25).ToString() + " : " + input + "\r\n");
                 debugOut.Write(bytedata, 0, bytedata.Length);
-                //index += bytedata.Length;
             }
         }
 

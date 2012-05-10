@@ -27,9 +27,7 @@ namespace NeuroRighter.DataTypes
     /// Generic class for holding spike events. That is, those that are defined
     /// by a discrete point in time, but also can have a channel, a snip of analog data
     /// and,  a threshold value associated with them.
-    /// <author> Jon Newman </author>
     /// </summary>
-    
     [Serializable]
     public sealed class SpikeEvent : NREvent
     {

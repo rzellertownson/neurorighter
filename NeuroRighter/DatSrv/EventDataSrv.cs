@@ -31,7 +31,9 @@ namespace NeuroRighter.DatSrv
     /// </summary>
     public class EventDataSrv<T> where T : NREvent
     {
-        // Locking object for thread-safe access to the internal data buffer
+        /// <summary>
+        /// Locking object to allow thread-safe read/write access to the data buffer.
+        /// </summary>
         protected static readonly object lockObj = new object();
 
         // Main storage buffer

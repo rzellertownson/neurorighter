@@ -42,6 +42,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using NeuroRighter.DatSrv;
 using NeuroRighter.DataTypes;
+using NeuroRighter.Output;
 using NeuroRighter.StimSrv;
 using NeuroRighter.dbg;
 using ConsoleWidget;
@@ -116,12 +117,11 @@ namespace NeuroRighter
         private double[] stimDataBuffer; //Stores some of the old samples for the next read (to avoid reading only half an encoding during a buffer read)
         private uint lastDigState = 0; // stores the digtial state after a port change occurs
         private uint[] auxDigData;
-        private DigitalWaveform auxDigitalWaveform;
-        internal List<StimulusOutEvent> _stimulations;
-        internal List<StimulusOutEvent> stimulations
-        {
-            get { return _stimulations; }
-        }
+        //private DigitalWaveform auxDigitalWaveform;
+        //private List<StimulusOutEvent> stimulations;
+        //{
+        //    get { return _stimulations; }
+        //}
         //Locations of threshold crossings
         
 

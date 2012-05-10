@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008-2009 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -15,6 +15,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ using NeuroRighter.DataTypes;
 
 namespace NeuroRighter.DatSrv
 {
+    /// <summary>
+    /// NeuoroRighter data server collection. This class contains all of NeuroRighter's data servers as properties.
+    /// </summary>
     public class NRDataSrv
     {
         /// <summary>

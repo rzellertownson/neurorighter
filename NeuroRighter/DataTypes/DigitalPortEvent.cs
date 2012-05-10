@@ -24,8 +24,7 @@ using System.Text;
 namespace NeuroRighter.DataTypes
 {
     /// <summary>
-
-    /// <author> Jon Newman </author>
+    /// A digital port event type.
     /// </summary>
     [Serializable]
     public sealed class DigitalPortEvent : NREvent
@@ -34,7 +33,7 @@ namespace NeuroRighter.DataTypes
         internal uint portState;
 
         /// <summary>
-        /// Generic class for holding digial events. That is, those that are defined
+        /// Generic class for holding recorded digital events. That is, those that are defined
         /// by a discrete point in time, but also can have a port state, represented
         /// by an 32 bit integer, associated with them.
         /// </summary>

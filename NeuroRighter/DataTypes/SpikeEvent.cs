@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -15,7 +15,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +58,7 @@ namespace NeuroRighter.DataTypes
         /// Set the unit number of waveform after sorting
         /// </summary>
         /// <param name="unit">The spike's unit number</param>
-        public void SetUnit(Int16 unit)
+        internal void SetUnit(Int16 unit)
         {
             this.unit = unit;
         }
@@ -68,13 +67,13 @@ namespace NeuroRighter.DataTypes
         /// Set the unit number of waveform after sorting
         /// </summary>
         /// <param name="unit">The spike's unit number</param>
-        public void SetUnit(int unit)
+        internal void SetUnit(int unit)
         {
             this.unit = (short)unit;
         }
 
         /// <summary>
-        /// HW Channel that the spike occured on
+        /// Channel on which the spike was dectected.
         /// </summary>
         public Int16 Channel
         {
@@ -100,7 +99,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// The unit number of the spikes.
+        /// The sorted unit number that generated the spike.
         /// </summary>
         public short Unit
         {

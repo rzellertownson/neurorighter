@@ -22,7 +22,7 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
         /// <summary>
     /// Ihnerited frm MakeAODOPair, specialized for auxilary AO/DO.

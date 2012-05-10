@@ -218,7 +218,7 @@ namespace NeuroRighter
         {
 
             // update the recordingSettings object
-            recordingSettings.Refresh();
+            recordingSettings.RefreshForm();
 
             // Set spike buffer lengths
             spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));

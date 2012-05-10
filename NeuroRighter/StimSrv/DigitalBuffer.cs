@@ -1,4 +1,22 @@
-﻿using System;
+﻿// NeuroRighter
+// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +44,7 @@ namespace NeuroRighter.StimSrv
     public class DigitalBuffer : NROutBuffer<DigitalOutEvent>
     {
         AuxBuffer analogBuffer;
+        internal bool failflag;
 
         internal DigitalBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int queueThreshold, bool robust)
             : base(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust) {
@@ -33,12 +52,12 @@ namespace NeuroRighter.StimSrv
                 failflag = false;
         }
        
-        internal bool failflag;
         internal void grabPartner(AuxBuffer analogBuffer)//different from the analog buffer version!
         {
             this.analogBuffer = analogBuffer;
             recoveryInProgress = analogBuffer.recoveryInProgress;
         }
+
         internal void setNBLC(ulong nblc)
         {
             numBuffLoadsCompleted = nblc;
@@ -59,20 +78,6 @@ namespace NeuroRighter.StimSrv
             //this should never get called
             
         }
-
-        //internal void Setup(DigitalSingleChannelWriter digitalOutputWriter, Task digitalOutputTask, Task buffLoadTask, RealTimeDebugger Debugger)
-        //{
-        //    //encapsulate the tasks and writer given into arrays
-        //    DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
-        //    digitalWriters[0] = digitalOutputWriter;
-
-        //    Task[] digitalTasks = new Task[1];
-        //    digitalTasks[0]=digitalOutputTask;
-
-        //    base.Setup(new AnalogMultiChannelWriter[0],digitalWriters,new Task[0],digitalTasks,buffLoadTask,Debugger);
-            
-
-        //}
 
         protected override void  WriteEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {

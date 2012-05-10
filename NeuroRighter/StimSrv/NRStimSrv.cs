@@ -1,4 +1,22 @@
-﻿using System;
+﻿// NeuroRighter
+// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,45 +36,43 @@ namespace NeuroRighter.StimSrv
         /// <summary>
         /// Aux analog output buffer.
         /// </summary>
-        public AuxBuffer AuxOut;
+        private AuxBuffer auxOut;
 
         /// <summary>
         /// Aux digital output buffer.
         /// </summary>
-        public DigitalBuffer DigitalOut;
+        private DigitalBuffer digitalOut;
 
         /// <summary>
         /// Electical stimulus (for use with NR's stimulator) output buffer.
         /// </summary>
-        public StimBuffer StimOut;
+        private StimBuffer stimOut;
 
         /// <summary>
         /// The DAC sampling frequency in Hz for all forms of output.
         /// </summary>
-        public double sampleFrequencyHz;
+        private double sampleFrequencyHz;
 
         /// <summary>
         /// The DAC polling periods in seconds.
         /// </summary>
-        public double DACPollingPeriodSec;
+        private double dacPollingPeriodSec;
 
         /// <summary>
         /// The DAC polling periods in samples.
         /// </summary>
-        public int DACPollingPeriodSamples;
-        
+        private int dacPollingPeriodSamples;
+
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
-       
+
         // Master timing and triggering task
         internal Task masterTask;
         private RealTimeDebugger debugger;
-        
+
         private int INNERBUFFSIZE;
         private int STIM_SAMPLING_FREQ;
-        
 
-        //public accessors
         /// <summary>
         /// grabs the size of the inner (array) buffer, in samples
         /// </summary>
@@ -65,7 +81,7 @@ namespace NeuroRighter.StimSrv
         {
             return INNERBUFFSIZE;
         }
-        
+
         /// <summary>
         /// Neurorighter's stimulus/generic output server. Used in open-loop and closed-loop experiments where just-in-time buffering of output signals is required.
         /// </summary>
@@ -81,20 +97,18 @@ namespace NeuroRighter.StimSrv
             int sampblanking = 2;
             int queueThreshold = -1;//no queue thresholds for closed loop
             //create buffers
-            AuxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
-            DigitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
-            AuxOut.grabPartner(DigitalOut);
-            DigitalOut.grabPartner(AuxOut);
-            StimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold, robust);
+            auxOut = new AuxBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
+            digitalOut = new DigitalBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, queueThreshold, robust);
+            auxOut.grabPartner(digitalOut);
+            digitalOut.grabPartner(auxOut);
+            stimOut = new StimBuffer(INNERBUFFSIZE, STIM_SAMPLING_FREQ, sampblanking, queueThreshold, robust);
             this.debugger = debugger;
-            
+
             this.sampleFrequencyHz = Convert.ToDouble(STIM_SAMPLING_FREQ);
-            this.DACPollingPeriodSec = Properties.Settings.Default.DACPollingPeriodSec;
-            this.DACPollingPeriodSamples = Convert.ToInt32(DACPollingPeriodSec * STIM_SAMPLING_FREQ);
+            this.dacPollingPeriodSec = Properties.Settings.Default.DACPollingPeriodSec;
+            this.dacPollingPeriodSamples = Convert.ToInt32(dacPollingPeriodSec * STIM_SAMPLING_FREQ);
         }
 
-        
-        
         //create the counter, and set up the buffers based on the hardware configuration
         internal void Setup()
         {
@@ -104,25 +118,23 @@ namespace NeuroRighter.StimSrv
             if (Properties.Settings.Default.UseAODO)
             {
                 //ConfigureAODO(true, masterTask);
-                AuxOut.immortal = true;
-                DigitalOut.immortal = true;
-
-                
+                auxOut.immortal = true;
+                digitalOut.immortal = true;
 
                 //DigitalOut.Setup(buffLoadTask,  debugger, masterTask);
-                AuxOut.grabPartner(DigitalOut);
-                DigitalOut.grabPartner(AuxOut);
-                AuxOut.Setup(buffLoadTask, debugger, masterTask);
-                AuxOut.Start();
+                auxOut.grabPartner(digitalOut);
+                digitalOut.grabPartner(auxOut);
+                auxOut.Setup(buffLoadTask, debugger, masterTask);
+                auxOut.Start();
                 //DigitalOut.Start();
             }
 
             if (Properties.Settings.Default.UseStimulator)
             {
                 //ConfigureStim(masterTask);
-                StimOut.immortal = true;
-                StimOut.Setup(buffLoadTask, debugger, masterTask);
-                StimOut.Start();
+                stimOut.immortal = true;
+                stimOut.Setup(buffLoadTask, debugger, masterTask);
+                stimOut.Start();
             }
         }
 
@@ -133,25 +145,25 @@ namespace NeuroRighter.StimSrv
 
         internal void StopAllBuffers()
         {
-            if (AuxOut != null)
-                AuxOut.Stop();
+            if (auxOut != null)
+                auxOut.Stop();
 
-            if (DigitalOut != null)
-                DigitalOut.Stop();
-            if (StimOut != null)
-                StimOut.Stop();
+            if (digitalOut != null)
+                digitalOut.Stop();
+            if (stimOut != null)
+                stimOut.Stop();
             Console.WriteLine("NRStimSrv: StimSrv output Buffers Stopped");
         }
 
         internal void StopLoading()
         {
-            
+
             if (buffLoadTask != null)
             {
                 buffLoadTask.Stop();
                 buffLoadTask.Dispose();
                 buffLoadTask = null;
-            } 
+            }
             Console.WriteLine("NRStimSrv: buffLoadTask is no more");
             //lock(AuxOut)
             //    lock (DigitalOut)
@@ -166,8 +178,6 @@ namespace NeuroRighter.StimSrv
 
         }
 
-       
-
         //the counter is a timing signal that goes off once per daq loading period.  It is used to time the start of different tasks, as well as the time
         // that the hardware buffers are filled with user commands. Lastly, the counter serves to trigger events created by the user for closed loop stuff.
         // the counter pumps out it's signal on the 'main' device (the same device that spikes are recorded on), and it in turn started by the main
@@ -176,24 +186,92 @@ namespace NeuroRighter.StimSrv
         {
             //configure counter
             if (buffLoadTask != null) { buffLoadTask.Dispose(); buffLoadTask = null; }
-            
+
             buffLoadTask = new Task("stimBufferTask");
 
             // Trigger a buffer load event off every edge of this channel
             buffLoadTask.COChannels.CreatePulseChannelFrequency(Properties.Settings.Default.AnalogInDevice[0] + "/ctr1",
-                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)INNERBUFFSIZE)/2.0, 0.5);
+                "BufferLoadCounter", COPulseFrequencyUnits.Hertz, COPulseIdleState.Low, 0, ((double)STIM_SAMPLING_FREQ / (double)INNERBUFFSIZE) / 2.0, 0.5);
             buffLoadTask.Timing.ConfigureImplicit(SampleQuantityMode.ContinuousSamples);
             buffLoadTask.SynchronizeCallbacks = false;
             buffLoadTask.Timing.ReferenceClockSource = "OnboardClock";
             buffLoadTask.Control(TaskAction.Verify);
-            
+
             // Syncronize the start to the master recording task
             buffLoadTask.Triggers.ArmStartTrigger.ConfigureDigitalEdgeTrigger(
                 masterTask.Triggers.StartTrigger.Terminal, DigitalEdgeArmStartTriggerEdge.Rising);
-         
+
         }
 
-     
+        #region Accessors
+        /// <summary>
+        /// Analog event output buffer.
+        /// </summary>
+        public AuxBuffer AuxOut
+        {
+            get
+            {
+                return auxOut;
+            }
+        }
+
+        /// <summary>
+        /// Digital event output buffer.
+        /// </summary>
+        public DigitalBuffer DigitalOut
+        {
+            get
+            {
+                return digitalOut;
+            }
+        }
+
+        /// <summary>
+        /// Electical stimulus (for use with NR's stimulator) output buffer.
+        /// </summary>
+        public StimBuffer StimOut
+        {
+            get
+            {
+                return stimOut;
+            }
+        }
+
+        /// <summary>
+        /// The DAC sampling frequency in Hz for all forms of output.
+        /// </summary>
+        public double SampleFrequencyHz
+        {
+            get
+            {
+                return sampleFrequencyHz;
+            }
+        }
+
+        /// <summary>
+        /// The DAC polling periods in seconds.
+        /// </summary>
+        public double DACPollingPeriodSec
+        {
+            get
+            {
+                return dacPollingPeriodSec;
+            }
+        }
+
+        /// <summary>
+        /// The DAC polling period in samples.
+        /// </summary>
+        public int DACPollingPeriodSamples
+        {
+            get
+            {
+                return dacPollingPeriodSamples;
+            }
+        }
+
+
+        #endregion
 
     }
 }

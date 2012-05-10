@@ -1,4 +1,22 @@
-﻿using System;
+﻿// NeuroRighter
+// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +25,9 @@ using ExtensionMethods;
 
 namespace NeuroRighter.DataTypes
 {
+    /// <summary>
+    /// Electrical stimulation event type.
+    /// </summary>
     [Serializable]
     public sealed class StimulusOutEvent:NREvent
     {
@@ -18,11 +39,17 @@ namespace NeuroRighter.DataTypes
         private const int PORT_OFFSET_8bitPort = 0;
 
         // Internal to NR
-        internal Int16 channel; //1 based
-        internal double[] waveform; //Stim voltage
-        internal double[] AnalogEncode;
-        internal UInt32[] DigitalEncode;
+        private Int16 channel; //1 based
+        private double[] waveform; //Stim voltage
+        private double[] analogEncode;
+        private UInt32[] digitalEncode;
 
+        /// <summary>
+        /// Electrical stimulation event to be interpreted by NeuroRighter's all channel stimulation board.
+        /// </summary>
+        /// <param name="channel">Channel to stimulate</param>
+        /// <param name="time"> Time sample that stimulation should be applied </param>
+        /// <param name="waveform"> Stimulation waveform. </param>
         public StimulusOutEvent(int channel, ulong time, double[] waveform)
         {
             try
@@ -30,21 +57,19 @@ namespace NeuroRighter.DataTypes
                 this.channel = (short)channel;
                 this.sampleIndex = time;
                 this.waveform = new double[waveform.Length];
-                //  MessageBox.Show("creatingstim");
                 for (int i = 0; i < waveform.Length; i++)
                 {
                     this.waveform[i] = waveform[i];
                 }
 
-                //this.ChannelVector[outerIndexWrite] = ChannelVector[i];
-                this.AnalogEncode = new double[2];
-                this.DigitalEncode = new uint[3];
-                this.AnalogEncode[0] = Math.Ceiling((double)channel / 8.0);
-                this.AnalogEncode[1] = (double)((channel - 1) % 8) + 1.0;
+                this.analogEncode = new double[2];
+                this.digitalEncode = new uint[3];
+                this.analogEncode[0] = Math.Ceiling((double)channel / 8.0);
+                this.analogEncode[1] = (double)((channel - 1) % 8) + 1.0;
 
-                this.DigitalEncode[0] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
-                this.DigitalEncode[1] = channel2MUX_noEN((double)channel);
-                this.DigitalEncode[2] = channel2MUX((double)channel);
+                this.digitalEncode[0] = Convert.ToUInt32(Math.Pow(2, (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort)));
+                this.digitalEncode[1] = channel2MUX_noEN((double)channel);
+                this.digitalEncode[2] = channel2MUX((double)channel);
                 this.sampleDuration = (uint)waveform.Length;
             }
             catch (Exception e)
@@ -53,6 +78,13 @@ namespace NeuroRighter.DataTypes
             }
         }
 
+        /// <summary>
+        /// Electrical stimulation event to be interpreted by NeuroRighter's all channel stimulation board.
+        /// </summary>
+        /// <param name="channel">Channel to stimulate</param>
+        /// <param name="time"> Time sample that stimulation should be applied </param>
+        /// <param name="waveform"> Stimulation waveform. </param>
+        /// <param name="sampleDuration"> The duration of the stimulation waveform</param>
         public StimulusOutEvent(int channel, ulong time, double[] waveform, uint sampleDuration)
             :this(channel,time,waveform)
         {
@@ -171,6 +203,47 @@ namespace NeuroRighter.DataTypes
             return output;
         }
         #endregion MUX conversion Functions
+
+
+        #region Accessors
+
+        /// <summary>
+        /// 1-based channel number that this stimulus event will occur on.
+        /// </summary>
+        public Int16 Channel
+        {
+            get
+            {
+                return channel;
+            }
+        }
+        
+        public double[] Waveform //Stim voltage
+        {
+            get
+            {
+                return waveform;
+            }
+        }
+
+        internal double[] AnalogEncode
+        {
+            get
+            {
+                return analogEncode;
+            }
+        }
+
+        internal UInt32[] DigitalEncode
+        {
+            get
+            {
+                return digitalEncode;
+            }
+        }
+
+
+        #endregion
     }
 }
 

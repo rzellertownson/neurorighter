@@ -35,20 +35,20 @@ namespace NeuroRighter.DataTypes
     public sealed class ElectricalStimEvent : NREvent
     {
 
-        public short channel;
-        internal double amplitude;
-        internal double width;
-        internal List<double> auxInfo = null;
+        private short channel;
+        private double amplitude;
+        private double width;
+        //private List<double> auxInfo = null;
 
         /// <summary>
         /// Generic class for holding mixed digital/analog events corresponding to electrical
         /// stimulation recordings in NR. These are defined by a time sample, a channel, a amplitude 
         /// value and an optional a list of auxiliary doubles that can be inserted by the user.
         /// </summary>
-        /// <param name="sampleIndex"></param>
-        /// <param name="channel"></param>
-        /// <param name="amplitude"></param>
-        /// <param name="width"></param>
+        /// <param name="sampleIndex"> The time of the detected electrical stimulus. </param>
+        /// <param name="channel">The channel on which the stimulus occured.</param>
+        /// <param name="amplitude"> The peak ampltude of the stimulus waveform</param>
+        /// <param name="width">The width of the stimulus waveform</param>
         internal ElectricalStimEvent(ulong sampleIndex, short channel, double amplitude, double width)
         {
             this.sampleIndex = sampleIndex;
@@ -56,6 +56,38 @@ namespace NeuroRighter.DataTypes
             this.amplitude = amplitude;
             this.width = width;
         }
-     
+
+        /// <summary>
+        /// The channel on which the stimulation occurs.
+        /// </summary>
+        public short Channel
+        {
+            get
+            {
+                return channel;
+            }
+        }
+
+        /// <summary>
+        /// The resulting stimulation event amplitude.
+        /// </summary>
+        public double Amplitude
+        {
+            get
+            {
+                return amplitude;
+            }
+        }
+
+        /// <summary>
+        /// The width of the stimulus waveform<
+        /// </summary>
+        public double Width
+        {
+            get
+            {
+                return width;
+            }
+        }
     }
 }

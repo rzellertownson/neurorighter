@@ -3,21 +3,24 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 
-
-
 namespace ExtensionMethods
 {
-
+    /// <summary>
+    /// DLL Loader for NRTasks created with the NeuroRighter API
+    /// </summary>
     public class ClassLoader
     {
-
+        /// <summary>
+        /// Creates a new assembly from NeuroRighter for the excecution of extension DLLs.
+        /// </summary>
+        /// <param name="filename"></param>
         public void NewAssembly(String filename)
         {
 
             // Create application domain setup information.
             AppDomainSetup domainSetup = new AppDomainSetup();
             domainSetup.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
-            domainSetup.ApplicationName = "NeuroRighter Closed Loop DLL";
+            domainSetup.ApplicationName = "NRTask DLL";
 
             //Create new domain with domain setup details
             AppDomain myDomain = AppDomain.CreateDomain("LoaderDomain", null, domainSetup);

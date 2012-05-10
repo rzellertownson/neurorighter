@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -15,6 +15,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,13 +27,12 @@ namespace NeuroRighter.DataTypes
     /// Generic class for holding Analog Output events. That is, those that are defined
     /// by a discrete point in time, but also have a channel and voltage
     /// </summary>
-    
     [Serializable]
-    internal sealed class AnalogOutEvent : NREvent
+    public sealed class AnalogOutEvent : NREvent
     {
         //internal ulong sampleIndex;
-        internal uint channel;
-        internal double voltage;
+        private uint channel;
+        private double voltage;
 
         /// <summary>
         /// Generic class for holding Analog Output events. That is, those that are defined
@@ -47,5 +47,29 @@ namespace NeuroRighter.DataTypes
             this.channel = channel;
             this.voltage = voltage;
         }
+
+        /// <summary>
+        /// The channel on which the analog output event will occur.
+        /// </summary>
+        public uint Channel
+        {
+            get
+            {
+                return channel;
+            }
+        }
+
+        /// <summary>
+        /// The voltage that the output channel will take after the event has occured.
+        /// </summary>
+        public double Voltage
+        {
+            get
+            {
+                return voltage;
+            }
+        }
+
+
     }
 }

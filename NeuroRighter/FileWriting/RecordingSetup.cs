@@ -79,7 +79,7 @@ namespace NeuroRighter.FileWriting
             //ResetElectrodeCheckBox();
         }
 
-        internal void Refresh()
+        internal void RefreshForm()
         {
             // Set up access to streams
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;

@@ -9,7 +9,7 @@ using NationalInstruments.DAQmx;
 //The goal of this is to respond with stimulation 
 //whenever an IIS is seen in an LFP trace.
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     /// <author>John Rolston (rolston2@gmail.com)</author>
     internal class IISZapper

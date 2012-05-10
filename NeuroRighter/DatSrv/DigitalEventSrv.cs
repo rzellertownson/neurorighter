@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //

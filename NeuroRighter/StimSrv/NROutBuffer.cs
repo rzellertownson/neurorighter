@@ -1,4 +1,22 @@
-﻿using System;
+﻿// NeuroRighter
+// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +44,7 @@ namespace NeuroRighter.StimSrv
         /// <summary>
         ///  The mutex class for concurrent read and write access to data buffers
         /// </summary>
-        protected ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
+        private ReaderWriterLockSlim bufferLock = new ReaderWriterLockSlim();
 
         //events
         internal bool recoveryFlag = false;
@@ -71,6 +89,10 @@ namespace NeuroRighter.StimSrv
         //NI DAQ properties
         //this is the DAQ task that sends the 'load buffer' signal.
         Task buffLoadTask;
+
+        /// <summary>
+        /// Master NI Task that contains sychronizing clock.
+        /// </summary>
         protected Task masterTask;
 
         //these are the DAQ tasks that take the loaded buffer and turn it into stuff in the real world
@@ -214,7 +236,6 @@ namespace NeuroRighter.StimSrv
         //parts of task setup that are specific to this particular type of NROutBuffer
         protected abstract void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks);
 
-
         //starts all the analog and digital output tasks for this buffer.  generation will begin once the master task and buffer loading task start as well.
         internal void Start()
         {
@@ -255,7 +276,9 @@ namespace NeuroRighter.StimSrv
             totalEvents = totalNumberOfEvents;
         }
 
-        //disposes all output tasks
+        /// <summary>
+        /// Disposes all output tasks.
+        /// </summary>
         protected void ClearTasks()
         {
             if (analogTasks != null)

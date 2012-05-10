@@ -10,8 +10,9 @@ using NeuroRighter.DatSrv;
 using NationalInstruments.DAQmx;
 using NeuroRighter.dbg;
 using NeuroRighter;
+using NeuroRighter.NeuroRighterTask;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     class ClosedLoopOut
     {
@@ -58,7 +59,7 @@ namespace NeuroRighter.StimSrv
         {
             try
             {
-                CLE.Grab(DatSrv, StimSrv, Debugger, outputSampFreq, NRFilePath, NRRecording,NR);
+                CLE.Grab(DatSrv, StimSrv, Debugger, NRFilePath, NRRecording,NR);
                 if (useManStimWave)
                     CLE.GrabWave(guiWave);
                 CLE.Setup();//run the user code

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Diagnostics;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
+using NeuroRighter.Output;
 using ExtensionMethods;
 
 namespace NeuroRighter.StimSrv
@@ -21,10 +22,11 @@ namespace NeuroRighter.StimSrv
     // called when the stimBuffer finishes a DAQ load
     internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e);
 
-
+    /// <summary>
+    /// Output double buffer for StimulusOutEvent types that define electrical stimuation pulses.
+    /// </summary>
     public class StimBuffer : NROutBuffer<StimulusOutEvent>
     {
-
 
         //DO line that will have the blanking signal for different hardware configurations
         private const int BLANKING_BIT_32bitPort = 31;
@@ -32,18 +34,17 @@ namespace NeuroRighter.StimSrv
         private const int PORT_OFFSET_32bitPort = 7;
         private const int PORT_OFFSET_8bitPort = 0;
 
-
         // Constants for different systems
         private int NUM_SAMPLES_BLANKING;
         private int NumAOChannels;
         private int RowOffset;
 
         //Stuff that gets defined with input arguments to constructor
-        private int[] TimeVector;
-        private int[] ChannelVector;
-        private double[,] WaveMatrix;
-        private uint BUFFSIZE;
-        private uint LengthWave;
+        //private int[] TimeVector;
+        //private int[] ChannelVector;
+        //private double[,] WaveMatrix;
+        //private uint BUFFSIZE;
+        //private uint LengthWave;
 
 
         internal StimBuffer(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, int NUM_SAMPLES_BLANKING, int queueThreshold, bool robust)
@@ -63,6 +64,11 @@ namespace NeuroRighter.StimSrv
 
         }
 
+        /// <summary>
+        /// Configures mixed digital/analog NI Tasks.
+        /// </summary>
+        /// <param name="analogTasks">Analog tasks</param>
+        /// <param name="digitalTasks">Digital Tasks</param>
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {
 
@@ -138,11 +144,16 @@ namespace NeuroRighter.StimSrv
 
 
 
-
+        /// <summary>
+        /// Write a stimulus event to the output buffer.
+        /// </summary>
+        /// <param name="Sout">Stimulus event to send to buffer</param>
+        /// <param name="anEventValues">Analog event encoder values</param>
+        /// <param name="digEventValues">Digital event encoding values</param>
         override protected void WriteEvent(StimulusOutEvent Sout, ref  List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             //initialize EventValues
-            int stimDuration = Sout.waveform.Length + NUM_SAMPLES_BLANKING * 2;
+            int stimDuration = Sout.Waveform.Length + NUM_SAMPLES_BLANKING * 2;
             anEventValues = new List<double[,]>();
             anEventValues.Add(new double[NumAOChannels, stimDuration]);
             digEventValues = new List<uint[]>();
@@ -160,9 +171,6 @@ namespace NeuroRighter.StimSrv
         //write as much of the current stimulus as possible
         //agnostic as to whether or not you've finished this stimulus or not.
         //returns if finished the stimulus or not
-
-
-
         internal void Append(ulong[] TimeVector, int[] ChannelVector, double[,] WaveMatrix)
         {
             //okay, passed the tests, start appending
@@ -192,13 +200,10 @@ namespace NeuroRighter.StimSrv
             //  MessageBox.Show("finished Append");
         }
 
-
-
-
         //appending versions
         internal uint CalculateDigPointAppending(StimulusOutEvent currentStim, uint NumSampLoadedForCurr)
         {
-            uint wavelength = (uint)currentStim.waveform.Length;
+            uint wavelength = (uint)currentStim.Waveform.Length;
             if (NumSampLoadedForCurr < NUM_SAMPLES_BLANKING || NumSampLoadedForCurr > NUM_SAMPLES_BLANKING + wavelength)
             {
                 return currentStim.DigitalEncode[0];
@@ -216,7 +221,7 @@ namespace NeuroRighter.StimSrv
 
         internal double[] CalculateAnalogPointAppending(StimulusOutEvent currentStim, uint NumSampLoadedForCurr, int NumAOChannels)
         {
-            uint WaveLength = (uint)currentStim.waveform.Length;
+            uint WaveLength = (uint)currentStim.Waveform.Length;
             double[] AnalogPoint = new double[2];
             //Get the analog encoding for this stimulus
             // Case when we are in blanking before a stimulus
@@ -240,7 +245,7 @@ namespace NeuroRighter.StimSrv
                 //what is the current analog value to be sent to the buffer?
                 double voltageOut;
                 if (NumSamplesLoadedForWave < WaveLength)
-                    voltageOut = currentStim.waveform[NumSamplesLoadedForWave];
+                    voltageOut = currentStim.Waveform[NumSamplesLoadedForWave];
                 else
                     voltageOut = 0;
 
@@ -258,7 +263,7 @@ namespace NeuroRighter.StimSrv
                 else if (NumSamplesLoadedForWave < 60)
                 {
                     AnalogPoint[0] = voltageOut;
-                    AnalogPoint[1] = currentStim.waveform.Max();
+                    AnalogPoint[1] = currentStim.Waveform.Max();
                 }
                 else if (NumSamplesLoadedForWave < 80)
                 {
@@ -267,7 +272,7 @@ namespace NeuroRighter.StimSrv
                 }
                 else
                 {
-                    AnalogPoint[0] = currentStim.waveform[NumSamplesLoadedForWave];
+                    AnalogPoint[0] = currentStim.Waveform[NumSamplesLoadedForWave];
                     AnalogPoint[1] = 0;
                 }
 
@@ -275,7 +280,6 @@ namespace NeuroRighter.StimSrv
             return AnalogPoint;
 
         }
-
 
 
         #region MUX conversion Functions

@@ -22,7 +22,7 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     /// <summary>
     /// Base class for creating a pair of AO and DO tasks within NR. Contains methods

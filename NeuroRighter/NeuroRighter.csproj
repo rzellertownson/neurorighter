@@ -182,17 +182,22 @@
     <Compile Include="NR-UI\stim.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="NRTask\NRtask.cs" />
+    <Compile Include="Output\AODOPair\AuxOutTask.cs" />
+    <Compile Include="Output\AODOPair\ContStimTask.cs" />
+    <Compile Include="Output\AODOPair\MakeAODOPair.cs" />
+    <Compile Include="Output\ClosedLoopOut.cs" />
+    <Compile Include="Output\File2Aux.cs" />
+    <Compile Include="Output\File2Dig.cs" />
+    <Compile Include="Output\File2Stim.cs" />
+    <Compile Include="Output\IISZapper.cs" />
+    <Compile Include="Output\OpenLoopOut.cs" />
+    <Compile Include="Output\StimPulse.cs" />
+    <Compile Include="Output\StimTrain.cs" />
+    <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
     <Compile Include="StimSrv\AuxBuffer.cs" />
     <Compile Include="DataTypes\AuxOutEvent.cs" />
-    <Compile Include="StimSrv\AODOPair\AuxOutTask.cs" />
-    <Compile Include="StimSrv\NRTask.cs" />
-    <Compile Include="StimSrv\ClosedLoopOut.cs" />
-    <Compile Include="StimSrv\File2Aux.cs" />
-    <Compile Include="StimSrv\AODOPair\ContStimTask.cs" />
-    <Compile Include="StimSrv\AODOPair\MakeAODOPair.cs" />
-    <Compile Include="StimSrv\OpenLoopOut.cs" />
     <Compile Include="StimSrv\NROutBuffer.cs" />
-    <Compile Include="StimSrv\ZeroOutput\ZeroOutput.cs" />
     <Compile Include="Plotting\ScatterGraphController.cs" />
     <Compile Include="Plotting\SpikeWaveformGraph.cs">
       <SubType>UserControl</SubType>
@@ -294,12 +299,7 @@
     </Compile>
     <Compile Include="DataTypes\DigitalOutEvent.cs" />
     <Compile Include="StimSrv\DigitalBuffer.cs" />
-    <Compile Include="StimSrv\File2Dig.cs" />
-    <Compile Include="StimSrv\File2Stim.cs" />
-    <Compile Include="StimSrv\IISZapper.cs" />
     <Compile Include="StimSrv\StimBuffer.cs" />
-    <Compile Include="StimSrv\StimPulse.cs" />
-    <Compile Include="StimSrv\StimTrain.cs" />
     <Compile Include="DataTypes\StimulusOutEvent.cs" />
     <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
     <Compile Include="SpikeDetection\LimAda.cs" />

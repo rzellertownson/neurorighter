@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -26,22 +26,30 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace NeuroRighter.DataTypes
 {
-
+    /// <summary>
+    /// Base NeuroRighter output event data type.
+    /// </summary>
     [Serializable] 
     public abstract class NREvent 
 
     {
+        /// <summary>
+        /// The sample, measured from the start of protocol executation, of the event.
+        /// </summary>
         protected ulong sampleIndex;
+
+        /// <summary>
+        /// The duration of the event if it is longer than on sample.
+        /// </summary>
         protected uint sampleDuration;
 
         /// <summary>
-        /// Base class for event type data wrapper classes in NR.
-        /// <author>Jon Newman </author>
+        /// Base class for ouput event type data classes in NR.
         /// </summary> 
         public NREvent() {}
 
         /// <summary>
-        /// Specifies when event occured relative to recording start
+        /// Specifies when the output event occurs, in samples, relative to recording start
         /// </summary>
         public ulong SampleIndex
         {
@@ -56,9 +64,9 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// Specifies sample duration
+        /// Duration of stimulation event in samples.
         /// </summary>
-        public uint SampleDuration
+        internal uint SampleDuration
         {
             get
             {
@@ -66,7 +74,7 @@ namespace NeuroRighter.DataTypes
             }
             set
             {
-                value = sampleDuration;
+                sampleDuration = value;
             }
         }
     }

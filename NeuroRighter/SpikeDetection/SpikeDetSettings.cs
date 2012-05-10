@@ -247,7 +247,7 @@ namespace NeuroRighter.SpikeDetection
                 if (tmpCM.Count > 0)
                 {
                     textBox_Results.Text += "CHANNEL " + ((short)tmpCM[0].channelNumber).ToString() + "\r\n";
-                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[tmpCM[0].channelNumber + 1].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
+                    textBox_Results.Text += " Number of training spikes: " + spikeSorter.spikesCollectedPerChannel[(short)(tmpCM[0].channelNumber + 1)].ToString() + " / " + spikeSorter.maxTrainingSpikesPerChannel.ToString() + "\r\n";
                     textBox_Results.Text += " Units Detected: " + tmpCM[0].K.ToString() + "\r\n";
                     textBox_Results.Text += " Clustering Results:\r\n";
 

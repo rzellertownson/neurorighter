@@ -14,14 +14,14 @@ namespace NeuroRighter
 
         private void button_SetRecordingStreams_Click(object sender, EventArgs e)
         {
-            recordingSettings.Refresh();
+            recordingSettings.RefreshForm();
             recordingSettings.MoveToDefaultLocation();
             recordingSettings.ShowDialog();
         }
 
         private void recordingSettings_SettingsHaveChanged(object sender, EventArgs e)
         {
-            recordingSettings.Refresh();
+            recordingSettings.RefreshForm();
         }
 
     }

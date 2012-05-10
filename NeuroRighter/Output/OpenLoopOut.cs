@@ -23,8 +23,9 @@ using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 using System.IO;
 using NeuroRighter.dbg;
+using NeuroRighter.StimSrv;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     /// <summary>
     /// <title> OpenLoopOutput</title>
@@ -46,7 +47,7 @@ namespace NeuroRighter.StimSrv
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
         internal ContStimTask stimTaskMaker;
-        internal AuxOutTask auxTaskMaker;
+        //internal AuxOutTask auxTaskMaker;
 
         // Master timing and triggering task
         internal Task masterTask;

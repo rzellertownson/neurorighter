@@ -1,5 +1,5 @@
 ﻿// NeuroRighter
-// Copyright (c) 2008 John Rolston
+// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -15,6 +15,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

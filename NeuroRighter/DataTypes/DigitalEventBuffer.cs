@@ -11,7 +11,7 @@ namespace NeuroRighter.DataTypes
         /// the digital event occured and portState, which is the integer
         /// state of the digital port at the time of the event.
         /// </summary>
-        class DigitalEventBuffer
+        public class DigitalEventBuffer
         {
 
             private double sampleFrequencyHz;

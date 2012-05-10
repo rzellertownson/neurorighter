@@ -54,14 +54,24 @@ namespace NeuroRighter
     {
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            HardwareSettings nc_s = new HardwareSettings();
-            nc_s.ShowDialog();
-            updateSettings();
+            // As the user if they are sure
+            DialogResult yesNoResult = MessageBox.Show("This will overwrite the current spike filter. Do you want to proceed?", 
+                "Hardware Settings", MessageBoxButtons.YesNo);
 
-            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
-            spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
-            spikeDet.SetSpikeDetector(spikeBufferLength);
+            // Proceed
+            if (yesNoResult == DialogResult.Yes)
+            {
 
+                spikeDet.Close();
+
+                HardwareSettings nc_s = new HardwareSettings();
+                nc_s.ShowDialog();
+                updateSettings();
+
+                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
+                spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
+                spikeDet.SetSpikeDetector(spikeBufferLength);
+            }
         }
 
         private void toolStripMenuItem_DisplaySettings_Click(object sender, EventArgs e)

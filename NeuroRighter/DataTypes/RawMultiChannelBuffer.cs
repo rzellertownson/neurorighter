@@ -1,4 +1,22 @@
-﻿using System;
+﻿// NeuroRighter
+// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,12 +25,8 @@ namespace NeuroRighter.DataTypes
 {
     /// <summary>
     /// This class is the standard NR buffer class for raw analog data coming from
-    /// multiple input channels. It has a startAndEndSample property that specifies
-    /// the start and end sample indicies, relative to the start of data collection
-    /// contained in the data buffer corresponding to the first and last positions
-    /// of the rawMultichannelBuffer array (one channel's worth of data along each row).
-    /// The samplePeriodSecond property allows client classes to determine the absolute
-    /// time stamp of each sample in seconds.
+    /// multiple input channels. It contains various properties and methods for accessing 
+    /// multichannel stream data and metadata.
     /// </summary>
     public class RawMultiChannelBuffer
     {
@@ -30,13 +44,9 @@ namespace NeuroRighter.DataTypes
         internal int[] netLeastAndMostCurrentCircular;
 
         /// <summary>
-        /// This is the standard NeuroRighter buffer class for buffering raw analog data coming from
-        /// multiple input channels. It has a StartAndEndSample property that specifies
-        /// the  newest and oldest sample indicies, relative to the start of data collection
-        /// contained in the data buffer, which correspond to the first and last positions
-        /// of the rawMultichannelBuffer array (one channel's worth of data along each row).
-        /// The SamplePeriodSecond property allows clients to determine the absolute
-        /// time stamp of each sample in seconds.
+        /// This class is the standard NR buffer class for raw analog data coming from
+        /// multiple input channels. It contains various properties and methods for accessing 
+        /// multichannel stream data and metadata.
         /// </summary>
         /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
         /// <param name="numChannelsPerTask"> Number of channels data collection task (argument 4) </param>
@@ -129,7 +139,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// The oldest and newest sample that are current members of this data buffer.
+        /// The oldest and newest sample that currently members of the buffer.
         /// </summary>
         public ulong[] StartAndEndSample
         {
@@ -144,7 +154,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// The sample buffer itself.
+        /// Multichannle data buffer array that contains one channel's worth of data along each row.
         /// </summary>
         public double[][] Buffer
         {
@@ -166,7 +176,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// The history of the this buffer, measured in the amount of past samples it stores for eachc channel.
+        /// The history of the this buffer, measured in the amount of past samples it stores for each channel.
         /// </summary>
         public int BufferLengthInSamples
         {

@@ -44,10 +44,10 @@ using NationalInstruments.Analysis.SignalGeneration;
 using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
-using NeuroRighter.StimSrv;
+//using NeuroRighter.StimSrv;
 using ExtensionMethods;
-
-
+using NeuroRighter.NeuroRighterTask;
+using NeuroRighter.Output;
 
 namespace NeuroRighter
 {

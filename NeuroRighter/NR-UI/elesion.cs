@@ -33,7 +33,7 @@ using NationalInstruments.DAQmx;
 using rawType = System.Double;
 using NationalInstruments.Analysis.Dsp.Filters;
 using csmatio.types;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Output;
 
 namespace NeuroRighter
 {

@@ -9,8 +9,9 @@ using System.Windows.Forms;
 using System.Threading;
 using NeuroRighter.DataTypes;
 using NeuroRighter.dbg;
+using NeuroRighter.StimSrv;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     class File2Dig
     {

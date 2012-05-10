@@ -21,7 +21,7 @@ using System.Linq;
 using System.Text;
 using NationalInstruments.DAQmx;
 
-namespace NeuroRighter.StimSrv
+namespace NeuroRighter.Output
 {
     /// <summary>
     /// Ihnerited frm MakeAODOPair, specialized for stimulation output.

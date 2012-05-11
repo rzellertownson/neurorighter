@@ -37,6 +37,7 @@ namespace NeuroRighter
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox_impedanceDevice = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.checkBox_UseFloatingRef = new System.Windows.Forms.CheckBox();
             this.checkBox_useProgRef = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.comboBox_progRefSerialPort = new System.Windows.Forms.ComboBox();
@@ -249,23 +250,33 @@ namespace NeuroRighter
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.checkBox_UseFloatingRef);
             this.groupBox5.Controls.Add(this.checkBox_useProgRef);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.comboBox_progRefSerialPort);
             this.groupBox5.Location = new System.Drawing.Point(3, 111);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(341, 79);
+            this.groupBox5.Size = new System.Drawing.Size(341, 119);
             this.groupBox5.TabIndex = 15;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Plexon referencing";
-            this.groupBox5.Visible = false;
+            this.groupBox5.Text = "Referencing";
+            // 
+            // checkBox_UseFloatingRef
+            // 
+            this.checkBox_UseFloatingRef.AutoSize = true;
+            this.checkBox_UseFloatingRef.Location = new System.Drawing.Point(6, 21);
+            this.checkBox_UseFloatingRef.Name = "checkBox_UseFloatingRef";
+            this.checkBox_UseFloatingRef.Size = new System.Drawing.Size(169, 20);
+            this.checkBox_UseFloatingRef.TabIndex = 10;
+            this.checkBox_UseFloatingRef.Text = "Use Floating Reference";
+            this.checkBox_UseFloatingRef.UseVisualStyleBackColor = true;
             // 
             // checkBox_useProgRef
             // 
             this.checkBox_useProgRef.AutoSize = true;
-            this.checkBox_useProgRef.Location = new System.Drawing.Point(6, 19);
+            this.checkBox_useProgRef.Location = new System.Drawing.Point(6, 51);
             this.checkBox_useProgRef.Name = "checkBox_useProgRef";
-            this.checkBox_useProgRef.Size = new System.Drawing.Size(225, 17);
+            this.checkBox_useProgRef.Size = new System.Drawing.Size(283, 20);
             this.checkBox_useProgRef.TabIndex = 7;
             this.checkBox_useProgRef.Text = "Enable Plexon Programmable Referencing";
             this.checkBox_useProgRef.UseVisualStyleBackColor = true;
@@ -274,7 +285,7 @@ namespace NeuroRighter
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 48);
+            this.label5.Location = new System.Drawing.Point(6, 80);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(167, 16);
             this.label5.TabIndex = 9;
@@ -283,7 +294,7 @@ namespace NeuroRighter
             // comboBox_progRefSerialPort
             // 
             this.comboBox_progRefSerialPort.FormattingEnabled = true;
-            this.comboBox_progRefSerialPort.Location = new System.Drawing.Point(226, 45);
+            this.comboBox_progRefSerialPort.Location = new System.Drawing.Point(226, 77);
             this.comboBox_progRefSerialPort.Name = "comboBox_progRefSerialPort";
             this.comboBox_progRefSerialPort.Size = new System.Drawing.Size(97, 24);
             this.comboBox_progRefSerialPort.TabIndex = 8;
@@ -294,7 +305,7 @@ namespace NeuroRighter
             this.groupBox2.Controls.Add(this.checkBox_useCineplex);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.comboBox_cineplexDevice);
-            this.groupBox2.Location = new System.Drawing.Point(3, 196);
+            this.groupBox2.Location = new System.Drawing.Point(3, 415);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(341, 79);
             this.groupBox2.TabIndex = 14;
@@ -1604,5 +1615,6 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_UseAuxDataBuffer;
         private System.Windows.Forms.CheckBox checkBox_UseDigDataBuffer;
         private System.Windows.Forms.CheckBox checkBox_EnableImpedanceMeasurements;
+        private System.Windows.Forms.CheckBox checkBox_UseFloatingRef;
     }
 }

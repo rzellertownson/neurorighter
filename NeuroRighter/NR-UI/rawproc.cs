@@ -1,5 +1,4 @@
-﻿// EPHYSWRITE.CS
-// Copyright (c) 2008-2009 John Rolston
+﻿// Copyright (c) 2008-2012 Potter Lab
 //
 // This file is part of NeuroRighter.
 //
@@ -15,9 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
-
-//#define USE_LOG_FILE
-//#define DEBUG
 
 using System;
 using System.Collections;
@@ -262,7 +258,6 @@ namespace NeuroRighter
 
             // Debugger.Write(taskNumber.ToString() + ": lfp filtered");
 
-
             #region SALPA Filtering
             lock (stimIndices)
                 if (checkBox_SALPA.Checked && numStimReads == null) //Account for those not using the stimulator and stimulus coding scheme
@@ -454,6 +449,7 @@ namespace NeuroRighter
 
             //NEED TO FIX FOR MULTI DEVS
             #region Digital_Referencing_Spikes
+
             //Digital ref spikes signals
             if (checkBox_digRefSpikes.Checked)
             {
@@ -606,15 +602,17 @@ namespace NeuroRighter
             //Write to PlotData buffer
             spikePlotData.write(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             //   Debugger.Write(taskNumber.ToString() + ": spikes plotted");
+
             #region MUA
             if (Properties.Settings.Default.ProcessMUA)
             {
-                muaFilter.Filter(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, ref muaData);
+                muaFilter.Filter(filtSpikeData, taskNumber * numChannelsPerDev, numChannelsPerDev, ref muaData, checkBox_MUAFilter.Checked);
 
                 //Write to plot buffer
                 muaPlotData.write(muaData, taskNumber * numChannelsPerDev, numChannelsPerDev);
             }
             #endregion
+
             //    Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
             bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;

@@ -1,4 +1,21 @@
-﻿using System;
+﻿// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +32,10 @@ namespace NeuroRighter.Filters
 
         public void mein(string[] args)//filter data 
         {
-            //string test = " 0.6905 0.2496 0.8486 0.4885 0.2764 0.6659";
-            //string[] outt = test.Split(' ');
-            //for (int i = 0;i<outt.Length;i++)
-            //{
-            //    System.Console.Out.WriteLine(outt[i]); 
-            //}
-                
+
             if (args.Length <2)
             {
-                System.Console.Out.WriteLine("not enough input args");
+                System.Console.Out.WriteLine("Not enough input arguments.");
                 return;
             }
             StreamReader sr = new StreamReader(args[0]);

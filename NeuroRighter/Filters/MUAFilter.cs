@@ -1,4 +1,21 @@
-﻿using System;
+﻿// Copyright (c) 2008-2012 Potter Lab
+//
+// This file is part of NeuroRighter.
+//
+// NeuroRighter is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// NeuroRighter is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with NeuroRighter.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +27,8 @@ namespace NeuroRighter.Filters
         private int DownsampleFactor;
         private int BufferLength;
         private int NumChannels;
-        //private ButterworthFilter[] HighFilters;
-        //private ButterworthFilter[] LowFilters;
         private List<NationalInstruments.Analysis.Dsp.Filters.ButterworthLowpassFilter> LowFilters;
+        private int samplingRate;
 
         private const double WINDOW = 5.0; //in seconds, how much data to average over for RMS
         private const double VOLTAGE_EPSILON = 1E-6;
@@ -21,12 +37,13 @@ namespace NeuroRighter.Filters
         private readonly int numReadsPerWindow;
 
 
-        internal MUAFilter(int NumChannels, int InputSamplingRate, int BufferLength, double Low_LowCut, double Low_HighCut, 
+        internal MUAFilter(int NumChannels, int InputSamplingRate, int BufferLength, double highCut,  int filterOrder,
             int DownsampleFactor, double DeviceRefresh)
         {
             this.NumChannels = NumChannels;
             this.BufferLength = BufferLength;
             this.DownsampleFactor = DownsampleFactor;
+            this.samplingRate = InputSamplingRate;
 
             numReadsPerWindow = (int)Math.Round(WINDOW / DeviceRefresh);
             if (numReadsPerWindow < 1) numReadsPerWindow = 1;
@@ -39,12 +56,13 @@ namespace NeuroRighter.Filters
             //for (int c = 0; c < NumChannels; ++c)
             //    LowFilters[c] = new ButterworthFilter(2, InputSamplingRate, Low_LowCut, Low_HighCut, BufferLength);
             LowFilters = new List<NationalInstruments.Analysis.Dsp.Filters.ButterworthLowpassFilter>();
-            for (int c = 0; c < NumChannels; ++c) LowFilters.Add(new NationalInstruments.Analysis.Dsp.Filters.ButterworthLowpassFilter(2, InputSamplingRate, Low_HighCut));
+            for (int c = 0; c < NumChannels; ++c)
+                LowFilters.Add(new NationalInstruments.Analysis.Dsp.Filters.ButterworthLowpassFilter(filterOrder, InputSamplingRate, highCut));
 
             
         }
 
-        internal void Filter(double[][] data, int startChannel, int numChannels, ref double[][] OutputData)
+        internal void Filter(double[][] data, int startChannel, int numChannels, ref double[][] OutputData, bool applyFilter)
         {
             for (int c = startChannel; c < startChannel + numChannels; ++c)
             {
@@ -82,16 +100,19 @@ namespace NeuroRighter.Filters
                 }
 
                 //Low-pass filter
-                //LowFilters[c].filterData(data[c]);
-                LowFilters[c].FilterData(data[c]);
+                if(applyFilter)
+                    LowFilters[c].FilterData(data[c]);
 
                 //Downsample and take square root
                 for (int s = 0, sout = 0; s < BufferLength; s += DownsampleFactor)
                     OutputData[c][sout++] = Math.Sqrt((data[c][s] > 0 ? data[c][s] : 0.0));
-
             }
+        }
 
-
+        internal void Reset( double highCutHz, int filterOrder)
+        {
+            for (int c = 0; c < NumChannels; ++c)
+                LowFilters[c].Reset(filterOrder, samplingRate, highCutHz);
         }
     }
 }

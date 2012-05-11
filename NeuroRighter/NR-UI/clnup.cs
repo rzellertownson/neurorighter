@@ -298,7 +298,7 @@ namespace NeuroRighter
                 else if (!Properties.Settings.Default.ProcessMUA && tabControl.TabPages.Contains(tabPage_MUA))
                     tabControl.TabPages.Remove(tabPage_MUA);
 
-                //Add MUA tab, if applicable
+                //Add EEG tab, if applicable
                 if (Properties.Settings.Default.UseEEG && !tabControl.TabPages.Contains(tabPage_EEG))
                 {
                     tabPage_EEG = new TabPage("EEG");
@@ -330,21 +330,40 @@ namespace NeuroRighter
                     && tabControl.TabPages.Contains(tabPage_AuxInput))
                     tabControl.TabPages.Remove(tabPage_AuxInput);
 
+                //Add Referencing tab, if applicable
+                if ((Properties.Settings.Default.UseProgRef || Properties.Settings.Default.UseFloatingRef)
+                    && !tabControl.TabPages.Contains(tabPage_ProgRef))
+                {
+                    tabPage_ProgRef = new TabPage("Referencing");
+                    int pageNum = 2;
+                    if (Properties.Settings.Default.UseLFPs)
+                        pageNum++;
+                    if (Properties.Settings.Default.ProcessMUA)
+                        pageNum++;
+                    if (Properties.Settings.Default.UseEEG)
+                        pageNum++;
+                    if (Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                        pageNum++;
+                    tabControl.TabPages.Insert(pageNum, tabPage_ProgRef);
+                }
+                else if ((!Properties.Settings.Default.UseProgRef || Properties.Settings.Default.UseFloatingRef)
+                    && tabControl.TabPages.Contains(tabPage_ProgRef))
+                    tabControl.TabPages.Remove(tabPage_ProgRef);
+
                 //Add Impedance tab, if applicable
                 if (Properties.Settings.Default.useImpedanceMeasurer && !tabControl.TabPages.Contains(tabPage_impedance))
                 {
                     tabPage_MUA = new TabPage("Impedance Measurement");
                     tabControl.TabPages.Insert(tabControl.TabPages.Count, tabPage_impedance);
                 }
-
                 else if (!Properties.Settings.Default.useImpedanceMeasurer && tabControl.TabPages.Contains(tabPage_impedance))
                     tabControl.TabPages.Remove(tabPage_impedance);
 
                 // Remove the Referencing and Diagnostics tabs since they are currently non functional
-                if (tabControl.TabPages.Contains(tabPage_ProgRef))
-                {
-                    tabControl.TabPages.Remove(tabPage_ProgRef);
-                }
+                //if (tabControl.TabPages.Contains(tabPage_ProgRef))
+                //{
+                //    tabControl.TabPages.Remove(tabPage_ProgRef);
+                //}
                 if (tabControl.TabPages.Contains(tabPage_diagnostics))
                 {
                     tabControl.TabPages.Remove(tabPage_diagnostics);

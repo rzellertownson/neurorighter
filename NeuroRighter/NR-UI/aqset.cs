@@ -40,7 +40,7 @@ using csmatio.types;
 using csmatio.io;
 using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
-
+using NeuroRighter.Filters;
 
 namespace NeuroRighter
 {
@@ -262,42 +262,44 @@ namespace NeuroRighter
             artiFilt = new Filters.ArtiFilt_Interpolation(0.001, 0.002, spikeSamplingRate, numChannels);
         }
 
-        // Deal with changes to filter parameters
-        private void button_EnableFilterChanges_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("The Potter Lab standard settings for spike detection are: \n" +
-                "\tLow-Cut = 200 Hz\n" +
-                "\tHigh-Cut = 5000 Hz\n" +
-                "\tFilter = 2nd order Butterworth\n" +
-                "Be careful with these settings because they will affect spike\n" +
-                "detection and detected spike shape.");
+        //// Deal with changes to filter parameters
+        //private void button_EnableFilterChanges_Click(object sender, EventArgs e)
+        //{
+        //    MessageBox.Show("The Potter Lab standard settings for spike detection are: \n" +
+        //        "\tLow-Cut = 200 Hz\n" +
+        //        "\tHigh-Cut = 5000 Hz\n" +
+        //        "\tFilter = 2nd order Butterworth\n" +
+        //        "Be careful with these settings because they will affect spike\n" +
+        //        "detection and detected spike shape.");
 
-            checkBox_spikesFilter.Enabled = true;
-            SpikeLowCut.Enabled = true;
-            SpikeHighCut.Enabled = true;
-            SpikeFiltOrder.Enabled = true;
-            checkBox_LFPsFilter.Enabled = true;
-            LFPFiltOrder.Enabled = true;
-            LFPHighCut.Enabled = true;
-            LFPLowCut.Enabled = true;
-            checkBox_artiFilt.Enabled = true;
-            button_DisableFilterChanges.Enabled = true;
-            button_EnableFilterChanges.Enabled = false;
-        }
-        private void button_DisableFilterChanges_Click(object sender, EventArgs e)
-        {
-            checkBox_spikesFilter.Enabled = false;
-            SpikeLowCut.Enabled = false;
-            SpikeHighCut.Enabled = false;
-            SpikeFiltOrder.Enabled = false;
-            checkBox_LFPsFilter.Enabled = false;
-            LFPFiltOrder.Enabled = false;
-            LFPHighCut.Enabled = false;
-            LFPLowCut.Enabled = false;
-            checkBox_artiFilt.Enabled = false;
-            button_DisableFilterChanges.Enabled = false;
-            button_EnableFilterChanges.Enabled = true;
-        }
+        //    checkBox_spikesFilter.Enabled = true;
+        //    SpikeLowCut.Enabled = true;
+        //    SpikeHighCut.Enabled = true;
+        //    SpikeFiltOrder.Enabled = true;
+        //    checkBox_LFPsFilter.Enabled = true;
+        //    LFPFiltOrder.Enabled = true;
+        //    LFPHighCut.Enabled = true;
+        //    LFPLowCut.Enabled = true;
+        //    checkBox_artiFilt.Enabled = true;
+        //    button_DisableFilterChanges.Enabled = true;
+        //    button_EnableFilterChanges.Enabled = false;
+        //}
+
+        //private void button_DisableFilterChanges_Click(object sender, EventArgs e)
+        //{
+        //    checkBox_spikesFilter.Enabled = false;
+        //    SpikeLowCut.Enabled = false;
+        //    SpikeHighCut.Enabled = false;
+        //    SpikeFiltOrder.Enabled = false;
+        //    checkBox_LFPsFilter.Enabled = false;
+        //    LFPFiltOrder.Enabled = false;
+        //    LFPHighCut.Enabled = false;
+        //    LFPLowCut.Enabled = false;
+        //    checkBox_artiFilt.Enabled = false;
+        //    button_DisableFilterChanges.Enabled = false;
+        //    button_EnableFilterChanges.Enabled = true;
+        //}
+
         private void SpikeLowCut_ValueChanged(object sender, EventArgs e)
         {
             resetSpikeFilter();
@@ -367,6 +369,17 @@ namespace NeuroRighter
         {
             resetSALPA();
         }
+
+        private void numericUpDown_MUAHighCut_ValueChanged(object sender, EventArgs e)
+        {
+            resetMUAFilter();
+        }
+
+        private void numericUpDown_MUAFilterOrder_ValueChanged(object sender, EventArgs e)
+        {
+            resetMUAFilter();
+        }
+
 
         private void checkBox_SALPA_CheckedChanged(object sender, EventArgs e)
         {
@@ -501,6 +514,31 @@ namespace NeuroRighter
                     //    Convert.ToDouble(EEGLowCut.Value), Convert.ToDouble(EEGHighCut.Value));
                     eegFilter[i] = new BesselBandpassFilter((int)EEGFiltOrder.Value, Convert.ToDouble(textBox_eegSamplingRate.Text),
                         Convert.ToDouble(EEGLowCut.Value), Convert.ToDouble(EEGHighCut.Value));
+            }
+        }
+
+        //Reset MUA filter
+        private void resetMUAFilter()
+        {
+            Properties.Settings.Default.MUAHighCutHz = Convert.ToDouble(numericUpDown_MUAHighCut.Value);
+            Properties.Settings.Default.MUAFilterOrder = (int)(numericUpDown_MUAFilterOrder.Value);
+
+            if (muaFilter != null)
+            {
+                lock (muaFilter)
+                {
+                    muaFilter.Reset(Properties.Settings.Default.MUAHighCutHz, Properties.Settings.Default.MUAFilterOrder);
+                }
+            }
+            else //lfpFilter is uninitialized
+            {
+                //lfpFilter = new BesselBandpassFilter[numChannels];
+                muaFilter = new Filters.MUAFilter(
+                            numChannels, spikeSamplingRate, spikeBufferLength, 
+                            Properties.Settings.Default.MUAHighCutHz, 
+                            Properties.Settings.Default.MUAFilterOrder, 
+                            MUA_DOWNSAMPLE_FACTOR, 
+                            Properties.Settings.Default.ADCPollingPeriodSec);
             }
         }
 

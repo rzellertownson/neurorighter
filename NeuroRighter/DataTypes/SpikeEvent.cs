@@ -56,7 +56,7 @@ namespace NeuroRighter.DataTypes
         /// Set the unit number of waveform after sorting
         /// </summary>
         /// <param name="unit">The spike's unit number</param>
-        internal void SetUnit(Int16 unit)
+        public void SetUnit(Int16 unit)
         {
             this.unit = unit;
         }
@@ -65,7 +65,7 @@ namespace NeuroRighter.DataTypes
         /// Set the unit number of waveform after sorting
         /// </summary>
         /// <param name="unit">The spike's unit number</param>
-        internal void SetUnit(int unit)
+        public void SetUnit(int unit)
         {
             this.unit = (short)unit;
         }

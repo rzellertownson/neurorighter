@@ -718,7 +718,13 @@ namespace NeuroRighter
                         if (Properties.Settings.Default.UseLFPs) resetLFPFilter();
                         resetEEGFilter();
 
-                        muaFilter = new Filters.MUAFilter(numChannels, spikeSamplingRate, spikeBufferLength, 0.1, 100.0, MUA_DOWNSAMPLE_FACTOR, Properties.Settings.Default.ADCPollingPeriodSec);
+                        muaFilter = new Filters.MUAFilter(
+                            numChannels, spikeSamplingRate, spikeBufferLength, 
+                            Properties.Settings.Default.MUAHighCutHz, 
+                            Properties.Settings.Default.MUAFilterOrder, 
+                            MUA_DOWNSAMPLE_FACTOR, 
+                            Properties.Settings.Default.ADCPollingPeriodSec);
+
                         #endregion
 
                         #region Setup_DataStorage
@@ -1128,6 +1134,5 @@ namespace NeuroRighter
         {
             nrConsole.ShowConsole();
         }
-        
     }
 }

@@ -433,7 +433,6 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter464\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
-C:\Users\Jon\Desktop\neurorighter470\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.XML
 C:\Users\Jon\Desktop\neurorighter470\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.dll
 C:\Users\Jon\Desktop\neurorighter470\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.pdb
 C:\Users\Jon\Desktop\neurorighter470\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.dll

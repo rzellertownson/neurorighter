@@ -471,4 +471,7 @@
   <ProjectExtensions>
     <VisualStudio AllowExistingFolder="true" />
   </ProjectExtensions>
+  <PropertyGroup>
+    <PreBuildEvent>rmdir /q /s %25localappdata%25\[company name]\[AppName]</PreBuildEvent>
+  </PropertyGroup>
 </Project>

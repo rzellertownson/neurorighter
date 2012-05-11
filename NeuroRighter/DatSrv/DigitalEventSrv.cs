@@ -36,8 +36,7 @@ namespace NeuroRighter.DatSrv
         /// </summary>
         protected static readonly object lockObj = new object();
 
-        // Main storage buffer
-        private DigitalEventBuffer dataBuffer;
+        private DigitalEventBuffer dataBuffer; // Main storage buffer
         private ulong currentSample;
         private int bufferSizeInSamples; // The maximum number of samples between the current sample and the last avaialbe mixed event time before it expires and is removed.
         private int numSamplesPerWrite;  // The number of samples for each buffer that mixed events could have been detected in

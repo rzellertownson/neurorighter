@@ -80,13 +80,6 @@ namespace NeuroRighter
             ds.ShowDialog();
         }
 
-        //private void processingSettingsToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    ProcessingSettings ps = new ProcessingSettings();
-        //    ps.ShowDialog();
-        //    updateSettings();
-        //}
-
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox ab = new AboutBox();
@@ -166,7 +159,6 @@ namespace NeuroRighter
             }
         }
 
-        // Toggle file writing
         private void switch_record_StateChanged(object sender, ActionEventArgs e)
         {
             if (switch_record.Value)

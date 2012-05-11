@@ -1070,5 +1070,41 @@ namespace NeuroRighter.Properties {
                 this["useImpedanceMeasurer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public double MUAHighCutHz {
+            get {
+                return ((double)(this["MUAHighCutHz"]));
+            }
+            set {
+                this["MUAHighCutHz"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int MUAFilterOrder {
+            get {
+                return ((int)(this["MUAFilterOrder"]));
+            }
+            set {
+                this["MUAFilterOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseFloatingRef {
+            get {
+                return ((bool)(this["UseFloatingRef"]));
+            }
+            set {
+                this["UseFloatingRef"] = value;
+            }
+        }
     }
 }

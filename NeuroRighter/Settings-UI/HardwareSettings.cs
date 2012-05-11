@@ -273,6 +273,7 @@ namespace NeuroRighter
             checkBox_UseDigDataBuffer.Checked = Properties.Settings.Default.useDigDataBuffer;
             checkBox_UseAuxDataBuffer.Checked = Properties.Settings.Default.useAuxDataBuffer;
             checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
+            checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseProgRef;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -356,6 +357,7 @@ namespace NeuroRighter
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
             Properties.Settings.Default.useImpedanceMeasurer = checkBox_EnableImpedanceMeasurements.Checked;
+            Properties.Settings.Default.UseProgRef = checkBox_UseFloatingRef.Checked;
 
             // Set up devices
             if (checkBox_useSecondBoard.Checked)

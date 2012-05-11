@@ -114,7 +114,9 @@ namespace NeuroRighter
                 else
                     comboBox_LFPDevice2.SelectedIndex = 0;
             }
-            comboBox_progRefSerialPort.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
+
+            string[] serialPortNames = System.IO.Ports.SerialPort.GetPortNames();
+            comboBox_progRefSerialPort.Items.AddRange(serialPortNames);
             if (comboBox_progRefSerialPort.Items.Count > 0)
             {
                 int idx = comboBox_progRefSerialPort.Items.IndexOf(Properties.Settings.Default.SerialPortDevice);
@@ -123,6 +125,7 @@ namespace NeuroRighter
                 else
                     comboBox_progRefSerialPort.SelectedIndex = 0;
             }
+
             comboBox_EEG.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_EEG.Items.Count > 0)
             {
@@ -273,7 +276,7 @@ namespace NeuroRighter
             checkBox_UseDigDataBuffer.Checked = Properties.Settings.Default.useDigDataBuffer;
             checkBox_UseAuxDataBuffer.Checked = Properties.Settings.Default.useAuxDataBuffer;
             checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
-            checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseProgRef;
+            checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseFloatingRef;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -357,7 +360,7 @@ namespace NeuroRighter
             Properties.Settings.Default.ProcessMUA = checkBox_processMUA.Checked;
             Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
             Properties.Settings.Default.useImpedanceMeasurer = checkBox_EnableImpedanceMeasurements.Checked;
-            Properties.Settings.Default.UseProgRef = checkBox_UseFloatingRef.Checked;
+            Properties.Settings.Default.UseFloatingRef= checkBox_UseFloatingRef.Checked;
 
             // Set up devices
             if (checkBox_useSecondBoard.Checked)

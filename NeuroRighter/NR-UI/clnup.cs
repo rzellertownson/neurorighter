@@ -270,14 +270,28 @@ namespace NeuroRighter
 
                 comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
 
-                if (Properties.Settings.Default.UseProgRef)
+                try
                 {
-                    serialOut = new SerialPort(Properties.Settings.Default.SerialPortDevice, 38400, Parity.None, 8, StopBits.One);
-                    serialOut.Open();
-                    serialOut.Write("#0140/0\r"); //Reset everything to power-up state
-                    groupBox_plexonProgRef.Visible = true;
+                    if (Properties.Settings.Default.UseProgRef)
+                    {
+                        string serialOutPort = Properties.Settings.Default.SerialPortDevice;
+                        serialOut = new SerialPort(serialOutPort, 38400, Parity.None, 8, StopBits.One);
+                        serialOut.Open();
+                        serialOut.Write("#0140/0\r"); //Reset everything to power-up state
+                        groupBox_plexonProgRef.Visible = true;
+                    }
+                    else
+                    {
+                        groupBox_plexonProgRef.Visible = false;
+                    }
                 }
-                else { groupBox_plexonProgRef.Visible = false; }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("There was a problem when setting up the serial communicaiton port to the Plexon device:\r\n\r\n" + ex.Message);
+                    groupBox_plexonProgRef.Visible = false;
+                }
+
+
                 this.drawOpenLoopStimPulse();
 
                 //Add LFP tab, if applicable
@@ -316,7 +330,6 @@ namespace NeuroRighter
                 if ((Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
                     && !tabControl.TabPages.Contains(tabPage_AuxInput))
                 {
-                    tabPage_EEG = new TabPage("Aux. Input");
                     int pageNum = 2;
                     if (Properties.Settings.Default.UseLFPs)
                         pageNum++;
@@ -334,7 +347,6 @@ namespace NeuroRighter
                 if ((Properties.Settings.Default.UseProgRef || Properties.Settings.Default.UseFloatingRef)
                     && !tabControl.TabPages.Contains(tabPage_ProgRef))
                 {
-                    tabPage_ProgRef = new TabPage("Referencing");
                     int pageNum = 2;
                     if (Properties.Settings.Default.UseLFPs)
                         pageNum++;
@@ -344,9 +356,11 @@ namespace NeuroRighter
                         pageNum++;
                     if (Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
                         pageNum++;
+
+                    pageNum++; // Account for stimulation page
                     tabControl.TabPages.Insert(pageNum, tabPage_ProgRef);
                 }
-                else if ((!Properties.Settings.Default.UseProgRef || Properties.Settings.Default.UseFloatingRef)
+                else if (!(Properties.Settings.Default.UseProgRef || Properties.Settings.Default.UseFloatingRef)
                     && tabControl.TabPages.Contains(tabPage_ProgRef))
                     tabControl.TabPages.Remove(tabPage_ProgRef);
 
@@ -381,6 +395,7 @@ namespace NeuroRighter
                 reset();
             }
         }
+
         // Look at the stimulation hardware settings and create NI Tasks that reflect the user's choices
         private void UpdateStimulationSettings()
         {

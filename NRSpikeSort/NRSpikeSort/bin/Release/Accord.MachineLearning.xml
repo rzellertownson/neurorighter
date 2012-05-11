@@ -4,6 +4,782 @@
         <name>Accord.MachineLearning</name>
     </assembly>
     <members>
+        <member name="T:Accord.MachineLearning.KMeans">
+             <summary>
+               K-Means algorithm.
+             </summary>
+             
+             <remarks>
+             <para>
+               In statistics and machine learning, k-means clustering is a method
+               of cluster analysis which aims to partition n observations into k 
+               clusters in which each observation belongs to the cluster with the
+               nearest mean.</para>
+             <para>
+               It is similar to the expectation-maximization algorithm for mixtures
+               of Gaussians in that they both attempt to find the centers of natural
+               clusters in the data as well as in the iterative refinement approach
+               employed by both algorithms.</para> 
+             
+             <para>
+               The algorithm is composed of the following steps:
+               <list type="number">
+                 <item><description>
+                     Place K points into the space represented by the objects that are
+                     being clustered. These points represent initial group centroids.
+                 </description></item>
+                 <item><description>
+                     Assign each object to the group that has the closest centroid.
+                 </description></item>
+                 <item><description>
+                     When all objects have been assigned, recalculate the positions
+                     of the K centroids.
+                 </description></item>
+                 <item><description>
+                     Repeat Steps 2 and 3 until the centroids no longer move. This
+                     produces a separation of the objects into groups from which the
+                     metric to be minimized can be calculated.
+                 </description></item>
+               </list></para>
+             
+             <para>
+               This particular implementation uses the squared euclidean distance
+               as a similarity measure in order to form clusters. </para>
+               
+             <para>
+               References:
+               <list type="bullet">
+                 <item><description>
+                   Wikipedia, The Free Encyclopedia. K-means clustering. Available on:
+                   http://en.wikipedia.org/wiki/K-means_clustering </description></item>
+                 <item><description>
+                   Matteo Matteucci. A Tutorial on Clustering Algorithms. Available on:
+                   http://home.dei.polimi.it/matteucc/Clustering/tutorial_html/kmeans.html </description></item>
+               </list></para>
+             </remarks>
+             <example>
+               How to perform clustering with K-Means.
+               <code>
+               // Declare some observations
+               double[][] observations = 
+               {
+                   new double[] { -5, -2, -1 },
+                   new double[] { -5, -5, -6 },
+                   new double[] {  2,  1,  1 },
+                   new double[] {  1,  1,  2 },
+                   new double[] {  1,  2,  2 },
+                   new double[] {  3,  1,  2 },
+                   new double[] { 11,  5,  4 },
+                   new double[] { 15,  5,  6 },
+                   new double[] { 10,  5,  6 },
+               };
+              
+               // Create a new K-Means algorithm with 3 clusters 
+               KMeans kmeans = new KMeans(3);
+              
+               // Compute the algorithm, retrieving an integer array
+               //  containing the labels for each of the observations
+               int[] labels = kmeans.Compute(observations);
+              
+               // As result, the first two observations should belong to the
+               // same cluster (thus having the same label). The same should
+               // happen to the next four observations and to the last three.
+               </code>
+             </example>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.#ctor(System.Int32)">
+            <summary>
+              Initializes a new instance of K-Means algorithm
+            </summary>
+            
+            <param name="k">The number of clusters to divide input data.</param>    
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.#ctor(System.Int32,System.Func{System.Double[],System.Double[],System.Double})">
+            <summary>
+              Initializes a new instance of KMeans algorithm
+            </summary>
+            
+            <param name="k">The number of clusters to divide input data.</param>       
+            <param name="distance">The distance function to use. Default is to
+            use the <see cref="M:Accord.Math.Distance.SquareEuclidean(System.Double[],System.Double[])"/> distance.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Randomize(System.Double[][])">
+            <summary>
+              Randomizes the clusters inside a dataset.
+            </summary>
+            
+            <param name="data">The data to randomize the algorithm.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][])">
+            <summary>
+              Divides the input data into K clusters. 
+            </summary>     
+            
+            <param name="data">The data where to compute the algorithm.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double@)">
+            <summary>
+              Divides the input data into K clusters. 
+            </summary>    
+            
+            <param name="data">The data where to compute the algorithm.</param>
+            <param name="error">
+              The average square distance from the
+              data points to the clusters' centroids.
+            </param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double)">
+            <summary>
+              Divides the input data into K clusters. 
+            </summary>     
+            
+            <param name="data">The data where to compute the algorithm.</param>
+            <param name="threshold">The relative convergence threshold
+            for the algorithm. Default is 1e-5.</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double,System.Double@)">
+            <summary>
+              Divides the input data into K clusters. 
+            </summary>  
+            
+            <param name="data">The data where to compute the algorithm.</param>
+            <param name="threshold">The relative convergence threshold
+            for the algorithm. Default is 1e-5.</param>
+            
+            <param name="error">
+              The average square distance from the
+              data points to the clusters' centroids.
+            </param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Nearest(System.Double[])">
+            <summary>
+              Returns the closest cluster to an input vector.
+            </summary>
+            <param name="point">The input vector.</param>
+            <returns>
+              The index of the nearest cluster
+              to the given data point. </returns>
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Nearest(System.Double[][])">
+            <summary>
+              Returns the closest clusters to an input vector array.
+            </summary>
+            
+            <param name="points">The input vector array.</param>
+            
+            <returns>
+              An array containing the index of the nearest cluster
+              to the corresponding point in the input array.</returns>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Error(System.Double[][])">
+            <summary>
+              Calculates the average square distance from the data points
+              to the clusters' centroids.
+            </summary>
+            
+            <remarks>
+              The average distance from centroids can be used as a measure
+              of the "goodness" of the clusterization. The more the data
+              are aggregated around the centroids, the less the average
+              distance.
+            </remarks>
+            
+            <returns>
+              The average square distance from the data points to the
+              clusters' centroids.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.Error(System.Double[][],System.Int32[])">
+            <summary>
+              Calculates the average square distance from the data points
+              to the clusters' centroids.
+            </summary>
+            
+            <remarks>
+              The average distance from centroids can be used as a measure
+              of the "goodness" of the clusterization. The more the data
+              are aggregated around the centroids, the less the average
+              distance.
+            </remarks>
+            
+            <returns>
+              The average square distance from the data points to the
+              clusters' centroids.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.KMeans.converged(System.Double[][],System.Double[][],System.Double)">
+            <summary>
+              Determines if the algorithm has converged by comparing the
+              centroids between two consecutive iterations.
+            </summary>
+            
+            <param name="centroids">The previous centroids.</param>
+            <param name="newCentroids">The new centroids.</param>
+            <param name="threshold">A convergence threshold.</param>
+            
+            <returns>Returns <see langword="true"/> if all centroids had a percentage change
+               less than <see param="threshold"/>. Returns <see langword="false"/> otherwise.</returns>
+               
+        </member>
+        <member name="P:Accord.MachineLearning.KMeans.Clusters">
+            <summary>
+              Gets the clusters found by K-means.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeans.K">
+            <summary>
+              Gets the number of clusters.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeans.Dimension">
+            <summary>
+              Gets the dimensionality of the data space.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeans.Distance">
+            <summary>
+              Gets or sets the distance function used
+              as a distance metric between data points.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.KMeansCluster">
+            <summary>
+              K-means' Cluster
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansCluster.Index">
+            <summary>
+              Gets the label for this cluster.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansCluster.Mean">
+            <summary>
+              Gets the cluster's centroid.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansCluster.Covariance">
+            <summary>
+              Gets the cluster's variance-covariance matrix.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansCluster.Proportion">
+            <summary>
+              Gets the proportion of samples in the cluster.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.KMeansClusterCollection">
+            <summary>
+              K-means Cluster Collection.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Covariances">
+            <summary>
+              Gets the clusters' variance-covariance matrices.
+            </summary>
+            
+            <value>The clusters' variance-covariance matrices.</value>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Centroids">
+            <summary>
+              Gets or sets the clusters' centroids.
+            </summary>
+            
+            <value>The clusters' centroids.</value>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Proportions">
+            <summary>
+              Gets the proportion of samples in each cluster.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SupportVectorMachineLearningConfigurationFunction">
+            <summary>
+              Configuration function to configure the learning algorithms
+              for each of the Kernel Support Vector Machines used in this
+              Multi-class Support Vector Machine.
+            </summary>
+            
+            <param name="inputs">The input data for the learning algorithm.</param>
+            <param name="outputs">The output data for the learning algorithm.</param>
+            <param name="machine">The machine for the learning algorithm.</param>
+            <param name="class1">The class index corresponding to the negative values
+                in the output values contained in <paramref name="outputs"/>.</param>
+            <param name="class2">The class index corresponding to the positive values
+                in the output values contained in <paramref name="outputs"/>.</param>
+                
+            <returns>
+              The configured <see cref="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning"/> algorithm
+              to be used to train the given <see cref="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine"/>.
+            </returns>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning">
+             <summary>
+               One-against-one Multi-class Support Vector Machine Learning Algorithm
+             </summary>
+             
+             <remarks>
+               This class can be used to train Kernel Support Vector Machines with
+               any algorithm using a one-against-one strategy. The underlying training
+               algorithm can be configured by defining the Configure delegate.
+             </remarks>
+             
+             <example>
+               <code>
+               // Sample data
+               //   The following is simple auto association function
+               //   where each input correspond to its own class. This
+               //   problem should be easily solved by a Linear kernel.
+            
+               // Sample input data
+               double[][] inputs =
+               {
+                   new double[] { 0 },
+                   new double[] { 3 },
+                   new double[] { 1 },
+                   new double[] { 2 },
+               };
+               
+               // Output for each of the inputs
+               int[] outputs = { 0, 3, 1, 2 };
+               
+               
+               // Create a new Linear kernel
+               IKernel kernel = new Linear();
+               
+               // Create a new Multi-class Support Vector Machine with one input,
+               //  using the linear kernel and for four disjoint classes.
+               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
+               
+               // Create the Multi-class learning algorithm for the machine
+               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
+               
+               // Configure the learning algorithm to use SMO to train the
+               //  underlying SVMs in each of the binary class subproblems.
+               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =>
+                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
+               
+               // Run the learning algorithm
+               double error = teacher.Run();
+               </code>
+             </example>
+             
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning">
+            <summary>
+              Common interface for Support Machine Vector learning algorithms.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run">
+            <summary>
+              Runs the learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run(System.Boolean)">
+            <summary>
+              Runs the learning algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise.
+            </param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.#ctor(Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine,System.Double[][],System.Int32[])">
+            <summary>
+              Constructs a new Multi-class Support Vector Learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run">
+            <summary>
+              Runs the one-against-one learning algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run(System.Boolean)">
+            <summary>
+              Runs the one-against-one learning algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise. Default is true.
+            </param>
+            
+            <returns>
+              The sum of squares error rate for
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.ComputeError(System.Double[][],System.Int32[])">
+            <summary>
+              Compute the error ratio.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Algorithm">
+            <summary>
+              Gets or sets the configuration function for the learning algorithm.
+            </summary>
+            
+            <remarks>
+              The configuration function should return a properly configured ISupportVectorMachineLearning
+              algorithm using the given support vector machine and the input and output data.
+            </remarks>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine">
+             <summary>
+               One-against-one Multi-class Kernel Support Vector Machine Classifier.
+             </summary>
+             <remarks>
+             <para>
+               The Support Vector Machine is by nature a binary classifier. One of the ways
+               to extend the original SVM algorithm to multiple classes is to build a one-
+               against-one scheme where multiple SVMs specialize to recognize each of the
+               available classes. By using a competition scheme, the original multi-class
+               classification problem is then reduced to <c>n*(n/2)</c> smaller binary problems.</para>
+             <para>
+               Currently this class supports only Kernel machines as the underlying classifiers.
+               If a Linear Support Vector Machine is needed, specify a Linear kernel in the
+               constructor at the moment of creation. </para>
+               
+             <para>
+               References:
+               <list type="bullet">
+                 <item><description>
+                   <a href="http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html">
+                    http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html</a></description></item>
+                 <item><description>
+                   <a href="http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html">
+                    http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html</a></description></item>
+                 </list></para>
+                 
+             </remarks>
+            
+             <example>
+               <code>
+               // Sample data
+               //   The following is simple auto association function
+               //   where each input correspond to its own class. This
+               //   problem should be easily solved by a Linear kernel.
+            
+               // Sample input data
+               double[][] inputs =
+               {
+                   new double[] { 0 },
+                   new double[] { 3 },
+                   new double[] { 1 },
+                   new double[] { 2 },
+               };
+               
+               // Output for each of the inputs
+               int[] outputs = { 0, 3, 1, 2 };
+               
+               
+               // Create a new Linear kernel
+               IKernel kernel = new Linear();
+               
+               // Create a new Multi-class Support Vector Machine with one input,
+               //  using the linear kernel and for four disjoint classes.
+               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
+               
+               // Create the Multi-class learning algorithm for the machine
+               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
+               
+               // Configure the learning algorithm to use SMO to train the
+               //  underlying SVMs in each of the binary class subproblems.
+               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =&gt;
+                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
+               
+               // Run the learning algorithm
+               double error = teacher.Run();
+               </code>
+             </example>
+            
+             <seealso cref="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning"/>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.ISupportVectorMachine">
+            <summary>
+              Common interface for Support Vector Machines
+            </summary>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.ISupportVectorMachine.Compute(System.Double[])">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <param name="inputs">An input vector.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.#ctor(System.Int32,Accord.Statistics.Kernels.IKernel,System.Int32)">
+            <summary>
+              Constructs a new Multi-class Kernel Support Vector Machine
+            </summary>
+            <param name="kernel">The chosen kernel for the machine.</param>
+            <param name="inputs">The number of inputs for the machine.</param>
+            <param name="classes">The number of classes in the classification problem.</param>
+            <remarks>
+              If the number of inputs is zero, this means the machine
+              accepts a indefinite number of inputs. This is often the
+              case for kernel vector machines using a sequence kernel.
+            </remarks>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.#ctor(Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine[][])">
+            <summary>
+              Constructs a new Multi-class Kernel Support Vector Machine
+            </summary>
+            <param name="machines">
+              The machines to be used in each of the pairwise class subproblems.
+            </param>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Accord#MachineLearning#VectorMachines#ISupportVectorMachine#Compute(System.Double[])">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <param name="inputs">An input vector.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Compute(System.Double[])">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <param name="inputs">An input vector.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Compute(System.Double[],System.Int32[]@)">
+            <summary>
+              Computes the given input to produce the corresponding output.
+            </summary>
+            <param name="inputs">An input vector.</param>
+            <param name="votes">A vector containing the number of votes for each class.</param>
+            <returns>The output for the given input.</returns>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Item(System.Int32,System.Int32)">
+            <summary>
+              Gets the classifier for <paramref name="class1"/> against <paramref name="class2"/>.
+            </summary>
+            <remarks>
+              If the index of <paramref name="class1"/> is greater than <paramref name="class2"/>,
+              the classifier for the <paramref name="class2"/> against <paramref name="class1"/>
+              will be returned instead. If both indices are equal, null will be
+              returned instead.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Classes">
+            <summary>
+              Gets the number of classes.
+            </summary>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Inputs">
+            <summary>
+              Gets the number of inputs of the machines.
+            </summary>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Machines">
+            <summary>
+              Gets the subproblems classifiers.
+            </summary>
+        </member>
+        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization">
+            <summary>
+              Sequential Minimal Optimization (SMO) Algorithm
+            </summary>
+            
+            <remarks>
+            <para>
+              The SMO algorithm is an algorithm for solving large quadratic programming (QP)
+              optimization problems, widely used for the training of support vector machines.
+              First developed by John C. Platt in 1998, SMO breaks up large QP problems into
+              a series of smallest possible QP problems, which are then solved analytically.</para>
+            <para>
+              This class follows the original algorithm by Platt as strictly as possible.</para>
+             
+            <para>
+              References:
+              <list type="bullet">
+                <item><description>
+                  <a href="http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization">
+                  Wikipedia, The Free Encyclopedia. Sequential Minimal Optimization. Available on:
+                  http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization </a></description></item>
+                <item><description>
+                  <a href="http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf">
+                  John C. Platt, Sequential Minimal Optimization: A Fast Algorithm for Training Support
+                  Vector Machines. 1998. Available on: http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf </a></description></item>
+                <item><description>
+                  <a href="http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf">
+                  J. P. Lewis. A Short SVM (Support Vector Machine) Tutorial. Available on:
+                  http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf </a></description></item>
+                </list></para>  
+            </remarks>
+            
+            <example>
+              <code>
+              // Example XOR problem
+              double[][] inputs =
+              {
+                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
+                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
+                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
+                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
+              };
+               
+              // Dichotomy SVM outputs should be given as [-1;+1]
+              int[] labels =
+              {
+                     1, -1, -1, 1
+              };
+             
+              // Create a Kernel Support Vector Machine for the given inputs
+              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
+            
+              // Instantiate a new learning algorithm for SVMs
+              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
+            
+              // Set up the learning algorithm
+              smo.Complexity = 1.0;
+            
+              // Run the learning algorithm
+              double error = smo.Run();
+              
+              // Compute the decision output for one of the input vectors
+              int decision = System.Math.Sign(svm.Compute(inputs[0]));
+             </code>
+            </example>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.#ctor(Accord.MachineLearning.VectorMachines.SupportVectorMachine,System.Double[][],System.Int32[])">
+            <summary>
+              Initializes a new instance of a Sequential Minimal Optimization (SMO) algorithm.
+            </summary>
+            
+            <param name="machine">A Support Vector Machine.</param>
+            <param name="inputs">The input data points as row vectors.</param>
+            <param name="outputs">The classification label for each data point in the range [-1;+1].</param>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run(System.Boolean)">
+            <summary>
+              Runs the SMO algorithm.
+            </summary>
+            
+            <param name="computeError">
+              True to compute error after the training
+              process completes, false otherwise. Default is true.
+            </param>
+            
+            <returns>
+              The misclassification error rate of
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run">
+            <summary>
+              Runs the SMO algorithm.
+            </summary>
+            
+            <returns>
+              The misclassification error rate of
+              the resulting support vector machine.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.ComputeError(System.Double[][],System.Int32[])">
+            <summary>
+              Computes the error rate for a given set of input and outputs.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.examineExample(System.Int32)">
+            <summary>
+             Chooses which multipliers to optimize using heuristics.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.takeStep(System.Int32,System.Int32)">
+            <summary>
+              Analytically solves the optimization problem for two Lagrange multipliers.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.compute(System.Double[])">
+            <summary>
+              Computes the SVM output for a given point.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Complexity">
+            <summary>
+              Complexity (cost) parameter C. Increasing the value of C forces the creation
+              of a more accurate model that may not generalize well. Default value is the
+              number of examples divided by the trace of the kernel matrix.
+            </summary>
+            <remarks>
+              The cost parameter C controls the trade off between allowing training
+              errors and forcing rigid margins. It creates a soft margin that permits
+              some misclassifications. Increasing the value of C increases the cost of
+              misclassifying points and forces the creation of a more accurate model
+              that may not generalize well.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.UseComplexityHeuristic">
+            <summary>
+              Gets or sets a value indicating whether the Complexity parameter C
+              should be computed automatically by employing an heuristic rule.
+            </summary>
+            <value>
+            	<c>true</c> if complexity should be computed automatically; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Epsilon">
+            <summary>
+              Insensitivity zone ε. Increasing the value of ε can result in fewer support
+              vectors in the created model. Default value is 1e-3.
+            </summary>
+            <remarks>
+              Parameter ε controls the width of the ε-insensitive zone, used to fit the training
+              data. The value of ε can affect the number of support vectors used to construct the
+              regression function. The bigger ε, the fewer support vectors are selected. On the
+              other hand, bigger ε-values results in more flat estimates.
+            </remarks>
+        </member>
+        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Tolerance">
+            <summary>
+              Convergence tolerance. Default value is 1e-3.
+            </summary>
+            <remarks>
+              The criterion for completing the model training process. The default is 0.001.
+            </remarks>
+        </member>
         <member name="T:Accord.MachineLearning.CrossvalidationFittingFunction`1">
             <summary>
               Fitting function delegate.
@@ -222,6 +998,274 @@
         <member name="P:Accord.MachineLearning.CrossvalidationInfo`1.Tag">
             <summary>
               Gets or sets a tag for user-defined information.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GaussianMixtureModel">
+            <summary>
+              Gaussian Mixture Model Clustering.
+            </summary>
+            
+            <remarks>
+              Gaussian Mixture Models are one of most widely used model-based 
+              clustering methods. This specialized class provides a wrap-up
+              around the
+              <see cref="T:Accord.Statistics.Distributions.Multivariate.MultivariateMixture`1">
+              Mixture&lt;NormalDistribution&gt;</see> distribution and provides
+              mixture initialization using the K-Means clustering algorithm.
+            </remarks>
+            
+            <example>
+              <code>
+              // Create a new Gaussian Mixture Model with 2 components
+              GaussianMixtureModel gmm = new GaussianMixtureModel(2);
+              
+              // Compute the model (estimate)
+              gmm.Compute(samples, 0.0001);
+              
+              // Classify a single sample
+              int c = gmm.Classify(sample);
+              </code>
+            </example>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.GetMixtureDistribution">
+            <summary>
+              Gets a mixture distribution modeled
+              by this Gaussian Mixture Model.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.#ctor(System.Int32)">
+            <summary>
+              Initializes a new instance of the <see cref="T:Accord.MachineLearning.GaussianMixtureModel"/> class.
+            </summary>
+            
+            <param name="components">
+              The number of clusters in the clusterization problem. This will be
+              used to set the number of components in the mixture model.</param>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(System.Double[][],System.Double)">
+            <summary>
+              Initializes the model with initial values obtained 
+              throught a run of the K-Means clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(Accord.MachineLearning.KMeans)">
+            <summary>
+              Initializes the model with initial values obtained 
+              throught a run of the K-Means clustering algorithm.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(Accord.Statistics.Distributions.Multivariate.MultivariateNormalDistribution[])">
+            <summary>
+              Initializes the model with initial values.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][])">
+            <summary>
+              Divides the input data into K clusters modeling each
+              cluster as a multivariate Gaussian distribution. 
+            </summary>     
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],System.Double)">
+            <summary>
+              Divides the input data into K clusters modeling each
+              cluster as a multivariate Gaussian distribution. 
+            </summary>     
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],System.Double,System.Double)">
+            <summary>
+              Divides the input data into K clusters modeling each
+              cluster as a multivariate Gaussian distribution. 
+            </summary>     
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],Accord.MachineLearning.GaussianMixtureModelOptions)">
+            <summary>
+              Divides the input data into K clusters modeling each
+              cluster as a multivariate Gaussian distribution. 
+            </summary>     
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[])">
+            <summary>
+              Returns the most likely clusters of an observation.
+            </summary>
+            
+            <param name="observation">An input observation.</param>
+            
+            <returns>
+              The index of the most likely cluster
+              of the given observation. </returns>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.ClassifyThresh(System.Double[])">
+            <summary>
+              Returns the most likely clusters of an observation subject to the constraint that
+              the highest probability of the data point is higher than minProbability. In this case, 
+              the classifier will return -1.
+            </summary>
+            
+            <param name="observation">An input observation.</param>
+            <param name=" minProbability">highest probability of the data point is higher
+            than minProbability to be classified.</param>
+            <returns>
+              The index of the most likely cluster
+              of the given observation. </returns>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[],System.Double[]@)">
+            <summary>
+              Returns the most likely clusters of an observation.
+            </summary>
+            
+            <param name="observation">An input observation.</param>
+            <param name="responses">The likelihood responses for each cluster.</param>
+            
+            <returns>
+              The index of the most likely cluster
+              of the given observation. </returns>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[][])">
+            <summary>
+              Returns the most likely clusters for an array of observations.
+            </summary>
+            
+            <param name="observations">An set of observations.</param>
+            
+            <returns>
+              An array containing the index of the most likely cluster
+              for each of the given observations. </returns>
+              
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.ClassifyThresh(System.Double[][])">
+             <summary>
+               Returns the most likely clusters for an array of observation subject to the constraint that
+               the highest probability a data point is higher than minProbability. In this case, 
+               the classifier will return -1 as the classification.
+             </summary>
+             
+             <param name="observations">An set of observations.</param>
+            <param name=" minProbability">highest probability of the data point is higher
+             than minProbability to be classified.</param>
+             
+             <returns>
+               An array containing the index of the most likely cluster
+               for each of the given observations. </returns>
+               
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.SetPValue(System.Double)">
+            <summary>
+            Set the the pValue to consider a spike an outlier or not
+            </summary>
+            <param name="pVal"></param>
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModel.TestForOutlier(System.Double[],System.Int32)">
+            <summary>
+            Calculate if an observation is outside of the standard ellipsoid defining outlier boundary for a givin distrubtion
+            </summary>
+            <param name="obs"> The observation </param>
+            <param name="dist"> The index of the distrubtion being tested </param>
+            <returns></returns>
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianMixtureModel.Gaussians">
+            <summary>
+              Gets the Gaussian components of the mixture model.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GaussianMixtureModelOptions">
+            <summary>
+              Options for Gaussian Mixture Model fitting.
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianMixtureModelOptions.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Accord.MachineLearning.GaussianMixtureModelOptions"/> class.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianMixtureModelOptions.Threshold">
+            <summary>
+              Gets or sets the convergence criterion for the
+              Expectation-Maximization algorithm. Default is 1e-3.
+            </summary>
+            
+            <value>The convergence threshold.</value>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianMixtureModelOptions.NormalOptions">
+            <summary>
+              Gets or sets the fitting options for the component
+              Gaussian distributions of the mixture model.
+            </summary>
+            
+            <value>The fitting options for inner Gaussian distributions.</value>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GaussianCluster">
+            <summary>
+              Gaussian Mixture Model Cluster
+            </summary>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianCluster.Probability(System.Double[])">
+            <summary>
+              Gets the probability density function of the
+              underlying Gaussian probability distribution 
+              evaluated in point <c>x</c>.
+            </summary>
+            
+            <param name="x">An observation.</param>
+            
+            <returns>
+              The probability of <c>x</c> occurring
+              in the weighted Gaussian distribution.
+            </returns>
+            
+        </member>
+        <member name="M:Accord.MachineLearning.GaussianCluster.GetDistribution">
+            <summary>
+              Gets the normal distribution associated with this cluster.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianCluster.Index">
+            <summary>
+              Gets the label for this cluster.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianCluster.Mean">
+            <summary>
+              Gets the cluster's mean.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianCluster.Covariance">
+            <summary>
+              Gets the cluster's variance-covariance matrix.
+            </summary>
+            
+        </member>
+        <member name="P:Accord.MachineLearning.GaussianCluster.Proportion">
+            <summary>
+              Gets the mixture coefficient for the cluster distribution.
+            </summary>
+            
+        </member>
+        <member name="T:Accord.MachineLearning.GaussianClusterCollection">
+            <summary>
+              Gaussian Mixture Model Cluster Collection.
             </summary>
             
         </member>
@@ -484,300 +1528,6 @@
             <summary>
               Returns the identifying value for an item on this collection.
             </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine">
-             <summary>
-               One-against-one Multi-class Kernel Support Vector Machine Classifier.
-             </summary>
-             <remarks>
-             <para>
-               The Support Vector Machine is by nature a binary classifier. One of the ways
-               to extend the original SVM algorithm to multiple classes is to build a one-
-               against-one scheme where multiple SVMs specialize to recognize each of the
-               available classes. By using a competition scheme, the original multi-class
-               classification problem is then reduced to <c>n*(n/2)</c> smaller binary problems.</para>
-             <para>
-               Currently this class supports only Kernel machines as the underlying classifiers.
-               If a Linear Support Vector Machine is needed, specify a Linear kernel in the
-               constructor at the moment of creation. </para>
-               
-             <para>
-               References:
-               <list type="bullet">
-                 <item><description>
-                   <a href="http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html">
-                    http://courses.media.mit.edu/2006fall/mas622j/Projects/aisen-project/index.html</a></description></item>
-                 <item><description>
-                   <a href="http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html">
-                    http://nlp.stanford.edu/IR-book/html/htmledition/multiclass-svms-1.html</a></description></item>
-                 </list></para>
-                 
-             </remarks>
-            
-             <example>
-               <code>
-               // Sample data
-               //   The following is simple auto association function
-               //   where each input correspond to its own class. This
-               //   problem should be easily solved by a Linear kernel.
-            
-               // Sample input data
-               double[][] inputs =
-               {
-                   new double[] { 0 },
-                   new double[] { 3 },
-                   new double[] { 1 },
-                   new double[] { 2 },
-               };
-               
-               // Output for each of the inputs
-               int[] outputs = { 0, 3, 1, 2 };
-               
-               
-               // Create a new Linear kernel
-               IKernel kernel = new Linear();
-               
-               // Create a new Multi-class Support Vector Machine with one input,
-               //  using the linear kernel and for four disjoint classes.
-               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
-               
-               // Create the Multi-class learning algorithm for the machine
-               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
-               
-               // Configure the learning algorithm to use SMO to train the
-               //  underlying SVMs in each of the binary class subproblems.
-               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =&gt;
-                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
-               
-               // Run the learning algorithm
-               double error = teacher.Run();
-               </code>
-             </example>
-            
-             <seealso cref="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning"/>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.ISupportVectorMachine">
-            <summary>
-              Common interface for Support Vector Machines
-            </summary>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.ISupportVectorMachine.Compute(System.Double[])">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <param name="inputs">An input vector.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.#ctor(System.Int32,Accord.Statistics.Kernels.IKernel,System.Int32)">
-            <summary>
-              Constructs a new Multi-class Kernel Support Vector Machine
-            </summary>
-            <param name="kernel">The chosen kernel for the machine.</param>
-            <param name="inputs">The number of inputs for the machine.</param>
-            <param name="classes">The number of classes in the classification problem.</param>
-            <remarks>
-              If the number of inputs is zero, this means the machine
-              accepts a indefinite number of inputs. This is often the
-              case for kernel vector machines using a sequence kernel.
-            </remarks>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.#ctor(Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine[][])">
-            <summary>
-              Constructs a new Multi-class Kernel Support Vector Machine
-            </summary>
-            <param name="machines">
-              The machines to be used in each of the pairwise class subproblems.
-            </param>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Accord#MachineLearning#VectorMachines#ISupportVectorMachine#Compute(System.Double[])">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <param name="inputs">An input vector.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Compute(System.Double[])">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <param name="inputs">An input vector.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Compute(System.Double[],System.Int32[]@)">
-            <summary>
-              Computes the given input to produce the corresponding output.
-            </summary>
-            <param name="inputs">An input vector.</param>
-            <param name="votes">A vector containing the number of votes for each class.</param>
-            <returns>The output for the given input.</returns>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Item(System.Int32,System.Int32)">
-            <summary>
-              Gets the classifier for <paramref name="class1"/> against <paramref name="class2"/>.
-            </summary>
-            <remarks>
-              If the index of <paramref name="class1"/> is greater than <paramref name="class2"/>,
-              the classifier for the <paramref name="class2"/> against <paramref name="class1"/>
-              will be returned instead. If both indices are equal, null will be
-              returned instead.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Classes">
-            <summary>
-              Gets the number of classes.
-            </summary>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Inputs">
-            <summary>
-              Gets the number of inputs of the machines.
-            </summary>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine.Machines">
-            <summary>
-              Gets the subproblems classifiers.
-            </summary>
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning">
-            <summary>
-              Common interface for Support Machine Vector learning algorithms.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run">
-            <summary>
-              Runs the learning algorithm.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning.Run(System.Boolean)">
-            <summary>
-              Runs the learning algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise.
-            </param>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SupportVectorMachineLearningConfigurationFunction">
-            <summary>
-              Configuration function to configure the learning algorithms
-              for each of the Kernel Support Vector Machines used in this
-              Multi-class Support Vector Machine.
-            </summary>
-            
-            <param name="inputs">The input data for the learning algorithm.</param>
-            <param name="outputs">The output data for the learning algorithm.</param>
-            <param name="machine">The machine for the learning algorithm.</param>
-            <param name="class1">The class index corresponding to the negative values
-                in the output values contained in <paramref name="outputs"/>.</param>
-            <param name="class2">The class index corresponding to the positive values
-                in the output values contained in <paramref name="outputs"/>.</param>
-                
-            <returns>
-              The configured <see cref="T:Accord.MachineLearning.VectorMachines.Learning.ISupportVectorMachineLearning"/> algorithm
-              to be used to train the given <see cref="T:Accord.MachineLearning.VectorMachines.KernelSupportVectorMachine"/>.
-            </returns>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning">
-             <summary>
-               One-against-one Multi-class Support Vector Machine Learning Algorithm
-             </summary>
-             
-             <remarks>
-               This class can be used to train Kernel Support Vector Machines with
-               any algorithm using a one-against-one strategy. The underlying training
-               algorithm can be configured by defining the Configure delegate.
-             </remarks>
-             
-             <example>
-               <code>
-               // Sample data
-               //   The following is simple auto association function
-               //   where each input correspond to its own class. This
-               //   problem should be easily solved by a Linear kernel.
-            
-               // Sample input data
-               double[][] inputs =
-               {
-                   new double[] { 0 },
-                   new double[] { 3 },
-                   new double[] { 1 },
-                   new double[] { 2 },
-               };
-               
-               // Output for each of the inputs
-               int[] outputs = { 0, 3, 1, 2 };
-               
-               
-               // Create a new Linear kernel
-               IKernel kernel = new Linear();
-               
-               // Create a new Multi-class Support Vector Machine with one input,
-               //  using the linear kernel and for four disjoint classes.
-               var machine = new MulticlassSupportVectorMachine(1, kernel, 4);
-               
-               // Create the Multi-class learning algorithm for the machine
-               var teacher = new MulticlassSupportVectorLearning(machine, inputs, outputs);
-               
-               // Configure the learning algorithm to use SMO to train the
-               //  underlying SVMs in each of the binary class subproblems.
-               teacher.Algorithm = (svm, classInputs, classOutputs, i, j) =>
-                   new SequentialMinimalOptimization(svm, classInputs, classOutputs);
-               
-               // Run the learning algorithm
-               double error = teacher.Run();
-               </code>
-             </example>
-             
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.#ctor(Accord.MachineLearning.VectorMachines.MulticlassSupportVectorMachine,System.Double[][],System.Int32[])">
-            <summary>
-              Constructs a new Multi-class Support Vector Learning algorithm.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run">
-            <summary>
-              Runs the one-against-one learning algorithm.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Run(System.Boolean)">
-            <summary>
-              Runs the one-against-one learning algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise. Default is true.
-            </param>
-            
-            <returns>
-              The sum of squares error rate for
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.ComputeError(System.Double[][],System.Int32[])">
-            <summary>
-              Compute the error ratio.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.MulticlassSupportVectorLearning.Algorithm">
-            <summary>
-              Gets or sets the configuration function for the learning algorithm.
-            </summary>
-            
-            <remarks>
-              The configuration function should return a properly configured ISupportVectorMachineLearning
-              algorithm using the given support vector machine and the input and output data.
-            </remarks>
             
         </member>
         <member name="T:Accord.MachineLearning.VectorMachines.SupportVectorMachine">
@@ -1137,756 +1887,6 @@
             <summary>
               Gets or sets the kernel used by this machine.
             </summary>
-        </member>
-        <member name="T:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization">
-            <summary>
-              Sequential Minimal Optimization (SMO) Algorithm
-            </summary>
-            
-            <remarks>
-            <para>
-              The SMO algorithm is an algorithm for solving large quadratic programming (QP)
-              optimization problems, widely used for the training of support vector machines.
-              First developed by John C. Platt in 1998, SMO breaks up large QP problems into
-              a series of smallest possible QP problems, which are then solved analytically.</para>
-            <para>
-              This class follows the original algorithm by Platt as strictly as possible.</para>
-             
-            <para>
-              References:
-              <list type="bullet">
-                <item><description>
-                  <a href="http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization">
-                  Wikipedia, The Free Encyclopedia. Sequential Minimal Optimization. Available on:
-                  http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization </a></description></item>
-                <item><description>
-                  <a href="http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf">
-                  John C. Platt, Sequential Minimal Optimization: A Fast Algorithm for Training Support
-                  Vector Machines. 1998. Available on: http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf </a></description></item>
-                <item><description>
-                  <a href="http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf">
-                  J. P. Lewis. A Short SVM (Support Vector Machine) Tutorial. Available on:
-                  http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf </a></description></item>
-                </list></para>  
-            </remarks>
-            
-            <example>
-              <code>
-              // Example XOR problem
-              double[][] inputs =
-              {
-                  new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
-                  new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
-                  new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
-                  new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
-              };
-               
-              // Dichotomy SVM outputs should be given as [-1;+1]
-              int[] labels =
-              {
-                     1, -1, -1, 1
-              };
-             
-              // Create a Kernel Support Vector Machine for the given inputs
-              KernelSupportVectorMachine machine = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
-            
-              // Instantiate a new learning algorithm for SVMs
-              SequentialMinimalOptimization smo = new SequentialMinimalOptimization(machine, inputs, labels);
-            
-              // Set up the learning algorithm
-              smo.Complexity = 1.0;
-            
-              // Run the learning algorithm
-              double error = smo.Run();
-              
-              // Compute the decision output for one of the input vectors
-              int decision = System.Math.Sign(svm.Compute(inputs[0]));
-             </code>
-            </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.#ctor(Accord.MachineLearning.VectorMachines.SupportVectorMachine,System.Double[][],System.Int32[])">
-            <summary>
-              Initializes a new instance of a Sequential Minimal Optimization (SMO) algorithm.
-            </summary>
-            
-            <param name="machine">A Support Vector Machine.</param>
-            <param name="inputs">The input data points as row vectors.</param>
-            <param name="outputs">The classification label for each data point in the range [-1;+1].</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run(System.Boolean)">
-            <summary>
-              Runs the SMO algorithm.
-            </summary>
-            
-            <param name="computeError">
-              True to compute error after the training
-              process completes, false otherwise. Default is true.
-            </param>
-            
-            <returns>
-              The misclassification error rate of
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Run">
-            <summary>
-              Runs the SMO algorithm.
-            </summary>
-            
-            <returns>
-              The misclassification error rate of
-              the resulting support vector machine.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.ComputeError(System.Double[][],System.Int32[])">
-            <summary>
-              Computes the error rate for a given set of input and outputs.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.examineExample(System.Int32)">
-            <summary>
-             Chooses which multipliers to optimize using heuristics.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.takeStep(System.Int32,System.Int32)">
-            <summary>
-              Analytically solves the optimization problem for two Lagrange multipliers.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.compute(System.Double[])">
-            <summary>
-              Computes the SVM output for a given point.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Complexity">
-            <summary>
-              Complexity (cost) parameter C. Increasing the value of C forces the creation
-              of a more accurate model that may not generalize well. Default value is the
-              number of examples divided by the trace of the kernel matrix.
-            </summary>
-            <remarks>
-              The cost parameter C controls the trade off between allowing training
-              errors and forcing rigid margins. It creates a soft margin that permits
-              some misclassifications. Increasing the value of C increases the cost of
-              misclassifying points and forces the creation of a more accurate model
-              that may not generalize well.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.UseComplexityHeuristic">
-            <summary>
-              Gets or sets a value indicating whether the Complexity parameter C
-              should be computed automatically by employing an heuristic rule.
-            </summary>
-            <value>
-            	<c>true</c> if complexity should be computed automatically; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Epsilon">
-            <summary>
-              Insensitivity zone ε. Increasing the value of ε can result in fewer support
-              vectors in the created model. Default value is 1e-3.
-            </summary>
-            <remarks>
-              Parameter ε controls the width of the ε-insensitive zone, used to fit the training
-              data. The value of ε can affect the number of support vectors used to construct the
-              regression function. The bigger ε, the fewer support vectors are selected. On the
-              other hand, bigger ε-values results in more flat estimates.
-            </remarks>
-        </member>
-        <member name="P:Accord.MachineLearning.VectorMachines.Learning.SequentialMinimalOptimization.Tolerance">
-            <summary>
-              Convergence tolerance. Default value is 1e-3.
-            </summary>
-            <remarks>
-              The criterion for completing the model training process. The default is 0.001.
-            </remarks>
-        </member>
-        <member name="T:Accord.MachineLearning.GaussianMixtureModel">
-            <summary>
-              Gaussian Mixture Model Clustering.
-            </summary>
-            
-            <remarks>
-              Gaussian Mixture Models are one of most widely used model-based 
-              clustering methods. This specialized class provides a wrap-up
-              around the
-              <see cref="T:Accord.Statistics.Distributions.Multivariate.MultivariateMixture`1">
-              Mixture&lt;NormalDistribution&gt;</see> distribution and provides
-              mixture initialization using the K-Means clustering algorithm.
-            </remarks>
-            
-            <example>
-              <code>
-              // Create a new Gaussian Mixture Model with 2 components
-              GaussianMixtureModel gmm = new GaussianMixtureModel(2);
-              
-              // Compute the model (estimate)
-              gmm.Compute(samples, 0.0001);
-              
-              // Classify a single sample
-              int c = gmm.Classify(sample);
-              </code>
-            </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.GetMixtureDistribution">
-            <summary>
-              Gets a mixture distribution modeled
-              by this Gaussian Mixture Model.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.#ctor(System.Int32)">
-            <summary>
-              Initializes a new instance of the <see cref="T:Accord.MachineLearning.GaussianMixtureModel"/> class.
-            </summary>
-            
-            <param name="components">
-              The number of clusters in the clusterization problem. This will be
-              used to set the number of components in the mixture model.</param>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(System.Double[][],System.Double)">
-            <summary>
-              Initializes the model with initial values obtained 
-              throught a run of the K-Means clustering algorithm.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(Accord.MachineLearning.KMeans)">
-            <summary>
-              Initializes the model with initial values obtained 
-              throught a run of the K-Means clustering algorithm.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Initialize(Accord.Statistics.Distributions.Multivariate.MultivariateNormalDistribution[])">
-            <summary>
-              Initializes the model with initial values.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][])">
-            <summary>
-              Divides the input data into K clusters modeling each
-              cluster as a multivariate Gaussian distribution. 
-            </summary>     
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],System.Double)">
-            <summary>
-              Divides the input data into K clusters modeling each
-              cluster as a multivariate Gaussian distribution. 
-            </summary>     
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],System.Double,System.Double)">
-            <summary>
-              Divides the input data into K clusters modeling each
-              cluster as a multivariate Gaussian distribution. 
-            </summary>     
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Compute(System.Double[][],Accord.MachineLearning.GaussianMixtureModelOptions)">
-            <summary>
-              Divides the input data into K clusters modeling each
-              cluster as a multivariate Gaussian distribution. 
-            </summary>     
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[])">
-            <summary>
-              Returns the most likely clusters of an observation.
-            </summary>
-            
-            <param name="observation">An input observation.</param>
-            
-            <returns>
-              The index of the most likely cluster
-              of the given observation. </returns>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.ClassifyThresh(System.Double[])">
-            <summary>
-              Returns the most likely clusters of an observation subject to the constraint that
-              the highest probability of the data point is higher than minProbability. In this case, 
-              the classifier will return -1.
-            </summary>
-            
-            <param name="observation">An input observation.</param>
-            <param name=" minProbability">highest probability of the data point is higher
-            than minProbability to be classified.</param>
-            <returns>
-              The index of the most likely cluster
-              of the given observation. </returns>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[],System.Double[]@)">
-            <summary>
-              Returns the most likely clusters of an observation.
-            </summary>
-            
-            <param name="observation">An input observation.</param>
-            <param name="responses">The likelihood responses for each cluster.</param>
-            
-            <returns>
-              The index of the most likely cluster
-              of the given observation. </returns>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.Classify(System.Double[][])">
-            <summary>
-              Returns the most likely clusters for an array of observations.
-            </summary>
-            
-            <param name="observations">An set of observations.</param>
-            
-            <returns>
-              An array containing the index of the most likely cluster
-              for each of the given observations. </returns>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.ClassifyThresh(System.Double[][])">
-             <summary>
-               Returns the most likely clusters for an array of observation subject to the constraint that
-               the highest probability a data point is higher than minProbability. In this case, 
-               the classifier will return -1 as the classification.
-             </summary>
-             
-             <param name="observations">An set of observations.</param>
-            <param name=" minProbability">highest probability of the data point is higher
-             than minProbability to be classified.</param>
-             
-             <returns>
-               An array containing the index of the most likely cluster
-               for each of the given observations. </returns>
-               
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.SetPValue(System.Double)">
-            <summary>
-            Set the the pValue to consider a spike an outlier or not
-            </summary>
-            <param name="pVal"></param>
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModel.TestForOutlier(System.Double[],System.Int32)">
-            <summary>
-            Calculate if an observation is outside of the standard ellipsoid defining outlier boundary for a givin distrubtion
-            </summary>
-            <param name="obs"> The observation </param>
-            <param name="dist"> The index of the distrubtion being tested </param>
-            <returns></returns>
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianMixtureModel.Gaussians">
-            <summary>
-              Gets the Gaussian components of the mixture model.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GaussianMixtureModelOptions">
-            <summary>
-              Options for Gaussian Mixture Model fitting.
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianMixtureModelOptions.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Accord.MachineLearning.GaussianMixtureModelOptions"/> class.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianMixtureModelOptions.Threshold">
-            <summary>
-              Gets or sets the convergence criterion for the
-              Expectation-Maximization algorithm. Default is 1e-3.
-            </summary>
-            
-            <value>The convergence threshold.</value>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianMixtureModelOptions.NormalOptions">
-            <summary>
-              Gets or sets the fitting options for the component
-              Gaussian distributions of the mixture model.
-            </summary>
-            
-            <value>The fitting options for inner Gaussian distributions.</value>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GaussianCluster">
-            <summary>
-              Gaussian Mixture Model Cluster
-            </summary>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianCluster.Probability(System.Double[])">
-            <summary>
-              Gets the probability density function of the
-              underlying Gaussian probability distribution 
-              evaluated in point <c>x</c>.
-            </summary>
-            
-            <param name="x">An observation.</param>
-            
-            <returns>
-              The probability of <c>x</c> occurring
-              in the weighted Gaussian distribution.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.GaussianCluster.GetDistribution">
-            <summary>
-              Gets the normal distribution associated with this cluster.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianCluster.Index">
-            <summary>
-              Gets the label for this cluster.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianCluster.Mean">
-            <summary>
-              Gets the cluster's mean.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianCluster.Covariance">
-            <summary>
-              Gets the cluster's variance-covariance matrix.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.GaussianCluster.Proportion">
-            <summary>
-              Gets the mixture coefficient for the cluster distribution.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.GaussianClusterCollection">
-            <summary>
-              Gaussian Mixture Model Cluster Collection.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.KMeans">
-             <summary>
-               K-Means algorithm.
-             </summary>
-             
-             <remarks>
-             <para>
-               In statistics and machine learning, k-means clustering is a method
-               of cluster analysis which aims to partition n observations into k 
-               clusters in which each observation belongs to the cluster with the
-               nearest mean.</para>
-             <para>
-               It is similar to the expectation-maximization algorithm for mixtures
-               of Gaussians in that they both attempt to find the centers of natural
-               clusters in the data as well as in the iterative refinement approach
-               employed by both algorithms.</para> 
-             
-             <para>
-               The algorithm is composed of the following steps:
-               <list type="number">
-                 <item><description>
-                     Place K points into the space represented by the objects that are
-                     being clustered. These points represent initial group centroids.
-                 </description></item>
-                 <item><description>
-                     Assign each object to the group that has the closest centroid.
-                 </description></item>
-                 <item><description>
-                     When all objects have been assigned, recalculate the positions
-                     of the K centroids.
-                 </description></item>
-                 <item><description>
-                     Repeat Steps 2 and 3 until the centroids no longer move. This
-                     produces a separation of the objects into groups from which the
-                     metric to be minimized can be calculated.
-                 </description></item>
-               </list></para>
-             
-             <para>
-               This particular implementation uses the squared euclidean distance
-               as a similarity measure in order to form clusters. </para>
-               
-             <para>
-               References:
-               <list type="bullet">
-                 <item><description>
-                   Wikipedia, The Free Encyclopedia. K-means clustering. Available on:
-                   http://en.wikipedia.org/wiki/K-means_clustering </description></item>
-                 <item><description>
-                   Matteo Matteucci. A Tutorial on Clustering Algorithms. Available on:
-                   http://home.dei.polimi.it/matteucc/Clustering/tutorial_html/kmeans.html </description></item>
-               </list></para>
-             </remarks>
-             <example>
-               How to perform clustering with K-Means.
-               <code>
-               // Declare some observations
-               double[][] observations = 
-               {
-                   new double[] { -5, -2, -1 },
-                   new double[] { -5, -5, -6 },
-                   new double[] {  2,  1,  1 },
-                   new double[] {  1,  1,  2 },
-                   new double[] {  1,  2,  2 },
-                   new double[] {  3,  1,  2 },
-                   new double[] { 11,  5,  4 },
-                   new double[] { 15,  5,  6 },
-                   new double[] { 10,  5,  6 },
-               };
-              
-               // Create a new K-Means algorithm with 3 clusters 
-               KMeans kmeans = new KMeans(3);
-              
-               // Compute the algorithm, retrieving an integer array
-               //  containing the labels for each of the observations
-               int[] labels = kmeans.Compute(observations);
-              
-               // As result, the first two observations should belong to the
-               // same cluster (thus having the same label). The same should
-               // happen to the next four observations and to the last three.
-               </code>
-             </example>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.#ctor(System.Int32)">
-            <summary>
-              Initializes a new instance of K-Means algorithm
-            </summary>
-            
-            <param name="k">The number of clusters to divide input data.</param>    
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.#ctor(System.Int32,System.Func{System.Double[],System.Double[],System.Double})">
-            <summary>
-              Initializes a new instance of KMeans algorithm
-            </summary>
-            
-            <param name="k">The number of clusters to divide input data.</param>       
-            <param name="distance">The distance function to use. Default is to
-            use the <see cref="M:Accord.Math.Distance.SquareEuclidean(System.Double[],System.Double[])"/> distance.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Randomize(System.Double[][])">
-            <summary>
-              Randomizes the clusters inside a dataset.
-            </summary>
-            
-            <param name="data">The data to randomize the algorithm.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][])">
-            <summary>
-              Divides the input data into K clusters. 
-            </summary>     
-            
-            <param name="data">The data where to compute the algorithm.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double@)">
-            <summary>
-              Divides the input data into K clusters. 
-            </summary>    
-            
-            <param name="data">The data where to compute the algorithm.</param>
-            <param name="error">
-              The average square distance from the
-              data points to the clusters' centroids.
-            </param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double)">
-            <summary>
-              Divides the input data into K clusters. 
-            </summary>     
-            
-            <param name="data">The data where to compute the algorithm.</param>
-            <param name="threshold">The relative convergence threshold
-            for the algorithm. Default is 1e-5.</param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Compute(System.Double[][],System.Double,System.Double@)">
-            <summary>
-              Divides the input data into K clusters. 
-            </summary>  
-            
-            <param name="data">The data where to compute the algorithm.</param>
-            <param name="threshold">The relative convergence threshold
-            for the algorithm. Default is 1e-5.</param>
-            
-            <param name="error">
-              The average square distance from the
-              data points to the clusters' centroids.
-            </param>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Nearest(System.Double[])">
-            <summary>
-              Returns the closest cluster to an input vector.
-            </summary>
-            <param name="point">The input vector.</param>
-            <returns>
-              The index of the nearest cluster
-              to the given data point. </returns>
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Nearest(System.Double[][])">
-            <summary>
-              Returns the closest clusters to an input vector array.
-            </summary>
-            
-            <param name="points">The input vector array.</param>
-            
-            <returns>
-              An array containing the index of the nearest cluster
-              to the corresponding point in the input array.</returns>
-              
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Error(System.Double[][])">
-            <summary>
-              Calculates the average square distance from the data points
-              to the clusters' centroids.
-            </summary>
-            
-            <remarks>
-              The average distance from centroids can be used as a measure
-              of the "goodness" of the clusterization. The more the data
-              are aggregated around the centroids, the less the average
-              distance.
-            </remarks>
-            
-            <returns>
-              The average square distance from the data points to the
-              clusters' centroids.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.Error(System.Double[][],System.Int32[])">
-            <summary>
-              Calculates the average square distance from the data points
-              to the clusters' centroids.
-            </summary>
-            
-            <remarks>
-              The average distance from centroids can be used as a measure
-              of the "goodness" of the clusterization. The more the data
-              are aggregated around the centroids, the less the average
-              distance.
-            </remarks>
-            
-            <returns>
-              The average square distance from the data points to the
-              clusters' centroids.
-            </returns>
-            
-        </member>
-        <member name="M:Accord.MachineLearning.KMeans.converged(System.Double[][],System.Double[][],System.Double)">
-            <summary>
-              Determines if the algorithm has converged by comparing the
-              centroids between two consecutive iterations.
-            </summary>
-            
-            <param name="centroids">The previous centroids.</param>
-            <param name="newCentroids">The new centroids.</param>
-            <param name="threshold">A convergence threshold.</param>
-            
-            <returns>Returns <see langword="true"/> if all centroids had a percentage change
-               less than <see param="threshold"/>. Returns <see langword="false"/> otherwise.</returns>
-               
-        </member>
-        <member name="P:Accord.MachineLearning.KMeans.Clusters">
-            <summary>
-              Gets the clusters found by K-means.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeans.K">
-            <summary>
-              Gets the number of clusters.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeans.Dimension">
-            <summary>
-              Gets the dimensionality of the data space.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeans.Distance">
-            <summary>
-              Gets or sets the distance function used
-              as a distance metric between data points.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.KMeansCluster">
-            <summary>
-              K-means' Cluster
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansCluster.Index">
-            <summary>
-              Gets the label for this cluster.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansCluster.Mean">
-            <summary>
-              Gets the cluster's centroid.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansCluster.Covariance">
-            <summary>
-              Gets the cluster's variance-covariance matrix.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansCluster.Proportion">
-            <summary>
-              Gets the proportion of samples in the cluster.
-            </summary>
-            
-        </member>
-        <member name="T:Accord.MachineLearning.KMeansClusterCollection">
-            <summary>
-              K-means Cluster Collection.
-            </summary>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Covariances">
-            <summary>
-              Gets the clusters' variance-covariance matrices.
-            </summary>
-            
-            <value>The clusters' variance-covariance matrices.</value>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Centroids">
-            <summary>
-              Gets or sets the clusters' centroids.
-            </summary>
-            
-            <value>The clusters' centroids.</value>
-            
-        </member>
-        <member name="P:Accord.MachineLearning.KMeansClusterCollection.Proportions">
-            <summary>
-              Gets the proportion of samples in each cluster.
-            </summary>
-            
         </member>
     </members>
 </doc>

@@ -125,23 +125,7 @@ namespace NeuroRighter.StimSrv
         }
 
 
-        //internal void Setup(AnalogMultiChannelWriter stimAnalogWriter, DigitalSingleChannelWriter stimDigitalWriter, Task stimDigitalTask, Task stimAnalogTask, Task buffLoadTask, RealTimeDebugger Debugger)//, ulong starttime)
-        //{
-        //    AnalogMultiChannelWriter[] analogWriters = new AnalogMultiChannelWriter[1];
-        //    analogWriters[0] = stimAnalogWriter;
-
-        //    Task[] analogTasks = new Task[1];
-        //    analogTasks[0] = stimAnalogTask;
-
-        //    DigitalSingleChannelWriter[] digitalWriters = new DigitalSingleChannelWriter[1];
-        //    digitalWriters[0] = stimDigitalWriter;
-
-        //    Task[] digitalTasks = new Task[1];
-        //    digitalTasks[0] = stimDigitalTask;
-
-        //    base.Setup(analogWriters, digitalWriters, analogTasks, digitalTasks, buffLoadTask,Debugger);
-        //}
-
+      
 
 
         /// <summary>
@@ -282,114 +266,6 @@ namespace NeuroRighter.StimSrv
         }
 
 
-        #region MUX conversion Functions
-        internal static UInt32 channel2MUX(double channel)
-        {
-            if (Properties.Settings.Default.ChannelMapping == "invitro")
-                channel = MEAChannelMappings.ch2stimChannel[(short)(--channel)];
-
-            switch (Properties.Settings.Default.MUXChannels)
-            {
-                case 8: return _channel2MUX_8chMUX(channel, true, true);
-                case 16: return _channel2MUX_16chMUX(channel, true, true);
-                default: return 0; //Error!
-            }
-        }
-
-        internal static UInt32 channel2MUX_noEN(double channel)
-        {
-            if (Properties.Settings.Default.ChannelMapping == "invitro")
-                channel = MEAChannelMappings.ch2stimChannel[(short)(--channel)];
-
-            switch (Properties.Settings.Default.MUXChannels)
-            {
-                case 8: return _channel2MUX_8chMUX(channel, false, false);
-                case 16: return _channel2MUX_16chMUX(channel, false, false);
-                default: return 0; //Error!
-            }
-        }
-
-        internal static UInt32 channel2MUX(double channel, bool enable, bool trigger)
-        {
-            switch (Properties.Settings.Default.MUXChannels)
-            {
-                case 8: return _channel2MUX_8chMUX(channel, enable, trigger);
-                case 16: return _channel2MUX_16chMUX(channel, enable, trigger);
-                default: return 0; //Error!
-            }
-        }
-
-
-        //Convert channel number into control signal for deMUX
-        private static UInt32 _channel2MUX_16chMUX(double channel, bool enable, bool trigger) //'channel' is 1-based
-        {
-            bool[] data = new bool[32];
-
-            int portOffset = (Properties.Settings.Default.StimPortBandwidth == 32 ? PORT_OFFSET_32bitPort : PORT_OFFSET_8bitPort);
-            if (enable)
-            {
-                //Pick which mux to use
-                double tempDbl = (channel - 1) / 16.0;
-                int tempInt = (int)Math.Floor(tempDbl);
-                data[portOffset + 5 + tempInt] = true;
-            }
-            if (trigger)
-                data[portOffset] = true;  //Always true, since this is start trigger for AO
-
-            channel = 1 + ((channel - 1) % 16.0);
-            if (channel / 8.0 > 1) { data[portOffset + 4] = true; channel -= 8; }
-            if (channel / 4.0 > 1) { data[portOffset + 3] = true; channel -= 4; }
-            if (channel / 2.0 > 1) { data[portOffset + 2] = true; channel -= 2; }
-            if (channel / 1.0 > 1) { data[portOffset + 1] = true; }
-
-            int blankingBit = (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort);
-            data[blankingBit] = true; //Always true, since this is the "something's happening" signal
-
-            UInt32 temp = 0;
-            for (int p = 0; p < 32; ++p)
-                temp += (UInt32)Math.Pow(2, p) * Convert.ToUInt32(data[p]);
-
-            return temp;
-        }
-
-        private static UInt32 _channel2MUX_8chMUX(double channel, bool enable, bool trigger) //'channel' is 1-based
-        {
-            bool[] data = new bool[32];
-
-            int portOffset = (Properties.Settings.Default.StimPortBandwidth == 32 ? PORT_OFFSET_32bitPort : PORT_OFFSET_8bitPort);
-            if (enable)
-            {
-                //Pick which mux to use
-                double tempDbl = (channel - 1) / 8.0;
-                int tempInt = (int)Math.Floor(tempDbl);
-                data[portOffset + 4 + tempInt] = true;
-            }
-            if (trigger)
-                data[portOffset] = true;  //Always true, since this is start trigger for AO
-
-            channel = 1 + ((channel - 1) % 8.0);
-
-            if (channel / 4.0 > 1) { data[portOffset + 3] = true; channel -= 4; }
-            if (channel / 2.0 > 1) { data[portOffset + 2] = true; channel -= 2; }
-            if (channel / 1.0 > 1) { data[portOffset + 1] = true; }
-
-            int blankingBit = (Properties.Settings.Default.StimPortBandwidth == 32 ? BLANKING_BIT_32bitPort : BLANKING_BIT_8bitPort);
-            data[blankingBit] = true; //Always true, since this is the "something's happening" signal
-
-            UInt32 temp = 0;
-            for (int p = 0; p < 32; ++p)
-                temp += (UInt32)Math.Pow(2, p) * Convert.ToUInt32(data[p]);
-
-            return temp;
-        }
-
-        internal static Byte[] convertTo8Bit(UInt32[] data)
-        {
-            Byte[] output = new Byte[data.Length];
-            for (int i = 0; i < data.Length; ++i) output[i] = (Byte)data[i];
-            return output;
-        }
-        #endregion MUX conversion Functions
 
     }
 

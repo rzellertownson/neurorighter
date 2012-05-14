@@ -71,6 +71,10 @@ namespace NeuroRighter.DataTypes
                 this.digitalEncode[1] = channel2MUX_noEN((double)channel);
                 this.digitalEncode[2] = channel2MUX((double)channel);
                 this.sampleDuration = (uint)waveform.Length;
+                if (DigitalEncode[1] == 0 || DigitalEncode[2] == 0)
+                    throw new Exception("NR stimulation exception: you are attempting to stimulate on channel " + channel.ToString() + " which has resulted in an error. \n" +
+                        "this could be caused by your Properties.Settings.Default.MUXChannels, which is set to " + Properties.Settings.Default.MUXChannels.ToString() + " and must be either 16 or 8"
+                            );
             }
             catch (Exception e)
             {

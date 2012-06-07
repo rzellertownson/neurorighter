@@ -439,9 +439,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(7, 206);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(123, 13);
+            this.label4.Size = new System.Drawing.Size(138, 13);
             this.label4.TabIndex = 60;
-            this.label4.Text = "Min spike slope (uV/ms):";
+            this.label4.Text = "Min spike slope (uV/samp.):";
             // 
             // numericUpDown_MinSpikeSlope
             // 

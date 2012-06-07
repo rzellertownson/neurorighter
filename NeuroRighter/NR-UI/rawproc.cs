@@ -614,7 +614,6 @@ namespace NeuroRighter
             #endregion
 
             //    Debugger.Write(taskNumber.ToString() + ": multi unit activity done/processing done");
-            bwIsRunning[taskNumber] = false;
             e.Result = taskNumber;
 
             //Console.WriteLine(DateTime.Now.Subtract(spkClk).TotalMilliseconds.ToString());
@@ -627,6 +626,7 @@ namespace NeuroRighter
         private void bwSpikes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             int taskNumber = (int)e.Result;
+            bwIsRunning[taskNumber] = false;
 
             //Check whether timed recording is done or stopped
             if (checkBox_enableTimedRecording.Checked && DateTime.Now > timedRecordingStopTime)

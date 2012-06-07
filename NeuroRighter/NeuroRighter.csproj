@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Diagrams\AccessBufferAPICallStructure.cd" />
     <None Include="Matlab\loadraw.mexw32" />
     <None Include="Matlab\loadspike.mexw32" />
     <None Include="Matlab\loadstim.mexw32" />

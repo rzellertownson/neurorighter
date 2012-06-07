@@ -33,8 +33,9 @@ namespace NeuroRighter.NeuroRighterTask
     /// </summary>
     public abstract class NRTask
     {
-        private NRDataSrv datSrv;
-        private NRStimSrv stimSrv;
+
+        protected NRDataSrv DatSrv;
+        protected NRStimSrv StimSrv;
         private RealTimeDebugger debugger;
         private double[] cannedWaveform;
         private string nrFilePath;
@@ -43,9 +44,8 @@ namespace NeuroRighter.NeuroRighterTask
 
         internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
         {
-
-            this.datSrv = DatSrv;
-            this.stimSrv = StimSrv;
+            this.DatSrv = DatSrv;
+            this.StimSrv = StimSrv;
             this.debugger = Debugger;
             this.nrFilePath = NRFilePath;
             this.nrRecording = NRRecording;
@@ -88,27 +88,28 @@ namespace NeuroRighter.NeuroRighterTask
         internal protected abstract void Cleanup();
 
         #region Protected Accessors
-        /// <summary>
-        /// NeuroRighter's high level data server object.
-        /// </summary>
-        protected NRDataSrv DatSrv
-        {
-            get
-            {
-                return datSrv;
-            }
-        }
 
-        /// <summary>
-        /// NeuroRighter's high-level object for writing data to the doubled-buffered output FIFO on NI data aqusition cards.
-        /// </summary>
-        protected NRStimSrv StimSrv
-        {
-            get
-            {
-                return stimSrv;
-            }
-        }
+        ///// <summary>
+        ///// NeuroRighter's data server object that can be used to access incoming data streams.
+        ///// </summary>
+        //protected NRDataSrv DatSrv
+        //{
+        //    get
+        //    {
+        //        return datSrv;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// NeuroRighter's data server object for writing data to the doubled-buffered output FIFO on NI data aqusition cards.
+        ///// </summary>
+        //protected NRStimSrv StimSrv
+        //{
+        //    get
+        //    {
+        //        return stimSrv;
+        //    }
+        //}
 
         /// <summary>
         /// A real-time debugging tool usefule for debugging protcols created with the NeuroRighter API.

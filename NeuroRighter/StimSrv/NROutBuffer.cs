@@ -431,7 +431,6 @@ namespace NeuroRighter.StimSrv
         /// <returns> Current output buffer time in millieseconds</returns>
         public virtual double GetTime()
         {
-
             lock (taskLock)
                 return GetTimePrivate();
         }
@@ -518,8 +517,6 @@ namespace NeuroRighter.StimSrv
             return BUFFSIZE;
         }
 
-
-
         #endregion
 
         #region private methods
@@ -534,6 +531,7 @@ namespace NeuroRighter.StimSrv
             {
                 return (double)((digitalTasks[0].Stream.TotalSamplesGeneratedPerChannel) * 1000.0 / STIM_SAMPLING_FREQ);
             }
+
             throw new Exception("GetTime() requested from " + this.ToString() + ", which has no tasks");
         }
 

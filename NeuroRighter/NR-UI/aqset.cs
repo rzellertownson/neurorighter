@@ -103,6 +103,7 @@ namespace NeuroRighter
             // Reset the spike detector if it exists
             if (spikeDet != null)
             {
+                spikeDet.Close();
                 spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
                 spikeDet.SetSpikeDetector(spikeBufferLength);
             }

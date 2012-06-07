@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NeuroRighter.DataTypes.EventBuffer&lt;T&gt;">
+    <Position X="13.5" Y="3.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAAAAQAA=</HashCode>
+      <FileName>DataTypes\EventBuffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NeuroRighter.DatSrv.EventDataSrv&lt;T&gt;">
+    <Position X="11" Y="3.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ABCACAAAgAAAAAAAwIAAAAAAAIAAgAAAIQQAAAIAoAA=</HashCode>
+      <FileName>DatSrv\EventDataSrv.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NeuroRighter.DatSrv.NRDataSrv">
+    <Position X="8.5" Y="3.25" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>gAIAAIACoIAAAIIAAAAAAAACAAAAiggAACIIgAAiAAA=</HashCode>
+      <FileName>DatSrv\NRDataSrv.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NeuroRighter.DataTypes.SpikeEvent">
+    <Position X="15.75" Y="3.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAggAAAgIAAAIAAAAAAAAAAAACAAAAAhAAAAAQA=</HashCode>
+      <FileName>DataTypes\SpikeEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NeuroRighter.DataTypes.NREvent">
+    <Position X="15.75" Y="6.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAEAAAABAAIAAAACAAAAAAA=</HashCode>
+      <FileName>DataTypes\NREvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

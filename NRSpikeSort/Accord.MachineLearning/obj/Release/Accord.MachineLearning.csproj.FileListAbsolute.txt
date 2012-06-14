@@ -482,3 +482,20 @@ C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter474\NRSpikeSort\
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter474\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter474\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
 C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter474\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.XML
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.MachineLearning.pdb
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Math.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Statistics.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\AForge.Math.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.pdb
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.xml
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Math.pdb
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Math.xml
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Statistics.pdb
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\Accord.Statistics.xml
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\bin\Release\AForge.Math.xml
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.dll
+C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\Accord.MachineLearning\obj\Release\Accord.MachineLearning.pdb

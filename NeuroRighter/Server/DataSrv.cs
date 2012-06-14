@@ -42,7 +42,7 @@ namespace NeuroRighter.Server
         /// <summary>
         /// Butterworth filtered electrode data persistant buffer.
         /// </summary>
-        private RawDataSrv filteredElectrodeSrv;
+        private RawDataSrv spikeBandSrv;
 
         /// <summary>
         /// LFP persistant buffer.
@@ -125,7 +125,7 @@ namespace NeuroRighter.Server
             //3. Spike Filter data
             if (true)
             {
-                filteredElectrodeSrv = new RawDataSrv(
+                spikeBandSrv = new RawDataSrv(
                     Properties.Settings.Default.RawSampleFrequency,
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
@@ -221,11 +221,11 @@ namespace NeuroRighter.Server
         /// <summary>
         /// Butterworth filtered electrode data persistant buffer.
         /// </summary>
-        public RawDataSrv FilteredElectrodeSrv
+        public RawDataSrv SpikeBandSrv
         {
             get
             {
-                return filteredElectrodeSrv;
+                return spikeBandSrv;
             }
         }
 

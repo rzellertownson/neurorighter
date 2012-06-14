@@ -406,7 +406,7 @@ namespace NeuroRighter
 
                 // Send filtSpikeData to datSrv
                 if (Properties.Settings.Default.useSALPADataBuffer)
-                    datSrv.FilteredElectrodeSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
+                    datSrv.SpikeBandSrv.WriteToBuffer(filtSpikeData, taskNumber, numChannelsPerDev);
 
                 if (switch_record.Value && recordingSettings.recordSpikeFilt && (spikeTask != null))
                 {

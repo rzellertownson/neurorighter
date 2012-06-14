@@ -24,7 +24,7 @@ using NeuroRighter.DataTypes;
 using NationalInstruments.DAQmx;
 using NationalInstruments.UI;
 using NationalInstruments.UI.WindowsForms;
-using NeuroRighter.DatSrv;
+using NeuroRighter.Server;
 
 namespace NeuroRighter
 {

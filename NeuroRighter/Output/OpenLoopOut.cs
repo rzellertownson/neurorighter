@@ -22,8 +22,8 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.DAQmx;
 using System.IO;
-using NeuroRighter.dbg;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Log;
+using NeuroRighter.Server;
 
 namespace NeuroRighter.Output
 {
@@ -37,7 +37,7 @@ namespace NeuroRighter.Output
     internal class OpenLoopOut
     {
 
-        RealTimeDebugger debugger;
+        Logger debugger;
 
         // File locations
         internal string stimFid;
@@ -75,7 +75,7 @@ namespace NeuroRighter.Output
         public delegate void OpenLoopOutFinishedEventHandler(object sender, EventArgs e);
         public event OpenLoopOutFinishedEventHandler OpenLoopOutIsFinished;
 
-        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, RealTimeDebugger debugger)
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, Logger debugger)
         {
             this.stimFid = sf;
             this.digFid = df;
@@ -86,7 +86,7 @@ namespace NeuroRighter.Output
             this.debugger = debugger;
         }
 
-        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, RealTimeDebugger debugger, double[] standardWave)
+        internal OpenLoopOut(string sf, string df, string af, int fs, Task masterTask, Logger debugger, double[] standardWave)
         {
             this.stimFid = sf;
             this.digFid = df;

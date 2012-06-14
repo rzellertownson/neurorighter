@@ -7,14 +7,14 @@ using NationalInstruments.DAQmx;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
-using NeuroRighter.dbg;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Log;
+using NeuroRighter.Server;
 
 namespace NeuroRighter.Output
 {
     class File2Stim
     {
-        RealTimeDebugger debugger;
+        Logger debugger;
         StreamReader olstimfile; // The stream reader for the .olstim file being used
         internal string stimfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
         internal string line; // line from the .olstim file
@@ -50,7 +50,7 @@ namespace NeuroRighter.Output
 
         //internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task stimDigitalTask,
         //    Task stimAnalogTask, Task buffLoadTask, DigitalSingleChannelWriter stimDigitalWriter,
-        //    AnalogMultiChannelWriter stimAnalogWriter, RealTimeDebugger debugger)
+        //    AnalogMultiChannelWriter stimAnalogWriter, Logger debugger)
         //{
 
         //    this.stimfile = stimfile;
@@ -68,7 +68,7 @@ namespace NeuroRighter.Output
         //    stimbuff = new StimBuffer(BUFFSIZE, STIM_SAMPLING_FREQ, 2, numStimPerLoad);
         //}
 
-        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task buffLoadTask, Task masterTask, string masterLoad, RealTimeDebugger debugger, double[] cannedWave, bool robust)
+        internal File2Stim(string stimfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, Task buffLoadTask, Task masterTask, string masterLoad, Logger debugger, double[] cannedWave, bool robust)
         {
 
             this.stimfile = stimfile;

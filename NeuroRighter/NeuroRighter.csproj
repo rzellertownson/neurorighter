@@ -118,12 +118,12 @@
     <Compile Include="DataTypes\NREvent.cs" />
     <Compile Include="DataTypes\RawMultiChannelBuffer.cs" />
     <Compile Include="DataTypes\EventBuffer.cs" />
-    <Compile Include="DatSrv\NRDataSrv.cs" />
-    <Compile Include="DatSrv\DigitalEventSrv.cs" />
-    <Compile Include="DatSrv\RawDataSrv.cs" />
-    <Compile Include="DatSrv\EventDataSrv.cs" />
-    <Compile Include="dbg\ExecptDBG.cs" />
-    <Compile Include="dbg\RealTimeDebugger.cs" />
+    <Compile Include="Debug\ExecptDBG.cs" />
+    <Compile Include="Server\DataSrv.cs" />
+    <Compile Include="Server\DigitalEventSrv.cs" />
+    <Compile Include="Server\RawDataSrv.cs" />
+    <Compile Include="Server\EventDataSrv.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="ExtentionMethods\ClassLoader.cs" />
     <Compile Include="ExtentionMethods\ExtMeth01.cs" />
     <Compile Include="ExtentionMethods\InVivoChannelMappings.cs" />
@@ -196,9 +196,9 @@
     <Compile Include="Output\StimPulse.cs" />
     <Compile Include="Output\StimTrain.cs" />
     <Compile Include="Output\ZeroOutput\ZeroOutput.cs" />
-    <Compile Include="StimSrv\AuxBuffer.cs" />
+    <Compile Include="Server\AuxBuffer.cs" />
     <Compile Include="DataTypes\AuxOutEvent.cs" />
-    <Compile Include="StimSrv\NROutBuffer.cs" />
+    <Compile Include="Server\NROutBuffer.cs" />
     <Compile Include="Plotting\ScatterGraphController.cs" />
     <Compile Include="Plotting\SpikeWaveformGraph.cs">
       <SubType>UserControl</SubType>
@@ -299,8 +299,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\DigitalOutEvent.cs" />
-    <Compile Include="StimSrv\DigitalBuffer.cs" />
-    <Compile Include="StimSrv\StimBuffer.cs" />
+    <Compile Include="Server\DigitalBuffer.cs" />
+    <Compile Include="Server\StimBuffer.cs" />
     <Compile Include="DataTypes\StimulusOutEvent.cs" />
     <Compile Include="SpikeDetection\AdaptiveRMSThreshold.cs" />
     <Compile Include="SpikeDetection\LimAda.cs" />
@@ -315,7 +315,7 @@
       <DependentUpon>SpikeDetSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\SpikeEvent.cs" />
-    <Compile Include="StimSrv\NRStimSrv.cs" />
+    <Compile Include="Server\StimSrv.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FileWriting\RecordingSetup.resx">

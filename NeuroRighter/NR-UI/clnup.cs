@@ -169,7 +169,6 @@ namespace NeuroRighter
             led_recording.OnColor = Color.Lime;
             if (!button_startStimFromFile.Enabled) { button_startStimFromFile.Enabled = true; }
 
-
             //debugger
             if (Debugger != null)
             {

@@ -31,9 +31,11 @@ namespace NeuroRighter
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        /// 
         [STAThread]
-        static void Main()
+        public static int Main()
         {
+            Console.WriteLine("Starting NeuroRighter at (" + DateTime.Now.ToShortDateString() + " at " + DateTime.Now.ToShortTimeString() + ")");
             Type reflectedClass = typeof(NeuroRighter);
             using (Process p = Process.GetCurrentProcess())
                 p.PriorityClass = ProcessPriorityClass.RealTime;
@@ -60,11 +62,14 @@ namespace NeuroRighter
             //the TargetInvocationException exception that is thrown by MethodInfo.Invoke. -J.N.
             catch (Exception startEx)
             {
-                MessageBox.Show("error starting NeuroRighter: " + startEx, "NeuroRighter Fatal Error");
-                dbg.ExecptDBG startErrorHandler = new dbg.ExecptDBG();
+                MessageBox.Show("Error starting NeuroRighter: " + startEx, "NeuroRighter Start-Up Error");
+                Debug.ExecptDBG startErrorHandler = new Debug.ExecptDBG();
                 startErrorHandler.DisplayInnerException(startEx, reflectedClass);
+
+                return -1;
             }
 
+            return 0;
         }
     }
 }

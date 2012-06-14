@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading;
 using System.ComponentModel;
 using System.Windows.Forms;
-using NeuroRighter.StimSrv;
-using NeuroRighter.DatSrv;
+using NeuroRighter.Server;
 using NationalInstruments.DAQmx;
-using NeuroRighter.dbg;
+using NeuroRighter.Log;
 using NeuroRighter;
 using NeuroRighter.NeuroRighterTask;
 
@@ -18,10 +17,10 @@ namespace NeuroRighter.Output
     {
         private NRTask CLE;
         private int outputSampFreq;
-        private NRDataSrv DatSrv;
-        private NRStimSrv StimSrv;
-        private RealTimeDebugger Debugger;
-
+        private DataSrv DatSrv;
+        private StimSrv StimSrv;
+        private Logger Debugger;
+        
         // waveform that gets ripped off NR UI
         bool useManStimWave;
         internal double[] guiWave;
@@ -33,7 +32,7 @@ namespace NeuroRighter.Output
         private bool NRRecording;
         private NeuroRighter NR;
 
-        internal ClosedLoopOut(NRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
+        internal ClosedLoopOut(NRTask CLE, int fs, DataSrv DatSrv, StimSrv StimSrv, Task buffLoadTask, Logger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
         {
             this.CLE = CLE;
             this.outputSampFreq = fs;
@@ -48,7 +47,7 @@ namespace NeuroRighter.Output
             
         }
 
-        internal ClosedLoopOut(NRTask CLE, int fs, NRDataSrv DatSrv, NRStimSrv StimSrv, Task buffLoadTask, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR, double[] standardWave)
+        internal ClosedLoopOut(NRTask CLE, int fs, DataSrv DatSrv, StimSrv StimSrv, Task buffLoadTask, Logger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR, double[] standardWave)
             : this(CLE, fs, DatSrv, StimSrv, buffLoadTask,Debugger,NRFilePath, NRRecording, NR)
         {
             this.guiWave = standardWave;

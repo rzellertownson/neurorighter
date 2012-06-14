@@ -8,14 +8,14 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using NeuroRighter.DataTypes;
-using NeuroRighter.dbg;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Log;
+using NeuroRighter.Server;
 
 namespace NeuroRighter.Output
 {
     class File2Aux
     {
-        RealTimeDebugger debugger;
+        Logger debugger;
         StreamReader olauxfile; // The stream reader for the .olaux file being used
         internal string auxfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makeauxfile.m
         internal string line; // line from the .olaux file
@@ -51,7 +51,7 @@ namespace NeuroRighter.Output
         string masterLoad;
         internal File2Aux(string auxfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE,
             Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad,
-            bool auxFileExists, RealTimeDebugger debugger,bool robust)
+            bool auxFileExists, Logger debugger,bool robust)
         {
             this.auxfile = auxfile;
             this.BUFFSIZE = BUFFSIZE;
@@ -149,6 +149,7 @@ namespace NeuroRighter.Output
                 
 
             }
+
             auxBuff.Setup(buffLoadTask, debugger, masterTask);
         }
 

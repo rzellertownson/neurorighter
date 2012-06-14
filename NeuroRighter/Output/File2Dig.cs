@@ -8,14 +8,14 @@ using System.IO;
 using System.Windows.Forms;
 using System.Threading;
 using NeuroRighter.DataTypes;
-using NeuroRighter.dbg;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Log;
+using NeuroRighter.Server;
 
 namespace NeuroRighter.Output
 {
     class File2Dig
     {
-        RealTimeDebugger debugger;
+        Logger debugger;
         private StreamReader oldigfile; // The stream reader for the .olstim file being used
         private string digfile; // ascii file containing all nessesary stimulation info as produced by the matlab script makestimfile.m
         private string line; // line from the .olstim file
@@ -47,7 +47,7 @@ namespace NeuroRighter.Output
         
         internal string masterLoad;
         internal File2Dig(string digfile, int STIM_SAMPLING_FREQ, Int32 BUFFSIZE, 
-            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad, RealTimeDebugger debugger, bool robust)
+            Task buffLoadTask, Task masterTask, string masterLoad, ulong numEventPerLoad, Logger debugger, bool robust)
         {
             this.digfile = digfile;
             this.BUFFSIZE = BUFFSIZE;

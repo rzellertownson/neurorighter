@@ -20,11 +20,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NeuroRighter.StimSrv;
-using NeuroRighter.DatSrv;
-using NeuroRighter.dbg;
+using NeuroRighter.Server;
+using NeuroRighter.Log;
 using NeuroRighter;
-
 
 namespace NeuroRighter.NeuroRighterTask
 {
@@ -33,19 +31,26 @@ namespace NeuroRighter.NeuroRighterTask
     /// </summary>
     public abstract class NRTask
     {
+        /// <summary>
+        /// NeuroRighter's data server. This object contains specialized data servers that provided access to the steams specified at 'real-time' in hardware settings.
+        /// </summary>
+        protected DataSrv NRDataSrv;
 
-        protected NRDataSrv DatSrv;
-        protected NRStimSrv StimSrv;
-        private RealTimeDebugger debugger;
+        /// <summary>
+        /// NeuroRighter's stimulus server. This object contains specialized data servers that can be used to produce electrical stimuli, analog output and digital output on-the-fly.
+        /// </summary>
+        protected StimSrv NRStimSrv;
+
+        private Logger debugger;
         private double[] cannedWaveform;
         private string nrFilePath;
         private bool nrRecording;
         private NeuroRighter NR;
 
-        internal void Grab(NRDataSrv DatSrv, NRStimSrv StimSrv, RealTimeDebugger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
+        internal void Grab(DataSrv DatSrv, StimSrv StimSrv, Logger Debugger, string NRFilePath, bool NRRecording, NeuroRighter NR)
         {
-            this.DatSrv = DatSrv;
-            this.StimSrv = StimSrv;
+            this.NRDataSrv = DatSrv;
+            this.NRStimSrv = StimSrv;
             this.debugger = Debugger;
             this.nrFilePath = NRFilePath;
             this.nrRecording = NRRecording;
@@ -92,7 +97,7 @@ namespace NeuroRighter.NeuroRighterTask
         ///// <summary>
         ///// NeuroRighter's data server object that can be used to access incoming data streams.
         ///// </summary>
-        //protected NRDataSrv DatSrv
+        //protected DataSrv DatSrv
         //{
         //    get
         //    {
@@ -103,7 +108,7 @@ namespace NeuroRighter.NeuroRighterTask
         ///// <summary>
         ///// NeuroRighter's data server object for writing data to the doubled-buffered output FIFO on NI data aqusition cards.
         ///// </summary>
-        //protected NRStimSrv StimSrv
+        //protected StimSrv StimSrv
         //{
         //    get
         //    {
@@ -114,7 +119,7 @@ namespace NeuroRighter.NeuroRighterTask
         /// <summary>
         /// A real-time debugging tool usefule for debugging protcols created with the NeuroRighter API.
         /// </summary>
-        protected RealTimeDebugger Debugger
+        protected Logger Debugger
         {
             get
             {

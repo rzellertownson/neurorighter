@@ -40,11 +40,10 @@ using NeuroRighter.FileWriting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using NeuroRighter.DatSrv;
+using NeuroRighter.Server;
 using NeuroRighter.DataTypes;
 using NeuroRighter.Output;
-using NeuroRighter.StimSrv;
-using NeuroRighter.dbg;
+using NeuroRighter.Log;
 using ConsoleWidget;
 
 namespace NeuroRighter
@@ -54,9 +53,9 @@ namespace NeuroRighter
     sealed internal partial class NeuroRighter
     {
         # region Internal Variables
-        internal NRDataSrv datSrv;
-        internal NRStimSrv stimSrv;
-        internal RealTimeDebugger Debugger;
+        internal DataSrv datSrv;
+        internal StimSrv stimSrv;
+        internal Logger Debugger;
 
         #endregion
 

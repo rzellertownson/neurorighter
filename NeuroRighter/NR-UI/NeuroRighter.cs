@@ -48,10 +48,9 @@ using rawType = System.Double;
 using NeuroRighter.SpikeDetection;
 using NeuroRighter.FileWriting;
 using ExtensionMethods;
-using NeuroRighter.DatSrv;
-using NeuroRighter.StimSrv;
+using NeuroRighter.Server;
 using NeuroRighter.DataTypes;
-using NeuroRighter.dbg;
+using NeuroRighter.Log;
 using ConsoleWidget;
 
 namespace NeuroRighter
@@ -898,12 +897,12 @@ namespace NeuroRighter
 
 
 
-                    // Set up the NRDataSrv object. This is an object that publishes a nice large data history
+                    // Set up the DataSrv object. This is an object that publishes a nice large data history
                     // for use in closed loop control and other things
                     if (datSrv != null)
                         datSrv = null;
 
-                    datSrv = new NRDataSrv(
+                    datSrv = new DataSrv(
                         Properties.Settings.Default.datSrvBufferSizeSec,
                         checkBox_SALPA.Checked,
                         SALPA_WIDTH,
@@ -912,7 +911,7 @@ namespace NeuroRighter
                         );
 
 
-                    Debugger = new RealTimeDebugger();
+                    Debugger = new Logger();
                     Debugger.GrabTimer(spikeTask[0]);
 
                     //Send debug output to the user's application data folder 
@@ -1038,7 +1037,7 @@ namespace NeuroRighter
         {
             if (stimSrv != null)
                 stimSrv = null;
-            stimSrv = new NRStimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec * STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0], Debugger,Properties.Settings.Default.stimRobust
+            stimSrv = new StimSrv((int)(Properties.Settings.Default.DACPollingPeriodSec * STIM_SAMPLING_FREQ), STIM_SAMPLING_FREQ, spikeTask[0], Debugger,Properties.Settings.Default.stimRobust
                 );
             stimSrv.Setup();
             stimSrv.StartAllTasks();

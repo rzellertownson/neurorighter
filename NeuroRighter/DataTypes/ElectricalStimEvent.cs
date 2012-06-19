@@ -80,7 +80,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// The width of the stimulus waveform<
+        /// The width of the stimulus waveform
         /// </summary>
         public double Width
         {

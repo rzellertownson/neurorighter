@@ -1,5 +1,6 @@
 ﻿namespace NeuroRighter
 {
+    
     partial class RecordingNote
     {
         /// <summary>

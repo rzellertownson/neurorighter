@@ -31,7 +31,6 @@ namespace NeuroRighter.Output
         internal double[,] WaveMatrix; // stimulation waveforms (NXM vector, M samples per waveform)
 
         internal StimBuffer stimbuff;
-        private BackgroundWorker bw;//loads stimuli into the buffer when needed
         private Task buffLoadTask;//stimDigitalTask, stimAnalogTask,
         string masterLoad;
         private Task masterTask;

@@ -222,6 +222,9 @@ namespace NeuroRighter.DataTypes
             }
         }
         
+        /// <summary>
+        /// returns the voltage waveform placed across the output electrode
+        /// </summary>
         public double[] Waveform //Stim voltage
         {
             get

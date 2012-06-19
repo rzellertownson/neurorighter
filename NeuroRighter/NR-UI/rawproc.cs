@@ -620,9 +620,7 @@ namespace NeuroRighter
         }
 
         internal delegate void spikesAcquiredHandler(object sender, bool inTrigger);
-
-        internal event spikesAcquiredHandler spikesAcquired;
-
+        
         private void bwSpikes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             int taskNumber = (int)e.Result;

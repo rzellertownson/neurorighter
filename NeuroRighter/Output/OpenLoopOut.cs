@@ -46,7 +46,6 @@ namespace NeuroRighter.Output
 
         // Actual Tasks that play with NI DAQ
         internal Task buffLoadTask;
-        internal ContStimTask stimTaskMaker;
         //internal AuxOutTask auxTaskMaker;
 
         // Master timing and triggering task

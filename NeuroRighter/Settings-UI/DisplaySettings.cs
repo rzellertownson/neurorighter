@@ -27,11 +27,13 @@ using System.Windows.Forms;
 
 namespace NeuroRighter
 {
-
+    /// <summary>
+    /// NeuroRighter display settings.
+    /// </summary>
     public partial class DisplaySettings : Form
     {
         /// <summary>
-        /// NeuroRighter display settings.
+        /// Open up window for Display Settings GUI
         /// </summary>
         public DisplaySettings()
         {

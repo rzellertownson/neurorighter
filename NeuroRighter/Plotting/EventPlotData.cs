@@ -46,7 +46,6 @@ namespace NeuroRighter
         private const Int32 REFRESH = 100; //Time between callbacks, in ms
         private Int32[] numWfmsStored;
         private String channelMapping;
-        private List<int> units;
 
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;

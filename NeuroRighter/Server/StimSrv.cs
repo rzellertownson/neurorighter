@@ -89,6 +89,7 @@ namespace NeuroRighter.Server
         /// <param name="STIM_SAMPLING_FREQ">The DAC sampling frequency in Hz for all forms of output</param>
         /// <param name="masterTask">The NI Task to which all of the output clocks are synchronized to</param>
         /// <param name="debugger"> NR's real-time debugger</param>
+        /// <param name="robust">used to determine if the StimServer will be recover from failures</param>
         internal StimSrv(int INNERBUFFSIZE, int STIM_SAMPLING_FREQ, Task masterTask, Logger debugger, bool robust)
         {
             this.masterTask = masterTask;

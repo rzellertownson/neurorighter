@@ -89,7 +89,9 @@ namespace NeuroRighter.Server
         /// </summary>
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
         /// <param name="salpaAccess"> Using SALPA? </param>
+        /// <param name="salpaWidth">half width of the salpa filter</param>
         /// <param name="spikeFiltAccess"> Using spike filters? </param>
+        /// <param name="spikeDetlag">lag from the spike detection settings</param>
         internal DataSrv(double bufferSizeSeconds, bool salpaAccess, int salpaWidth, bool spikeFiltAccess, int spikeDetlag)
         {
             // Set the polling periods

@@ -10,15 +10,16 @@ using System.Windows.Forms;
 
 namespace NeuroRighter
 {
+    /// <summary>
+    /// This form allows the user to enter information about the current recording as ascii text. 
+    /// When the information is logged it is stored as a *.log file with the same basefile name as the 
+    /// current recording. Each time a note is entered, it is prefaced by the time-stamp at which the note
+    /// form was opened.
+    /// </summary>
+    /// 
     public partial class RecordingNote : Form
     {
-        /// <summary>
-        /// This form allows the user to enter information about the current recording as ascii text. 
-        /// When the information is logged it is stored as a *.log file with the same basefile name as the 
-        /// current recording. Each time a note is entered, it is prefaced by the time-stamp at which the note
-        /// form was opened.
-        /// </summary>
-        /// 
+        
 
         string TS;
         string note_fid;
@@ -26,6 +27,10 @@ namespace NeuroRighter
         TextWriter NoteWriter;
         StreamWriter file;
 
+        /// <summary>
+        /// Creates a RecordingNote window for the user to enter/save a note with.
+        /// </summary>
+        /// <param name="namebase">filename prefix for the timestamped file to generate using this RecordingNote</param>
         public RecordingNote(string namebase)
         {
             InitializeComponent();

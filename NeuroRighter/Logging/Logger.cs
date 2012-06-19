@@ -17,7 +17,6 @@ namespace NeuroRighter.Log
         FileStream debugOut;
         Task timekeeper;
         long reference;
-        int index;
         object debuggerlock = new object();
 
         /// <summary>
@@ -29,7 +28,6 @@ namespace NeuroRighter.Log
         {
             debugOut = new FileStream(path, FileMode.Create);
             reference = 0;
-            index = 0;
             string header = "NeuroRighter real time debugger log\r\nexperiment starting at " + DateTime.Now.ToString() + "\r\nAll times are in ms\r\n\r\n";
             byte[] bytedata = Encoding.ASCII.GetBytes(header);
             debugOut.Write(bytedata, 0, bytedata.Length);
@@ -47,8 +45,8 @@ namespace NeuroRighter.Log
         /// <param name="input">String to write to file.</param>
         public void Write(string input)
         {
-//#ifdef debug
-            if(false)
+
+            
             lock (debuggerlock)
             {
                 long time = 0;
@@ -56,7 +54,7 @@ namespace NeuroRighter.Log
                 {
                     time = timekeeper.Stream.TotalSamplesAcquiredPerChannel - reference;
                 }
-                catch (Exception me)
+                catch (Exception me)//ignore this error- just means that 
                 { }
                 byte[] bytedata = Encoding.ASCII.GetBytes(((double)(time) / 25).ToString() + " : " + input + "\r\n");
                 try

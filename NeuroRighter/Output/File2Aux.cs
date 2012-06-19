@@ -31,9 +31,7 @@ namespace NeuroRighter.Output
         private int eventChannel;
         private ulong eventTime;
         internal AuxBuffer auxBuff;
-        private BackgroundWorker bw;//loads stimuli into the buffer when needed
-        private Task auxOutputTask, buffLoadTask;
-        private AnalogMultiChannelWriter auxOutputWriter;
+        private Task buffLoadTask;
 
         // Did the user provide an aux file
         internal bool auxFileExists;
@@ -44,7 +42,6 @@ namespace NeuroRighter.Output
 
         //Event Handling
         internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
-        internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
         internal event AllFinishedHandler AlertAllFinished;
         Task masterTask;

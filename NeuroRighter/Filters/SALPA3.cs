@@ -29,8 +29,6 @@ namespace NeuroRighter.Filters
         private int asym_sams;// = 10;
         private int blank_sams;// = 20;
         private int ahead_sams;// = 5;
-        private int period_sams;// = 0;
-        private int delay_sams;// = 0;
         private int forcepeg_sams;// = 0;
         
         private rawType[] thresh;

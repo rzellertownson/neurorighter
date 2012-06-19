@@ -35,10 +35,6 @@ namespace NeuroRighter.FileWriting
         internal bool recordStim;
         internal bool recordAuxDig;
         internal bool recordAuxAnalog;
-        internal bool useFidTimeStamp;
-
-        // List of electrodes to write to file
-        internal List<int> electrodesToRecord;
 
         // The file writers
         internal SpikeFileOutput spkOut;

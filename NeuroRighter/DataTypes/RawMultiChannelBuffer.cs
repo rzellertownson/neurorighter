@@ -50,7 +50,7 @@ namespace NeuroRighter.DataTypes
         /// </summary>
         /// <param name="sampleFrequencyHz"> Sampling frequency of data in the buffer</param>
         /// <param name="numChannelsPerTask"> Number of channels data collection task (argument 4) </param>
-        /// <param name="bufferLengthInSamples">The history of the channels that should be kept, in samples</param></param>
+        /// <param name="bufferLengthInSamples">The history of the channels that should be kept, in samples</param>
         /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
         public RawMultiChannelBuffer(double sampleFrequencyHz, int numChannelsPerTask, int bufferLengthInSamples, int numDataCollectionTasks)
         {

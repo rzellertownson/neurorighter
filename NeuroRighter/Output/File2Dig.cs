@@ -30,9 +30,8 @@ namespace NeuroRighter.Output
         private UInt32 Byte;
         private UInt64 EventTime;
         private DigitalBuffer digbuff;
-        private BackgroundWorker bw;//loads stimuli into the buffer when needed
-        private Task digitalOutputTask, buffLoadTask;
-        private DigitalSingleChannelWriter digitalOutputWriter;
+        private Task buffLoadTask;
+        
 
         // Stimulation Constants
         internal Int32 BUFFSIZE; // Number of samples delivered to DAQ per buffer load
@@ -42,7 +41,6 @@ namespace NeuroRighter.Output
         //internal delegate void ProgressChangedHandler(object sender, EventArgs e, int percentage);
         //internal event ProgressChangedHandler AlertProgChanged;
         internal delegate void AllFinishedHandler(object sender, EventArgs e);
-        internal event AllFinishedHandler AlertAllFinished;
         internal Task masterTask;
         
         internal string masterLoad;

@@ -195,11 +195,7 @@ namespace NeuroRighter
         private RawScale auxDataScaler;
         private bool[] firstRawWrite;
         RecordingSetup recordingSettings;
-
-        private static string OLstimdirectory = ".";
-        private static string CLstimdirectory = ".";
-        private static string savedirectory = "." ;
-
+        
         // Open-loop AO/DO 
         private OpenLoopOut openLoopSynchronizedOutput;
         private bool repeatOpenLoopProtocol;

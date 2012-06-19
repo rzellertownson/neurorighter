@@ -38,7 +38,7 @@ namespace NeuroRighter.DataTypes
         /// Generic class for holding Analog Output events. That is, those that are defined
         /// by a discrete point in time, but also have a channel and voltage
         /// </summary>
-        /// <param name="time"> event time (in 100ths of ms)</param>
+        /// <param name="sampleIndex"> event time (in 100ths of ms)</param>
         /// <param name="channel">the analog channel (0-3), corresponding to the event time</param>
         /// <param name="voltage">analog voltage state, -10 to 10 volts, corresponding to the event time</param>
         public AnalogOutEvent(ulong sampleIndex, uint channel, double voltage)

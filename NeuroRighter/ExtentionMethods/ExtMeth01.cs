@@ -73,9 +73,9 @@ namespace ExtensionMethods
         /// <summary>
         /// Method for creating deep copies of objects
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <typeparam name="T"> type of object to clone</typeparam>
+        /// <param name="a">object to copy</param>
+        /// <returns> Deep copy of </returns>
         public static T DeepClone<T>(this T a)
         {
             using (MemoryStream stream = new MemoryStream())

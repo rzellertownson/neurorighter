@@ -63,6 +63,7 @@ namespace NeuroRighter.Server
         /// <param name="numDataCollectionTasks"> The number of external processes that can asynchronously add data to the buffer</param>
         /// <param name="serverLag"> If there is some lag in the process producing the samples, e.g. a filter like SALPA or spike detection, this is the total number of samples
         /// behind that this event process is compared to the raw process that produced it.</param>
+        /// <param name="channelCount">The number of channels supplying this server </param>
         public EventDataSrv(double sampleFrequencyHz, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks, int serverLag, int channelCount)
         {
             this.currentSample = new ulong[numDataCollectionTasks];

@@ -1066,3 +1066,32 @@ C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\NRSpikeSort\bin\Release\csmat
 C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
 C:\Users\Jon\Desktop\NeuroRighter_r479\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\NRSpikeSort.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\NRSpikeSort.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\AForge.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\AxInterop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Mowog.PersistWindowState.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Interop.CWUIControlsLib.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\zlib.net.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.MachineLearning.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Math.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\Accord.Statistics.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\AForge.Math.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.pdb
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\NeuroRighter.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\AForge.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\bin\Release\csmatio.xml
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.dll
+C:\Documents and Settings\Lab\My Documents\Riley\NR\neurorighter480\NRSpikeSort\NRSpikeSort\obj\Release\NRSpikeSort.pdb

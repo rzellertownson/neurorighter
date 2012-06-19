@@ -12,9 +12,12 @@ namespace NeuroRighter.Filters
         //user set variables, mentioned in the paper:
         private int N; //segment half-length- referred to as 'tau' in DAW's code.  When approximating the artifact with a polynomial, how many samples out in either direction from the current sample you are approximating do you want to go?
         private int tau;//how Daniel's code uses N
-        private int sigma; //estimator width- when you depeg, your fit won't be perfect immmediately.  Deviation from the fit can be measured with an estimator, which uses sigma samples to estimate the deviation.  Default is 1/10th of N.
-        private double beta;//threshold for the estimator- how good does the fit have to be in order to qualify as 'depegged'?  
-        private double threshold; //noise level for each channel
+
+        //the following items are used in Daniel's algorithm, but are accounted for through other terms in this implementation:
+
+        //private int sigma; //estimator width- when you depeg, your fit won't be perfect immmediately.  Deviation from the fit can be measured with an estimator, which uses sigma samples to estimate the deviation.  Default is 1/10th of N.
+        //private double beta;//threshold for the estimator- how good does the fit have to be in order to qualify as 'depegged'?  
+        //private double threshold; //noise level for each channel
 
         //user set variables, not mentioned in the paper, but included in the meabench implementation:
         private int t_ahead;//how far ahead should we be looking for pegs (beyond the half width)?
@@ -24,7 +27,7 @@ namespace NeuroRighter.Filters
         //user set variables introduced in NeuroRighter, because Steve likes knobs and buttons
         private rawType railLow;//what counts for a peg low?
         private rawType railHigh;//what counts for a peg high?
-        private int numElectrodes;//how many electrodes (16 or 59) are we processing?
+       
 
         //stuff that the user is not allowed to touch:
         private state elecState;
@@ -119,11 +122,13 @@ namespace NeuroRighter.Filters
             {
                 source[i] = previousData[i];
             }
+
             //grab new data from this buffer load
             for (int i = 0; i < bufferlength; i++)
             {
                 source[i + PRE + POST] = filtData[channel][i];
             }
+
             //store unused buffer data for next time
             for (int i = 0; i < PRE + POST; i++)
             {
@@ -141,7 +146,7 @@ namespace NeuroRighter.Filters
             int t_nextPeg;
             int t_processTo;
             toPeg = false;
-            //System.Console.Write(channel.ToString() + " on " + elecState.ToString() + ":");
+            
             while (t_stream < t_limit)
             {
                 
@@ -159,28 +164,15 @@ namespace NeuroRighter.Filters
                         {
                             t_nextPeg = stimIndices[0]+PRE+POST;//convert from real samples to buffered samples
                             t_processTo = t_nextPeg;
-                            //t0 = t_nextPeg - 1;
-                            //elecState = state.PEGGING;
                             stimIndices.RemoveAt(0);
-                            source[t_nextPeg] = railHigh+0.01;//this is a hell of a hack, but I'm keeping with tradition- in order to force a peg, I just set the damn trace to railHigh where it should peg.
+                            source[t_nextPeg] = railHigh+0.01;//in order to force a peg, I just set the damn trace to railHigh where it should peg.
                             toPeg = true;
                         }
                         break;
 
                     }
                 }
-                    //stuff!
-                //find pegs in this buffer load- 
-                //MB code
-                //for (timeref_t tt=processedto+ahead_sams; tt<filledto; tt++)
-                //{
-                //    Sample const &s(MEAB::rawout->sfsrv[BLOCKSHIFT + tt]);
-                //    if (s[trigpeg_hw]>=trigpeg_thresh)
-                //    {
-                //        nextpeg = max(tt-ahead_sams, processedto);
-                //        break;
-                //    }
-                //}
+                
 
                 //set limit
                 
@@ -380,6 +372,7 @@ namespace NeuroRighter.Filters
                     }
 #endregion
                 }
+
                 //we just processed through t_processto
                 if (toPeg&(t_processTo==t_nextPeg))
                 {
@@ -389,13 +382,9 @@ namespace NeuroRighter.Filters
                 }
                 
             }
-            //if (elecState == state.TOOPOOR)
-            //{
-            //    //we are still trying to figure this one out- assuming we are currently at t_stream =t_limit
-                
-            //}
+           
             t0 = t0 - t_stream + PRE;
-            //dest[t_stream - PRE-1] = 5;
+            
             return dest;
         }
 

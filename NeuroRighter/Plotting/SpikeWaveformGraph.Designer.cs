@@ -1,5 +1,9 @@
 ﻿namespace NeuroRighter
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     partial class SpikeWaveformGraph
     {
         /// <summary> 

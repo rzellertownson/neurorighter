@@ -7,7 +7,7 @@ using System.Net.Sockets;
 namespace NeuroRighter.Network
 {
     /// <summary>
-    /// Simple TCP Client for sending simple messages accorss LAN
+    /// A TCP Client for sending simple messages accross a network connection.
     /// </summary>
     public class TCPClient
     {

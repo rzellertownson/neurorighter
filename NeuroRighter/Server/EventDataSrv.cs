@@ -23,9 +23,12 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using System.Threading;
 using ExtensionMethods;
+using MoreLinq;
 
 namespace NeuroRighter.Server
 {
+
+
     /// <summary>
     /// Data server for event-type data.
     /// </summary>
@@ -36,6 +39,23 @@ namespace NeuroRighter.Server
         /// </summary>
         protected static readonly object lockObj = new object();
 
+        // The 'New Data' Event Handler
+        /// <summary>
+        /// New data collected event handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public delegate void NewDataHandler(object sender, NewDataEventArgs e);
+
+        // The 'New Data' Event
+        /// <summary>
+        /// New data collected event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public event NewDataHandler NewData;
+        private NewDataEventArgs eventArgs = new NewDataEventArgs();
+        
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
 
@@ -104,6 +124,14 @@ namespace NeuroRighter.Server
                     minCurrentSample = currentSample.Min() - serverLagSamples;
                 else
                     minCurrentSample = 0;
+            }
+
+            // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
+            if (newData.Buffer.Count > 0 &&  NewData!=null)
+            {
+                eventArgs.FirstNewSample = newData.Buffer.MinBy(x => x.SampleIndex).SampleIndex;
+                eventArgs.LastNewSample = newData.Buffer.MaxBy(x => x.SampleIndex).SampleIndex;
+                NewData(this, eventArgs);
             }
         }
 

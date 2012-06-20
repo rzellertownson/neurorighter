@@ -236,12 +236,19 @@ namespace NeuroRighter
                 if (spikeTask != null)
                 {
                     bool cantReset = true;
+
+                    //Hack to prevent lock up 
+                    DateTime startTime = DateTime.Now;
                     while (cantReset)
                     {
                         cantReset = false;
                         for (int i = 0; i < spikeTask.Count; i++)
                             cantReset = cantReset || bwIsRunning[i];
-                        System.Threading.Thread.Sleep(250);
+                        System.Threading.Thread.Sleep(100);
+
+                        // Exit the loop if we are waiting for more than a second
+                        if ((DateTime.Now - startTime).TotalSeconds > 0.5)
+                            break;
                     }
                     for (int i = 0; i < spikeTask.Count; ++i)
                         spikeTask[i].Dispose();

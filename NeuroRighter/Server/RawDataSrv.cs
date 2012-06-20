@@ -17,6 +17,23 @@ namespace NeuroRighter.Server
         /// </summary>
         protected static readonly object lockObj = new object();
 
+        // The 'New Data' Event Handler
+        /// <summary>
+        /// New data collected event handler.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public delegate void NewDataHandler(object sender, NewDataEventArgs e);
+
+        // The 'New Data' Event
+        /// <summary>
+        /// New data collected event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public event NewDataHandler NewData;
+        private NewDataEventArgs eventArgs = new NewDataEventArgs();
+
         // Main storage buffer
         private RawMultiChannelBuffer dataBuffer;
         private int numSamplesPerWrite; // The number of samples to be writen for each channel during a write operations
@@ -66,6 +83,14 @@ namespace NeuroRighter.Server
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
+            }
+
+            // Fire the new data event (if someone is listening)
+            if (NewData != null)
+            {
+                eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
+                eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
+                NewData(this, eventArgs);
             }
         }
 

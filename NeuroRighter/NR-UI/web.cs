@@ -30,5 +30,16 @@ namespace NeuroRighter
         {
             System.Diagnostics.Process.Start("http://www.neuro.gatech.edu/~jnewman6/nr-api.ref/");
         }
+
+
+        /// <summary>
+        /// Access NR code repository.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void codeRespositoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://code.google.com/p/neurorighter/");
+        }
     }
 }

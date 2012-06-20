@@ -9,7 +9,7 @@ using NationalInstruments.DAQmx;
 namespace NeuroRighter.Log
 {
     /// <summary>
-    /// Debugging tool usefule for fixing protocols created with NeuroRighter's API.
+    /// Message logging tool useful for fixing protocols created with NeuroRighter's API.
     /// </summary>
     public class Logger
     {
@@ -20,7 +20,7 @@ namespace NeuroRighter.Log
         object debuggerlock = new object();
 
         /// <summary>
-        /// Real-time debugger for fixing protocols created with NeuroRighter's API.
+        ///  Real-time message logeger for fixing protocols created with NeuroRighter's API.
         /// </summary>
         internal Logger() {}
 
@@ -40,7 +40,7 @@ namespace NeuroRighter.Log
         }
 
         /// <summary>
-        /// Write to the debug log file.
+        /// Write to the log file.
         /// </summary>
         /// <param name="input">String to write to file.</param>
         public void Write(string input)

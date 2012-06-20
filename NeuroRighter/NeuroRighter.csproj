@@ -72,6 +72,9 @@
     <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
+    <Reference Include="MoreLinq">
+      <HintPath>lib\MoreLinq.dll</HintPath>
+    </Reference>
     <Reference Include="Mowog.PersistWindowState, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.Analysis.Enterprise, Version=9.1.40.204, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
     <Reference Include="NationalInstruments.Common, Version=9.1.40.159, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
@@ -121,6 +124,7 @@
     <Compile Include="Debug\ExecptDBG.cs" />
     <Compile Include="Server\DataSrv.cs" />
     <Compile Include="Server\DigitalEventSrv.cs" />
+    <Compile Include="Server\NewDataEventArgs.cs" />
     <Compile Include="Server\RawDataSrv.cs" />
     <Compile Include="Server\EventDataSrv.cs" />
     <Compile Include="Logging\Logger.cs" />

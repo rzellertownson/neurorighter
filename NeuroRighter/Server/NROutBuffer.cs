@@ -64,6 +64,16 @@ namespace NeuroRighter.Server
         internal bool robust = true;
         bool notDead;
 
+        //protected properties
+        /// <summary>
+        /// how long is the DAQ half buffer (ie, how many samples get loaded into the DAQ per bufferload?
+        /// </summary>
+        protected internal uint BUFFSIZE;
+        /// <summary>
+        /// sampling frequency of the output buffers
+        /// </summary>
+        protected internal uint STIM_SAMPLING_FREQ;
+
         // Private Properties
         private int semSize = Int32.MaxValue;
         private string[] s = DaqSystem.Local.GetPhysicalChannels(PhysicalChannelTypes.All, PhysicalChannelAccess.Internal);
@@ -71,11 +81,11 @@ namespace NeuroRighter.Server
         private ulong currentSample;
 
         //properties of the buffer being written to the DAQ
-        protected uint BUFFSIZE;//how long is the DAQ half buffer (ie, how many samples get loaded into the DAQ per bufferload?
+       
         private ulong bufferIndex = 0;//where are we in the buffer we are writing?
         private ulong numEventsWritten = 0;//how many NREvents have we loaded?
         private ulong totalEvents;//what is the total number of events we need to load?  0 means we will load eternally
-        protected uint STIM_SAMPLING_FREQ;
+        
         private List<double[,]> abuffs;//the analog buffers that are going to be written to the DAQ
         private List<uint[]> dbuffs;//the digital buffers that are going to be written to the DAQ
 
@@ -111,6 +121,9 @@ namespace NeuroRighter.Server
         //internal object loopLock;
         // DEBUGGING
         // these are in place so you can watch the timing of your NROutBuffer
+        /// <summary>
+        /// Logging tool that this NROutBuffer has access to for precisely timestamped logging.
+        /// </summary>
         protected Logger Debugger;
         private CounterOutputEventHandler tt;
         #region internal/protected methods- used by NR objects

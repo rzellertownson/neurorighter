@@ -508,7 +508,6 @@ namespace NeuroRighter
                                 // In this case we are recording both stimulus times and aux analog input times on the same
                                 // DAQ, so we need to just make the auxAnInTask reference the stimulus timing task
                                 twoAITasksOnSingleBoard = true;
-                                auxInSource = "stimTimeTask";
                                 auxAnInTask = stimTimeTask;
                                 auxChanSet.SetupAuxCollection(ref auxAnInTask);
                             }
@@ -516,7 +515,6 @@ namespace NeuroRighter
                             {
                                 // In this case there is no conflict for AI, so we can create a dedicated task for aux analog input
                                 twoAITasksOnSingleBoard = false;
-                                auxInSource = "AuxiliaryAnalogInput";
                                 auxAnInTask = new Task("AuxiliaryAnalogInput");
                                 auxChanSet.SetupAuxCollection(ref auxAnInTask);
 

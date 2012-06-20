@@ -128,7 +128,6 @@ namespace NeuroRighter
         private NRAIChannelCollection stimTimeChanSet;
         private NRAIChannelCollection auxChanSet;
         private bool twoAITasksOnSingleBoard = false;
-        private string auxInSource = "";
         private int spikeSamplingRate;
         private int lfpSamplingRate;
         private int eegSamplingRate;

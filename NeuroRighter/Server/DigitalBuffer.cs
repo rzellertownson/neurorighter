@@ -80,12 +80,25 @@ namespace NeuroRighter.Server
             return analogBuffer.GetCurrentSample();
         }
 
+        /// <summary>
+        /// privately called method to setup tasks used by the digital buffer.
+        /// Not ever actually used, as these tasks are set up by the associated analog buffer
+        /// </summary>
+        /// <param name="analogTasks">analog tasks to configure</param>
+        /// <param name="digitalTasks">digital tasks to configure</param>
         protected override void SetupTasksSpecific(ref Task[] analogTasks, ref Task[] digitalTasks)
         {
-            //this should never get called
+            //this should never get called for the DigitalBuffer, and is only overriden to make this class not abstract.  
+            //SetupTasksSpecific is instead handled by the associated auxiliary task
             
         }
 
+        /// <summary>
+        /// Turns a DigitalOutEvent into a set of analog and digital values that can be written to the hardware buffers
+        /// </summary>
+        /// <param name="stim">the DigitalOutEvent to be translated</param>
+        /// <param name="anEventValues">a list of arrays (one array per analog task) that contain analog values to send to the DAQs</param>
+        /// <param name="digEventValues">a list of arrays (one array per digital task) that contain digital values to send to the DAQs</param>
         protected override void  WriteEvent(DigitalOutEvent stim, ref List<double[,]> anEventValues, ref List<uint[]> digEventValues)
         {
             anEventValues = null;

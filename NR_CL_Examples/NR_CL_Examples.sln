@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewDataEventCatcher", "NewDataEventCatcher\NewDataEventCatcher.csproj", "{1C6EE64E-0D1A-44AA-8B1F-111FB0DDF8F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClosedLoopRxnTime", "ClosedLoopRxnTime\ClosedLoopRxnTime.csproj", "{B2965DB5-9E30-43D8-AAEC-F6BA07906CC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiElectrodePopClamp", "MultiElectrodePopClamp\MultiElectrodePopClamp.csproj", "{E9B501F1-8247-450F-A6D8-8493D8E8B14E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeizureIntervention", "SeizureIntervention\SeizureIntervention.csproj", "{C836AD17-30EB-4072-85A8-C3FAC11272DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C6EE64E-0D1A-44AA-8B1F-111FB0DDF8F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C6EE64E-0D1A-44AA-8B1F-111FB0DDF8F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C6EE64E-0D1A-44AA-8B1F-111FB0DDF8F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C6EE64E-0D1A-44AA-8B1F-111FB0DDF8F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2965DB5-9E30-43D8-AAEC-F6BA07906CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2965DB5-9E30-43D8-AAEC-F6BA07906CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2965DB5-9E30-43D8-AAEC-F6BA07906CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2965DB5-9E30-43D8-AAEC-F6BA07906CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9B501F1-8247-450F-A6D8-8493D8E8B14E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9B501F1-8247-450F-A6D8-8493D8E8B14E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9B501F1-8247-450F-A6D8-8493D8E8B14E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9B501F1-8247-450F-A6D8-8493D8E8B14E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C836AD17-30EB-4072-85A8-C3FAC11272DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C836AD17-30EB-4072-85A8-C3FAC11272DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C836AD17-30EB-4072-85A8-C3FAC11272DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C836AD17-30EB-4072-85A8-C3FAC11272DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

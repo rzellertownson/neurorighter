@@ -10,8 +10,8 @@ namespace NeuroRighter.Server
     /// </summary>
     public class NewDataEventArgs : EventArgs
     {
-        private ulong firstNeweSample;
-        private ulong lastNeweSample;
+        private ulong firstNewSample;
+        private ulong lastNewSample;
         
         /// <summary>
         /// Sample index of the least recent sample in the new data that has been imported into the data server object.
@@ -20,11 +20,11 @@ namespace NeuroRighter.Server
         {
             internal set
             {
-                firstNeweSample = value;
+                firstNewSample = value;
             }
             get
             {
-                return this.firstNeweSample;
+                return firstNewSample;
             }
         }
 
@@ -35,11 +35,11 @@ namespace NeuroRighter.Server
         {
             internal set
             {
-                lastNeweSample = value;
+                lastNewSample = value;
             }
             get
             {
-                return this.lastNeweSample;
+                return lastNewSample;
             }
         }
     }

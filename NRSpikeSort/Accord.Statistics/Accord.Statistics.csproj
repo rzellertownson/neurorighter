@@ -215,10 +215,10 @@
     <Compile Include="Models\Regression\Linear\SimpleLinearRegression.cs" />
     <Compile Include="Models\Regression\Nonlinear\LogisticRegression.cs" />
     <Compile Include="Models\Regression\Linear\PolynomialRegression.cs" />
-    <Compile Include="Running\IRunningStatistics.cs" />
+    <Compile Include="Visualizations\Running\IRunningStatistics.cs" />
     <Compile Include="Moving\IMovingStatistics.cs" />
     <Compile Include="Moving\MovingCircularStatistics.cs" />
-    <Compile Include="Running\RunningNormalStatistics.cs" />
+    <Compile Include="Visualizations\Running\RunningNormalStatistics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Moving\MovingNormalStatistics.cs" />
     <Compile Include="Testing\Base\HypothesisTest.cs" />

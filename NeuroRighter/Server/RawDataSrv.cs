@@ -23,7 +23,7 @@ namespace NeuroRighter.Server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public delegate void NewDataHandler(object sender, NewDataEventArgs e);
+        public delegate void NewDataHandler(object sender, NewRawDataEventArgs e);
 
         // The 'New Data' Event
         /// <summary>
@@ -32,7 +32,7 @@ namespace NeuroRighter.Server
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public event NewDataHandler NewData;
-        private NewDataEventArgs eventArgs = new NewDataEventArgs();
+        private NewRawDataEventArgs eventArgs = new NewRawDataEventArgs();
 
         // Main storage buffer
         private RawMultiChannelBuffer dataBuffer;
@@ -181,8 +181,8 @@ namespace NeuroRighter.Server
         /// will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
         /// method to get a (time-sensitive) estimate for good-arguments for this method.
         /// </summary>
-        /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
-        /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
+        /// <param name="desiredStartIndex">Earliest sample (inclusive), referenced to 0, that should be returned</param>
+        /// <param name="desiredStopIndex">Latest sample (inclusive), referenced to 0, that should be returned</param>
         /// <returns>RawMultiChannelBuffer</returns>
         public RawMultiChannelBuffer ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {

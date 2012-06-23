@@ -23,11 +23,9 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using System.Threading;
 using ExtensionMethods;
-using MoreLinq;
 
 namespace NeuroRighter.Server
 {
-
 
     /// <summary>
     /// Data server for event-type data.
@@ -45,7 +43,7 @@ namespace NeuroRighter.Server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public delegate void NewDataHandler(object sender, NewDataEventArgs e);
+        public delegate void NewDataHandler(object sender, NewEventDataEventArgs<T> e);
 
         // The 'New Data' Event
         /// <summary>
@@ -54,7 +52,7 @@ namespace NeuroRighter.Server
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public event NewDataHandler NewData;
-        private NewDataEventArgs eventArgs = new NewDataEventArgs();
+        private NewEventDataEventArgs<T> eventArgs;
         
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
@@ -116,7 +114,6 @@ namespace NeuroRighter.Server
 
                 // Add new data
                 dataBuffer.Buffer.AddRange(newData.Buffer);
-                //Console.WriteLine(newData.eventBuffer.Count);
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
@@ -129,8 +126,7 @@ namespace NeuroRighter.Server
             // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
             if (newData.Buffer.Count > 0 &&  NewData!=null)
             {
-                eventArgs.FirstNewSample = newData.Buffer.MinBy(x => x.SampleIndex).SampleIndex;
-                eventArgs.LastNewSample = newData.Buffer.MaxBy(x => x.SampleIndex).SampleIndex;
+                eventArgs = new NewEventDataEventArgs<T>(newData);
                 NewData(this, eventArgs);
             }
         }
@@ -213,8 +209,8 @@ namespace NeuroRighter.Server
         /// will contain information on the true sample bounds. You can use the EstimateAvailableTimeRange
         /// method to get a (time-sensitive) estimate for good-arguments for this method.
         /// </summary>
-        /// <param name="desiredStartIndex">earliest sample, referenced to 0, that should be returned</param>
-        /// <param name="desiredStopIndex">latest sample, referenced to 0, that should be returned</param>
+        /// <param name="desiredStartIndex">Earliest spike time-sample (inclusive), referenced to 0, that should be returned</param>
+        /// <param name="desiredStopIndex">Latest spike time-sample (inclusive), referenced to 0, that should be returned</param>
         /// <returns>EventBuffer</returns>
         public EventBuffer<T> ReadFromBuffer(ulong desiredStartIndex, ulong desiredStopIndex)
         {
@@ -226,7 +222,7 @@ namespace NeuroRighter.Server
                 //returnBuffer = dataBuffer.DeepClone();
                 returnBuffer.Buffer.AddRange(
                     dataBuffer.Buffer.Where(
-                        x => (x.SampleIndex > desiredStartIndex
+                        x => (x.SampleIndex >= desiredStartIndex
                         && x.SampleIndex <= desiredStopIndex)).ToList());
 
                 // Return the data

@@ -120,7 +120,8 @@
     <Compile Include="Debug\ExecptDBG.cs" />
     <Compile Include="Server\DataSrv.cs" />
     <Compile Include="Server\DigitalEventSrv.cs" />
-    <Compile Include="Server\NewDataEventArgs.cs" />
+    <Compile Include="Server\NewEventDataEventArgs.cs" />
+    <Compile Include="Server\NewRawDataEventArgs.cs" />
     <Compile Include="Server\RawDataSrv.cs" />
     <Compile Include="Server\EventDataSrv.cs" />
     <Compile Include="Logging\Logger.cs" />

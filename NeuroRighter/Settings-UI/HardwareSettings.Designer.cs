@@ -266,7 +266,7 @@ namespace NeuroRighter
             this.checkBox_UseFloatingRef.AutoSize = true;
             this.checkBox_UseFloatingRef.Location = new System.Drawing.Point(6, 21);
             this.checkBox_UseFloatingRef.Name = "checkBox_UseFloatingRef";
-            this.checkBox_UseFloatingRef.Size = new System.Drawing.Size(223, 20);
+            this.checkBox_UseFloatingRef.Size = new System.Drawing.Size(180, 17);
             this.checkBox_UseFloatingRef.TabIndex = 10;
             this.checkBox_UseFloatingRef.Text = "Use Common Mode Referencing";
             this.checkBox_UseFloatingRef.UseVisualStyleBackColor = true;
@@ -276,7 +276,7 @@ namespace NeuroRighter
             this.checkBox_useProgRef.AutoSize = true;
             this.checkBox_useProgRef.Location = new System.Drawing.Point(6, 51);
             this.checkBox_useProgRef.Name = "checkBox_useProgRef";
-            this.checkBox_useProgRef.Size = new System.Drawing.Size(283, 20);
+            this.checkBox_useProgRef.Size = new System.Drawing.Size(225, 17);
             this.checkBox_useProgRef.TabIndex = 7;
             this.checkBox_useProgRef.Text = "Enable Plexon Programmable Referencing";
             this.checkBox_useProgRef.UseVisualStyleBackColor = true;
@@ -604,7 +604,7 @@ namespace NeuroRighter
             this.groupBox24.Size = new System.Drawing.Size(335, 47);
             this.groupBox24.TabIndex = 17;
             this.groupBox24.TabStop = false;
-            this.groupBox24.Text = "LFP/MUA";
+            this.groupBox24.Text = "Digital Filtering for LFP/MUA";
             // 
             // checkBox_processMUA
             // 

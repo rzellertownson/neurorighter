@@ -28,7 +28,7 @@ namespace NeuroRighter
         /// <param name="e"></param>
         private void realTimeAPIReferenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://www.neuro.gatech.edu/~jnewman6/nr-api.ref/");
+            System.Diagnostics.Process.Start("https://potterlab.gatech.edu/main/neurorighter-api-ref/");
         }
 
 
@@ -40,6 +40,16 @@ namespace NeuroRighter
         private void codeRespositoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://code.google.com/p/neurorighter/");
+        }
+
+        /// <summary>
+        /// Access the closed-loop example codes on the NR repository
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void closedloopExampleCodesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://code.google.com/p/neurorighter/source/browse/#svn%2FNR-ClosedLoop-Examples");
         }
     }
 }

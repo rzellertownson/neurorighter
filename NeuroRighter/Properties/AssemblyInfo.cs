@@ -24,11 +24,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NeuroRighter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Multichannel data aquisition system designed for closed-loop applications.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Potter Lab, Georgia Tech")]
 [assembly: AssemblyProduct("NeuroRighter")]
-[assembly: AssemblyCopyright("Copyright Potter Lab 2012")]
+[assembly: AssemblyCopyright("Copyright Potter Lab, 2012")]
 [assembly: AssemblyTrademark("NeuroRighter")]
 [assembly: AssemblyCulture("")]
 
@@ -47,5 +47,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.462")]
-[assembly: AssemblyFileVersion("1.0.0.462")]
+[assembly: AssemblyVersion("1.0.1.494")]
+[assembly: AssemblyFileVersion("1.0.1.494")]

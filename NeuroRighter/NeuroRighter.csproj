@@ -100,10 +100,6 @@
     <None Include="Matlab\loadraw.mexw32" />
     <None Include="Matlab\loadspike.mexw32" />
     <None Include="Matlab\loadstim.mexw32" />
-    <None Include="Matlab\SqueakySpk.zip" />
-    <None Include="Miscellaneous\Microsoft Permissive License.rtf" />
-    <None Include="Miscellaneous\National_Instruments_software_license_agreement.pdf" />
-    <None Include="Miscellaneous\NEURORIGHTER_LICENSE_AGREEMENT.rtf" />
     <None Include="obj\Release\build.force" />
     <None Include="obj\Release\NeuroRighter_05.csproj.ResolveComReference.cache" />
     <None Include="Properties\Settings.settings">
@@ -358,9 +354,6 @@
     <Content Include="Miscellaneous\Buttons\ZoomOut.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOutBlue.png" />
     <Content Include="Miscellaneous\Buttons\ZoomReset.png" />
-    <Content Include="Miscellaneous\gpl.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Icon\Slide1.PNG" />
     <Content Include="Matlab\loadraw.c" />
     <Content Include="Matlab\loadraw.m" />
@@ -368,8 +361,6 @@
     <Content Include="Matlab\loadspike.m" />
     <Content Include="Matlab\loadstim.c" />
     <Content Include="Matlab\loadstim.m" />
-    <Content Include="Matlab\Readme.txt" />
-    <Content Include="Miscellaneous\NeuroRighter_Disclaimer.txt" />
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

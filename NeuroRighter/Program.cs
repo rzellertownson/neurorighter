@@ -43,7 +43,7 @@ namespace NeuroRighter
 
             // Set application data path
             Properties.Settings.Default.neurorighterAppDataPath = Path.Combine(Environment.GetFolderPath(
-                            Environment.SpecialFolder.ApplicationData) , "NeuroRighter");
+                            Environment.SpecialFolder.LocalApplicationData) , "NeuroRighter");
 
             // persist window path
             Properties.Settings.Default.persistWindowPath = Path.Combine(Properties.Settings.Default.neurorighterAppDataPath, "WindowState.xml");

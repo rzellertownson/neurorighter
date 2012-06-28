@@ -351,6 +351,7 @@
   <ItemGroup>
     <Content Include="ExtentionMethods\Mowog.PersistWindowState.dll" />
     <Content Include="Matlab\makestimfile.m" />
+    <Content Include="Matlab\READ_ME.txt" />
     <Content Include="Miscellaneous\Buttons\ZoomIn.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOut.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOutBlue.png" />

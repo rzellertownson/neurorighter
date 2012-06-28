@@ -7,13 +7,7 @@ Microsoft and National Instruments.  These libraries should not be reverse engin
 not covered under the GPL.  Please see National_Instruments_software_license_agreement.pdf
 and the Microsoft Permissive Liscense for additional licensing information.
 
-NeuroRighter was written by John Rolston (rolston2@gmail.com) in the course of his PhD thesis at 
-Emory University and Georgia Tech.  It was written for a particular class of experiments (closed loop 
-stimulation of epileptic animals), and therefore has a limited feature set.  It has only been tested on a 
-limited number of computers, and under a limited range of conditions.  Therefore, it is possible that 
-the software will be unstable when run in different settings.  We therefore take no responsibility for 
-any problems caused by installing or using this software.  However, we eagerly solicit feedback and 
-bug reports.  
+NeuroRighter was written by John Rolston, Jon Newman and Riley Zeller-Townson in the course of their PhD theses at Emory University and Georgia Tech.  It has only been tested on a limited number of computers, and under a limited range of conditions.  Therefore, it is possible that the software will be unstable when run in different settings.  We therefore take no responsibility for any problems caused by installing or using this software.  However, we eagerly solicit feedback and bug reports (http://code.google.com/p/neurorighter/issues/list).  
 
 Please help us make this software better by documenting any errors encountered, or features that 
 you would like to see.  Also, feel free to contribute to the NeuroRighter project by modifying the 

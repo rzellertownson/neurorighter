@@ -66,6 +66,9 @@ namespace NeuroRighter
 
             InitializeComponent();
 
+            // Save window state in application data folder
+            NRPersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
+
             //Set version number
             this.Text += System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.Text += " (BETA)";
@@ -1131,5 +1134,6 @@ namespace NeuroRighter
         {
             nrConsole.ShowConsole();
         }
+
     }
 }

@@ -43,6 +43,9 @@ namespace NeuroRighter
 
             InitializeComponent();
 
+            // Save window state in application data folder
+            HWpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
+
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             if (comboBox_analogInputDevice1.Items.Count > 0)
             {

@@ -571,7 +571,6 @@
             // spkDetpersistWindowComponent
             // 
             this.spkDetpersistWindowComponent.Form = this;
-            this.spkDetpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
             // 
             // groupBox4
             // 
@@ -991,20 +990,20 @@
             this.saveSpikeFilterToolStripMenuItem,
             this.loadSpikeFilterToolStripMenuItem});
             this.saveDetectorToolStripMenuItem.Name = "saveDetectorToolStripMenuItem";
-            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.saveDetectorToolStripMenuItem.Text = "File";
             // 
             // saveSpikeFilterToolStripMenuItem
             // 
             this.saveSpikeFilterToolStripMenuItem.Name = "saveSpikeFilterToolStripMenuItem";
-            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.saveSpikeFilterToolStripMenuItem.Text = "Save Spike Filter";
             this.saveSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.saveSpikeFilterToolStripMenuItem_Click);
             // 
             // loadSpikeFilterToolStripMenuItem
             // 
             this.loadSpikeFilterToolStripMenuItem.Name = "loadSpikeFilterToolStripMenuItem";
-            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.loadSpikeFilterToolStripMenuItem.Text = "Load Spike Filter";
             this.loadSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.loadSpikeFilterToolStripMenuItem_Click);
             // 

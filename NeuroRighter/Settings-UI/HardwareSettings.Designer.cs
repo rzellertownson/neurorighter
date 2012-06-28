@@ -1426,7 +1426,7 @@ namespace NeuroRighter
             // HWpersistWindowComponent
             // 
             this.HWpersistWindowComponent.Form = this;
-            this.HWpersistWindowComponent.XMLFilePath = global::NeuroRighter.Properties.Settings.Default.persistWindowPath;
+            this.HWpersistWindowComponent.XMLFilePath = ".";
             // 
             // HardwareSettings
             // 

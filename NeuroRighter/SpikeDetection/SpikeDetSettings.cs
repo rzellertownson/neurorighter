@@ -52,6 +52,9 @@ namespace NeuroRighter.SpikeDetection
 
             InitializeComponent();
 
+            // Save window state in application data folder
+            spkDetpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
+
             //Default spike det. algorithm is fixed RMS
             this.comboBox_noiseEstAlg.SelectedIndex = 0;
             this.comboBox_spikeDetAlg.SelectedIndex = 0;

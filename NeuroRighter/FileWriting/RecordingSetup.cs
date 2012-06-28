@@ -56,7 +56,7 @@ namespace NeuroRighter.FileWriting
         public RecordingSetup()
         {
             InitializeComponent();
-            Refresh();
+            //Refresh();
 
             // Disable the electrodes tab since its non-functional right now
             // Remove electrode selection tab because it is currently non-functional
@@ -69,7 +69,7 @@ namespace NeuroRighter.FileWriting
             SetSalpaAccess(false);
 
             // Set recording parameters
-            ResetStreams2Record();
+            RefreshForm();
 
             // Reset the electrodes to match number of channels
             //ResetElectrodeCheckBox();
@@ -79,21 +79,11 @@ namespace NeuroRighter.FileWriting
         {
             // Set up access to streams
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
-            if (!checkBox_RecordLFP.Enabled)
-                checkBox_RecordLFP.Checked = false;
             checkBox_RecordEEG.Enabled = Properties.Settings.Default.UseEEG;
-            if (!checkBox_RecordEEG.Enabled)
-                checkBox_RecordEEG.Checked = false;
             checkBox_RecordStim.Enabled = Properties.Settings.Default.RecordStimTimes;
-            if (!checkBox_RecordStim.Enabled)
-                checkBox_RecordStim.Checked = false;
-            checkBox_RecordMUA.Enabled = false; // TODO: CREATE SUPPORT FOR MUA
+            checkBox_RecordMUA.Enabled = Properties.Settings.Default.ProcessMUA;
             checkBox_RecordAuxAnalog.Enabled = Properties.Settings.Default.useAuxAnalogInput;
-            if (!checkBox_RecordAuxAnalog.Enabled)
-                checkBox_RecordAuxAnalog.Checked = false;
             checkBox_RecordAuxDig.Enabled = Properties.Settings.Default.useAuxDigitalInput;
-            if (!checkBox_RecordAuxDig.Enabled)
-                checkBox_RecordAuxDig.Checked = false;
 
             // Time stamp option
             checkBox_UseFidTimeStamp.Checked = Properties.Settings.Default.useFidTimeStamp;
@@ -392,6 +382,56 @@ namespace NeuroRighter.FileWriting
             this.Location = Properties.Settings.Default.recSetFormLoc;
         }
 
+        private void ResetStreams2Record()
+        {
+            // Set recording parameters
+            recordSpike = checkBox_RecordSpikes.Checked;
+            recordRawSpike = checkBox_RecordRawSpikes.Checked;
+            recordSalpaSpike = checkBox_RecordSalpaSpikes.Checked;
+            recordRaw = checkBox_RecordRaw.Checked;
+            recordSALPA = checkBox_RecordSALPA.Checked;
+            recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
+            recordLFP = checkBox_RecordLFP.Checked;
+            recordEEG = checkBox_RecordEEG.Checked;
+            recordMUA = checkBox_RecordMUA.Checked;
+            recordStim = checkBox_RecordStim.Checked;
+            recordAuxDig = checkBox_RecordAuxDig.Checked;
+            recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
+        }
+
+        //private void ResetElectrodeCheckBox()
+        //{
+        //    // On electrodes tab, enable the checkboxes that correspond to the given
+        //    // number of electrodes
+        //    checkedListBox_Electrodes.Items.Clear();
+        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+        //    {
+        //        checkedListBox_Electrodes.Items.Add(i + 1, false);
+        //    }
+        //}
+
+        //private void SelectAllElectrodes()
+        //{
+        //    // On electrodes tab, enable the checkboxes that correspond to the given
+        //    // number of electrodes
+        //    checkedListBox_Electrodes.Items.Clear();
+        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
+        //    {
+        //        checkedListBox_Electrodes.Items.Add(i + 1, true);
+        //    }
+        //}
+
+        //private void SetElectrodes()
+        //{
+        //    // Recall default electrode settings
+        //    electrodesToRecord.Clear();
+        //    foreach (int ce in checkedListBox_Electrodes.CheckedIndices)
+        //    {
+        //        electrodesToRecord.Add(ce+1);
+        //    }
+        //}
+
+        #region Event Handlers
         private void checkBox_RecordRaw_CheckedChanged(object sender, EventArgs e)
         {
             // Set recording parameters
@@ -476,55 +516,6 @@ namespace NeuroRighter.FileWriting
             SettingsHaveChanged(this, e);
         }
 
-        private void ResetStreams2Record()
-        {
-            // Set recording parameters
-            recordSpike = checkBox_RecordSpikes.Checked;
-            recordRawSpike = checkBox_RecordRawSpikes.Checked;
-            recordSalpaSpike = checkBox_RecordSalpaSpikes.Checked;
-            recordRaw = checkBox_RecordRaw.Checked;
-            recordSALPA = checkBox_RecordSALPA.Checked;
-            recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
-            recordLFP = checkBox_RecordLFP.Checked;
-            recordEEG = checkBox_RecordEEG.Checked;
-            recordMUA = checkBox_RecordMUA.Checked;
-            recordStim = checkBox_RecordStim.Checked;
-            recordAuxDig = checkBox_RecordAuxDig.Checked;
-            recordAuxAnalog = checkBox_RecordAuxAnalog.Checked;
-        }
-
-        //private void ResetElectrodeCheckBox()
-        //{
-        //    // On electrodes tab, enable the checkboxes that correspond to the given
-        //    // number of electrodes
-        //    checkedListBox_Electrodes.Items.Clear();
-        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
-        //    {
-        //        checkedListBox_Electrodes.Items.Add(i + 1, false);
-        //    }
-        //}
-
-        //private void SelectAllElectrodes()
-        //{
-        //    // On electrodes tab, enable the checkboxes that correspond to the given
-        //    // number of electrodes
-        //    checkedListBox_Electrodes.Items.Clear();
-        //    for (int i = 0; i < Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels); ++i)
-        //    {
-        //        checkedListBox_Electrodes.Items.Add(i + 1, true);
-        //    }
-        //}
-
-        //private void SetElectrodes()
-        //{
-        //    // Recall default electrode settings
-        //    electrodesToRecord.Clear();
-        //    foreach (int ce in checkedListBox_Electrodes.CheckedIndices)
-        //    {
-        //        electrodesToRecord.Add(ce+1);
-        //    }
-        //}
-
         private void button_MakeRawSelections_Click(object sender, EventArgs e)
         {
             // Streams
@@ -588,5 +579,7 @@ namespace NeuroRighter.FileWriting
             this.Hide();
 
         }
+        #endregion
+
     }
 }

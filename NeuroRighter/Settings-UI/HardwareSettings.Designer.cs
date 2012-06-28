@@ -636,7 +636,7 @@ namespace NeuroRighter
             this.groupBox15.Size = new System.Drawing.Size(334, 57);
             this.groupBox15.TabIndex = 16;
             this.groupBox15.TabStop = false;
-            this.groupBox15.Text = "Preamp/Headstage Gain";
+            this.groupBox15.Text = "Preamp/Headstage Electrode Gain";
             // 
             // numericUpDown_PreAmpGain
             // 
@@ -669,9 +669,9 @@ namespace NeuroRighter
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(6, 24);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(197, 16);
+            this.label14.Size = new System.Drawing.Size(159, 16);
             this.label14.TabIndex = 1;
-            this.label14.Text = "Amplifier Gain for Extracell. Rec.";
+            this.label14.Text = "Amplifier Passband Gain:";
             // 
             // groupBox7
             // 

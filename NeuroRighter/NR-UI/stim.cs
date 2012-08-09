@@ -866,7 +866,12 @@ namespace NeuroRighter
 
             //setup
             NRAcquisitionSetup();
-            Task BuffLoadTask = NROutputSetup();
+            Task BuffLoadTask;
+            if (Properties.Settings.Default.UseBuffload)
+                BuffLoadTask = NROutputSetup();
+            else
+                BuffLoadTask = null;
+
             //create closed loop code, throw into it's own thread
 
 

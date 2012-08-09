@@ -46,6 +46,8 @@ namespace NeuroRighter
             this.label3 = new System.Windows.Forms.Label();
             this.comboBox_cineplexDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_stim = new System.Windows.Forms.TabPage();
+            this.groupBox26 = new System.Windows.Forms.GroupBox();
+            this.checkBox_useBuffloader = new System.Windows.Forms.CheckBox();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -142,11 +144,13 @@ namespace NeuroRighter
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
+            this.label25 = new System.Windows.Forms.Label();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPage_stim.SuspendLayout();
+            this.groupBox26.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.groupBox17.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -343,6 +347,7 @@ namespace NeuroRighter
             // 
             // tabPage_stim
             // 
+            this.tabPage_stim.Controls.Add(this.groupBox26);
             this.tabPage_stim.Controls.Add(this.groupBox12);
             this.tabPage_stim.Controls.Add(this.groupBox17);
             this.tabPage_stim.Controls.Add(this.checkBox_useStimulator);
@@ -355,6 +360,27 @@ namespace NeuroRighter
             this.tabPage_stim.TabIndex = 1;
             this.tabPage_stim.Text = "Output";
             this.tabPage_stim.UseVisualStyleBackColor = true;
+            // 
+            // groupBox26
+            // 
+            this.groupBox26.Controls.Add(this.label25);
+            this.groupBox26.Controls.Add(this.checkBox_useBuffloader);
+            this.groupBox26.Location = new System.Drawing.Point(6, 362);
+            this.groupBox26.Name = "groupBox26";
+            this.groupBox26.Size = new System.Drawing.Size(335, 128);
+            this.groupBox26.TabIndex = 23;
+            this.groupBox26.TabStop = false;
+            this.groupBox26.Text = "Double Buffered Output";
+            // 
+            // checkBox_useBuffloader
+            // 
+            this.checkBox_useBuffloader.AutoSize = true;
+            this.checkBox_useBuffloader.Location = new System.Drawing.Point(6, 19);
+            this.checkBox_useBuffloader.Name = "checkBox_useBuffloader";
+            this.checkBox_useBuffloader.Size = new System.Drawing.Size(224, 20);
+            this.checkBox_useBuffloader.TabIndex = 9;
+            this.checkBox_useBuffloader.Text = "Disable Double Buffering System";
+            this.checkBox_useBuffloader.UseVisualStyleBackColor = true;
             // 
             // groupBox12
             // 
@@ -414,9 +440,9 @@ namespace NeuroRighter
             this.checkBox_UseAODO.AutoSize = true;
             this.checkBox_UseAODO.Location = new System.Drawing.Point(8, 19);
             this.checkBox_UseAODO.Name = "checkBox_UseAODO";
-            this.checkBox_UseAODO.Size = new System.Drawing.Size(166, 17);
+            this.checkBox_UseAODO.Size = new System.Drawing.Size(224, 20);
             this.checkBox_UseAODO.TabIndex = 24;
-            this.checkBox_UseAODO.Text = "Use Analog and Digital Ouput";
+            this.checkBox_UseAODO.Text = "Use Analog and Digital Outttttttput";
             this.checkBox_UseAODO.UseVisualStyleBackColor = true;
             this.checkBox_UseAODO.CheckedChanged += new System.EventHandler(this.checkBox_UseAODO_CheckedChanged);
             // 
@@ -444,7 +470,7 @@ namespace NeuroRighter
             this.checkBox_useStimulator.AutoSize = true;
             this.checkBox_useStimulator.Location = new System.Drawing.Point(14, 6);
             this.checkBox_useStimulator.Name = "checkBox_useStimulator";
-            this.checkBox_useStimulator.Size = new System.Drawing.Size(94, 17);
+            this.checkBox_useStimulator.Size = new System.Drawing.Size(114, 20);
             this.checkBox_useStimulator.TabIndex = 7;
             this.checkBox_useStimulator.Text = "Use Stimulator";
             this.checkBox_useStimulator.UseVisualStyleBackColor = true;
@@ -1428,6 +1454,16 @@ namespace NeuroRighter
             this.HWpersistWindowComponent.Form = this;
             this.HWpersistWindowComponent.XMLFilePath = ".";
             // 
+            // label25
+            // 
+            this.label25.Location = new System.Drawing.Point(3, 48);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(329, 83);
+            this.label25.TabIndex = 10;
+            this.label25.Text = "Disabling the double buffering system will prevent closed-loop applications from " +
+                "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
+                " \'Loop()\' method.  ";
+            // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1453,6 +1489,8 @@ namespace NeuroRighter
             this.groupBox2.PerformLayout();
             this.tabPage_stim.ResumeLayout(false);
             this.tabPage_stim.PerformLayout();
+            this.groupBox26.ResumeLayout(false);
+            this.groupBox26.PerformLayout();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
             this.groupBox17.ResumeLayout(false);
@@ -1615,5 +1653,8 @@ namespace NeuroRighter
         private System.Windows.Forms.CheckBox checkBox_UseDigDataBuffer;
         private System.Windows.Forms.CheckBox checkBox_EnableImpedanceMeasurements;
         private System.Windows.Forms.CheckBox checkBox_UseFloatingRef;
+        private System.Windows.Forms.GroupBox groupBox26;
+        private System.Windows.Forms.CheckBox checkBox_useBuffloader;
+        private System.Windows.Forms.Label label25;
     }
 }

@@ -62,7 +62,11 @@ namespace NeuroRighter.Output
                 if (useManStimWave)
                     CLE.GrabWave(guiWave);
                 CLE.Setup();//run the user code
-                buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.Loop);
+                if (buffLoadTask != null)//if the buffloadtask is running, we need to grab on to it.
+                {
+                    buffLoadTask.CounterOutput += new CounterOutputEventHandler(CLE.Loop);
+                   
+                }
             }
             catch (Exception me)
             {

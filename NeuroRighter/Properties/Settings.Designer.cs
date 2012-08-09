@@ -1106,5 +1106,17 @@ namespace NeuroRighter.Properties {
                 this["UseFloatingRef"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseBuffload {
+            get {
+                return ((bool)(this["UseBuffload"]));
+            }
+            set {
+                this["UseBuffload"] = value;
+            }
+        }
     }
 }

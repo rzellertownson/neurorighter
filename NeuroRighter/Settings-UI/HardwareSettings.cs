@@ -400,6 +400,7 @@ namespace NeuroRighter
             checkBox_UseAuxDataBuffer.Checked = Properties.Settings.Default.useAuxDataBuffer;
             checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
             checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseFloatingRef;
+            checkBox_useBuffloader.Checked = !Properties.Settings.Default.UseBuffload;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -484,7 +485,7 @@ namespace NeuroRighter
             Properties.Settings.Default.stimRobust = robustStim_checkbox.Checked;
             Properties.Settings.Default.useImpedanceMeasurer = checkBox_EnableImpedanceMeasurements.Checked;
             Properties.Settings.Default.UseFloatingRef = checkBox_UseFloatingRef.Checked;
-
+            Properties.Settings.Default.UseBuffload = !checkBox_useBuffloader.Checked;
             // Set up devices
             if (checkBox_useSecondBoard.Checked)
                 Properties.Settings.Default.AnalogInDevice.Add(Convert.ToString(comboBox_analogInputDevice2.SelectedItem));
@@ -731,5 +732,7 @@ namespace NeuroRighter
         {
             comboBox_impedanceDevice.Enabled = checkBox_EnableImpedanceMeasurements.Checked;
         }
+
+       
     }
 }

@@ -29,7 +29,7 @@ namespace NeuroRighter.NeuroRighterTask
     /// <summary>
     /// NeuroRighter's abstract class for user defined closed loop experiments.
     /// </summary>
-    public abstract class NRTask
+    public class NRTask
     {
         /// <summary>
         /// NeuroRighter's data server. This object contains specialized data servers that provided access to the steams specified at 'real-time' in hardware settings.
@@ -75,7 +75,8 @@ namespace NeuroRighter.NeuroRighterTask
         /// recording, stimulation or the Loop() method execute.  You probably want to use this for setting up a GUI, initializing
         /// data structures, and constructing larger objects/initializing secondary threads.
         /// </summary>
-        internal protected abstract void Setup();
+        internal protected virtual void Setup()
+        { }
 
         /// <summary>
         /// The meat.  This abstract method gets called repeatedly, after Setup() has completed.  It is triggered off of a clock in the
@@ -83,14 +84,16 @@ namespace NeuroRighter.NeuroRighterTask
         /// off of the NR data streams, and alert GUIs that updates are available.  Try to offload really intensive processing to 
         /// secondary threads, and just use Loop() for the absolutely essential high-speed updates
         /// </summary>
-        internal protected abstract void Loop(object sender, EventArgs e);
+        internal protected virtual void Loop(object sender, EventArgs e)
+        { }
 
         /// <summary>
         /// This abstract method will be executed last out of the three overriden methods in this class.  It is called either by clicking the
         /// 'stop' button during closed loop execution, or by calling it directly through some other closed loop method (which will also
         /// force the closed loop protocol to close).  Use this method to close off file streams, dispose objects.
         /// </summary>
-        internal protected abstract void Cleanup();
+        internal protected virtual void Cleanup()
+        { }
 
         #region Protected Accessors
 

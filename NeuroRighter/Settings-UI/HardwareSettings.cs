@@ -46,16 +46,18 @@ namespace NeuroRighter
             // Save window state in application data folder
             HWpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
 
+            // Recall default settings
+
             comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
             try
             {
                 if (comboBox_analogInputDevice1.Items.Count > 0)
                 {
-                    int idx = 0;
+                    int idx = -1;
                     if (Properties.Settings.Default.AnalogInDevice != null)
                         idx = comboBox_analogInputDevice1.Items.IndexOf(Properties.Settings.Default.AnalogInDevice[0]);
 
-                    if (idx >= 0)
+                    if (idx != null && idx >= 0)
                         comboBox_analogInputDevice1.SelectedIndex = idx;
                     else
                         comboBox_analogInputDevice1.SelectedIndex = 0;
@@ -93,8 +95,11 @@ namespace NeuroRighter
             {
                 if (comboBox_stimulatorDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_stimulatorDevice.Items.IndexOf(Properties.Settings.Default.StimulatorDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.StimulatorDevice != null)
+                        idx = comboBox_stimulatorDevice.Items.IndexOf(Properties.Settings.Default.StimulatorDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_stimulatorDevice.SelectedIndex = idx;
                     else
                         comboBox_stimulatorDevice.SelectedIndex = 0;
@@ -110,8 +115,11 @@ namespace NeuroRighter
             {
                 if (comboBox_stimInfoDev.Items.Count > 0)
                 {
-                    int idx = comboBox_stimInfoDev.Items.IndexOf(Properties.Settings.Default.StimInfoDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.StimInfoDevice != null)
+                        idx = comboBox_stimInfoDev.Items.IndexOf(Properties.Settings.Default.StimInfoDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_stimInfoDev.SelectedIndex = idx;
                     else
                         comboBox_stimInfoDev.SelectedIndex = 0;
@@ -127,8 +135,11 @@ namespace NeuroRighter
             {
                 if (comboBox_cineplexDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_cineplexDevice.Items.IndexOf(Properties.Settings.Default.CineplexDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.CineplexDevice != null)
+                        idx = comboBox_cineplexDevice.Items.IndexOf(Properties.Settings.Default.CineplexDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_cineplexDevice.SelectedIndex = idx;
                     else
                         comboBox_cineplexDevice.SelectedIndex = 0;
@@ -144,8 +155,11 @@ namespace NeuroRighter
             {
                 if (comboBox_LFPDevice1.Items.Count > 0)
                 {
-                    int idx = comboBox_LFPDevice1.Items.IndexOf(Properties.Settings.Default.LFPDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.LFPDevice != null)
+                        idx = comboBox_LFPDevice1.Items.IndexOf(Properties.Settings.Default.LFPDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_LFPDevice1.SelectedIndex = idx;
                     else
                         comboBox_LFPDevice1.SelectedIndex = 0;
@@ -161,8 +175,11 @@ namespace NeuroRighter
             {
                 if (comboBox_LFPDevice2.Items.Count > 0)
                 {
-                    int idx = comboBox_LFPDevice2.Items.IndexOf(Properties.Settings.Default.LFPDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.LFPDevice != null)
+                        idx = comboBox_LFPDevice2.Items.IndexOf(Properties.Settings.Default.LFPDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_LFPDevice2.SelectedIndex = idx;
                     else
                         comboBox_LFPDevice2.SelectedIndex = 0;
@@ -179,8 +196,11 @@ namespace NeuroRighter
             {
                 if (comboBox_progRefSerialPort.Items.Count > 0)
                 {
-                    int idx = comboBox_progRefSerialPort.Items.IndexOf(Properties.Settings.Default.SerialPortDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.SerialPortDevice != null)
+                        idx = comboBox_progRefSerialPort.Items.IndexOf(Properties.Settings.Default.SerialPortDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_progRefSerialPort.SelectedIndex = idx;
                     else
                         comboBox_progRefSerialPort.SelectedIndex = 0;
@@ -196,8 +216,11 @@ namespace NeuroRighter
             {
                 if (comboBox_EEG.Items.Count > 0)
                 {
-                    int idx = comboBox_EEG.Items.IndexOf(Properties.Settings.Default.EEGDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.EEGDevice != null)
+                        idx = comboBox_EEG.Items.IndexOf(Properties.Settings.Default.EEGDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_EEG.SelectedIndex = idx;
                     else
                         comboBox_EEG.SelectedIndex = 0;
@@ -213,8 +236,11 @@ namespace NeuroRighter
             {
                 if (comboBox_impedanceDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_impedanceDevice.Items.IndexOf(Properties.Settings.Default.ImpedanceDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.ImpedanceDevice != null)
+                        idx = comboBox_impedanceDevice.Items.IndexOf(Properties.Settings.Default.ImpedanceDevice);
+                    
+                    if (idx != null && idx >= 0)
                         comboBox_impedanceDevice.SelectedIndex = idx;
                     else
                         comboBox_impedanceDevice.SelectedIndex = 0;
@@ -230,8 +256,11 @@ namespace NeuroRighter
             {
                 if (comboBox_singleChannelPlaybackDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_singleChannelPlaybackDevice.Items.IndexOf(Properties.Settings.Default.SingleChannelPlaybackDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.SingleChannelPlaybackDevice != null)
+                        idx = comboBox_singleChannelPlaybackDevice.Items.IndexOf(Properties.Settings.Default.SingleChannelPlaybackDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_singleChannelPlaybackDevice.SelectedIndex = idx;
                     else
                         comboBox_singleChannelPlaybackDevice.SelectedIndex = 0;
@@ -247,8 +276,11 @@ namespace NeuroRighter
             {
                 if (comboBox_IVControlDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_IVControlDevice.Items.IndexOf(Properties.Settings.Default.StimIvsVDevice);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.StimIvsVDevice != null)
+                        idx = comboBox_IVControlDevice.Items.IndexOf(Properties.Settings.Default.StimIvsVDevice);
+
+                    if (idx != null && idx >= 0)
                         comboBox_IVControlDevice.SelectedIndex = idx;
                     else
                         comboBox_IVControlDevice.SelectedIndex = 0;
@@ -264,8 +296,11 @@ namespace NeuroRighter
             {
                 if (comboBox_SigOutDev.Items.Count > 0)
                 {
-                    int idx = comboBox_SigOutDev.Items.IndexOf(Properties.Settings.Default.SigOutDev);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.SigOutDev != null)
+                        idx = comboBox_SigOutDev.Items.IndexOf(Properties.Settings.Default.SigOutDev);
+
+                    if (idx != null && idx >= 0)
                         comboBox_SigOutDev.SelectedIndex = idx;
                     else
                         comboBox_SigOutDev.SelectedIndex = 0;
@@ -281,8 +316,11 @@ namespace NeuroRighter
             {
                 if (comboBox_AuxAnalogInputDevice.Items.Count > 0)
                 {
-                    int idx = comboBox_AuxAnalogInputDevice.Items.IndexOf(Properties.Settings.Default.auxAnalogInDev);
-                    if (idx >= 0)
+                    int idx = -1;
+                    if (Properties.Settings.Default.auxAnalogInDev != null)
+                        idx = comboBox_AuxAnalogInputDevice.Items.IndexOf(Properties.Settings.Default.auxAnalogInDev);
+
+                    if (idx != null && idx >= 0)
                         comboBox_AuxAnalogInputDevice.SelectedIndex = idx;
                     else
                         comboBox_AuxAnalogInputDevice.SelectedIndex = 0;

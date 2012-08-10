@@ -69,9 +69,10 @@
     <Reference Include="ConsoleWidget">
       <HintPath>lib\ConsoleWidget.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86" />
-    <Reference Include="Microsoft.Xna.Framework.Game, Version=3.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="MoreLinq">
       <HintPath>lib\MoreLinq.dll</HintPath>
     </Reference>
@@ -89,6 +90,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="XamlBuildTask" />
     <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\ZedGraph.dll</HintPath>
@@ -118,6 +120,7 @@
     <Compile Include="DataTypes\RawMultiChannelBuffer.cs" />
     <Compile Include="DataTypes\EventBuffer.cs" />
     <Compile Include="Debug\ExecptDBG.cs" />
+    <Compile Include="Plotting\GraphicsDeviceService.cs" />
     <Compile Include="Server\DataSrv.cs" />
     <Compile Include="Server\DigitalEventSrv.cs" />
     <Compile Include="Server\NewEventDataEventArgs.cs" />
@@ -264,7 +267,6 @@
     <Compile Include="Plotting\GraphicsDeviceControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Plotting\GraphicsDeviceService.cs" />
     <Compile Include="Plotting\GridGraph.cs">
       <SubType>Component</SubType>
     </Compile>

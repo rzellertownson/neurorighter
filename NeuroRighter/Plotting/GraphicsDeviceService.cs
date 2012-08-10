@@ -35,14 +35,23 @@ namespace NeuroRighter
     {
         #region Fields
 
-
         // Singleton device service instance.
         static GraphicsDeviceService singletonInstance;
 
+        // Presentaiton parameters
+        public PresentationParameters Parameters { get; private set; }
+
+        // IGraphicsDeviceService events.
+        public event EventHandler<EventArgs> DeviceCreated;
+        public event EventHandler<EventArgs> DeviceDisposing;
+        public event EventHandler<EventArgs> DeviceReset;
+        public event EventHandler<EventArgs> DeviceResetting;
+
+        // The actual graphics device
+        GraphicsDevice graphicsDevice;
 
         // Keep track of how many controls are sharing the singletonInstance.
         static int referenceCount;
-
 
         #endregion
 
@@ -53,19 +62,38 @@ namespace NeuroRighter
         /// </summary>
         GraphicsDeviceService(IntPtr windowHandle, int width, int height)
         {
-            parameters = new PresentationParameters();
+            //parameters = new PresentationParameters();
 
-            parameters.BackBufferWidth = Math.Max(width, 1);
-            parameters.BackBufferHeight = Math.Max(height, 1);
-            parameters.BackBufferFormat = SurfaceFormat.Color;
+            //parameters.BackBufferWidth = Math.Max(width, 1);
+            //parameters.BackBufferHeight = Math.Max(height, 1);
+            //parameters.BackBufferFormat = SurfaceFormat.Color;
 
-            parameters.EnableAutoDepthStencil = true;
-            parameters.AutoDepthStencilFormat = DepthFormat.Depth24;
+            //parameters.EnableAutoDepthStencil = true;
+            //parameters.AutoDepthStencilFormat = DepthFormat.Depth24;
 
-            graphicsDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter,
-                                                DeviceType.Hardware,
-                                                windowHandle,
-                                                parameters);
+            this.Parameters = new PresentationParameters()
+            {
+                BackBufferWidth = Math.Max(width, 1),
+                BackBufferHeight = Math.Max(height, 1),
+                BackBufferFormat = SurfaceFormat.Color,
+                DepthStencilFormat = DepthFormat.Depth24,
+                DeviceWindowHandle = windowHandle,
+                PresentationInterval = PresentInterval.Immediate,
+                IsFullScreen = false,
+                MultiSampleCount = 4
+            };
+
+            //graphicsDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter,
+            //                                    DeviceType.Hardware,
+            //                                    windowHandle,
+            //                                    parameters);
+
+            this.graphicsDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter, GraphicsProfile.Reach, this.Parameters);
+
+            if (this.DeviceCreated != null)
+            {
+                this.DeviceCreated(this, EventArgs.Empty);
+            }
         }
 
 
@@ -121,10 +149,10 @@ namespace NeuroRighter
             if (DeviceResetting != null)
                 DeviceResetting(this, EventArgs.Empty);
 
-            parameters.BackBufferWidth = Math.Max(parameters.BackBufferWidth, width);
-            parameters.BackBufferHeight = Math.Max(parameters.BackBufferHeight, height);
+            Parameters.BackBufferWidth = Math.Max(Parameters.BackBufferWidth, width);
+            Parameters.BackBufferHeight = Math.Max(Parameters.BackBufferHeight, height);
 
-            graphicsDevice.Reset(parameters);
+            graphicsDevice.Reset(Parameters);
 
             if (DeviceReset != null)
                 DeviceReset(this, EventArgs.Empty);
@@ -138,18 +166,5 @@ namespace NeuroRighter
         {
             get { return graphicsDevice; }
         }
-
-        GraphicsDevice graphicsDevice;
-
-
-        // Store the current device settings.
-        PresentationParameters parameters;
-
-
-        // IGraphicsDeviceService events.
-        public event EventHandler DeviceCreated;
-        public event EventHandler DeviceDisposing;
-        public event EventHandler DeviceReset;
-        public event EventHandler DeviceResetting;
     }
 }

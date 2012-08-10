@@ -63,17 +63,17 @@ namespace NeuroRighter
 
         protected override void Initialize()
         {
-            effect = new BasicEffect(GraphicsDevice, null);
+            effect = new BasicEffect(GraphicsDevice);
             effect.VertexColorEnabled = true;
             effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up);
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
-            GraphicsDevice.RenderState.CullMode = CullMode.None;
-            vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
+            //GraphicsDevice.RenderState.CullMode = CullMode.None;
+            //vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
 
             content = new ContentManager(Services, "Content");
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("Arial");
+            font = content.Load<SpriteFont>("NRArial");
 
             updateVoltageTime();
 
@@ -120,20 +120,20 @@ namespace NeuroRighter
         protected override void Draw()
         {
             GraphicsDevice.Clear(Color.Black);
-            GraphicsDevice.VertexDeclaration = vDec;
+            //GraphicsDevice.VertexDeclaration = vDec;
 
             plotChannelNumbers();
             plotVoltageTime();
 
-            effect.Begin();
-            effect.CurrentTechnique.Passes[0].Begin();
+            //effect.EffectPass
+            effect.CurrentTechnique.Passes[0].Apply();
 
             for (int i = 0; i < lines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
 
-            effect.CurrentTechnique.Passes[0].End();
-            effect.End();
+            //effect.CurrentTechnique.Passes[0].End();
+            //effect.End();
         }
 
         private void plotChannelNumbers()

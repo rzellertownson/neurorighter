@@ -47,6 +47,7 @@ namespace NeuroRighter
             this.comboBox_cineplexDevice = new System.Windows.Forms.ComboBox();
             this.tabPage_stim = new System.Windows.Forms.TabPage();
             this.groupBox26 = new System.Windows.Forms.GroupBox();
+            this.label25 = new System.Windows.Forms.Label();
             this.checkBox_useBuffloader = new System.Windows.Forms.CheckBox();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -144,7 +145,6 @@ namespace NeuroRighter
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
-            this.label25 = new System.Windows.Forms.Label();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -372,12 +372,22 @@ namespace NeuroRighter
             this.groupBox26.TabStop = false;
             this.groupBox26.Text = "Double Buffered Output";
             // 
+            // label25
+            // 
+            this.label25.Location = new System.Drawing.Point(3, 48);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(329, 83);
+            this.label25.TabIndex = 10;
+            this.label25.Text = "Disabling the double buffering system will prevent closed-loop applications from " +
+                "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
+                " \'Loop()\' method.  ";
+            // 
             // checkBox_useBuffloader
             // 
             this.checkBox_useBuffloader.AutoSize = true;
             this.checkBox_useBuffloader.Location = new System.Drawing.Point(6, 19);
             this.checkBox_useBuffloader.Name = "checkBox_useBuffloader";
-            this.checkBox_useBuffloader.Size = new System.Drawing.Size(224, 20);
+            this.checkBox_useBuffloader.Size = new System.Drawing.Size(180, 17);
             this.checkBox_useBuffloader.TabIndex = 9;
             this.checkBox_useBuffloader.Text = "Disable Double Buffering System";
             this.checkBox_useBuffloader.UseVisualStyleBackColor = true;
@@ -440,9 +450,9 @@ namespace NeuroRighter
             this.checkBox_UseAODO.AutoSize = true;
             this.checkBox_UseAODO.Location = new System.Drawing.Point(8, 19);
             this.checkBox_UseAODO.Name = "checkBox_UseAODO";
-            this.checkBox_UseAODO.Size = new System.Drawing.Size(224, 20);
+            this.checkBox_UseAODO.Size = new System.Drawing.Size(206, 20);
             this.checkBox_UseAODO.TabIndex = 24;
-            this.checkBox_UseAODO.Text = "Use Analog and Digital Outttttttput";
+            this.checkBox_UseAODO.Text = "Use Analog and Digital Output";
             this.checkBox_UseAODO.UseVisualStyleBackColor = true;
             this.checkBox_UseAODO.CheckedChanged += new System.EventHandler(this.checkBox_UseAODO_CheckedChanged);
             // 
@@ -1453,16 +1463,6 @@ namespace NeuroRighter
             // 
             this.HWpersistWindowComponent.Form = this;
             this.HWpersistWindowComponent.XMLFilePath = ".";
-            // 
-            // label25
-            // 
-            this.label25.Location = new System.Drawing.Point(3, 48);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(329, 83);
-            this.label25.TabIndex = 10;
-            this.label25.Text = "Disabling the double buffering system will prevent closed-loop applications from " +
-                "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
-                " \'Loop()\' method.  ";
             // 
             // HardwareSettings
             // 

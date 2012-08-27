@@ -27,7 +27,7 @@ namespace NeuroRighter
         BasicEffect effect;
         VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
-        int[] idx; //Index to points in 'lines'
+        short[] idx; //Index to points in 'lines'
 
         //Constants for text rendering
         private ContentManager content;
@@ -47,9 +47,10 @@ namespace NeuroRighter
             this.numSamplesPerPlot = numSamplesPerPlot;
             lines = new List<VertexPositionColor[]>(numRows);
             for (int i = 0; i < numRows; ++i) lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-            idx = new int[numSamplesPerPlot];
+            idx = new short[numSamplesPerPlot];
 
-            for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+            for (short i = 0; i < idx.Length; ++i) 
+                idx[i] = i;
 
             this.timeRange = timeRange;
             this.voltageRange = voltageRange;

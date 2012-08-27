@@ -34,12 +34,12 @@ namespace NeuroRighter
         private Color gridColor = Color.White;
 
         BasicEffect effect;
-        VertexDeclaration vDec;
+        //VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
         List<VertexPositionColor[]> threshlines1; // threshold lines to be plotted
         List<VertexPositionColor[]> threshlines2; // -threshold lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
-        int[] idx; //Index to points in 'lines'
+        short[] idx; //Index to points in 'lines'
         private static readonly short[] gridIdx = { 0, 1 }; //Index to points in gridLines
 
         //Constants for text rendering
@@ -71,20 +71,22 @@ namespace NeuroRighter
                     threshlines1.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
                     threshlines2.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
                 }
-                idx = new int[numSamplesPerPlot * numCols];
+                idx = new short[numSamplesPerPlot * numCols];
             }
             else
             {
                 lines = new List<VertexPositionColor[]>(numCols * numRows * NUM_WAVEFORMS_PER_PLOT);
                 for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-                idx = new int[numSamplesPerPlot];
+                idx = new short[numSamplesPerPlot];
             }
 
             gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
 
-            for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
-            for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+            for (int i = 0; i < numRows + numCols - 2; ++i) 
+                gridLines.Add(new VertexPositionColor[2]);
+            for (short i = 0; i < idx.Length; ++i) 
+                idx[i] = i;
 
             this.timeRange = timeRange;
             this.voltageRange = voltageRange;
@@ -177,7 +179,6 @@ namespace NeuroRighter
         protected override void Draw()
         {
             GraphicsDevice.Clear(Color.Black);
-            //GraphicsDevice.VertexDeclaration = vDec;
 
             //Draw channel numbers
             plotChannelNumbers();

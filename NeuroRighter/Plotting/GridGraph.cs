@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Content.Pipeline;
 
 namespace NeuroRighter
 {
@@ -33,12 +34,12 @@ namespace NeuroRighter
         private Color gridColor = Color.White;
 
         BasicEffect effect;
-        VertexDeclaration vDec;
+        //VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
         List<VertexPositionColor[]> threshlines1; // threshold lines to be plotted
         List<VertexPositionColor[]> threshlines2; // -threshold lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
-        int[] idx; //Index to points in 'lines'
+        short[] idx; //Index to points in 'lines'
         private static readonly short[] gridIdx = { 0, 1 }; //Index to points in gridLines
 
         //Constants for text rendering
@@ -70,20 +71,22 @@ namespace NeuroRighter
                     threshlines1.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
                     threshlines2.Add(new VertexPositionColor[numSamplesPerPlot * numColumns]);
                 }
-                idx = new int[numSamplesPerPlot * numCols];
+                idx = new short[numSamplesPerPlot * numCols];
             }
             else
             {
                 lines = new List<VertexPositionColor[]>(numCols * numRows * NUM_WAVEFORMS_PER_PLOT);
                 for (int i = 0; i < numCols * numRows * NUM_WAVEFORMS_PER_PLOT; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-                idx = new int[numSamplesPerPlot];
+                idx = new short[numSamplesPerPlot];
             }
 
             gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
 
-            for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
-            for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+            for (int i = 0; i < numRows + numCols - 2; ++i) 
+                gridLines.Add(new VertexPositionColor[2]);
+            for (short i = 0; i < idx.Length; ++i) 
+                idx[i] = i;
 
             this.timeRange = timeRange;
             this.voltageRange = voltageRange;
@@ -113,17 +116,17 @@ namespace NeuroRighter
 
         protected override void Initialize()
         {
-            effect = new BasicEffect(GraphicsDevice, null);
+            effect = new BasicEffect(GraphicsDevice);
             effect.VertexColorEnabled = true;
             effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up);
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
-            GraphicsDevice.RenderState.CullMode = CullMode.None;
-            vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
+            //GraphicsDevice.RenderState.CullMode = CullMode.None;
+            //vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
 
             content = new ContentManager(Services, "Content");
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("Arial");
+            font = content.Load<SpriteFont>("NRArial");
 
             this.Resize += new EventHandler(resize);
             this.SizeChanged += new EventHandler(resize);
@@ -176,15 +179,13 @@ namespace NeuroRighter
         protected override void Draw()
         {
             GraphicsDevice.Clear(Color.Black);
-            GraphicsDevice.VertexDeclaration = vDec;
 
             //Draw channel numbers
             plotChannelNumbers();
             plotVoltageTime();
 
-            effect.Begin();
-            effect.CurrentTechnique.Passes[0].Begin();
-
+            //effect.Begin();
+            effect.CurrentTechnique.Passes[0].Apply();
 
             for (int i = 0; i < lines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
@@ -200,8 +201,8 @@ namespace NeuroRighter
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     gridLines[i], 0, 2, gridIdx, 0, 1);
 
-            effect.CurrentTechnique.Passes[0].End();
-            effect.End();
+            //effect.CurrentTechnique.Passes[0].End();
+            //effect.End();
         }
 
         private void plotGridLines()
@@ -313,4 +314,5 @@ namespace NeuroRighter
             base.Dispose(disposing);
         }
     }
+
 }

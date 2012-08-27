@@ -64,7 +64,7 @@ namespace NeuroRighter
                 for (int i = 0; i < data.Length; ++i)
                     spikeGraph.plotYWithThresh(data[i], threshdata1[i], threshdata2[i],
                         0, 1, NRBrainbow, pd.numSamplesPerPlot,
-                        Microsoft.Xna.Framework.Graphics.Color.SlateGray, i);
+                        Microsoft.Xna.Framework.Color.SlateGray, i);
                 spikeGraph.Invalidate();
             }
 

@@ -40,7 +40,7 @@ namespace NeuroRighter
         VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
-        int[] idx; //Index to points in 'lines'
+        short[] idx; //Index to points in 'lines'
         private static readonly short[] gridIdx = { 0, 1 }; //Index to points in gridLines
 
         //Constants for text rendering
@@ -54,6 +54,7 @@ namespace NeuroRighter
         private double voltageRange; //in volts
         private double timeRange; //in seconds
         private Vector2 voltageTimeLabelCoords;
+   
 
         private int waveformsPerPlot;
 
@@ -62,7 +63,6 @@ namespace NeuroRighter
         {
             lock (lockObject)
             {
-
                 this.numRows = numRows; this.numCols = numColumns; this._isSpikeWaveformPlot = isSpikeWaveformPlot;
                 this.numSamplesPerPlot = numSamplesPerPlot;
                 this.waveformsPerPlot = waveformsPerPlot;
@@ -70,13 +70,14 @@ namespace NeuroRighter
                 lines = new List<VertexPositionColor[]>(numCols * numRows * waveformsPerPlot);
                 for (int i = 0; i < numCols * numRows * waveformsPerPlot; ++i)
                     lines.Add(new VertexPositionColor[numSamplesPerPlot]);
-                idx = new int[numSamplesPerPlot];
+                idx = new short[numSamplesPerPlot];
 
 
                 gridLines = new List<VertexPositionColor[]>(numRows + numCols - 2);
 
                 for (int i = 0; i < numRows + numCols - 2; ++i) gridLines.Add(new VertexPositionColor[2]);
-                for (int i = 0; i < idx.Length; ++i) idx[i] = i;
+                for (short i = 0; i < idx.Length; ++i) 
+                    idx[i] = i;
 
                 this.timeRange = timeRange;
                 this.voltageRange = voltageRange;
@@ -96,17 +97,17 @@ namespace NeuroRighter
 
         protected override void Initialize()
         {
-            effect = new BasicEffect(GraphicsDevice, null);
+            effect = new BasicEffect(GraphicsDevice);
             effect.VertexColorEnabled = true;
             effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up);
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
-            GraphicsDevice.RenderState.CullMode = CullMode.None;
-            vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
+            //GraphicsDevice.RenderState.CullMode = CullMode.None;
+            //vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
 
             content = new ContentManager(Services, "Content");
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("Arial");
+            font = content.Load<SpriteFont>("NRArial");
 
             this.Resize += new EventHandler(resize);
             this.SizeChanged += new EventHandler(resize);
@@ -169,14 +170,14 @@ namespace NeuroRighter
         protected override void Draw()
         {
             GraphicsDevice.Clear(Color.Black);
-            GraphicsDevice.VertexDeclaration = vDec;
+            //GraphicsDevice.VertexDeclaration = vDec;
 
             //Draw channel numbers
             plotChannelNumbers();
             plotVoltageTime();
 
-            effect.Begin();
-            effect.CurrentTechnique.Passes[0].Begin();
+            //effect.Begin();
+            effect.CurrentTechnique.Passes[0].Apply();
 
             for (int i = 0; i < gridLines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
@@ -185,8 +186,8 @@ namespace NeuroRighter
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
 
-            effect.CurrentTechnique.Passes[0].End();
-            effect.End();
+            //effect.CurrentTechnique.Passes[0].End();
+            //effect.End();
         }
 
         private void plotGridLines()

@@ -165,9 +165,9 @@ namespace NeuroRighter
         private bool[] bwIsRunning;
 
         //Plots
-        private List<Microsoft.Xna.Framework.Graphics.Color> NRBrainbow;
-        private List<Microsoft.Xna.Framework.Graphics.Color> NRSnipBrainbow;
-        private List<Microsoft.Xna.Framework.Graphics.Color> NRUnitBrainbow;
+        private List<Microsoft.Xna.Framework.Color> NRBrainbow;
+        private List<Microsoft.Xna.Framework.Color> NRSnipBrainbow;
+        private List<Microsoft.Xna.Framework.Color> NRUnitBrainbow;
         private GridGraph spikeGraph;
         private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;

@@ -13,23 +13,27 @@ function spk = loadspk(fid, varargin)
 %
 % T = LOADSPK(FID,'last') returns the final spike time in the file. This is
 % useful setting up a loop that parses the file into time chunks.
+% 
+% T = LOADSPK(FID,'head') prints the file header to the console and
+% returns file meta data only.
 
+findlast = false;
+getheader = false;
 if nargin > 1 % then we need to decode varargin
     if length(varargin) == 1 % time range specified
         if strcmp(varargin{1},'last')
             findlast = true;
+        elseif strcmp(varargin{1},'head')
+            getheader = true;
         else
-            findlast = false;
             time = varargin{1};
             wave = 1;
         end
     elseif length(varargin) == 2 % time range and channels specified
-        findlast = false;
         time = varargin{1};
         wave = varargin{2};
     end
 else
-    findlast = false;
     time = [];
     wave = 1;
 end
@@ -133,6 +137,25 @@ fprintf(['\tRecording time (yr-mo-dy-hr-mi-sc-ms): ' ...
 
 fprintf(['\tNumber of spikes: ' num2str(nospikes) '\n']);
 fprintf(['\trecording duration: ' num2str(lastspiketime) '\n\n']);
+% If all they want is the header then break here
+if getheader
+    spk.fs_Hz = fs;
+    spk.num_chan = nochannels;
+    spk.dig_gain = gain;
+    spk.adc_polling_period_sec = adcpoll;
+    spk.sorting_on = recunit;
+    spk.num_spk = nospikes;
+    spk.last_spk = lastspiketime;
+    spk.wave_samp = waveSamples;
+    spk.date = [num2str(dt(1)) '-' ...
+    num2str(dt(2)) '-' ...
+    num2str(dt(3)) '-' ...
+    num2str(dt(4)) '-' ...
+    num2str(dt(5)) '-' ...
+    num2str(dt(6)) '-' ...
+    num2str(dt(7))];
+    return;
+end
 fprintf('\t------------\n\n');
 
 % RZT: algorithm for getting intervals: estimate average firing rate- from
@@ -257,7 +280,10 @@ spk.meta.fs_Hz = fs;
 spk.meta.num_chan = nochannels;
 spk.meta.dig_gain = gain;
 spk.meta.adc_polling_period_sec = adcpoll;
-spk.meta.record_units = recunit;
+spk.meta.sorting_on = recunit;
+spk.meta.num_spk = nospikes;
+spk.meta.last_spk = lastspiketime;
+spk.meta.wave_samp = waveSamples;
 spk.meta.date = [num2str(dt(1)) '-' ...
     num2str(dt(2)) '-' ...
     num2str(dt(3)) '-' ...
@@ -265,7 +291,6 @@ spk.meta.date = [num2str(dt(1)) '-' ...
     num2str(dt(5)) '-' ...
     num2str(dt(6)) '-' ...
     num2str(dt(7))];
-
 fprintf('\t...done\n\n\tLoad complete.\n\n');
 fclose(h);
 

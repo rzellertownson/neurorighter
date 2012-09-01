@@ -18,6 +18,7 @@ namespace ExtensionMethods
     /// <author> Jon Newman</author>
     public static class NRExtensionMethods
     {
+
         /// <summary>
         /// Method for getting index of max value of 
         /// a generic collection
@@ -94,6 +95,9 @@ namespace ExtensionMethods
         /// <returns>List of color objects</returns>
         public static List<Color> GenerateBrainbow(this int numChannels)
         {
+            // Alpha of colors
+            int colorAlpha = 100;
+
             // This is generated code
             byte[,] cmap = new byte[64, 3]  {{255,0,0},
                                             {255,24,0},
@@ -164,7 +168,7 @@ namespace ExtensionMethods
             List<Color> NRColorMap = new List<Color>();
             for (int i = 0; i < numChannels; ++i)
             {
-                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2]);
+                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2], colorAlpha);
                 NRColorMap.Add(colTemp);
             }
 
@@ -178,6 +182,9 @@ namespace ExtensionMethods
         /// <returns>List of color objects</returns>
         public static List<Color> GenerateSnipBrainbow(this int numChannels)
         {
+            // Alpha of colors
+            int colorAlpha = 100;
+
             // This is generated code
             byte[,] cmap = new byte[64, 3]  {{255,0,0},
                                             {255,24,0},
@@ -248,7 +255,7 @@ namespace ExtensionMethods
             List<Color> NRColorMap = new List<Color>();
             for (int i = 0; i < numChannels; ++i)
             {
-                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2], 100);
+                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2], colorAlpha);
                 NRColorMap.Add(colTemp);
             }
 
@@ -262,6 +269,9 @@ namespace ExtensionMethods
         /// <returns>List of color objects</returns>
         public static List<Color> GenerateUnitBrainbow(this int numChannels)
         {
+            // Alpha of colors
+            int colorAlpha = 100;
+
             // This is generated code
             byte[,] cmap = new byte[7, 3]  {{120,120,120},
                                             {255,24,0},
@@ -275,7 +285,7 @@ namespace ExtensionMethods
             List<Color> NRColorMap = new List<Color>();
             for (int i = 0; i < cmap.GetLength(0); ++i)
             {
-                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2], 100);
+                Color colTemp = new Color(cmap[i, 0], cmap[i, 1], cmap[i, 2], colorAlpha);
                 NRColorMap.Add(colTemp);
             }
 

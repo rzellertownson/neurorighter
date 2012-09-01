@@ -81,6 +81,7 @@ namespace NeuroRighter
 
                 this.timeRange = timeRange;
                 this.voltageRange = voltageRange;
+
             }
 
         }
@@ -102,8 +103,8 @@ namespace NeuroRighter
             effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 1), Vector3.Zero, Vector3.Up);
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
-            //GraphicsDevice.RenderState.CullMode = CullMode.None;
-            //vDec = new VertexDeclaration(GraphicsDevice, VertexPositionColor.VertexElements);
+            // Graphics device options
+            GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
             content = new ContentManager(Services, "Content");
             spriteBatch = new SpriteBatch(GraphicsDevice);

@@ -22,6 +22,7 @@ namespace NeuroRighter
         private float dY = 1F;
         private float xScale;
         private float yScale;
+        private float alpha = 0.5F;
 
         private int numRows;
         private int numCols;
@@ -37,7 +38,6 @@ namespace NeuroRighter
         private Color gridColor = Color.White;
 
         BasicEffect effect;
-        VertexDeclaration vDec;
         List<VertexPositionColor[]> lines; //Lines to be plotted
         List<VertexPositionColor[]> gridLines; //Grid lines
         short[] idx; //Index to points in 'lines'
@@ -104,6 +104,7 @@ namespace NeuroRighter
             effect.Projection = Matrix.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 1, 1000);
 
             // Graphics device options
+            //GraphicsDevice.BlendState = BlendState.AlphaBlend;
             GraphicsDevice.BlendState = BlendState.NonPremultiplied;
 
             content = new ContentManager(Services, "Content");
@@ -152,7 +153,7 @@ namespace NeuroRighter
             {
                 for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                        yScale * ((float)data[i] - maxY), 0), colorWave[chan]);
+                        yScale * ((float)data[i] - maxY), 0), colorWave[chan]*alpha);
             }
         }
 
@@ -164,7 +165,7 @@ namespace NeuroRighter
             {
                 for (int i = 0; i < lines[plotNumber].Length; ++i)
                     lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                        yScale * ((float)data[i] - maxY), 0), colorWave);
+                        yScale * ((float)data[i] - maxY), 0), colorWave * alpha);
             }
         }
 

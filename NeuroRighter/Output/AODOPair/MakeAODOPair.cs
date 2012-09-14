@@ -119,14 +119,14 @@ namespace NeuroRighter.Output
             {
                 digitalTask.Dispose();
                 digitalTask = null;
-                Console.WriteLine("A digital output task was destroyed"); 
+                Console.WriteLine("A digital output task was disposed."); 
             }
            
             if (analogTask != null)
             {
                 analogTask.Dispose(); 
                 analogTask = null;
-                Console.WriteLine("An analog output task was destroyed"); 
+                Console.WriteLine("An analog output task was disposed."); 
             }
         }
 

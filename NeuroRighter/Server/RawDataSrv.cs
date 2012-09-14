@@ -83,14 +83,14 @@ namespace NeuroRighter.Server
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
-            }
 
-            // Fire the new data event (if someone is listening)
-            if (NewData != null)
-            {
-                eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
-                eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
-                NewData(this, eventArgs);
+                // Fire the new data event (if someone is listening)
+                if (NewData != null)
+                {
+                    eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
+                    eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
+                    NewData(this, eventArgs);
+                }
             }
         }
 
@@ -115,6 +115,14 @@ namespace NeuroRighter.Server
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(task);
                 }
+
+                // Fire the new data event (if someone is listening)
+                if (NewData != null)
+                {
+                    eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
+                    eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
+                    NewData(this, eventArgs);
+                }
             }
         }
 
@@ -138,6 +146,14 @@ namespace NeuroRighter.Server
                     dataBuffer.IncrementCurrentPosition(0);
                 }
             }
+
+            // Fire the new data event (if someone is listening)
+            if (NewData != null)
+            {
+                eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
+                eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
+                NewData(this, eventArgs);
+            }
         }
 
         /// <summary>
@@ -159,6 +175,14 @@ namespace NeuroRighter.Server
                     // Increment start, end and write markers
                     dataBuffer.IncrementCurrentPosition(0);
                 }
+            }
+
+            // Fire the new data event (if someone is listening)
+            if (NewData != null)
+            {
+                eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
+                eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
+                NewData(this, eventArgs);
             }
         }
 

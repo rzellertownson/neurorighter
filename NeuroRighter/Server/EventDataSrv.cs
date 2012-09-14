@@ -64,6 +64,7 @@ namespace NeuroRighter.Server
         private ulong serverLagSamples;
         private double sampleFrequencyHz;
         private int channelCount;
+        private int numUnits = 0;
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
@@ -168,6 +169,15 @@ namespace NeuroRighter.Server
         }
 
         /// <summary>
+        /// Sets the number of units handled by this channel
+        /// </summary>
+        /// <param name="numberOfUnits">The number of units detected by the spike sorter</param>
+        internal void SetNumberOfUnits(int numberOfUnits)
+        {
+            numUnits = numberOfUnits;
+        }
+
+        /// <summary>
         /// Estimate the avialable samples in the buffer. This can be used to inform
         /// the user of good arguments for the ReadFromBuffer method.
         /// </summary>
@@ -256,6 +266,17 @@ namespace NeuroRighter.Server
             {
                 return channelCount;
             }
+        }
+        /// <summary>
+        /// In the case that this is the spike server, this returns the number of detected units. If there is no spike sorting, this number is set to 0.
+        /// </summary>
+        public int NumUnits
+        {
+            get
+            {
+                return numUnits;
+            }
+
         }
 
         # endregion

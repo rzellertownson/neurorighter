@@ -882,10 +882,6 @@ namespace NeuroRighter
                             BNCOutput = new ChannelOutput(spikeSamplingRate, 0.1, Properties.Settings.Default.ADCPollingPeriodSec, spikeTask[0],
                                 Properties.Settings.Default.SingleChannelPlaybackDevice, 0);
 
-                        
-
-
-
 
                     }
                     catch (Exception exception)
@@ -895,7 +891,6 @@ namespace NeuroRighter
                         MessageBox.Show(exception.Message);
                         reset();
                     }
-
 
 
                     // Set up the DataSrv object. This is an object that publishes a nice large data history
@@ -911,6 +906,9 @@ namespace NeuroRighter
                         spikeDet.spikeDetectionLag
                         );
 
+                    // Set the number of units if appropriate
+                    if (spikeDet.spikeSorter != null)
+                        datSrv.SetNumberOfUnits(spikeDet.spikeSorter.totalNumberOfUnits);
 
                     Debugger = new Logger();
                     Debugger.GrabTimer(spikeTask[0]);

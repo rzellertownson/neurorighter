@@ -546,8 +546,9 @@ namespace NeuroRighter
 
                 // Provide new spike data to persistent buffer
                 if (Properties.Settings.Default.useSpikeDataBuffer)
+                {
                     datSrv.SpikeSrv.WriteToBuffer(toRawsrv, taskNumber);
-
+                }
 
                 // Record spike waveforms 
                 if (switch_record.Value && Properties.Settings.Default.recordSpikes)
@@ -623,6 +624,9 @@ namespace NeuroRighter
         
         private void bwSpikes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            // Update the number of polls completed
+            datSrv.NumberOfPollsCompleted = trackingReads[0];
+
             int taskNumber = (int)e.Result;
             bwIsRunning[taskNumber] = false;
 

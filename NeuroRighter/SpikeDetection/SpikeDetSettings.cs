@@ -595,6 +595,7 @@ namespace NeuroRighter.SpikeDetection
         {
             // Train the sorter on a separate thread
             button_TrainSorter.Enabled = false;
+            button_EngageSpikeSorter.Enabled = false;
             sorterTrainer.RunWorkerAsync();
         }
 

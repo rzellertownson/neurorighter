@@ -223,7 +223,6 @@ namespace NeuroRighter.Server
                 analogWriters[i] = new AnalogMultiChannelWriter(analogTasks[i].Stream);
 
                 //now that we've created a potential task configuration, check to make sure everything is kosher
-                analogTasks[i].Control(TaskAction.Verify);
                 //actually set the hardware to these settings
                 analogTasks[i].Control(TaskAction.Reserve);
             }

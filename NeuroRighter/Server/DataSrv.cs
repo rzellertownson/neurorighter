@@ -85,6 +85,16 @@ namespace NeuroRighter.Server
         private int aDCPollingPeriodSamples;
 
         /// <summary>
+        /// The number of times the ADC's have been polled since the start of aquisition
+        /// </summary>
+        private int numberOfPollsCompleted;
+
+        /// <summary>
+        /// If there is a spike sorter, this variable is the number of units that have been detected.
+        /// </summary>
+        private int numberOfUnits;
+
+        /// <summary>
         /// NeuroRighter's Persistant Data Server
         /// </summary>
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
@@ -194,6 +204,16 @@ namespace NeuroRighter.Server
                    1, 0, 0);
             }
 
+        }
+
+        /// <summary>
+        /// If there is a spike sorter, us this  to set the number of units that have been detected.
+        /// </summary>
+        /// <param name="numberOfUnits">The Number of units found by the spike sorter.</param>
+        internal void SetNumberOfUnits(int numberOfUnits)
+        {
+            if (spikeSrv != null)
+                spikeSrv.SetNumberOfUnits(numberOfUnits);
         }
 
         # region public accessors
@@ -316,6 +336,22 @@ namespace NeuroRighter.Server
             get
             {
                 return aDCPollingPeriodSamples;
+            }
+        }
+
+        /// <summary>
+        /// The number of times the ADC's have been polled since the start of aquisition
+        /// </summary>
+        public int NumberOfPollsCompleted
+        {
+            get
+            {
+                return numberOfPollsCompleted;
+            }
+
+            internal set
+            {
+                numberOfPollsCompleted = value;
             }
         }
 

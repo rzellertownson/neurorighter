@@ -106,7 +106,7 @@ namespace NeuroRighter.DataTypes
                 netLeastAndMostCurrentCircular[1] = (int)((tmpi - 1) % (ulong)bufferLengthInSamples);//most current circular index
 
             startAndEndSample[1] = tmpi - 1;
-            if (tmpa-1 < (ulong)bufferLengthInSamples)
+            if (tmpa < 1 || tmpa-1 < (ulong)bufferLengthInSamples)
             {
                 startAndEndSample[0] = 0; 
             }
@@ -118,7 +118,7 @@ namespace NeuroRighter.DataTypes
         }
 
         /// <summary>
-        /// used for reading only.  this means that we care about the 'youngest' of the two oldest samples and the 
+        /// Used for reading only.  this means that we care about the 'youngest' of the two oldest samples and the 
         /// </summary>
         /// <param name="absoluteSampleIndex"> The absolute sample index</param>
         /// <returns>Relative sample index, based relative to the start of the last buffer load.</returns>

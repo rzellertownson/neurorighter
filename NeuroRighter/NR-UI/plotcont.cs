@@ -154,5 +154,16 @@ namespace NeuroRighter
         {
             spkWfmGraph.clear();
         }
+
+        private void numericUpDown_NumSnipsDisplayed_ValueChanged(object sender, EventArgs e)
+        {
+            if (spkWfmGraph != null)
+            {
+                spkWfmGraph.clear();
+                waveformPlotData.MaxWaveforms = (int)numericUpDown_NumSnipsDisplayed.Value;
+                spkWfmGraph.WaveformsToPlot = (int)numericUpDown_NumSnipsDisplayed.Value;
+                spkWfmGraph.clear();
+            }
+        }
     }
 }

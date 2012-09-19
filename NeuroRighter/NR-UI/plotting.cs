@@ -91,7 +91,7 @@ namespace NeuroRighter
             EventPlotData pd = (EventPlotData)sender;
             if (spkWfmGraph.Visible && !checkBox_freeze.Checked)
             {
-                int maxWaveforms = pd.getMaxWaveforms();
+                int maxWaveforms = pd.MaxWaveforms;
 
                 List<PlotSpikeWaveform> wfms = pd.read();
                 for (int i = 0; i < wfms.Count; ++i)

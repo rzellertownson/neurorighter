@@ -948,7 +948,7 @@ namespace NeuroRighter
             checkBox_SALPA.Enabled = false;
             if (Properties.Settings.Default.SeparateLFPBoard)
                 comboBox_LFPGain.Enabled = false;
-            numericUpDown_NumSnipsDisplayed.Enabled = false;
+            //numericUpDown_NumSnipsDisplayed.Enabled = false;
             button_startClosedLoopStim.Enabled = false;
 
             // Disable spike detector saving while running
@@ -1132,6 +1132,5 @@ namespace NeuroRighter
         {
             nrConsole.ShowConsole();
         }
-
     }
 }

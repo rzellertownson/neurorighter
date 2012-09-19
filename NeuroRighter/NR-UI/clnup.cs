@@ -146,7 +146,7 @@ namespace NeuroRighter
             textBox_MUASamplingRate.Enabled = true;
             button_startStimFromFile.Enabled = true;
             button_startClosedLoopStim.Enabled = true;
-            numericUpDown_NumSnipsDisplayed.Enabled = true;
+            //numericUpDown_NumSnipsDisplayed.Enabled = true;
             button_stopClosedLoopStim.Enabled = false;
             button_startClosedLoopStim.Enabled = true;
             checkBox_SALPA.Enabled = true;

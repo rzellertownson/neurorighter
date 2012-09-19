@@ -70,8 +70,6 @@ namespace NeuroRighter
             bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
         }
 
-        internal Int32 getMaxWaveforms() { return maxWaveforms; }
-
         void bgWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             bool isRunning = true;
@@ -182,5 +180,19 @@ namespace NeuroRighter
 
         internal float getGain() { return gain; }
         internal void setGain(float gain) { this.gain = gain; }
+
+        #region Public Accessors
+        public int MaxWaveforms
+        {
+            set
+            {
+                maxWaveforms = value;
+            }
+            get
+            {
+                return maxWaveforms;
+            }
+        }
+        #endregion
     }
 }

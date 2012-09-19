@@ -151,9 +151,16 @@ namespace NeuroRighter
         {
             lock (lockObject)
             {
-                for (int i = 0; i < lines[plotNumber].Length; ++i)
-                    lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                        yScale * ((float)data[i] - maxY), 0), colorWave[chan]*alpha);
+                try
+                {
+                    for (int i = 0; i < lines[plotNumber].Length; ++i)
+                        lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
+                            yScale * ((float)data[i] - maxY), 0), colorWave[chan] * alpha);
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
 
@@ -163,10 +170,19 @@ namespace NeuroRighter
         {
             lock (lockObject)
             {
-                for (int i = 0; i < lines[plotNumber].Length; ++i)
-                    lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
-                        yScale * ((float)data[i] - maxY), 0), colorWave * alpha);
+                try
+                {
+                    for (int i = 0; i < lines[plotNumber].Length; ++i)
+                        lines[plotNumber][i] = new VertexPositionColor(new Vector3(xScale * (firstX + incrementX * i - minX),
+                            yScale * ((float)data[i] - maxY), 0), colorWave * alpha);
+                }
+                catch
+                {
+                    return;
+                }
+
             }
+
         }
 
         protected override void Draw()
@@ -301,6 +317,20 @@ namespace NeuroRighter
                 content.Unload();
             base.Dispose(disposing);
         }
+
+        #region Public Accessors
+        public int WaveformsToPlot
+        {
+            set
+            {
+                waveformsPerPlot = value;
+            }
+            get
+            {
+                return waveformsPerPlot;
+            }
+        }
+        #endregion
     }
 }
 

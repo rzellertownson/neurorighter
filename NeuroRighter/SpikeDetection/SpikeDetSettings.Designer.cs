@@ -571,6 +571,7 @@
             // spkDetpersistWindowComponent
             // 
             this.spkDetpersistWindowComponent.Form = this;
+            this.spkDetpersistWindowComponent.XMLFilePath = "WindowState.xml";
             // 
             // groupBox4
             // 
@@ -706,7 +707,6 @@
             this.numericUpDown_MinClassificationProb.TabIndex = 82;
             this.numericUpDown_MinClassificationProb.TabStop = false;
             this.numericUpDown_MinClassificationProb.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numericUpDown_MinClassificationProb.UseWaitCursor = true;
             this.numericUpDown_MinClassificationProb.Value = new decimal(new int[] {
             5,
             0,
@@ -990,20 +990,20 @@
             this.saveSpikeFilterToolStripMenuItem,
             this.loadSpikeFilterToolStripMenuItem});
             this.saveDetectorToolStripMenuItem.Name = "saveDetectorToolStripMenuItem";
-            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.saveDetectorToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.saveDetectorToolStripMenuItem.Text = "File";
             // 
             // saveSpikeFilterToolStripMenuItem
             // 
             this.saveSpikeFilterToolStripMenuItem.Name = "saveSpikeFilterToolStripMenuItem";
-            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.saveSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.saveSpikeFilterToolStripMenuItem.Text = "Save Spike Filter";
             this.saveSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.saveSpikeFilterToolStripMenuItem_Click);
             // 
             // loadSpikeFilterToolStripMenuItem
             // 
             this.loadSpikeFilterToolStripMenuItem.Name = "loadSpikeFilterToolStripMenuItem";
-            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.loadSpikeFilterToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.loadSpikeFilterToolStripMenuItem.Text = "Load Spike Filter";
             this.loadSpikeFilterToolStripMenuItem.Click += new System.EventHandler(this.loadSpikeFilterToolStripMenuItem_Click);
             // 

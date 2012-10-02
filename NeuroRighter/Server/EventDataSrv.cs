@@ -118,6 +118,8 @@ namespace NeuroRighter.Server
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
+
+                //The most up to date read position in the buffer is determined by the slowest input task
                 if (serverLagSamples < currentSample.Min())
                     minCurrentSample = currentSample.Min() - serverLagSamples;
                 else
@@ -125,7 +127,7 @@ namespace NeuroRighter.Server
             }
 
             // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
-            if (newData.Buffer.Count > 0 &&  NewData!=null)
+            if (newData.Buffer.Count > 0 &&  NewData!=null && taskNo == 0)
             {
                 eventArgs = new NewEventDataEventArgs<T>(newData);
                 NewData(this, eventArgs);

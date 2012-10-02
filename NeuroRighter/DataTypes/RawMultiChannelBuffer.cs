@@ -85,9 +85,14 @@ namespace NeuroRighter.DataTypes
         /// <param name="task"></param>
         internal void IncrementCurrentPosition(int task)
         {
-            totalNumSamplesWritten[task]++;
+            //  WHAT IS GOING ON HERE...
+
+            totalNumSamplesWritten[task]++; // IS THIS BUFFER POLLS OR SAMPLES?
+
+            // Each task has its own
             mostCurrentCircularSample[task] = leastCurrentCircularSample[task] % bufferLengthInSamples;
             leastCurrentCircularSample[task] = (++leastCurrentCircularSample[task]) % bufferLengthInSamples;
+
             ulong tmpa =totalNumSamplesWritten[0];
             ulong tmpi = totalNumSamplesWritten[0];
 

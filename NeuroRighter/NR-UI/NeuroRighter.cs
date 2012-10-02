@@ -284,6 +284,7 @@ namespace NeuroRighter
 
                         // Create spike aquisition task list
                         spikeTask = new List<Task>(numDevices);
+                        Properties.Settings.Default.numSpikeTasks = numDevices;
                         NRAIChannelCollection spikeAqSet = new NRAIChannelCollection(numDevices, numChannelsPerDev);
                         spikeAqSet.SetupSpikeCollection(ref spikeTask);
 
@@ -400,6 +401,10 @@ namespace NeuroRighter
 
                             // Manually allocate buffer memory
                             lfpTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                        }
+                        else
+                        {
+                            Properties.Settings.Default.numLFPTasks = Properties.Settings.Default.numSpikeTasks;
                         }
 
                         if (Properties.Settings.Default.UseEEG)

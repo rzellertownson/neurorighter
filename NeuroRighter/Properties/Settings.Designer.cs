@@ -1118,5 +1118,29 @@ namespace NeuroRighter.Properties {
                 this["UseBuffload"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int numSpikeTasks {
+            get {
+                return ((int)(this["numSpikeTasks"]));
+            }
+            set {
+                this["numSpikeTasks"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int numLFPTasks {
+            get {
+                return ((int)(this["numLFPTasks"]));
+            }
+            set {
+                this["numLFPTasks"] = value;
+            }
+        }
     }
 }

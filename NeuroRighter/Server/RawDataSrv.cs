@@ -84,13 +84,8 @@ namespace NeuroRighter.Server
                     dataBuffer.IncrementCurrentPosition(task);
                 }
 
-                // Fire the new data event (if someone is listening)
-                if (NewData != null)
-                {
-                    eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
-                    eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
-                    NewData(this, eventArgs);
-                }
+                // Fire NewData Event (if there are listening processes)
+                FireNewDataEvent(task);
             }
         }
 
@@ -116,13 +111,8 @@ namespace NeuroRighter.Server
                     dataBuffer.IncrementCurrentPosition(task);
                 }
 
-                // Fire the new data event (if someone is listening)
-                if (NewData != null)
-                {
-                    eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
-                    eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
-                    NewData(this, eventArgs);
-                }
+                // Fire NewData Event (if there are listening processes)
+                FireNewDataEvent(task);
             }
         }
 
@@ -147,13 +137,8 @@ namespace NeuroRighter.Server
                 }
             }
 
-            // Fire the new data event (if someone is listening)
-            if (NewData != null)
-            {
-                eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
-                eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;
-                NewData(this, eventArgs);
-            }
+            // Fire NewData Event (if there are listening processes)
+            FireNewDataEvent(0);
         }
 
         /// <summary>
@@ -177,8 +162,14 @@ namespace NeuroRighter.Server
                 }
             }
 
-            // Fire the new data event (if someone is listening)
-            if (NewData != null)
+            // Fire NewData Event (if there are listening processes)
+            FireNewDataEvent(0);
+        }
+
+        private void FireNewDataEvent(int taskNo)
+        {
+            // Fire the new data event (if someone is listening) and only call once per task set
+            if (NewData != null && taskNo == 0)
             {
                 eventArgs.FirstNewSample = dataBuffer.StartAndEndSample[1];
                 eventArgs.LastNewSample = dataBuffer.StartAndEndSample[1] - (ulong)numSamplesPerWrite;

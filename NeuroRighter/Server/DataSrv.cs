@@ -90,11 +90,6 @@ namespace NeuroRighter.Server
         private int numberOfPollsCompleted;
 
         /// <summary>
-        /// If there is a spike sorter, this variable is the number of units that have been detected.
-        /// </summary>
-        private int numberOfUnits;
-
-        /// <summary>
         /// NeuroRighter's Persistant Data Server
         /// </summary>
         /// <param name="bufferSizeSeconds"> History that is stored in the Server (seconds)</param>
@@ -119,7 +114,7 @@ namespace NeuroRighter.Server
                 Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                 bufferSizeSeconds,
                 ADCPollingPeriodSamples,
-                2);
+                Properties.Settings.Default.numSpikeTasks);
 
             //2. SALPA data
             if (salpaAccess)
@@ -129,7 +124,7 @@ namespace NeuroRighter.Server
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    2);
+                    Properties.Settings.Default.numSpikeTasks);
 
                 spikeLag += 2*salpaWidth;
             }
@@ -142,7 +137,7 @@ namespace NeuroRighter.Server
                     Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
                     bufferSizeSeconds,
                     ADCPollingPeriodSamples,
-                    2);
+                    Properties.Settings.Default.numSpikeTasks);
             }
 
             //4. LFP data
@@ -154,7 +149,7 @@ namespace NeuroRighter.Server
                     bufferSizeSeconds,
                     Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency *
                     (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
-                    1);
+                    Properties.Settings.Default.numLFPTasks);
             }
 
             //5. EEG data
@@ -184,7 +179,9 @@ namespace NeuroRighter.Server
             spikeSrv = new EventDataSrv<SpikeEvent>(
                 Properties.Settings.Default.RawSampleFrequency, bufferSizeSeconds,
                 ADCPollingPeriodSamples,
-                2, spikeLag, Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
+                Properties.Settings.Default.numSpikeTasks, 
+                spikeLag, 
+                Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
 
             //8. Auxiliary Digital data
             if (Properties.Settings.Default.useAuxDigitalInput)

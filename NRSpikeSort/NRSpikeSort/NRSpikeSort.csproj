@@ -78,6 +78,7 @@
     <Compile Include="SorterSerializer.cs" />
     <Compile Include="SpikeSorter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TrainingParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

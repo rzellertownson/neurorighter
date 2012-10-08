@@ -22,6 +22,8 @@ using System.Text;
 using NeuroRighter.DataTypes;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.ComponentModel;
+using System.Threading;
 
 namespace NRSpikeSort
 {
@@ -91,7 +93,7 @@ namespace NRSpikeSort
         /// <summary>
         /// The maximum number of waveforms used for training a GMM on each channel
         /// </summary>
-        public int maxTrainingSpikesPerChannel = 200;
+        public int maxTrainingSpikesPerChannel = 500;
 
         /// <summary>
         /// Minimum probability nessesary to classify a spike
@@ -106,6 +108,7 @@ namespace NRSpikeSort
 
         // Private
         private int numberChannels;
+        //private BackgroundWorker trainerBW;
         
         /// <summary>
         /// NeuroRighter's spike sorter.
@@ -134,6 +137,12 @@ namespace NRSpikeSort
                     projectionDimension = 2;
                     break;
             }
+
+            // Set up the trainer bw
+            //trainerBW = new BackgroundWorker();
+            //trainerBW.DoWork +=new DoWorkEventHandler(trainerBW_DoWork);
+            //trainerBW.RunWorkerCompleted +=new RunWorkerCompletedEventHandler(trainerBW_RunWorkerCompleted);
+            //trainerBW.WorkerSupportsCancellation = true;
 
             this.pValue = pValue;
         }
@@ -180,13 +189,46 @@ namespace NRSpikeSort
 
         /// <summary>
         /// Trains a classifier for each channel so long as (int)minSpikes worth of spikes have been collected
+        /// for that channel in the training buffer. Performs operation on its own thread.
+        /// </summary>
+        public void Train(TrainingParameters trainParam)
+        {
+            Console.WriteLine("Training spike sorter...");
+            try
+            {
+                switch (trainParam.Type)
+                {
+                    case "PCA":
+                        Train();
+                        break;
+                    case "Maximum Voltage Inflection":
+                        Train(trainParam.PeakSample);
+                        break;
+                    case "Double Voltage Inflection":
+                        Train(trainParam.PeakSample, trainParam.MSecToSecondSample, trainParam.SampleFreqHz);
+                        break;
+                }
+
+                trained = true;
+                Console.WriteLine("Spike sorter training complete.");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Spike sorter training has failed. No sorting will be performed.");
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Trains a classifier for each channel so long as (int)minSpikes worth of spikes have been collected
         /// for that channel in the training buffer. This uses to time points as the projection: The peak sample
         /// of the waveform and sample at some fixed  (mSecToSecondSample) delay from the peak sample. Preferably,
         /// this should be in the middle of the AHP.
         /// </summary>
         /// <param name="peakSample"> Sample that the peak of the waveform occured at </param>
         /// <param name="mSecToSecondSample">Delay, in msec, to get the second data point</param>
-        public void Train(int peakSample, double mSecToSecondSample, int sampleFreqHz)
+        private void Train(int peakSample, double mSecToSecondSample, int sampleFreqHz)
         {
             // Clear old channel models
             channelsToSort = new List<int>();
@@ -202,7 +244,7 @@ namespace NRSpikeSort
 
             // Set the inflection sample
             inflectionSample = peakSample;
-            secondInflectionIndex = peakSample + (int)(sampleFreqHz*(mSecToSecondSample / 1000));
+            secondInflectionIndex = peakSample + (int)(sampleFreqHz * (mSecToSecondSample / 1000));
 
             // Make sure we have something in the training matrix
             if (trainingSpikes.Buffer.Count == 0)
@@ -260,7 +302,7 @@ namespace NRSpikeSort
         /// for that channel in the training buffer
         /// </summary>
         /// <param name="peakSample"> The sample within a spike snippet that corresponds to the aligned peak.</param>
-        public void Train(int peakSample)
+        private void Train(int peakSample)
         {
             // Clear old channel models
             channelsToSort = new List<int>();
@@ -332,7 +374,7 @@ namespace NRSpikeSort
         /// Trains a classifier for each channel so long as (int)minSpikes worth of spikes have been collected
         /// for that channel in the training buffer
         /// </summary>
-        public void Train()
+        private void Train()
         {
             // Clear old channel models
             channelsToSort = new List<int>();
@@ -395,8 +437,7 @@ namespace NRSpikeSort
                 }
             }
 
-            // All finished
-            trained = true;
+
         }
 
         /// <summary>

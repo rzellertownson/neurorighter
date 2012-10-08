@@ -135,7 +135,7 @@ namespace NeuroRighter.SpikeDetection
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
 
                     spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+                    spikeDetectorSalpa = spikeDetector.DeepClone();
 
                     break;
                 case 1:  //RMS Adaptive
@@ -144,7 +144,7 @@ namespace NeuroRighter.SpikeDetection
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
 
                     spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+                    spikeDetectorSalpa = spikeDetector.DeepClone();
 
                     break;
                 case 2:  //Limada
@@ -153,7 +153,7 @@ namespace NeuroRighter.SpikeDetection
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency));
 
                     spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone(); 
+                    spikeDetectorSalpa = spikeDetector.DeepClone();
 
                     break;
                 default:
@@ -602,12 +602,22 @@ namespace NeuroRighter.SpikeDetection
         private void sorterTrainer_trainSS(object sender, DoWorkEventArgs e)
         {
             // Actual training method
+            TrainingParameters tp;
             if (spikeSorter.projectionType == "Maximum Voltage Inflection")
-                spikeSorter.Train(numPre);
+            {
+                tp = new TrainingParameters(spikeSorter.projectionType, numPre);
+                spikeSorter.Train(tp);
+            }
             else if (spikeSorter.projectionType == "PCA")
-                spikeSorter.Train();
+            {
+                tp = new TrainingParameters(spikeSorter.projectionType);
+                spikeSorter.Train(tp);
+            }
             else if (spikeSorter.projectionType == "Double Voltage Inflection")
-                spikeSorter.Train(numPre, 0.4, (int)Properties.Settings.Default.RawSampleFrequency);
+            {
+                tp = new TrainingParameters(spikeSorter.projectionType,numPre, 0.4, (int)Properties.Settings.Default.RawSampleFrequency);
+                spikeSorter.Train(tp);
+            }
 
         }
 
@@ -625,7 +635,6 @@ namespace NeuroRighter.SpikeDetection
 
             // Print detector stats to textbox
             ReportTrainingResults();
-
         }
 
         private void button_EngageSpikeSorter_Click(object sender, EventArgs e)

@@ -955,6 +955,9 @@ namespace NeuroRighter
                 comboBox_LFPGain.Enabled = false;
             //numericUpDown_NumSnipsDisplayed.Enabled = false;
             button_startClosedLoopStim.Enabled = false;
+            button_scaleUp.Enabled = true;
+            button_scaleDown.Enabled = true;
+            button_scaleReset.Enabled = true;
 
             // Disable spike detector saving while running
             spikeDet.DisableFileMenu();

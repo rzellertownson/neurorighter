@@ -699,7 +699,8 @@ namespace NeuroRighter
             }
             else
             {
-                MessageBox.Show("The open loop protocol finished peacefully. Press Stop to end the recording");
+                MessageBox.Show("The open loop protocol finished peacefully. Press Stop to end the recording","Experiment Complete",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 // Invoke an anonymous method on the thread of the form.
                 this.Invoke((MethodInvoker)delegate
                 {

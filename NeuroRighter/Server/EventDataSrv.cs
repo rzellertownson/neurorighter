@@ -127,7 +127,7 @@ namespace NeuroRighter.Server
             }
 
             // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
-            if (newData.Buffer.Count > 0 &&  NewData!=null && taskNo == 0)
+            if (NewData!=null && taskNo == 0)
             {
                 eventArgs = new NewEventDataEventArgs<T>(newData);
                 NewData(this, eventArgs);

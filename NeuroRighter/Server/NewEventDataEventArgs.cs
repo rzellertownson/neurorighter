@@ -12,15 +12,37 @@ namespace NeuroRighter.Server
     /// </summary>
     public class NewEventDataEventArgs<T> where T : NREvent
     {
+        private bool isEmpty;
         private ulong firstNewSample;
         private ulong lastNewSample;
         private EventBuffer<T> newDataBuffer;
 
+        /// <summary>
+        /// Contains information about the New Data Event.
+        /// </summary>
+        /// <param name="newDataBuffer">New Data buffer that resulted from the NewData Event.</param>
         public NewEventDataEventArgs(EventBuffer<T> newDataBuffer)
         {
+            if (newDataBuffer.Buffer.Count == 0)
+                this.isEmpty = true;
+            else
+                this.isEmpty = false;
+
             this.firstNewSample = newDataBuffer.Buffer.MinBy(x => x.SampleIndex).SampleIndex;
             this.lastNewSample = newDataBuffer.Buffer.MaxBy(x => x.SampleIndex).SampleIndex;
             this.newDataBuffer = newDataBuffer;
+
+        }
+
+        /// <summary>
+        /// Boolean that is true of the buffer is empty and false otherwise.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return isEmpty;
+            }
         }
 
         /// <summary>

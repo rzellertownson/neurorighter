@@ -37,9 +37,9 @@ namespace NeuroRighter.FileWriting
         private Stream outStream;
         private bool recordingUnits;
 
-        private const int VERSION = 3;
+        private const int VERSION = 4;
 
-        internal SpikeFileOutput(string filenameBase, int numChannels, int samplingRate,
+        internal SpikeFileOutput(string filenameBase, int numChannels, double samplingRate,
             int numSamplesPerWaveform, Task recordingTask, string extension, bool recordingUnits)
         {
             this.numChannels = numChannels;
@@ -56,7 +56,7 @@ namespace NeuroRighter.FileWriting
             return new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, false);
         }
 
-        protected virtual void writeHeader(int numChannels, int samplingRate, Task recordingTask)
+        protected virtual void writeHeader(int numChannels, double samplingRate, Task recordingTask)
         {
             DateTime dt = DateTime.Now; //Get current time (local to computer)
             double[] scalingCoeffs = recordingTask.AIChannels[0].DeviceScalingCoefficients;
@@ -64,7 +64,7 @@ namespace NeuroRighter.FileWriting
             //Write header info: #chs, sampling rate, gain, date/time
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(-VERSION)), 0, 2); //Int: negative of file version (negative will prevent this from being confused with older versions, where this would be a positive numChannels field
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
-            outStream.Write(BitConverter.GetBytes(Convert.ToInt32(samplingRate)), 0, 4); //Int: Sampling rate
+            outStream.Write(BitConverter.GetBytes(Convert.ToDouble(samplingRate)), 0, 8); //Int: Sampling rate
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(numSamplesPerWaveform)), 0, 2); //Int: Num samples per waveform
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / recordingTask.AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
             outStream.Write(BitConverter.GetBytes(Properties.Settings.Default.ADCPollingPeriodSec), 0, 8); // DAC polling period

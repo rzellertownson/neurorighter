@@ -12,7 +12,7 @@ namespace NeuroRighter.FileWriting
 {
     class StimFileOutput : FileOutput
     {
-        internal StimFileOutput(string filenameBase, int samplingRate, string extension) :
+        internal StimFileOutput(string filenameBase, double samplingRate, string extension) :
             base(filenameBase, samplingRate, extension)
         {
             //Create output stream
@@ -20,11 +20,11 @@ namespace NeuroRighter.FileWriting
             writeHeader(samplingRate);
         }
 
-        protected override void writeHeader(int samplingRate)
+        protected override void writeHeader(double samplingRate)
         {
             DateTime dt = DateTime.Now; //Get current time (local to computer)
 
-            outStream.Write(BitConverter.GetBytes(samplingRate), 0, 4); //Int: Sampling rate
+            outStream.Write(BitConverter.GetBytes(samplingRate), 0, 8); //Int: Sampling rate
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day

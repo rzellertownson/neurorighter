@@ -41,7 +41,7 @@ namespace NeuroRighter
         protected Stream outStream;
         protected BackgroundWorker _bgWorker;
 
-        internal FileOutput(string filenameBase, int numChannels, int samplingRate, int fileType, Task recordingTask, string extension, double preampgain)
+        internal FileOutput(string filenameBase, int numChannels, double samplingRate, int fileType, Task recordingTask, string extension, double preampgain)
         {
             this.numChannels = numChannels;
             this.preampgain = preampgain;
@@ -61,23 +61,23 @@ namespace NeuroRighter
             _bgWorker.RunWorkerAsync();
         }
 
-        internal FileOutput(string filenameBase, int samplingRate, string extension) { }
+        internal FileOutput(string filenameBase, double samplingRate, string extension) { }
 
         protected virtual Stream createStream(String filename, Int32 bufferSize)
         {
             return new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, false);
         }
 
-        protected virtual void writeHeader(int samplingRate){ }
+        protected virtual void writeHeader(double samplingRate){ }
 
-        protected virtual void writeHeader(int numChannels, int samplingRate, int fileType, Task recordingTask, double preampgain)
+        protected virtual void writeHeader(int numChannels, double samplingRate, int fileType, Task recordingTask, double preampgain)
         {
             DateTime dt = DateTime.Now; //Get current time (local to computer)
             double[] scalingCoeffs = recordingTask.AIChannels[0].DeviceScalingCoefficients;
 
             //Write header info: #chs, sampling rate, gain, date/time
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(numChannels)), 0, 2); //Int: Num channels
-            outStream.Write(BitConverter.GetBytes(Convert.ToInt32(samplingRate)), 0, 4); //Int: Sampling rate
+            outStream.Write(BitConverter.GetBytes(samplingRate), 0, 8); //Double: Sampling rate
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(10.0 / recordingTask.AIChannels.All.RangeHigh)), 0, 2); //Double: Gain
             switch (fileType)
             {

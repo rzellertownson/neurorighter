@@ -114,7 +114,7 @@ namespace NeuroRighter.FileWriting
                     if (recordSpike)
                     {
                         spkOut = new SpikeFileOutput(fid, numElectrodes,
-                            (int)dataTask.Timing.SampleClockRate,
+                            dataTask.Timing.SampleClockRate,
                             Convert.ToInt32(numPreSamp + numPostSamp) + 1,
                             dataTask, "." + dataType, recordingUnits);
                     }
@@ -123,7 +123,7 @@ namespace NeuroRighter.FileWriting
                     if (recordSalpaSpike)
                     {
                         spkOutSalpa = new SpikeFileOutput(fid, numElectrodes,
-                            (int)dataTask.Timing.SampleClockRate,
+                            dataTask.Timing.SampleClockRate,
                             Convert.ToInt32(numPreSamp + numPostSamp) + 1,
                             dataTask, "." + dataType, recordingUnits);
                     }
@@ -132,7 +132,7 @@ namespace NeuroRighter.FileWriting
                     if (recordRawSpike)
                     {
                         spkOutRaw = new SpikeFileOutput(fid, numElectrodes,
-                            (int)dataTask.Timing.SampleClockRate,
+                            dataTask.Timing.SampleClockRate,
                             Convert.ToInt32(numPreSamp + numPostSamp) + 1,
                             dataTask, "." + dataType, recordingUnits);
                     }
@@ -156,15 +156,15 @@ namespace NeuroRighter.FileWriting
                     if (recordLFP)
                     {
                         if (Properties.Settings.Default.SeparateLFPBoard)
-                            lfpOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
+                            lfpOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
                                          "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                         {
                             if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                lfpOut = new FileOutputRemapped(fid, numElectrodes, extraInt, 1, dataTask,
+                                lfpOut = new FileOutputRemapped(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                             else
-                                lfpOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
+                                lfpOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                         }
                     }
@@ -174,10 +174,10 @@ namespace NeuroRighter.FileWriting
                     if (recordEEG)
                     {
                         if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                            eegOut = new FileOutputRemapped(fid, numElectrodes, extraInt, 1, dataTask,
+                            eegOut = new FileOutputRemapped(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
-                            eegOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
+                            eegOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -186,7 +186,7 @@ namespace NeuroRighter.FileWriting
                     if (recordAuxAnalog)
                     {
                         auxAnalogOut = new FileOutput(fid, extraInt,
-                            (int)dataTask.Timing.SampleClockRate, 0, dataTask,
+                            dataTask.Timing.SampleClockRate, 0, dataTask,
                             "." + dataType, 1);
                     }
                     break;
@@ -210,11 +210,11 @@ namespace NeuroRighter.FileWriting
                     {
                         if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
                             rawOut = new FileOutputRemapped(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                             rawOut = new FileOutput(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -224,11 +224,11 @@ namespace NeuroRighter.FileWriting
                     {
                         if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
                             salpaOut = new FileOutputRemapped(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                             salpaOut = new FileOutput(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -238,11 +238,11 @@ namespace NeuroRighter.FileWriting
                     {
                         if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
                             spkFiltOut = new FileOutputRemapped(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                             spkFiltOut = new FileOutput(fid, numElectrodes,
-                                (int)dataTask.Timing.SampleClockRate, 1, dataTask,
+                                dataTask.Timing.SampleClockRate, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -250,7 +250,7 @@ namespace NeuroRighter.FileWriting
                     // Check if we need to create this stream
                     if (recordStim)
                     {
-                        stimOut = new StimFileOutput(fid, (int)dataTask.Timing.SampleClockRate,
+                        stimOut = new StimFileOutput(fid, dataTask.Timing.SampleClockRate,
                             "." + dataType);
                     }
                     break;
@@ -260,7 +260,7 @@ namespace NeuroRighter.FileWriting
                     if (recordAuxAnalog)
                     {
                         auxAnalogOut = new FileOutput(fid, dataTask.AIChannels.Count,
-                            (int)dataTask.Timing.SampleClockRate, 0, dataTask,
+                            dataTask.Timing.SampleClockRate, 0, dataTask,
                             "." + dataType, 1);
                     }
                     break;
@@ -269,7 +269,7 @@ namespace NeuroRighter.FileWriting
                     // Check if we need to create this stream
                     if (recordAuxDig)
                     {
-                        auxDigitalOut = new DigFileOutput(fid, (int)dataTask.Timing.SampleClockRate,
+                        auxDigitalOut = new DigFileOutput(fid,dataTask.Timing.SampleClockRate,
                             "." + dataType);
                     }
                     break;

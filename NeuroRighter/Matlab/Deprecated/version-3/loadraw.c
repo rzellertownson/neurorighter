@@ -53,7 +53,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     double *t;
     int64_T i, j;  /* Loop indices */
     short numChannels;
-    double freq; /* Sampling rate */
+    int freq; /* Sampling rate */
     short gain;
     short* dt; /* Date and time */
     double scalingCoeffs[4]; /* Scaling coefficients to convert raw digital values to voltages */
@@ -181,20 +181,20 @@ void mexFunction(int nlhs, mxArray *plhs[],
         }
     }
     
-    /* There are 58 bytes in the header, then each record */
+    /* There are 54 bytes in the header, then each record */
     fread(&numChannels,2,1,fp); /* Read numChannels */
-    fread(&freq,sizeof(double),1,fp); /* Read sampling rate */
+    fread(&freq,4,1,fp); /* Read sampling rate */
     fread(&gain,2,1,fp); /* Read gain */
-    fread(scalingCoeffs,sizeof(double),4,fp);     /* Read scaling coeffs */
+    fread(scalingCoeffs,8,4,fp);     /* Read scaling coeffs */
     dt = mxCalloc(7, sizeof(short)); /* Allocate memory for date&time */
     fread(dt,2,7,fp); /* Read date and time */
 
     /* Compute #records */
-    numRecs = (len - 58) / (2 * (int64_T)numChannels);
+    numRecs = (len - 54) / (2 * (int64_T)numChannels);
 
     /* Print summary (header) data */
     if (!suppressText) {
-        mexPrintf("#chs: %i\nsampling rate: %f\ngain: %i\n", numChannels, freq, gain);
+        mexPrintf("#chs: %i\nsampling rate: %i\ngain: %i\n", numChannels, freq, gain);
         mexPrintf("date/time: %i-%i-%i %i:%i:%i:%i\n", dt[0], dt[1], dt[2], dt[3], dt[4], dt[5], dt[6]);
 		 mexPrintf("scaling coefficients: %f +%f *x + %f*x^2 + %f*x^3 \n", scalingCoeffs[0], scalingCoeffs[1], scalingCoeffs[2], scalingCoeffs[3]);
         mexPrintf("\nTotal num. samples per channel: %i\n", numRecs);
@@ -203,8 +203,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
     /* Compute start and stop indices, if time span was specified */
     timeSpanIdx = mxCalloc(2, sizeof(int64_T)); /* Allocate memory for start/stop indices */
     if (isUsingTimespan) {
-        timeSpanIdx[0] = (int64_T)(ceil(timeSpan[0] * freq));
-        timeSpanIdx[1] = (int64_T)(ceil(timeSpan[1] * freq));
+        timeSpanIdx[0] = (int64_T)(ceil(timeSpan[0] * (double)freq));
+        timeSpanIdx[1] = (int64_T)(ceil(timeSpan[1] * (double)freq));
         ++timeSpanIdx[1];
         /* Take care of over/underrun */
         if (timeSpanIdx[0] < 0) {
@@ -254,7 +254,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     /* Read each record */
     for (i = 0; i < outN; ++i) {
         if (nlhs > 1)
-            t[i] = (double)(i + timeSpanIdx[0]) / freq;
+            t[i] = (double)(i + timeSpanIdx[0]) / (double)freq;
         if (ch < 0) {
             for (j = 0; j < numChannels; ++j) {
                 fread(&val,2,1,fp); /* Read digital value */

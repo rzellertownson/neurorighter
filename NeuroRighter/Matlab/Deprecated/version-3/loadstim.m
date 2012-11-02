@@ -24,7 +24,7 @@ if(~strcmp(fid(end-4:end),'.stim'))
 end
 
 % Constants
-HEADER_BYTES = 22;
+HEADER_BYTES = 18;
 STIM_REC_BYTES = 22;
 
 % Main code
@@ -36,7 +36,7 @@ len = ftell(h);
 fseek(h,0,'bof');
 
 % Read header info
-fs = fread(h,1,'double'); % sampling rate
+fs = fread(h,1,'uint'); % sampling rate
 dt = fread(h,7,'ushort'); % date and time
 
 % Calculated number of stimuli
@@ -56,15 +56,6 @@ fprintf(['\tRecording time (yr-mo-dy-hr-mi-sc-ms): ' ...
 fprintf(['\tNumber of stimuli: ' num2str(numstm) '\n\n']);
 
 % Allocate space in data struct.
-stm.meta.fs_Hz = fs;
-stm.meta.num_stm = numstm;
-stm.date = [num2str(dt(1)) '-' ...
-        num2str(dt(2)) '-' ...
-        num2str(dt(3)) '-' ...
-        num2str(dt(4)) '-' ...
-        num2str(dt(5)) '-' ...
-        num2str(dt(6)) '-' ...
-        num2str(dt(7))];
 stm.time = zeros(numstm,1);
 stm.channel = zeros(numstm,1);
 stm.amplitude = zeros(numstm,1);

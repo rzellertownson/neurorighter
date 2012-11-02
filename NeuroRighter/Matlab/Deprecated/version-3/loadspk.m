@@ -1,6 +1,6 @@
 function spk = loadspk(fid, varargin)
 % LOADSPK Load NeuroRighter .spk,.rawspk, and .salpaspk files for NR
-% v1.1.0.0 and up
+% v0.7.0.0 and up
 %
 % SPK = LOADSPK(FID) fid is the fully qualified path to a NeuroRighter .spk
 % file. The structure that is returned contains metadata about the spike
@@ -48,13 +48,13 @@ fseek(h,0,'bof');
 
 % Read the header
 version = fread(h, 1, 'int16');
-if (version ~= -4)
+if (version ~= -3)
     % This file is from a revision of NeuroRighter lower than 0.7.0.0
     error('Error:DepreciatedVersion',['This file is from an old verion of NeuroRighter. ' ...
         'Please try to load your .spk file with the depreciated matlab function (../depreciated/loadspike)'])
 end
 nochannels = fread(h,1,'int16'); % number of channels
-fs = fread(h,1,'double'); % sampling rate in Hz
+fs = fread(h,1,'int32'); % sampling rate in Hz
 waveSamples = fread(h,1,'int16'); % samples per waveform
 gain = fread(h,1,'int16'); % gain
 adcpoll = fread(h,1,'double'); % DAC polling period in seconds

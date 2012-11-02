@@ -22,7 +22,7 @@ if(~strcmp(fid(end-2:end),'dig'))
 end
 
 % Constants
-HEADER_BYTES = 22;
+HEADER_BYTES = 18;
 DIG_REC_BYTES = 8;
 
 % Main code
@@ -34,7 +34,7 @@ len = ftell(h);
 fseek(h,0,'bof');
 
 % Read header info
-fs = fread(h,1,'double'); % sampling rate
+fs = fread(h,1,'uint'); % sampling rate
 dt = fread(h,7,'ushort'); % date and time
 
 % Calculated number of stimuli

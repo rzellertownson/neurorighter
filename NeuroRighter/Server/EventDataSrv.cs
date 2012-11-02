@@ -45,7 +45,7 @@ namespace NeuroRighter.Server
         /// <param name="e"></param>
         public delegate void NewDataHandler(object sender, NewEventDataEventArgs<T> e);
 
-        // The 'New Data' Event
+        // The 'NewData' Event
         /// <summary>
         /// New data collected event.
         /// </summary>
@@ -53,9 +53,10 @@ namespace NeuroRighter.Server
         /// <param name="e"></param>
         public event NewDataHandler NewData;
         private NewEventDataEventArgs<T> eventArgs;
-        
+
         // Main storage buffer
         private EventBuffer<T> dataBuffer;
+        private EventBuffer<T> newDataBuffer; // holds newData Buffer when using multiple tasks
 
         private ulong[] currentSample;
         private ulong bufferSizeInSamples; // The maximum number of samples between thecurrent sample and the last available event time before it expires and is removed.
@@ -89,6 +90,7 @@ namespace NeuroRighter.Server
             this.minCurrentSample = 0;
             this.sampleFrequencyHz = sampleFrequencyHz;
             this.dataBuffer = new EventBuffer<T>(sampleFrequencyHz);
+            this.newDataBuffer = new EventBuffer<T>(sampleFrequencyHz);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.bufferSizeInSamples = (ulong)Math.Ceiling(bufferSizeSec * sampleFrequencyHz);
             this.numDataCollectionTasks = numDataCollectionTasks;
@@ -113,8 +115,9 @@ namespace NeuroRighter.Server
                     dataBuffer.Buffer.RemoveAll(x => x.SampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
                 }
 
-                // Add new data
+                // Add new data to main and NewData buffer
                 dataBuffer.Buffer.AddRange(newData.Buffer);
+                newDataBuffer.Buffer.AddRange(newData.Buffer);
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
@@ -124,13 +127,14 @@ namespace NeuroRighter.Server
                     minCurrentSample = currentSample.Min() - serverLagSamples;
                 else
                     minCurrentSample = 0;
-            }
 
-            // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
-            if (NewData!=null && taskNo == 0)
-            {
-                eventArgs = new NewEventDataEventArgs<T>(newData);
-                NewData(this, eventArgs);
+                // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
+                if (NewData != null && taskNo == 0)
+                {
+                    eventArgs = new NewEventDataEventArgs<T>(newDataBuffer);
+                    NewData(this, eventArgs);
+                    newDataBuffer.Buffer.Clear();
+                }
             }
         }
 
@@ -159,6 +163,7 @@ namespace NeuroRighter.Server
                     T tmp = (T)newData.Buffer[i].DeepClone();
                     tmp.SampleIndex = tmp.SampleIndex + currentSample[taskNo];
                     dataBuffer.Buffer.Add(tmp);
+                    newDataBuffer.Buffer.Add(tmp);
                 }
 
                 // Update current read-head position
@@ -167,6 +172,14 @@ namespace NeuroRighter.Server
                     minCurrentSample = currentSample.Min() - serverLagSamples;
                 else
                     minCurrentSample = 0;
+
+                // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
+                if (NewData != null && taskNo == 0)
+                {
+                    eventArgs = new NewEventDataEventArgs<T>(newDataBuffer);
+                    NewData(this, eventArgs);
+                    newDataBuffer.Buffer.Clear();
+                }
             }
         }
 
@@ -186,12 +199,6 @@ namespace NeuroRighter.Server
         /// <returns>timeRange</returns>
         public ulong[] EstimateAvailableTimeRange()
         {
-            
-
-            //// Enforce a read lock
-            //bufferLock.EnterWriteLock();
-            //try
-            //{
             lock (lockObj)
             {
                 ulong[] timeRange = new ulong[2];
@@ -205,14 +212,6 @@ namespace NeuroRighter.Server
 
                 return timeRange;
             }
-            //}
-            //finally
-            //{
-            //    // release the read lock
-            //    bufferLock.ExitWriteLock();
-            //}
-
-
         }
 
         /// <summary>
@@ -269,6 +268,7 @@ namespace NeuroRighter.Server
                 return channelCount;
             }
         }
+
         /// <summary>
         /// In the case that this is the spike server, this returns the number of detected units. If there is no spike sorting, this number is set to 0.
         /// </summary>

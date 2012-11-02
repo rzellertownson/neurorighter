@@ -24,13 +24,19 @@ namespace NeuroRighter.Server
         public NewEventDataEventArgs(EventBuffer<T> newDataBuffer)
         {
             if (newDataBuffer.Buffer.Count == 0)
+            {
                 this.isEmpty = true;
+                this.firstNewSample = 0;
+                this.lastNewSample = 0;
+                this.newDataBuffer = newDataBuffer;
+            }
             else
+            {
                 this.isEmpty = false;
-
-            this.firstNewSample = newDataBuffer.Buffer.MinBy(x => x.SampleIndex).SampleIndex;
-            this.lastNewSample = newDataBuffer.Buffer.MaxBy(x => x.SampleIndex).SampleIndex;
-            this.newDataBuffer = newDataBuffer;
+                this.firstNewSample = newDataBuffer.Buffer.MinBy(x => x.SampleIndex).SampleIndex;
+                this.lastNewSample = newDataBuffer.Buffer.MaxBy(x => x.SampleIndex).SampleIndex;
+                this.newDataBuffer = newDataBuffer;
+            }
 
         }
 

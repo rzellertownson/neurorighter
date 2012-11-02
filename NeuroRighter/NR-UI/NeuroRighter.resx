@@ -130,8 +130,8 @@ Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
   <data name="button_scaleReset.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+gAA
-        CvoBGdj/dAAABipJREFUSEvllnlQlAUYxp9sHM3Kg9B0bDBnUWQ8EmEFRUyZ1KQVGxU8o1TwRtRQUDlc
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+QAA
+        CvkBtGHeGQAABipJREFUSEvllnlQlAUYxp9sHM3Kg9B0bDBnUWQ8EmEFRUyZ1KQVGxU8o1TwRtRQUDlc
         7kNgObwm8j5Ks9HGHO8jF/FEE80FUTxQQOiyQ12meXu+byXZBa2m7J/+eGc+lm++33s+7wtkVeIPy74L
         LL0OpJcBKdeA5d8/j8V5Tghc64rEokDoz74Pv2QXRJ3UYPl3QOx5IO0GoC8Acr59/J2636zzLCKoNeuX
         a8EZd4DUa22QftMf4Ue2YvLqrzDzsyuYst5E8BHM37cWSUXDkHCpOTJu/UvgdH4o5eo4RlqCWdsF0zYJ
@@ -163,8 +163,8 @@ Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
   <data name="button_scaleDown.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+gAA
-        CvoBGdj/dAAABhBJREFUSEvllnlQVXUUx7+D47jkaKvh2GSFuWTaQ7BEA5V6JC5QJhhkpokIaomECsri
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+QAA
+        CvkBtGHeGQAABhBJREFUSEvllnlQVXUUx7+D47jkaKvh2GSFuWTaQ7BEA5V6JC5QJhhkpokIaomECsri
         A9nekx3FKUowl9yaVksLkxRxBXdRBN9DAQHTzJkwGuf0vfdG8h5oNmX/xMwZLo839/M73/M95/yAzDr8
         GVn1wDIzkHoBMFYCK660w+KivgjIc0Li6QAYDr0Jn2RHRO9zwIrLQNxhIMUCGEqA7B9vvqflO1s8iwia
         w/rLzeC0GsBU2R2pVb4I37kR0z/8AbM3lyNwdRnBOzF/ex6STo9HwomuSDv/L4FT+SJjhT8zPYs5WwRB
@@ -196,8 +196,8 @@ Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
   <data name="button_scaleUp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+gAA
-        CvoBGdj/dAAABihJREFUSEvllnlQlWUUxp+xMUytyUwGx0abANEhTAQXQEBwJGBERAFzTfCq4IqCCggX
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAAK+QAA
+        CvkBtGHeGQAABihJREFUSEvllnlQlWUUxp+xMUytyUwGx0abANEhTAQXQEBwJGBERAFzTfCq4IqCCggX
         Lshl87IqWOGaS7lUOqXppKMi4oq7giKgArK45uRub8/3faLcixlN0T/9cWbu/e793t9ZnnPOC2TV4oVl
         1wGLK4C0SiClDMi5/QYWFlhAtcoGiSUqaI5/Dr9ka6gPmyLnFhB/EtBdATRFwJKbL89pfGajz0IINJj+
         nxvA6dVAapkx0q76I3zvRkxasR/TN1/ClDXFBO/FvF2rkFTiBe25d5B+7V8Cp/GglMtjGGkpZmwRCFon
@@ -255,7 +255,7 @@ Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAADo
-        KQAAAk1TRnQBSQFMAgEBBgEAAQwBAAEMAQABHgEAAR4BAAT/AREBAAj/AUIBTQE2BwABNgMAASgDAAF4
+        KQAAAk1TRnQBSQFMAgEBBgEAARQBAAEUAQABHgEAAR4BAAT/AREBAAj/AUIBTQE2BwABNgMAASgDAAF4
         AwABPAMAAQEBAAEQBQABQAE4/wD/AP8AEQAB3gF3ATQBMgFsASkBjQEpAVMBRjIAAd8CdwEyAY4BKQGu
         ASkBdAFGqgABXAFbAckBAAFEAQABRAEAAUsBITIAAZ0BWwENAQEBZgEAAWYBAAFMASGoAAFcAVsByQEA
         AWUBAAFlAQABQwEAAUsBJTAAAZ0BWwEOAQEBhwEAAYcBAAFEAQABbAElpgABXAFbAcoBAAFmAQABZgEA
@@ -436,9 +436,6 @@ Wagenaar and Potter,  J. Neurosci. Meth. 2001.</value>
         AQAB/AEAAv8B8AEDAv8BwAEPAv8BAAE/Af8BAAH+AQMC/wH4AQ8C/wHgAT8C/wGAAv8BAAs=
 </value>
   </data>
-  <metadata name="textBox_diagnosticsResults.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <metadata name="textBox_diagnosticsResults.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>

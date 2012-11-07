@@ -56,7 +56,7 @@ namespace NeuroRighter.Server
         public RawDataSrv(double sampleFrequencyHz, int numChannels, double bufferSizeSec, int numSamplesPerWrite, int numDataCollectionTasks)
         {
             this.sampleFrequencyHz = sampleFrequencyHz;
-            this.dataBuffer = new RawMultiChannelBuffer(sampleFrequencyHz, numChannels, (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz), numDataCollectionTasks);
+            this.dataBuffer = new RawMultiChannelBuffer(sampleFrequencyHz, numChannels / numDataCollectionTasks, (int)Math.Ceiling(bufferSizeSec * sampleFrequencyHz), numDataCollectionTasks);
             this.numSamplesPerWrite = numSamplesPerWrite;
             this.numTasks = numDataCollectionTasks;
             this.channelCount = numChannels;

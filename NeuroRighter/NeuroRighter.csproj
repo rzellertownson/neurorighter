@@ -100,9 +100,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Diagrams\AccessBufferAPICallStructure.cd" />
-    <None Include="Matlab\loadraw.mexw32" />
-    <None Include="Matlab\loadspike.mexw32" />
-    <None Include="Matlab\loadstim.mexw32" />
     <None Include="obj\Release\build.force" />
     <None Include="obj\Release\NeuroRighter_05.csproj.ResolveComReference.cache" />
     <None Include="Properties\Settings.settings">
@@ -236,7 +233,6 @@
       <DependentUpon>HardwareSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Impedance\ImpedanceMeasurer.cs" />
-    <Compile Include="Matlab\NRLab.cs" />
     <Compile Include="ExtentionMethods\MEAChannelMappings.cs" />
     <Compile Include="NR-UI\rawproc.cs">
       <SubType>Form</SubType>
@@ -353,19 +349,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ExtentionMethods\Mowog.PersistWindowState.dll" />
-    <Content Include="Matlab\makestimfile.m" />
-    <Content Include="Matlab\READ_ME.txt" />
     <Content Include="Miscellaneous\Buttons\ZoomIn.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOut.png" />
     <Content Include="Miscellaneous\Buttons\ZoomOutBlue.png" />
     <Content Include="Miscellaneous\Buttons\ZoomReset.png" />
     <Content Include="Icon\Slide1.PNG" />
-    <Content Include="Matlab\loadraw.c" />
-    <Content Include="Matlab\loadraw.m" />
-    <Content Include="Matlab\loadspike.c" />
-    <Content Include="Matlab\loadspike.m" />
-    <Content Include="Matlab\loadstim.c" />
-    <Content Include="Matlab\loadstim.m" />
     <Content Include="NeuroRighter_v04.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

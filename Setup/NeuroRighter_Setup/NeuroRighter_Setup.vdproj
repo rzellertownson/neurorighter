@@ -21,12 +21,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_03491944E92C49B684DD3C787CA8C3E9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0517348A102B7521866FA45FEC6DD698"
         "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
@@ -35,24 +29,6 @@
         {
         "MsmKey" = "8:_0517348A102B7521866FA45FEC6DD698"
         "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_059610566FE842C38080CC072B85200B"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_059610566FE842C38080CC072B85200B"
-        "OwnerKey" = "8:_6CABD4D697B04326BDBCFAF7CA87752C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0770718949C945629087A14592607A24"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -87,20 +63,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0F609E2ED1A744ECA55A722C786AEB0F"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_104BA4E6746E4B32BF7B74C2E4EBE253"
+        "MsmKey" = "8:_0E81ECACF7B64166B90892378CC7781D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_16FC81E1B24F4BE88E43E324C6349217"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
+        "OwnerKey" = "8:_426B9C60848740519094255031FDD978"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1264861B361248139B7B34D8D8919827"
+        "OwnerKey" = "8:_6AD587EEEF5E406288EFCF5E217F235A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -123,25 +99,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1BD5D891289B41E0B4027974F5F361E5"
-        "OwnerKey" = "8:_E24F3359DBBC46038E4E224BFFE64A36"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1DBC291FDD9241EEAE8857D008B26574"
+        "MsmKey" = "8:_192EE8BED64E4AF09691C992746EC010"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_1E0719C2D82E405698CFABA434966517"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_28975E3C05E942AAAA53C82AB009C818"
+        "MsmKey" = "8:_2B58EB85C0324F59B88A7A482B42787B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -171,26 +135,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_30F050EB658E43A8AC7399F953A00668"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_32DEB44086C046AA9F78BC75D651BA57"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_338FFCB9B3084598AB557A9FF7F7E387"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_359E33A3C92140EEB24047128EA83261"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_35D0FB354526418C9B91D96DD4492D15"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -201,14 +153,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3FC36F6EAFA440F5B7C2B3E881994FB9"
-        "OwnerKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
+        "MsmKey" = "8:_426B9C60848740519094255031FDD978"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_3FC36F6EAFA440F5B7C2B3E881994FB9"
-        "OwnerKey" = "8:_DA9E21E096E84820BCFF5FA61B4997E3"
+        "MsmKey" = "8:_426B9C60848740519094255031FDD978"
+        "OwnerKey" = "8:_35D0FB354526418C9B91D96DD4492D15"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4924293E35E644F69A550A0B0BB56F99"
+        "OwnerKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -220,13 +178,13 @@
         "Entry"
         {
         "MsmKey" = "8:_49F95994CF28BE3EC342303B5825AE6C"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
+        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_49F95994CF28BE3EC342303B5825AE6C"
-        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -255,32 +213,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_59B73177179D4180B1ACC47D7A3EC942"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_5AF4ADEE42C14EABB160BB9746F4A5D5"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5CE94557692C4BE6B83E8693018158ED"
-        "OwnerKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5CE94557692C4BE6B83E8693018158ED"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5CE94557692C4BE6B83E8693018158ED"
-        "OwnerKey" = "8:_936FAFB4FD9A4C8C9A78C0FD9F68C7E1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -333,6 +267,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6134EDB614344ACCB40A4586C473D842"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_61A4E36A653CAEA7D504AFADD936F799"
         "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
@@ -345,8 +285,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_61F8BD2F84774128BD734EB428AB14EE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_626DC497FF45415093BF1CE2B630E2C3"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_641DC5BBA0CA4A17A855D229CFEB3FE0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6AD587EEEF5E406288EFCF5E217F235A"
+        "OwnerKey" = "8:_EB0EDAFBC5874149AA371D9D3FF5A7F7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -357,14 +315,44 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6CABD4D697B04326BDBCFAF7CA87752C"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
+        "MsmKey" = "8:_6DFAA101A1FB4F0A9F57424478CBDCC5"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6DFAA101A1FB4F0A9F57424478CBDCC5"
+        "MsmKey" = "8:_6F88CFA74FAD4C30824776FB0AD35BF6"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FD380A936A54443833E65889D8E492C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_706809EA36E24191B7A7759A1B25C782"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_71487D2CDB494E919996B46F9368291A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_718FD67BE78641EFBF4642861909F3D6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_72118D4FC9DC4DE5810FDEBCD5F6DAE5"
+        "OwnerKey" = "8:_426B9C60848740519094255031FDD978"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -387,6 +375,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_72ACCF9CACFD4B1AB1B33C611B8F4AFC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_747611BEC941CC41BCFA9FCE3C697E76"
         "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
@@ -399,14 +393,38 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7A0F2904F4E84FBC90BF2DE3FABBED63"
+        "MsmKey" = "8:_7D7E973D0A294E3FAE19EFB47BDEBEC2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
+        "MsmKey" = "8:_8024531BD9E847EEA9A32837FCCB7DF7"
+        "OwnerKey" = "8:_EB0EDAFBC5874149AA371D9D3FF5A7F7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8024531BD9E847EEA9A32837FCCB7DF7"
+        "OwnerKey" = "8:_426B9C60848740519094255031FDD978"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8024531BD9E847EEA9A32837FCCB7DF7"
+        "OwnerKey" = "8:_9781ED0A0DBB441FB2755A860D5D62EB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8024531BD9E847EEA9A32837FCCB7DF7"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_810CBD66C21B4BA9A477D9C8C64B752D"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -419,18 +437,6 @@
         {
         "MsmKey" = "8:_87502A19BE8634E2EE40DA2FAA3AB794"
         "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8759A648DDA14B48862627369F62E141"
-        "OwnerKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_87D83ADC3D084A1AA10770CF52C6A8E0"
-        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -454,25 +460,19 @@
         "Entry"
         {
         "MsmKey" = "8:_924C3730A138F8F2A262E9E3257509EA"
-        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_924C3730A138F8F2A262E9E3257509EA"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
+        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_92F231CBCBCE4BC7A78FB2FFAE433859"
+        "MsmKey" = "8:_9487732CFADA4D28B9AE37493EC3199B"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_936FAFB4FD9A4C8C9A78C0FD9F68C7E1"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -489,13 +489,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_979D11A0B5454B08865DCD02C2B45FD9"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_9781ED0A0DBB441FB2755A860D5D62EB"
+        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_9B49BE9C5C8442D3B63CA3C31F04FBD7"
+        "MsmKey" = "8:_979D11A0B5454B08865DCD02C2B45FD9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -513,7 +513,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A335C5500D30468F8998CAD240188672"
+        "MsmKey" = "8:_9D301CD9F09148EC9C8F8B8FCFBDCC49"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A1EC1293BD6B4D92ABDEE420491B5416"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -537,13 +543,37 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AC44841D53924D89936C8516A770FFC9"
+        "MsmKey" = "8:_B8246D6139864F98AEAA9D7CD1955C02"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_BB553B678D13495CA38F03292EF6460A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BB9B820DDEDD4E83AB384A3D4E90A917"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BDE08EA966523F93EC53784595E0451E"
+        "OwnerKey" = "8:_7280109E65EA847535DBD64850F9767F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BF39497B1C174189BE9EC55D317B07AD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C3E707F857CD4E95954C0B391ACFDC67"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -573,8 +603,44 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CF4510181C79375A3AE2084F5C010C6A"
-        "OwnerKey" = "8:_7280109E65EA847535DBD64850F9767F"
+        "MsmKey" = "8:_C9B1D989CFFD4B54AB354D2E06BFE265"
+        "OwnerKey" = "8:_1264861B361248139B7B34D8D8919827"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C9B1D989CFFD4B54AB354D2E06BFE265"
+        "OwnerKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C9B1D989CFFD4B54AB354D2E06BFE265"
+        "OwnerKey" = "8:_6AD587EEEF5E406288EFCF5E217F235A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CC557C4BABA7433CAE04BE583CDBF46B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CF88C0CF0F454F81AEE32529E0855135"
+        "OwnerKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CF88C0CF0F454F81AEE32529E0855135"
+        "OwnerKey" = "8:_4924293E35E644F69A550A0B0BB56F99"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D17F7E77BB72450FAC65CD2A57FCFDC6"
+        "OwnerKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -591,32 +657,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
-        "OwnerKey" = "8:_ECD4FAB45F614F9A86F5F9C837C54903"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
-        "OwnerKey" = "8:_936FAFB4FD9A4C8C9A78C0FD9F68C7E1"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
-        "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DA9E21E096E84820BCFF5FA61B4997E3"
-        "OwnerKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
+        "MsmKey" = "8:_D728B9087B9444038D247F6F41E65838"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -633,12 +675,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E24F3359DBBC46038E4E224BFFE64A36"
-        "OwnerKey" = "8:_ECD4FAB45F614F9A86F5F9C837C54903"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E2A19192233043C7ABF3C1065B701506"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -646,13 +682,19 @@
         "Entry"
         {
         "MsmKey" = "8:_E2A19192233043C7ABF3C1065B701506"
-        "OwnerKey" = "8:_8759A648DDA14B48862627369F62E141"
+        "OwnerKey" = "8:_D17F7E77BB72450FAC65CD2A57FCFDC6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_E2A19192233043C7ABF3C1065B701506"
-        "OwnerKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
+        "OwnerKey" = "8:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E49C3212F7914CDE905028B7A38DC160"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -687,13 +729,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_ECD4FAB45F614F9A86F5F9C837C54903"
+        "MsmKey" = "8:_EAB11F82FF0A4852A7D2BBAD3468CB63"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EB0EDAFBC5874149AA371D9D3FF5A7F7"
         "OwnerKey" = "8:_AA1239140351498AA9520151039D5460"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F342011A49224BADB699FC25434F22C5"
+        "MsmKey" = "8:_EBFD88E30B3D488F9B65781896587EF6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -705,25 +753,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_FD67C4AFCDFC4FF3BB782B65D19E46E9"
-        "OwnerKey" = "8:_1BD5D891289B41E0B4027974F5F361E5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FD67C4AFCDFC4FF3BB782B65D19E46E9"
-        "OwnerKey" = "8:_836B04E3FF3042838DE87D3BFC6D4470"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FD67C4AFCDFC4FF3BB782B65D19E46E9"
-        "OwnerKey" = "8:_E24F3359DBBC46038E4E224BFFE64A36"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FE26B557CA4C46B5940072F6CF2CF7AC"
+        "MsmKey" = "8:_FB88F9FE2B4B4E2DB4EE52DA1302FE65"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -736,13 +766,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2FE8B18E654A9C1F69F79A4D1828BC2B"
+        "OwnerKey" = "8:_967B3E0F96B20DD9C361D74742A715EE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2EEA0FE63A780DBB19A41DDBD8D78EE2"
+        "OwnerKey" = "8:_924C3730A138F8F2A262E9E3257509EA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -760,25 +790,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_924C3730A138F8F2A262E9E3257509EA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_49F95994CF28BE3EC342303B5825AE6C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_967B3E0F96B20DD9C361D74742A715EE"
+        "OwnerKey" = "8:_2FE8B18E654A9C1F69F79A4D1828BC2B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2EEA0FE63A780DBB19A41DDBD8D78EE2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_38C0DBB124B66F94A594CD103BDD4D47"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -874,37 +904,37 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6CABD4D697B04326BDBCFAF7CA87752C"
+        "OwnerKey" = "8:_35D0FB354526418C9B91D96DD4492D15"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_059610566FE842C38080CC072B85200B"
+        "OwnerKey" = "8:_426B9C60848740519094255031FDD978"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_338FFCB9B3084598AB557A9FF7F7E387"
+        "OwnerKey" = "8:_72118D4FC9DC4DE5810FDEBCD5F6DAE5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_936FAFB4FD9A4C8C9A78C0FD9F68C7E1"
+        "OwnerKey" = "8:_9781ED0A0DBB441FB2755A860D5D62EB"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_ECD4FAB45F614F9A86F5F9C837C54903"
+        "OwnerKey" = "8:_EB0EDAFBC5874149AA371D9D3FF5A7F7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D90BA6BA898A4B28A7C3258C8A562A3F"
+        "OwnerKey" = "8:_8024531BD9E847EEA9A32837FCCB7DF7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1021,7 +1051,7 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:3.5.21022       "
+                "FrameworkVersion" = "8:3.5.21022        "
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=76617"
                 }
@@ -1035,26 +1065,6 @@
             "TargetName" = "8:NeuroRighter_Disclaimer.txt"
             "Tag" = "8:"
             "Folder" = "8:_BA265C0A79B64123AC14BE7CF808DE08"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_03491944E92C49B684DD3C787CA8C3E9"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadraw.m"
-            "TargetName" = "8:loadraw.m"
-            "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1098,26 +1108,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0770718949C945629087A14592607A24"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\impmeas.m"
-            "TargetName" = "8:impmeas.m"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_097F69F37CC14D98A5FE2018E7028A37"
@@ -1211,32 +1201,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_104BA4E6746E4B32BF7B74C2E4EBE253"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0E81ECACF7B64166B90892378CC7781D"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadspk.m"
-            "TargetName" = "8:loadspk.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\impedance_report.m"
+            "TargetName" = "8:impedance_report.m"
             "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_16FC81E1B24F4BE88E43E324C6349217"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadstim.m"
-            "TargetName" = "8:loadstim.m"
-            "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1258,11 +1228,6 @@
             "AssemblyAsmDisplayName" = "8:Accord.Statistics, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_18A6B912945A2D4796B5E169F3FFCFE7"
-                    {
-                    "Name" = "8:Accord.Statistics.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Accord.Statistics.dll"
             "TargetName" = "8:"
@@ -1282,52 +1247,32 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1DBC291FDD9241EEAE8857D008B26574"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_192EE8BED64E4AF09691C992746EC010"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makeauxfile.m"
-            "TargetName" = "8:makeauxfile.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.fig"
+            "TargetName" = "8:EXAMPLE_SPECTRA.fig"
+            "Tag" = "8:"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B58EB85C0324F59B88A7A482B42787B"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loaddig.m"
+            "TargetName" = "8:loaddig.m"
             "Tag" = "8:"
             "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E0719C2D82E405698CFABA434966517"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.mat"
-            "TargetName" = "8:EXAMPLE_SPECTRA.mat"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_28975E3C05E942AAAA53C82AB009C818"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\impedance_report.m"
-            "TargetName" = "8:impedance_report.m"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1424,52 +1369,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_30F050EB658E43A8AC7399F953A00668"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\READ_ME.txt"
-            "TargetName" = "8:READ_ME.txt"
-            "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_32DEB44086C046AA9F78BC75D651BA57"
             {
             "SourcePath" = "8:..\\..\\NeuroRighter\\doc\\gpl.txt"
             "TargetName" = "8:gpl.txt"
             "Tag" = "8:"
             "Folder" = "8:_9BEE87DEF9544E26B73D37FF1B8B7857"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_359E33A3C92140EEB24047128EA83261"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.fig"
-            "TargetName" = "8:EXAMPLE_SPECTRA.fig"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1491,11 +1396,6 @@
             "AssemblyAsmDisplayName" = "8:NeuroRighter, Version=1.0.1.494, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_38C0DBB124B66F94A594CD103BDD4D47"
-                    {
-                    "Name" = "8:NeuroRighter.exe"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:NeuroRighter.exe"
             "TargetName" = "8:"
@@ -1573,11 +1473,6 @@
             "AssemblyAsmDisplayName" = "8:Accord, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_51C3432C4F9BF09BB5EC05E6480AE881"
-                    {
-                    "Name" = "8:Accord.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Accord.dll"
             "TargetName" = "8:"
@@ -1595,26 +1490,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_59B73177179D4180B1ACC47D7A3EC942"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.png"
-            "TargetName" = "8:EXAMPLE_SPECTRA.png"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5AF4ADEE42C14EABB160BB9746F4A5D5"
@@ -1664,11 +1539,6 @@
             "AssemblyAsmDisplayName" = "8:csmatio, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5E7FE2D36E719AB0ED34D868771B2EB5"
-                    {
-                    "Name" = "8:csmatio.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:csmatio.dll"
             "TargetName" = "8:"
@@ -1695,11 +1565,6 @@
             "AssemblyAsmDisplayName" = "8:AForge, Version=2.2.4.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6122584C384217568B9D2AB5D3712730"
-                    {
-                    "Name" = "8:AForge.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AForge.dll"
             "TargetName" = "8:"
@@ -1717,6 +1582,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6134EDB614344ACCB40A4586C473D842"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makestimfile.m"
+            "TargetName" = "8:makestimfile.m"
+            "Tag" = "8:"
+            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_61A4E36A653CAEA7D504AFADD936F799"
@@ -1750,12 +1635,52 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_61F8BD2F84774128BD734EB428AB14EE"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\avgimp.m"
+            "TargetName" = "8:avgimp.m"
+            "Tag" = "8:"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_626DC497FF45415093BF1CE2B630E2C3"
             {
             "SourcePath" = "8:..\\..\\NeuroRighter\\doc\\National_Instruments_software_license_agreement.pdf"
             "TargetName" = "8:National_Instruments_software_license_agreement.pdf"
             "Tag" = "8:"
             "Folder" = "8:_BA265C0A79B64123AC14BE7CF808DE08"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_641DC5BBA0CA4A17A855D229CFEB3FE0"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\loadraw.m"
+            "TargetName" = "8:loadraw.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1810,6 +1735,106 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F88CFA74FAD4C30824776FB0AD35BF6"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\loaddig.m"
+            "TargetName" = "8:loaddig.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FD380A936A54443833E65889D8E492C"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\loadstim.m"
+            "TargetName" = "8:loadstim.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_706809EA36E24191B7A7759A1B25C782"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\READ_ME.txt"
+            "TargetName" = "8:READ_ME.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_71487D2CDB494E919996B46F9368291A"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\makestimfile.m"
+            "TargetName" = "8:makestimfile.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_718FD67BE78641EFBF4642861909F3D6"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makedigfile.m"
+            "TargetName" = "8:makedigfile.m"
+            "Tag" = "8:"
+            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7280109E65EA847535DBD64850F9767F"
             {
             "AssemblyRegister" = "3:1"
@@ -1841,6 +1866,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72ACCF9CACFD4B1AB1B33C611B8F4AFC"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\impmeas.m"
+            "TargetName" = "8:impmeas.m"
+            "Tag" = "8:"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_747611BEC941CC41BCFA9FCE3C697E76"
             {
             "AssemblyRegister" = "3:1"
@@ -1848,11 +1893,6 @@
             "AssemblyAsmDisplayName" = "8:Accord.MachineLearning, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_747611BEC941CC41BCFA9FCE3C697E76"
-                    {
-                    "Name" = "8:Accord.MachineLearning.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Accord.MachineLearning.dll"
             "TargetName" = "8:"
@@ -1872,10 +1912,30 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A0F2904F4E84FBC90BF2DE3FABBED63"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D7E973D0A294E3FAE19EFB47BDEBEC2"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadraw.c"
-            "TargetName" = "8:loadraw.c"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\reloadspike.m"
+            "TargetName" = "8:reloadspike.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_810CBD66C21B4BA9A477D9C8C64B752D"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\READ_ME.txt"
+            "TargetName" = "8:READ_ME.txt"
             "Tag" = "8:"
             "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
             "Condition" = "8:"
@@ -1921,26 +1981,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_87D83ADC3D084A1AA10770CF52C6A8E0"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\avgimp.m"
-            "TargetName" = "8:avgimp.m"
-            "Tag" = "8:"
-            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8951BA89093243847BC1A60E810B5CD4"
@@ -2036,12 +2076,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_92F231CBCBCE4BC7A78FB2FFAE433859"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9487732CFADA4D28B9AE37493EC3199B"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\loadspike.c"
-            "TargetName" = "8:loadspike.c"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-2\\loadspike.m"
+            "TargetName" = "8:loadspike.m"
             "Tag" = "8:"
-            "Folder" = "8:_7486FCC5609B4B5BA6C11D11A0F2314D"
+            "Folder" = "8:_88A80B7A5F7748458742DFBE77A0F2DA"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2087,26 +2127,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B49BE9C5C8442D3B63CA3C31F04FBD7"
-            {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\loadspike.m"
-            "TargetName" = "8:loadspike.m"
-            "Tag" = "8:"
-            "Folder" = "8:_7486FCC5609B4B5BA6C11D11A0F2314D"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9CD4D01DC3C8C48804FD58E6406CBF66"
             {
             "AssemblyRegister" = "3:1"
@@ -2138,10 +2158,30 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A335C5500D30468F8998CAD240188672"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9D301CD9F09148EC9C8F8B8FCFBDCC49"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\reloadspike.m"
-            "TargetName" = "8:reloadspike.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadstim.m"
+            "TargetName" = "8:loadstim.m"
+            "Tag" = "8:"
+            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A1EC1293BD6B4D92ABDEE420491B5416"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makeauxfile.m"
+            "TargetName" = "8:makeauxfile.m"
             "Tag" = "8:"
             "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
             "Condition" = "8:"
@@ -2165,11 +2205,6 @@
             "AssemblyAsmDisplayName" = "8:NRSpikeSort, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_A512DEB3F54268228F545017C9C42720"
-                    {
-                    "Name" = "8:NRSpikeSort.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:NRSpikeSort.dll"
             "TargetName" = "8:"
@@ -2189,12 +2224,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AC44841D53924D89936C8516A770FFC9"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B8246D6139864F98AEAA9D7CD1955C02"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makestimfile.m"
-            "TargetName" = "8:makestimfile.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\loadraw.c"
+            "TargetName" = "8:loadraw.c"
             "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2229,23 +2264,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C8911148488722FC77A1E071C3E8F65A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB9B820DDEDD4E83AB384A3D4E90A917"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Accord.Math, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_C8911148488722FC77A1E071C3E8F65A"
-                    {
-                    "Name" = "8:Accord.Math.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Accord.Math.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.png"
+            "TargetName" = "8:EXAMPLE_SPECTRA.png"
             "Tag" = "8:"
-            "Folder" = "8:_CDAB9A884AEF40229363851E4F6F33F6"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2257,10 +2281,10 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CF4510181C79375A3AE2084F5C010C6A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BDE08EA966523F93EC53784595E0451E"
             {
             "SourcePath" = "8:cwui.ocx"
             "TargetName" = "8:cwui.ocx"
@@ -2280,6 +2304,92 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BF39497B1C174189BE9EC55D317B07AD"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\makeauxfile.m"
+            "TargetName" = "8:makeauxfile.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3E707F857CD4E95954C0B391ACFDC67"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadspk.m"
+            "TargetName" = "8:loadspk.m"
+            "Tag" = "8:"
+            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C8911148488722FC77A1E071C3E8F65A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Accord.Math, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                }
+            "SourcePath" = "8:Accord.Math.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CDAB9A884AEF40229363851E4F6F33F6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CC557C4BABA7433CAE04BE583CDBF46B"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadraw.m"
+            "TargetName" = "8:loadraw.m"
+            "Tag" = "8:"
+            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D6E3F8FDD7CD2A495064EB62E653134B"
             {
             "AssemblyRegister" = "3:1"
@@ -2287,11 +2397,6 @@
             "AssemblyAsmDisplayName" = "8:zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160"
                 "ScatterAssemblies"
                 {
-                    "_D6E3F8FDD7CD2A495064EB62E653134B"
-                    {
-                    "Name" = "8:zlib.net.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:zlib.net.dll"
             "TargetName" = "8:"
@@ -2309,6 +2414,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D728B9087B9444038D247F6F41E65838"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\makedigfile.m"
+            "TargetName" = "8:makedigfile.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DC5F8BFB97219B04916D027E0ED51655"
@@ -2340,6 +2465,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E49C3212F7914CDE905028B7A38DC160"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-2\\loadspike.c"
+            "TargetName" = "8:loadspike.c"
+            "Tag" = "8:"
+            "Folder" = "8:_88A80B7A5F7748458742DFBE77A0F2DA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E54B6CCC2FDCD3D493D75E3D7F904743"
@@ -2380,11 +2525,6 @@
             "AssemblyAsmDisplayName" = "8:AForge.Math, Version=2.2.4.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_EA884B24CB9C7F822CACD994296C90D6"
-                    {
-                    "Name" = "8:AForge.Math.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:AForge.Math.dll"
             "TargetName" = "8:"
@@ -2404,12 +2544,32 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F342011A49224BADB699FC25434F22C5"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EAB11F82FF0A4852A7D2BBAD3468CB63"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\makedigfile.m"
-            "TargetName" = "8:makedigfile.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loadraw.c"
+            "TargetName" = "8:loadraw.c"
             "Tag" = "8:"
             "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EBFD88E30B3D488F9B65781896587EF6"
+            {
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Deprecated\\version-3\\loadspk.m"
+            "TargetName" = "8:loadspk.m"
+            "Tag" = "8:"
+            "Folder" = "8:_1C996DA441434FD0B7A41F9671178501"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2444,12 +2604,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FE26B557CA4C46B5940072F6CF2CF7AC"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB88F9FE2B4B4E2DB4EE52DA1302FE65"
             {
-            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\loaddig.m"
-            "TargetName" = "8:loaddig.m"
+            "SourcePath" = "8:..\\..\\NeuroRighter\\Matlab\\Impedance-Testing\\EXAMPLE_SPECTRA.mat"
+            "TargetName" = "8:EXAMPLE_SPECTRA.mat"
             "Tag" = "8:"
-            "Folder" = "8:_51DBD2B4E93E4F9E87DDAB7409E1D8AB"
+            "Folder" = "8:_B345E571FC054402AB64B7E269F755D4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2551,6 +2711,28 @@
                                     "Property" = "8:_38AD46ABA06E4D948D61F8DA1D22EA8D"
                                         "Folders"
                                         {
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_1C996DA441434FD0B7A41F9671178501"
+                                            {
+                                            "Name" = "8:version-3"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_8E077741E094495382F2C3EDDD03A4D9"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_88A80B7A5F7748458742DFBE77A0F2DA"
+                                            {
+                                            "Name" = "8:version-2"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_A5EE1ABBB07744778D5D065A65B421A2"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
                                         }
                                     }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_B345E571FC054402AB64B7E269F755D4"
@@ -2596,9 +2778,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:NeuroRighter (v1.1.0.539)"
+        "ProductName" = "8:NeuroRighter (v1.1.0.542)"
         "ProductCode" = "8:{A2CB8A63-DAAE-4439-9D06-268567D8970F}"
-        "PackageCode" = "8:{BF2361C4-FF63-4BA3-A8B0-E96DFC589F15}"
+        "PackageCode" = "8:{3D0D57B2-E976-42E5-901B-6475C1E8451E}"
         "UpgradeCode" = "8:{88FD4D85-43F0-4081-BFA9-FF421AB95FAF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -2609,9 +2791,9 @@
         "Manufacturer" = "8:NeuroRighter"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://sites.google.com/site/neurorighter/"
-        "Title" = "8:NeuroRighter (v1.1.0.539)"
+        "Title" = "8:NeuroRighter (v1.1.0.542)"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Potter Lab, Georgia Tech"
+        "ARPCONTACT" = "8:Potter Lab, Georiga Tech"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:NeuroRighter (c) 2012"
         "ARPURLINFOABOUT" = "8:"
@@ -3222,7 +3404,74 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_059610566FE842C38080CC072B85200B"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0F3F2D6206AE4CB8823DD4913D3AEBBB"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:nimesadll.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_1264861B361248139B7B34D8D8919827"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:mkl.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_35D0FB354526418C9B91D96DD4492D15"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:mstudiouiwinforms.2010.msm"
+                "Properties"
+                {
+                    "_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    {
+                    "Name" = "8:_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:32769"
+                    "ContextData" = "8:_RetargetableFolder"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                    "_EB80E0B5F6AC6CFE5A4011DED7BF6427.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    {
+                    "Name" = "8:_EB80E0B5F6AC6CFE5A4011DED7BF6427.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "DisplayName" = "8:"
+                    "Description" = "8:"
+                    "Type" = "3:2"
+                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "Attributes" = "3:0"
+                    "Setting" = "3:2"
+                    "Value" = "8:_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "DefaultValue" = "8:_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "ParentName" = "8:_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:1033"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_426B9C60848740519094255031FDD978"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3275,11 +3524,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0F609E2ED1A744ECA55A722C786AEB0F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4924293E35E644F69A550A0B0BB56F99"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc100_atl_x86.msm"
+            "SourcePath" = "8:policy_9_0_microsoft_vc90_mfc_x86.msm"
                 "Properties"
                 {
                 }
@@ -3289,11 +3538,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_1BD5D891289B41E0B4027974F5F361E5"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6AD587EEEF5E406288EFCF5E217F235A"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:mkl.msm"
+            "SourcePath" = "8:nianlys.msm"
                 "Properties"
                 {
                 }
@@ -3303,7 +3552,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_338FFCB9B3084598AB557A9FF7F7E387"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_72118D4FC9DC4DE5810FDEBCD5F6DAE5"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3342,169 +3591,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_3FC36F6EAFA440F5B7C2B3E881994FB9"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_mfc_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5CE94557692C4BE6B83E8693018158ED"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc100_crt_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6CABD4D697B04326BDBCFAF7CA87752C"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:mstudiouiwinforms.2010.msm"
-                "Properties"
-                {
-                    "_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    {
-                    "Name" = "8:_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "DisplayName" = "8:Module Retargetable Folder"
-                    "Description" = "8:"
-                    "Type" = "3:32769"
-                    "ContextData" = "8:_RetargetableFolder"
-                    "Attributes" = "3:6"
-                    "Setting" = "3:1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                    "_EB80E0B5F6AC6CFE5A4011DED7BF6427.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    {
-                    "Name" = "8:_EB80E0B5F6AC6CFE5A4011DED7BF6427.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "DisplayName" = "8:"
-                    "Description" = "8:"
-                    "Type" = "3:2"
-                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "Attributes" = "3:0"
-                    "Setting" = "3:2"
-                    "Value" = "8:_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "DefaultValue" = "8:_668C56AC27BD4708AA176624256E795F.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "ParentName" = "8:_9537EF02219C4DEA98C97C65C50EBC43.D8EC2CBA0684493FB9BD3BE4848569C1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                }
-            "LanguageId" = "3:1033"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_836B04E3FF3042838DE87D3BFC6D4470"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:nimesadll.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8759A648DDA14B48862627369F62E141"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_microsoft_vc90_crt_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_936FAFB4FD9A4C8C9A78C0FD9F68C7E1"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:mstudiodaqmx.2010.msm"
-                "Properties"
-                {
-                    "_1ED0AE35216AEE30F6A20094DFB57B58.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    {
-                    "Name" = "8:_1ED0AE35216AEE30F6A20094DFB57B58.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "DisplayName" = "8:"
-                    "Description" = "8:"
-                    "Type" = "3:2"
-                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "Attributes" = "3:0"
-                    "Setting" = "3:2"
-                    "Value" = "8:_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "DefaultValue" = "8:_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "ParentName" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                    "_958FADC24E2C08E2FD44825B7F051C91.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    {
-                    "Name" = "8:_958FADC24E2C08E2FD44825B7F051C91.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "DisplayName" = "8:"
-                    "Description" = "8:"
-                    "Type" = "3:2"
-                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "Attributes" = "3:0"
-                    "Setting" = "3:2"
-                    "Value" = "8:_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "DefaultValue" = "8:_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "ParentName" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                    "_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    {
-                    "Name" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
-                    "DisplayName" = "8:Module Retargetable Folder"
-                    "Description" = "8:"
-                    "Type" = "3:32769"
-                    "ContextData" = "8:_RetargetableFolder"
-                    "Attributes" = "3:6"
-                    "Setting" = "3:1"
-                    "UsePlugInResources" = "11:FALSE"
-                    }
-                }
-            "LanguageId" = "3:1033"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_979D11A0B5454B08865DCD02C2B45FD9"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:FALSE"
-            "SourcePath" = "8:C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC90_ATL_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D90BA6BA898A4B28A7C3258C8A562A3F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8024531BD9E847EEA9A32837FCCB7DF7"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3725,11 +3812,64 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_DA9E21E096E84820BCFF5FA61B4997E3"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_9781ED0A0DBB441FB2755A860D5D62EB"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_microsoft_vc90_mfc_x86.msm"
+            "SourcePath" = "8:mstudiodaqmx.2010.msm"
+                "Properties"
+                {
+                    "_1ED0AE35216AEE30F6A20094DFB57B58.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    {
+                    "Name" = "8:_1ED0AE35216AEE30F6A20094DFB57B58.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "DisplayName" = "8:"
+                    "Description" = "8:"
+                    "Type" = "3:2"
+                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "Attributes" = "3:0"
+                    "Setting" = "3:2"
+                    "Value" = "8:_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "DefaultValue" = "8:_FE8008DA66754FC3A8EFBDD23072A1E9.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "ParentName" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                    "_958FADC24E2C08E2FD44825B7F051C91.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    {
+                    "Name" = "8:_958FADC24E2C08E2FD44825B7F051C91.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "DisplayName" = "8:"
+                    "Description" = "8:"
+                    "Type" = "3:2"
+                    "ContextData" = "8:InstallToGAC=;IsolateToManifest=_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "Attributes" = "3:0"
+                    "Setting" = "3:2"
+                    "Value" = "8:_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "DefaultValue" = "8:_C993FDBD61164990A74542A7D75D4A45.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "ParentName" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                    "_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    {
+                    "Name" = "8:_AFC05678A3BA4BB383B75547AAE6EB85.7C387D31872E4A16A2BCE1ACFB96BD60"
+                    "DisplayName" = "8:Module Retargetable Folder"
+                    "Description" = "8:"
+                    "Type" = "3:32769"
+                    "ContextData" = "8:_RetargetableFolder"
+                    "Attributes" = "3:6"
+                    "Setting" = "3:1"
+                    "UsePlugInResources" = "11:FALSE"
+                    }
+                }
+            "LanguageId" = "3:1033"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_979D11A0B5454B08865DCD02C2B45FD9"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "SourcePath" = "8:C:\\Program Files (x86)\\Common Files\\Merge Modules\\Microsoft_VC90_ATL_x86.msm"
                 "Properties"
                 {
                 }
@@ -3739,11 +3879,39 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E24F3359DBBC46038E4E224BFFE64A36"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_C9B1D989CFFD4B54AB354D2E06BFE265"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:nianlys.msm"
+            "SourcePath" = "8:nimetautils.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_CF88C0CF0F454F81AEE32529E0855135"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc90_mfc_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D17F7E77BB72450FAC65CD2A57FCFDC6"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:policy_9_0_microsoft_vc90_crt_x86.msm"
                 "Properties"
                 {
                 }
@@ -3767,7 +3935,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_ECD4FAB45F614F9A86F5F9C837C54903"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_EB0EDAFBC5874149AA371D9D3FF5A7F7"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -3801,20 +3969,6 @@
                     }
                 }
             "LanguageId" = "3:1033"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_FD67C4AFCDFC4FF3BB782B65D19E46E9"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:nimetautils.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
             "Exclude" = "11:FALSE"
             "Folder" = "8:"
             "Feature" = "8:"

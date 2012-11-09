@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NeuroRighter")]
 [assembly: AssemblyDescription("Multichannel data aquisition system designed for closed-loop applications.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Potter Lab, Georgia Tech")]
+[assembly: AssemblyCompany("NeuroRighter")]
 [assembly: AssemblyProduct("NeuroRighter")]
 [assembly: AssemblyCopyright("Copyright Potter Lab, 2012")]
 [assembly: AssemblyTrademark("NeuroRighter")]
@@ -47,5 +47,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.1.0.539")]
-[assembly: AssemblyFileVersion("1.1.0.539")]
+[assembly: AssemblyVersion("1.1.0.542")]
+[assembly: AssemblyFileVersion("1.1.0.542")]

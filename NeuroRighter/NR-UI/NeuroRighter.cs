@@ -388,7 +388,7 @@ namespace NeuroRighter
                                 "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
 
                             // Manually allocate buffer memory
-                            spikeTask[i].Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                            //spikeTask[i].Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
 
@@ -400,7 +400,7 @@ namespace NeuroRighter
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_lfpSamplingRate.Text) / 2));
 
                             // Manually allocate buffer memory
-                            lfpTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                            //lfpTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
                         else
                         {
@@ -415,7 +415,7 @@ namespace NeuroRighter
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 2));
                             
                             // Manually allocate buffer memory
-                            eegTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                            //eegTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
                         if (Properties.Settings.Default.UseCineplex)
@@ -484,7 +484,7 @@ namespace NeuroRighter
                                 stimTimeChanSet.SetupNumericalChannelOnly(stimTimeChannels);
 
                                 // Manually allocate buffer memory
-                                stimTimeTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                                //stimTimeTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
 
                                
                                 Console.WriteLine("NRAcquisitionSetup complete");
@@ -535,7 +535,7 @@ namespace NeuroRighter
                                 auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
 
                                 // Manually allocate buffer memory
-                                auxAnInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                                // auxAnInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
 
                                 // Create space for the buffer
                                 auxAnData = new double[auxChanSet.numericalChannels.Length, spikeBufferLength];
@@ -555,7 +555,7 @@ namespace NeuroRighter
                             auxDigInTask.Timing.SampleClockSource = spikeTask[0].Timing.SampleClockTerminal;
 
                             // Manually allocate buffer memory
-                            auxDigInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
+                            // auxDigInTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
                         }
 
                         #region Setup_Plotting

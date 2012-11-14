@@ -153,6 +153,7 @@ namespace NeuroRighter
         private void button_clearSpkWfms_Click(object sender, EventArgs e)
         {
             spkWfmGraph.clear();
+            spkWfmGraph.Invalidate();
         }
 
         private void numericUpDown_NumSnipsDisplayed_ValueChanged(object sender, EventArgs e)

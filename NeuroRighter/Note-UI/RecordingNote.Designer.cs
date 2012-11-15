@@ -40,6 +40,7 @@
             // 
             // textBox_Note
             // 
+            this.textBox_Note.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox_Note.Location = new System.Drawing.Point(15, 22);
             this.textBox_Note.Multiline = true;
             this.textBox_Note.Name = "textBox_Note";

@@ -61,6 +61,8 @@ namespace NeuroRighter
         {
             if (radioButton_stimCurrentControlled.Checked)
             {
+                Properties.Settings.Default.StimVoltageControlled = false;
+
                 if (Properties.Settings.Default.UseStimulator)
                 {
                     stimIvsVTask = new Task("stimIvsV");
@@ -90,6 +92,7 @@ namespace NeuroRighter
         {
             if (radioButton_stimVoltageControlled.Checked)
             {
+                Properties.Settings.Default.StimVoltageControlled = true;
                 if (Properties.Settings.Default.UseStimulator)
                 {
                     //this line goes high (TTL-wise) when we're doing current-controlled stim, low for voltage-controlled

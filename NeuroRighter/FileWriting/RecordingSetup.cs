@@ -77,6 +77,20 @@ namespace NeuroRighter.FileWriting
 
         internal void RefreshForm()
         {
+            // Uncheckboxes that you don't have access too from the settings
+            if (!Properties.Settings.Default.UseLFPs)
+                checkBox_RecordLFP.Checked = Properties.Settings.Default.UseLFPs;
+            if (!Properties.Settings.Default.UseEEG)
+                checkBox_RecordEEG.Checked = Properties.Settings.Default.UseEEG;
+            if (!Properties.Settings.Default.RecordStimTimes)
+                checkBox_RecordStim.Checked = Properties.Settings.Default.RecordStimTimes;
+            if (!Properties.Settings.Default.ProcessMUA)
+                checkBox_RecordMUA.Checked = Properties.Settings.Default.ProcessMUA;
+            if (!Properties.Settings.Default.useAuxAnalogInput)
+                checkBox_RecordAuxAnalog.Checked = Properties.Settings.Default.useAuxAnalogInput;
+            if (!Properties.Settings.Default.useAuxDigitalInput)
+                checkBox_RecordAuxDig.Checked = Properties.Settings.Default.useAuxDigitalInput;
+
             // Set up access to streams
             checkBox_RecordLFP.Enabled = Properties.Settings.Default.UseLFPs;
             checkBox_RecordEEG.Enabled = Properties.Settings.Default.UseEEG;

@@ -118,6 +118,7 @@ namespace NeuroRighter
                     // Tally number of waveforms being displayed for each channel
                     numSpkWfms[channel] %= maxWaveforms;
                 }
+
                 spkWfmGraph.Invalidate();
             }
             else { pd.skipRead(); }

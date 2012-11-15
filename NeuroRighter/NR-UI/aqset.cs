@@ -308,6 +308,7 @@ namespace NeuroRighter
         private void checkBox_spikesFilter_CheckedChanged(object sender, EventArgs e)
         {
             resetSpikeFilter();
+            Properties.Settings.Default.UseSpikeBandFilter = checkBox_spikesFilter.Checked;
             recordingSettings.SetSpikeFiltAccess(checkBox_spikesFilter.Checked);
         }
         private void SpikeHighCut_ValueChanged(object sender, EventArgs e)

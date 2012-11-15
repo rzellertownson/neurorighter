@@ -166,5 +166,10 @@ namespace NeuroRighter
                 spkWfmGraph.clear();
             }
         }
+
+        private void numericUpDown_NumSnipsDisplayed_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            numericUpDown_NumSnipsDisplayed_ValueChanged(this.numericUpDown_NumSnipsDisplayed, new EventArgs());
+        }
     }
 }

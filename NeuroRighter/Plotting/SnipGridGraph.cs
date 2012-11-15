@@ -188,13 +188,11 @@ namespace NeuroRighter
         protected override void Draw()
         {
             GraphicsDevice.Clear(Color.Black);
-            //GraphicsDevice.VertexDeclaration = vDec;
 
             //Draw channel numbers
             plotChannelNumbers();
             plotVoltageTime();
 
-            //effect.Begin();
             effect.CurrentTechnique.Passes[0].Apply();
 
             for (int i = 0; i < gridLines.Count; ++i)
@@ -203,9 +201,6 @@ namespace NeuroRighter
             for (int i = 0; i < lines.Count; ++i)
                 GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineStrip,
                     lines[i], 0, idx.Length, idx, 0, idx.Length - 1);
-
-            //effect.CurrentTechnique.Passes[0].End();
-            //effect.End();
         }
 
         private void plotGridLines()

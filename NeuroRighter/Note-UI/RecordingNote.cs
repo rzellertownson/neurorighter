@@ -81,6 +81,64 @@ namespace NeuroRighter
             this.Close();
         }
 
+        private void button_SettingSnapshot_Click(object sender, EventArgs e)
+        {   
+            // General
+            textBox_Note.Text += "** General Settings ** \r\n";
+            textBox_Note.Text += "Digital Gain: " + Properties.Settings.Default.Gain + "X \r\n";
+            textBox_Note.Text += "ADC Polling Period (sec): " + Properties.Settings.Default.ADCPollingPeriodSec + "\r\n"; ;
+            if (Properties.Settings.Default.UseBuffload)
+            {
+                textBox_Note.Text += "DAC Polling Period (sec): " + Properties.Settings.Default.DACPollingPeriodSec + "\r\n"; ;
+            }
+            else
+            {
+                textBox_Note.Text += "DAC Polling Period (sec): No output buffering in use.\r\n";
+            }
+
+            // For each recording type that is currently being used, write down the relavant parameters
+
+            // Raw voltages
+            textBox_Note.Text += "\r\n";
+            textBox_Note.Text += "** Raw Voltage Input ** \r\n";
+            textBox_Note.Text += "No. Channels: " + Properties.Settings.Default.DefaultNumChannels + "\r\n";
+            textBox_Note.Text += "Samp. Freq (Hz): " + Properties.Settings.Default.RawSampleFrequency + "\r\n";
+            textBox_Note.Text += "Amplifier Gain: " + Properties.Settings.Default.PreAmpGain + "\r\n";
+
+            // Spike band filtering
+            textBox_Note.Text += "\r\n";
+            textBox_Note.Text += "** Spike-Pass Filter ** \r\n";
+            textBox_Note.Text += "No. Channels: " + Properties.Settings.Default.DefaultNumChannels + "\r\n";
+            textBox_Note.Text += "Samp. Freq (Hz): " + Properties.Settings.Default.RawSampleFrequency + "\r\n";
+            textBox_Note.Text += "Low Freq. Cut (Hz): " + Properties.Settings.Default.SpikesLowCut + "\r\n";
+            textBox_Note.Text += "High Freq. Cut (Hz): " + Properties.Settings.Default.SpikesHighCut + "\r\n";
+            textBox_Note.Text += "Filter Order (Hz): " + Properties.Settings.Default.SpikesNumPoles + "\r\n";
+            textBox_Note.Text += "Filter Type (Hz): Butterworth" + Properties.Settings.Default.RawSampleFrequency + "\r\n";
+
+
+            // Current Recording Streams
+            textBox_Note.Text += "\r\n";
+            // Full FS streams
+            textBox_Note.Text += "** Selected Recording Streams ** \r\n";
+            textBox_Note.Text += "Raw Electrode Voltages: " + Properties.Settings.Default.recordRaw + "\r\n";
+            textBox_Note.Text += "Spike-band Filter: " + Properties.Settings.Default.recordSpikeFilt + "\r\n";
+            textBox_Note.Text += "SALPA Filter: " + Properties.Settings.Default.recordSalpa + "\r\n";
+
+            // Spikes
+            textBox_Note.Text += "Raw Electrode Voltages: " + Properties.Settings.Default.recordRaw + "\r\n";
+            textBox_Note.Text += "Spike-band Filter: " + Properties.Settings.Default.recordSpikeFilt + "\r\n";
+            textBox_Note.Text += "SALPA Filter: " + Properties.Settings.Default.recordSalpa + "\r\n";
+
+            // LFP
+
+            // EEG
+
+            // MUA
+
+            // Aux signals
+
+        }
+
 
     }
 }

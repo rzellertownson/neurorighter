@@ -61,11 +61,22 @@ namespace NeuroRighter
     sealed internal partial class NeuroRighter : Form
     {
         // Neurorighter object constructor
+        private void tweakGui()
+        {
+
+            radioButton_stimVoltageControlled.Checked = Properties.Settings.Default.StimVoltageControlled;
+
+            radioButton_stimCurrentControlled.Checked = !radioButton_stimVoltageControlled.Checked;
+            radioButton_impVoltage.Checked = radioButton_stimVoltageControlled.Checked;
+            radioButton_impCurrent.Checked = radioButton_stimCurrentControlled.Checked;
+     
+        }
+
         public NeuroRighter()
         {
 
             InitializeComponent();
-
+            tweakGui();
             // Save window state in application data folder
             NRPersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
 

@@ -142,7 +142,7 @@ namespace NeuroRighter
                 else
                 {
                     textBox_Note.Text += "  LFP Recording Type:             Digitally processed LFPs \r\n";
-                    textBox_Note.Text += "  No. Channels:                   " + Properties.Settings.Default.DefaultNumChannels + "\r\n";
+                    textBox_Note.Text += "  No. Channels:                   " + Properties.Settings.Default.NumChannels + "\r\n";
                 }
                 textBox_Note.Text += "  Samp. Freq (Hz):                " + Properties.Settings.Default.LFPSampleFrequency + "\r\n";
                 textBox_Note.Text += "  Low Freq. Cut (Hz):             " + Properties.Settings.Default.LFPLowCut + "\r\n";
@@ -156,7 +156,7 @@ namespace NeuroRighter
             {
                 textBox_Note.Text += "\r\n";
                 textBox_Note.Text += "** Multi-Unit Activity ** \r\n";
-                textBox_Note.Text += "  No. Channels:                   " + Properties.Settings.Default.DefaultNumChannels + "\r\n";
+                textBox_Note.Text += "  No. Channels:                   " + Properties.Settings.Default.NumChannels + "\r\n";
                 textBox_Note.Text += "  Samp. Freq (Hz):                " + Properties.Settings.Default.MUASampleFrequency + "\r\n";
                 textBox_Note.Text += "  High Freq. Cut (Hz):            " + Properties.Settings.Default.MUAHighCutHz + "\r\n";
                 textBox_Note.Text += "  Filter Order:                   " + Properties.Settings.Default.MUAFilterOrder + "\r\n";

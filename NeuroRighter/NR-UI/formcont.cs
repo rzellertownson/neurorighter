@@ -68,7 +68,7 @@ namespace NeuroRighter
                 nc_s.ShowDialog();
                 updateSettings();
 
-                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
+                spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
                 spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
                 spikeDet.SetSpikeDetector(spikeBufferLength);
             }
@@ -208,8 +208,7 @@ namespace NeuroRighter
             recordingSettings.Close();
 
             //Save gain settings
-            Properties.Settings.Default.Gain = comboBox_SpikeGain.SelectedIndex;
-
+            
             //Save referencing scheme settings
             if (radioButton_spikesReferencingCommonAverage.Checked)
                 Properties.Settings.Default.SpikesReferencingScheme = 0;

@@ -67,7 +67,7 @@ namespace NeuroRighter
             for (int i = 1; i < freqs.GetLength(0); ++i)
                 freqs[i] = freqs[i - 1] * Convert.ToDouble(textBox_diagnosticsMult.Text);
 
-            spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
+            spikeSamplingRate = Properties.Settings.Default.RawSampleFrequency;
             buttonStart.Enabled = false;  //So users can't try to get data from the same card
             button_computeGain.Enabled = false;
             button_computeGain.Refresh();
@@ -83,7 +83,7 @@ namespace NeuroRighter
                         AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
 
                 //Change gain based on comboBox values (1-100)
-                setGain(spikeTask[i], comboBox_SpikeGain);
+                setGain(spikeTask[i], Properties.Settings.Default.A2Dgain);
 
                 //Verify the Task
                 spikeTask[i].Control(TaskAction.Verify);
@@ -120,7 +120,7 @@ namespace NeuroRighter
             stimDigitalTask.Control(TaskAction.Verify);
             stimPulseTask.Control(TaskAction.Verify);
 
-            switch (comboBox_numChannels.SelectedIndex)
+            switch (Properties.Settings.Default.NumChannels)
             {
                 case 0:
                     numChannels = 16;

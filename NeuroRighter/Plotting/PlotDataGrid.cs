@@ -30,7 +30,7 @@ namespace NeuroRighter
     ///<author>John Rolston</author>
     internal sealed class PlotDataGrid : PlotData
     {
-        internal PlotDataGrid(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, Single boxHeight,
+        internal PlotDataGrid(Int32 numChannels, Int32 downsample, Int32 bufferLength, double samplingRate, Single boxHeight,
             Int32 numRows, Int32 numCols, Double plotLength, String channelMapping, Double deviceRefreshRate)
             : base(numChannels, downsample, bufferLength, samplingRate, boxHeight, numRows, numCols, plotLength, channelMapping, deviceRefreshRate)
         {

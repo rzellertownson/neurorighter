@@ -74,23 +74,18 @@ namespace NeuroRighter
             this.Text += " (BETA)";
 
             // Set spike buffer lengths
-            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
+            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency);
 
-            //Set default values for certain controls
-            comboBox_numChannels.SelectedItem = Properties.Settings.Default.DefaultNumChannels;
+            
             //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
-            this.numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
+            this.numChannels =Properties.Settings.Default.NumChannels;
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             this.currentRef = new int[2];
 
             // Set up console output
             nrConsole = new ConsoleControl();
-
-            //Ensure that sampling rates are okay
-            button_lfpSamplingRate_Click(null, null);
-            button_spikeSamplingRate_Click(null, null);
 
             // Create a new spike detection form so we can access its parameters
             spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
@@ -108,9 +103,7 @@ namespace NeuroRighter
             recordingSettings.SetSpikeFiltAccess(checkBox_spikesFilter.Checked);
             recordingSettings.RecallDefaultSettings();
 
-            this.comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
-            if (Properties.Settings.Default.SeparateLFPBoard)
-                this.comboBox_LFPGain.SelectedIndex = 2;
+            
             if (Properties.Settings.Default.UseEEG)
             {
                 comboBox_eegGain.SelectedIndex = Properties.Settings.Default.EEGGain;
@@ -131,13 +124,21 @@ namespace NeuroRighter
                 
             }
 
+            // Recall default settings
+            string[] deviceNames = DaqSystem.Local.Devices;
+            foreach (string dname in deviceNames)
+            {
+                Device d = DaqSystem.Local.LoadDevice(dname);
+                d.Reset();
+            }
+
             // Update recording and stimulation settings
             updateSettings();
 
             //Create plots
             try
             {
-                double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
+                double gain = 20.0 / Properties.Settings.Default.A2Dgain;
 
                 spikeGraph = new GridGraph();
                 spikeGraph.setup(4, 4, 100, false, 1 / 4.0, gain);
@@ -155,8 +156,6 @@ namespace NeuroRighter
             }
 
             //Load gain settings
-            comboBox_SpikeGain.SelectedIndex = Properties.Settings.Default.Gain;
-
             //Enable channel output button, if appropriate
             channelOut.Enabled = Properties.Settings.Default.UseSingleChannelPlayback;
 
@@ -279,8 +278,8 @@ namespace NeuroRighter
                         numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
 
                         // Set spike buffer lengths
-                        spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-                        lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+                        spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
+                        lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency);
 
                         // Create spike aquisition task list
                         spikeTask = new List<Task>(numDevices);
@@ -295,16 +294,16 @@ namespace NeuroRighter
                             triggerTask = new Task("triggerTask");
 
                         // Set MUA sample rate
-                        int muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
+                        double muaSamplingRate = spikeSamplingRate / MUA_DOWNSAMPLE_FACTOR;
 
                         //Add LFP channels, if configured
                         if (Properties.Settings.Default.SeparateLFPBoard && Properties.Settings.Default.UseLFPs)
                         {
                             lfpTask = new Task("lfpTask");
-                            for (int i = 0; i < Convert.ToInt32(comboBox_numChannels.SelectedItem); ++i)
+                            for (int i = 0; i < Properties.Settings.Default.NumChannels; ++i)
                                 lfpTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.LFPDevice + "/ai" + i.ToString(), "",
                                     AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
-                            setGain(lfpTask, comboBox_LFPGain);
+                            setGain(lfpTask, Properties.Settings.Default.LFPgain);
                             lfpTask.Control(TaskAction.Verify);
                         }
 
@@ -319,7 +318,7 @@ namespace NeuroRighter
                             for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
                                 eegTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.EEGDevice + "/ai" +
                                     (i).ToString(), "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
-                            setGain(eegTask, comboBox_eegGain);
+                            setGain(eegTask, (double)comboBox_eegGain.SelectedItem);
                             eegTask.Control(TaskAction.Verify);
                             eegSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
                         }
@@ -331,7 +330,7 @@ namespace NeuroRighter
 
                         //Change gain based on comboBox values (1-100)
                         for (int i = 0; i < spikeTask.Count; ++i)
-                            setGain(spikeTask[i], comboBox_SpikeGain);
+                            setGain(spikeTask[i], Properties.Settings.Default.A2Dgain);
 
                         //Verify the Tasks
                         for (int i = 0; i < spikeTask.Count; ++i)
@@ -340,8 +339,8 @@ namespace NeuroRighter
                         //    spikeOutTask.Control(TaskAction.Verify);
 
                         //Get sampling rates, set to private variables
-                        spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-                        lfpSamplingRate = Convert.ToInt32(textBox_lfpSamplingRate.Text);
+                        spikeSamplingRate = Properties.Settings.Default.RawSampleFrequency; 
+                        lfpSamplingRate = Properties.Settings.Default.LFPSampleFrequency; 
 
                         //Version with videoTask as master clock
                         if (Properties.Settings.Default.UseCineplex)
@@ -376,12 +375,12 @@ namespace NeuroRighter
                             }
                         }
                         spikeTask[0].Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
                         for (int i = 1; i < spikeTask.Count; ++i)
                         {
                             //Pipe ai dev0's sample clock to slave devices
                             spikeTask[i].Timing.ConfigureSampleClock("/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/SampleClock", spikeSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
 
                             //Trigger off of ai dev0's trigger
                             spikeTask[i].Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/" + Properties.Settings.Default.AnalogInDevice[0] +
@@ -397,7 +396,7 @@ namespace NeuroRighter
                             lfpTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                             lfpTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                             lfpTask.Timing.ConfigureSampleClock("", lfpSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_lfpSamplingRate.Text) / 2));
+                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency / 2));
 
                             // Manually allocate buffer memory
                             //lfpTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
@@ -465,7 +464,7 @@ namespace NeuroRighter
                                     stimTimeTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                                 stimTimeTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                                 stimTimeTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
                                 stimTimeTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger(
                                     "/" + Properties.Settings.Default.AnalogInDevice[0] + "/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
                                 stimTimeTask.Control(TaskAction.Verify);
@@ -531,7 +530,7 @@ namespace NeuroRighter
 
                                 //Pipe ai dev0's sample clock to slave devices
                                 auxAnInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                    SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
                                 auxAnInTask.Triggers.StartTrigger.ConfigureDigitalEdgeTrigger("/Dev1/ai/StartTrigger", DigitalEdgeStartTriggerEdge.Rising);
 
                                 // Manually allocate buffer memory
@@ -551,7 +550,7 @@ namespace NeuroRighter
                                 "Auxiliary Digitial In", ChannelLineGrouping.OneChannelForAllLines);
 
                             auxDigInTask.Timing.ConfigureSampleClock("", spikeSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_spikeSamplingRate.Text) / 2));
+                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
                             auxDigInTask.Timing.SampleClockSource = spikeTask[0].Timing.SampleClockTerminal;
 
                             // Manually allocate buffer memory
@@ -582,7 +581,7 @@ namespace NeuroRighter
                         //***********************
                         int downsample, numRows, numCols;
                         const double spikeplotlength = 0.25; //in seconds
-                        switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
+                        switch (Properties.Settings.Default.NumChannels)
                         {
                             case 16:
                                 numRows = numCols = 4;
@@ -644,7 +643,7 @@ namespace NeuroRighter
                             muaGraph.Dock = DockStyle.Fill;
                             muaGraph.Parent = tabPage_MUA;
 
-                            muaPlotData = new PlotDataRows(numChannels, downsample, muaSamplingRate * 5, muaSamplingRate,
+                            muaPlotData = new PlotDataRows(numChannels, downsample, (int)(muaSamplingRate * 5), muaSamplingRate,
                                     (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
                             //muaPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
 
@@ -656,7 +655,7 @@ namespace NeuroRighter
 
                         double ampdec = (1 / Properties.Settings.Default.PreAmpGain);
 
-                        spikePlotData = new PlotDataGrid(numChannels, downsample, spikeSamplingRate, spikeSamplingRate,
+                        spikePlotData = new PlotDataGrid(numChannels, downsample, (int)(spikeSamplingRate), spikeSamplingRate,
                             (float)(spikeTask[0].AIChannels.All.RangeHigh * 2.0), numRows, numCols, spikeplotlength,
                             Properties.Settings.Default.ChannelMapping, Properties.Settings.Default.ADCPollingPeriodSec);
                         spikePlotData.dataAcquired += new PlotData.dataAcquiredHandler(spikePlotData_dataAcquired);
@@ -666,9 +665,9 @@ namespace NeuroRighter
                         if (Properties.Settings.Default.UseLFPs)
                         {
                             if (Properties.Settings.Default.SeparateLFPBoard)
-                                lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
+                                lfpPlotData = new PlotDataRows(numChannels, downsample, (int)(lfpSamplingRate * 5), lfpSamplingRate,
                                     (float)lfpTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
-                            else lfpPlotData = new PlotDataRows(numChannels, downsample, lfpSamplingRate * 5, lfpSamplingRate,
+                            else lfpPlotData = new PlotDataRows(numChannels, downsample, (int)(lfpSamplingRate * 5), lfpSamplingRate,
                                     (float)spikeTask[0].AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
                             lfpPlotData.setGain(Properties.Settings.Default.LFPDisplayGain);
 
@@ -734,7 +733,7 @@ namespace NeuroRighter
 
                         #region Setup_DataStorage
                         //Initialize data storing matrices
-                        numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
+                        numChannels = Properties.Settings.Default.NumChannels; 
 
                         numSpikeReads = new int[spikeTask.Count];
 
@@ -934,25 +933,20 @@ namespace NeuroRighter
             //update gui at the end
             // Modify the UI, so user doesn't try running multiple instances of tasks
             
-            comboBox_numChannels.Enabled = false;
+           
             spikeDet.numPreSamples.Enabled = false;
             spikeDet.numPostSamples.Enabled = false;
             settingsToolStripMenuItem.Enabled = false;
-            comboBox_SpikeGain.Enabled = false;
+            
             button_Train.Enabled = false;
             button_SetRecordingStreams.Enabled = false;
             switch_record.Enabled = false;
             //processingSettingsToolStripMenuItem.Enabled = false;
-            button_spikeSamplingRate.PerformClick(); // updata samp freq
-            textBox_spikeSamplingRate.Enabled = false;
-            button_lfpSamplingRate.PerformClick();
-            textBox_lfpSamplingRate.Enabled = false;
-            textBox_MUASamplingRate.Enabled = false;
+           
             button_startStimFromFile.Enabled = false;
             button_startClosedLoopStim.Enabled = false;
             checkBox_SALPA.Enabled = false;
-            if (Properties.Settings.Default.SeparateLFPBoard)
-                comboBox_LFPGain.Enabled = false;
+            
             //numericUpDown_NumSnipsDisplayed.Enabled = false;
             button_startClosedLoopStim.Enabled = false;
             button_scaleUp.Enabled = true;

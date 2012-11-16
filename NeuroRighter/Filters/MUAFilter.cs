@@ -28,7 +28,7 @@ namespace NeuroRighter.Filters
         private int BufferLength;
         private int NumChannels;
         private List<NationalInstruments.Analysis.Dsp.Filters.ButterworthLowpassFilter> LowFilters;
-        private int samplingRate;
+        private double samplingRate;
 
         private const double WINDOW = 5.0; //in seconds, how much data to average over for RMS
         private const double VOLTAGE_EPSILON = 1E-6;
@@ -37,7 +37,7 @@ namespace NeuroRighter.Filters
         private readonly int numReadsPerWindow;
 
 
-        internal MUAFilter(int NumChannels, int InputSamplingRate, int BufferLength, double highCut,  int filterOrder,
+        internal MUAFilter(int NumChannels, double InputSamplingRate, int BufferLength, double highCut,  int filterOrder,
             int DownsampleFactor, double DeviceRefresh)
         {
             this.NumChannels = NumChannels;

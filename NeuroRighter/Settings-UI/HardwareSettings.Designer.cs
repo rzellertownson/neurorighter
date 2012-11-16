@@ -71,6 +71,19 @@ namespace NeuroRighter
             this.radioButton_16Mux = new System.Windows.Forms.RadioButton();
             this.radioButton_8Mux = new System.Windows.Forms.RadioButton();
             this.tabPage_input = new System.Windows.Forms.TabPage();
+            this.groupBox27 = new System.Windows.Forms.GroupBox();
+            this.numericUpDown_MUArate = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_LFPrate = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown_samplingRate = new System.Windows.Forms.NumericUpDown();
+            this.label73 = new System.Windows.Forms.Label();
+            this.comboBox_LFPGain = new System.Windows.Forms.ComboBox();
+            this.label38 = new System.Windows.Forms.Label();
+            this.comboBox_SpikeGain = new System.Windows.Forms.ComboBox();
+            this.label_SpikeGain = new System.Windows.Forms.Label();
+            this.label_LFPSamplingRate = new System.Windows.Forms.Label();
+            this.label_SpikeSamplingRate = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.comboBox_numChannels = new System.Windows.Forms.ComboBox();
             this.groupBox24 = new System.Windows.Forms.GroupBox();
             this.checkBox_processMUA = new System.Windows.Forms.CheckBox();
             this.checkBox_processLFPs = new System.Windows.Forms.CheckBox();
@@ -158,6 +171,10 @@ namespace NeuroRighter
             this.groupBox9.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage_input.SuspendLayout();
+            this.groupBox27.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MUArate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_LFPrate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_samplingRate)).BeginInit();
             this.groupBox24.SuspendLayout();
             this.groupBox15.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_PreAmpGain)).BeginInit();
@@ -181,7 +198,7 @@ namespace NeuroRighter
             // 
             // button_accept
             // 
-            this.button_accept.Location = new System.Drawing.Point(207, 543);
+            this.button_accept.Location = new System.Drawing.Point(212, 746);
             this.button_accept.Name = "button_accept";
             this.button_accept.Size = new System.Drawing.Size(75, 23);
             this.button_accept.TabIndex = 2;
@@ -191,7 +208,7 @@ namespace NeuroRighter
             // 
             // button_cancel
             // 
-            this.button_cancel.Location = new System.Drawing.Point(288, 543);
+            this.button_cancel.Location = new System.Drawing.Point(293, 746);
             this.button_cancel.Name = "button_cancel";
             this.button_cancel.Size = new System.Drawing.Size(75, 23);
             this.button_cancel.TabIndex = 10;
@@ -206,7 +223,7 @@ namespace NeuroRighter
             this.tabPage_misc.Controls.Add(this.groupBox2);
             this.tabPage_misc.Location = new System.Drawing.Point(4, 25);
             this.tabPage_misc.Name = "tabPage_misc";
-            this.tabPage_misc.Size = new System.Drawing.Size(347, 496);
+            this.tabPage_misc.Size = new System.Drawing.Size(347, 679);
             this.tabPage_misc.TabIndex = 2;
             this.tabPage_misc.Text = "Misc.";
             this.tabPage_misc.UseVisualStyleBackColor = true;
@@ -308,7 +325,7 @@ namespace NeuroRighter
             this.groupBox2.Controls.Add(this.checkBox_useCineplex);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.comboBox_cineplexDevice);
-            this.groupBox2.Location = new System.Drawing.Point(3, 415);
+            this.groupBox2.Location = new System.Drawing.Point(3, 236);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(341, 79);
             this.groupBox2.TabIndex = 14;
@@ -356,7 +373,7 @@ namespace NeuroRighter
             this.tabPage_stim.Location = new System.Drawing.Point(4, 25);
             this.tabPage_stim.Name = "tabPage_stim";
             this.tabPage_stim.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_stim.Size = new System.Drawing.Size(347, 496);
+            this.tabPage_stim.Size = new System.Drawing.Size(347, 679);
             this.tabPage_stim.TabIndex = 1;
             this.tabPage_stim.Text = "Output";
             this.tabPage_stim.UseVisualStyleBackColor = true;
@@ -379,8 +396,8 @@ namespace NeuroRighter
             this.label25.Size = new System.Drawing.Size(329, 83);
             this.label25.TabIndex = 10;
             this.label25.Text = "Disabling the double buffering system will prevent closed-loop applications from " +
-                "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
-                " \'Loop()\' method.  ";
+    "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
+    " \'Loop()\' method.  ";
             // 
             // checkBox_useBuffloader
             // 
@@ -618,6 +635,7 @@ namespace NeuroRighter
             // 
             // tabPage_input
             // 
+            this.tabPage_input.Controls.Add(this.groupBox27);
             this.tabPage_input.Controls.Add(this.groupBox24);
             this.tabPage_input.Controls.Add(this.groupBox15);
             this.tabPage_input.Controls.Add(this.groupBox7);
@@ -626,16 +644,194 @@ namespace NeuroRighter
             this.tabPage_input.Location = new System.Drawing.Point(4, 25);
             this.tabPage_input.Name = "tabPage_input";
             this.tabPage_input.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_input.Size = new System.Drawing.Size(347, 496);
+            this.tabPage_input.Size = new System.Drawing.Size(347, 679);
             this.tabPage_input.TabIndex = 0;
             this.tabPage_input.Text = "Neural Input";
             this.tabPage_input.UseVisualStyleBackColor = true;
+            // 
+            // groupBox27
+            // 
+            this.groupBox27.Controls.Add(this.numericUpDown_MUArate);
+            this.groupBox27.Controls.Add(this.numericUpDown_LFPrate);
+            this.groupBox27.Controls.Add(this.numericUpDown_samplingRate);
+            this.groupBox27.Controls.Add(this.label73);
+            this.groupBox27.Controls.Add(this.comboBox_LFPGain);
+            this.groupBox27.Controls.Add(this.label38);
+            this.groupBox27.Controls.Add(this.comboBox_SpikeGain);
+            this.groupBox27.Controls.Add(this.label_SpikeGain);
+            this.groupBox27.Controls.Add(this.label_LFPSamplingRate);
+            this.groupBox27.Controls.Add(this.label_SpikeSamplingRate);
+            this.groupBox27.Controls.Add(this.label26);
+            this.groupBox27.Controls.Add(this.comboBox_numChannels);
+            this.groupBox27.Location = new System.Drawing.Point(6, 6);
+            this.groupBox27.Name = "groupBox27";
+            this.groupBox27.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.groupBox27.Size = new System.Drawing.Size(334, 170);
+            this.groupBox27.TabIndex = 18;
+            this.groupBox27.TabStop = false;
+            this.groupBox27.Text = "Recording Properties";
+            // 
+            // numericUpDown_MUArate
+            // 
+            this.numericUpDown_MUArate.Location = new System.Drawing.Point(190, 105);
+            this.numericUpDown_MUArate.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown_MUArate.Name = "numericUpDown_MUArate";
+            this.numericUpDown_MUArate.Size = new System.Drawing.Size(99, 22);
+            this.numericUpDown_MUArate.TabIndex = 28;
+            this.numericUpDown_MUArate.Value = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDown_LFPrate
+            // 
+            this.numericUpDown_LFPrate.Location = new System.Drawing.Point(190, 80);
+            this.numericUpDown_LFPrate.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown_LFPrate.Name = "numericUpDown_LFPrate";
+            this.numericUpDown_LFPrate.Size = new System.Drawing.Size(99, 22);
+            this.numericUpDown_LFPrate.TabIndex = 27;
+            this.numericUpDown_LFPrate.Value = new decimal(new int[] {
+            2000,
+            0,
+            0,
+            0});
+            // 
+            // numericUpDown_samplingRate
+            // 
+            this.numericUpDown_samplingRate.Location = new System.Drawing.Point(190, 55);
+            this.numericUpDown_samplingRate.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.numericUpDown_samplingRate.Name = "numericUpDown_samplingRate";
+            this.numericUpDown_samplingRate.Size = new System.Drawing.Size(99, 22);
+            this.numericUpDown_samplingRate.TabIndex = 26;
+            this.numericUpDown_samplingRate.Value = new decimal(new int[] {
+            25000,
+            0,
+            0,
+            0});
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Location = new System.Drawing.Point(15, 107);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(163, 16);
+            this.label73.TabIndex = 24;
+            this.label73.Text = "MUA Sampling Rate (Hz): ";
+            // 
+            // comboBox_LFPGain
+            // 
+            this.comboBox_LFPGain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_LFPGain.FormattingEnabled = true;
+            this.comboBox_LFPGain.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "5",
+            "10",
+            "20",
+            "50",
+            "100"});
+            this.comboBox_LFPGain.Location = new System.Drawing.Point(274, 139);
+            this.comboBox_LFPGain.Name = "comboBox_LFPGain";
+            this.comboBox_LFPGain.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.comboBox_LFPGain.Size = new System.Drawing.Size(47, 24);
+            this.comboBox_LFPGain.TabIndex = 21;
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(205, 142);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(66, 16);
+            this.label38.TabIndex = 23;
+            this.label38.Text = "LFP Gain:";
+            // 
+            // comboBox_SpikeGain
+            // 
+            this.comboBox_SpikeGain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_SpikeGain.FormattingEnabled = true;
+            this.comboBox_SpikeGain.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "5",
+            "10",
+            "20",
+            "50",
+            "100"});
+            this.comboBox_SpikeGain.Location = new System.Drawing.Point(86, 139);
+            this.comboBox_SpikeGain.Name = "comboBox_SpikeGain";
+            this.comboBox_SpikeGain.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.comboBox_SpikeGain.Size = new System.Drawing.Size(46, 24);
+            this.comboBox_SpikeGain.TabIndex = 20;
+            this.comboBox_SpikeGain.SelectedIndexChanged += new System.EventHandler(this.comboBox_SpikeGain_SelectedIndexChanged);
+            // 
+            // label_SpikeGain
+            // 
+            this.label_SpikeGain.AutoSize = true;
+            this.label_SpikeGain.Location = new System.Drawing.Point(15, 142);
+            this.label_SpikeGain.Name = "label_SpikeGain";
+            this.label_SpikeGain.Size = new System.Drawing.Size(65, 16);
+            this.label_SpikeGain.TabIndex = 22;
+            this.label_SpikeGain.Text = "A/D Gain:";
+            // 
+            // label_LFPSamplingRate
+            // 
+            this.label_LFPSamplingRate.AutoSize = true;
+            this.label_LFPSamplingRate.Location = new System.Drawing.Point(15, 82);
+            this.label_LFPSamplingRate.Name = "label_LFPSamplingRate";
+            this.label_LFPSamplingRate.Size = new System.Drawing.Size(157, 16);
+            this.label_LFPSamplingRate.TabIndex = 17;
+            this.label_LFPSamplingRate.Text = "LFP Sampling Rate (Hz): ";
+            // 
+            // label_SpikeSamplingRate
+            // 
+            this.label_SpikeSamplingRate.AutoSize = true;
+            this.label_SpikeSamplingRate.Location = new System.Drawing.Point(15, 57);
+            this.label_SpikeSamplingRate.Name = "label_SpikeSamplingRate";
+            this.label_SpikeSamplingRate.Size = new System.Drawing.Size(157, 16);
+            this.label_SpikeSamplingRate.TabIndex = 16;
+            this.label_SpikeSamplingRate.Text = "Raw Sampling Rate (Hz):";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(9, 27);
+            this.label26.Name = "label26";
+            this.label26.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label26.Size = new System.Drawing.Size(101, 16);
+            this.label26.TabIndex = 8;
+            this.label26.Text = "Num. Channels:";
+            // 
+            // comboBox_numChannels
+            // 
+            this.comboBox_numChannels.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_numChannels.FormattingEnabled = true;
+            this.comboBox_numChannels.Items.AddRange(new object[] {
+            "16",
+            "32",
+            "64"});
+            this.comboBox_numChannels.Location = new System.Drawing.Point(121, 24);
+            this.comboBox_numChannels.Name = "comboBox_numChannels";
+            this.comboBox_numChannels.Size = new System.Drawing.Size(57, 24);
+            this.comboBox_numChannels.TabIndex = 2;
             // 
             // groupBox24
             // 
             this.groupBox24.Controls.Add(this.checkBox_processMUA);
             this.groupBox24.Controls.Add(this.checkBox_processLFPs);
-            this.groupBox24.Location = new System.Drawing.Point(6, 443);
+            this.groupBox24.Location = new System.Drawing.Point(6, 615);
             this.groupBox24.Name = "groupBox24";
             this.groupBox24.Size = new System.Drawing.Size(335, 47);
             this.groupBox24.TabIndex = 17;
@@ -667,7 +863,7 @@ namespace NeuroRighter
             this.groupBox15.Controls.Add(this.numericUpDown_PreAmpGain);
             this.groupBox15.Controls.Add(this.groupBox16);
             this.groupBox15.Controls.Add(this.label14);
-            this.groupBox15.Location = new System.Drawing.Point(7, 9);
+            this.groupBox15.Location = new System.Drawing.Point(10, 182);
             this.groupBox15.Name = "groupBox15";
             this.groupBox15.Size = new System.Drawing.Size(334, 57);
             this.groupBox15.TabIndex = 16;
@@ -715,7 +911,7 @@ namespace NeuroRighter
             this.groupBox7.Controls.Add(this.groupBox8);
             this.groupBox7.Controls.Add(this.label8);
             this.groupBox7.Controls.Add(this.comboBox_analogInputDevice2);
-            this.groupBox7.Location = new System.Drawing.Point(7, 208);
+            this.groupBox7.Location = new System.Drawing.Point(7, 380);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(334, 152);
             this.groupBox7.TabIndex = 15;
@@ -797,7 +993,7 @@ namespace NeuroRighter
             this.groupBox6.Controls.Add(this.checkBox_useEEG);
             this.groupBox6.Controls.Add(this.comboBox_EEG);
             this.groupBox6.Controls.Add(this.label6);
-            this.groupBox6.Location = new System.Drawing.Point(6, 366);
+            this.groupBox6.Location = new System.Drawing.Point(6, 538);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(334, 71);
             this.groupBox6.TabIndex = 9;
@@ -840,7 +1036,7 @@ namespace NeuroRighter
             this.groupBox3.Controls.Add(this.groupBox4);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.comboBox_analogInputDevice1);
-            this.groupBox3.Location = new System.Drawing.Point(7, 73);
+            this.groupBox3.Location = new System.Drawing.Point(7, 245);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(334, 129);
             this.groupBox3.TabIndex = 12;
@@ -926,7 +1122,7 @@ namespace NeuroRighter
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(355, 525);
+            this.tabControl1.Size = new System.Drawing.Size(355, 708);
             this.tabControl1.TabIndex = 16;
             // 
             // tabPag_Gen
@@ -936,7 +1132,7 @@ namespace NeuroRighter
             this.tabPag_Gen.Location = new System.Drawing.Point(4, 25);
             this.tabPag_Gen.Name = "tabPag_Gen";
             this.tabPag_Gen.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPag_Gen.Size = new System.Drawing.Size(347, 496);
+            this.tabPag_Gen.Size = new System.Drawing.Size(347, 679);
             this.tabPag_Gen.TabIndex = 4;
             this.tabPag_Gen.Text = "Real-Time";
             this.tabPag_Gen.UseVisualStyleBackColor = true;
@@ -1225,7 +1421,7 @@ namespace NeuroRighter
             this.tabPage_AuxInput.Controls.Add(this.groupBox10);
             this.tabPage_AuxInput.Location = new System.Drawing.Point(4, 25);
             this.tabPage_AuxInput.Name = "tabPage_AuxInput";
-            this.tabPage_AuxInput.Size = new System.Drawing.Size(347, 496);
+            this.tabPage_AuxInput.Size = new System.Drawing.Size(347, 679);
             this.tabPage_AuxInput.TabIndex = 3;
             this.tabPage_AuxInput.Text = "Aux. Input";
             this.tabPage_AuxInput.UseVisualStyleBackColor = true;
@@ -1469,7 +1665,7 @@ namespace NeuroRighter
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(372, 576);
+            this.ClientSize = new System.Drawing.Size(372, 781);
             this.ControlBox = false;
             this.Controls.Add(this.button_cancel);
             this.Controls.Add(this.button_accept);
@@ -1503,6 +1699,11 @@ namespace NeuroRighter
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage_input.ResumeLayout(false);
+            this.groupBox27.ResumeLayout(false);
+            this.groupBox27.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_MUArate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_LFPrate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_samplingRate)).EndInit();
             this.groupBox24.ResumeLayout(false);
             this.groupBox24.PerformLayout();
             this.groupBox15.ResumeLayout(false);
@@ -1656,5 +1857,18 @@ namespace NeuroRighter
         private System.Windows.Forms.GroupBox groupBox26;
         private System.Windows.Forms.CheckBox checkBox_useBuffloader;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.GroupBox groupBox27;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.ComboBox comboBox_numChannels;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.ComboBox comboBox_LFPGain;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.ComboBox comboBox_SpikeGain;
+        private System.Windows.Forms.Label label_SpikeGain;
+        private System.Windows.Forms.Label label_LFPSamplingRate;
+        private System.Windows.Forms.Label label_SpikeSamplingRate;
+        private System.Windows.Forms.NumericUpDown numericUpDown_MUArate;
+        private System.Windows.Forms.NumericUpDown numericUpDown_LFPrate;
+        private System.Windows.Forms.NumericUpDown numericUpDown_samplingRate;
     }
 }

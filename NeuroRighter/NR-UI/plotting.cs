@@ -168,7 +168,7 @@ namespace NeuroRighter
                 numSpkWfms[i] = 0; //Set to 1
 
             int numCols, numRows;
-            switch (Convert.ToInt32(comboBox_numChannels.SelectedItem))
+            switch (Properties.Settings.Default.NumChannels)
             {
                 case 16:
                     numRows = numCols = 4; break;
@@ -186,7 +186,7 @@ namespace NeuroRighter
                     spikeDet.NumPre + spikeDet.NumPost + 1, true, (double)(spikeDet.NumPre + spikeDet.NumPost + 1) / spikeSamplingRate, spikeTask[0].AIChannels.All.RangeHigh * 2.0);
             else
             {
-                double gain = 20.0 / Convert.ToInt32(comboBox_SpikeGain.SelectedItem);
+                double gain = 20.0 / Properties.Settings.Default.A2Dgain;
                 spkWfmGraph.setup(numRows, numCols, numSnipsDisplayed,
                     spikeDet.NumPre + spikeDet.NumPost + 1, true, (double)(spikeDet.NumPre + spikeDet.NumPost + 1) / spikeSamplingRate, gain);
             }

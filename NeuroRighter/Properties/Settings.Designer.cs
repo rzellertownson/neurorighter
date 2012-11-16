@@ -232,12 +232,12 @@ namespace NeuroRighter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public string DefaultNumChannels {
+        public int NumChannels {
             get {
-                return ((string)(this["DefaultNumChannels"]));
+                return ((int)(this["NumChannels"]));
             }
             set {
-                this["DefaultNumChannels"] = value;
+                this["NumChannels"] = value;
             }
         }
         
@@ -1140,6 +1140,54 @@ namespace NeuroRighter.Properties {
             }
             set {
                 this["numLFPTasks"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public double LFPSamplingRate {
+            get {
+                return ((double)(this["LFPSamplingRate"]));
+            }
+            set {
+                this["LFPSamplingRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public double MUASamplingRate {
+            get {
+                return ((double)(this["MUASamplingRate"]));
+            }
+            set {
+                this["MUASamplingRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public double A2Dgain {
+            get {
+                return ((double)(this["A2Dgain"]));
+            }
+            set {
+                this["A2Dgain"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public double LFPgain {
+            get {
+                return ((double)(this["LFPgain"]));
+            }
+            set {
+                this["LFPgain"] = value;
             }
         }
         

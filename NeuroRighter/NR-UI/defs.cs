@@ -128,9 +128,9 @@ namespace NeuroRighter
         private NRAIChannelCollection stimTimeChanSet;
         private NRAIChannelCollection auxChanSet;
         private bool twoAITasksOnSingleBoard = false;
-        private int spikeSamplingRate;
-        private int lfpSamplingRate;
-        private int eegSamplingRate;
+        private double spikeSamplingRate;
+        private double lfpSamplingRate;
+        private double eegSamplingRate;
         private int[] numSpikeReads; //Number of times the spike buffer has been read (for adding time stamps)
         private List<int> numStimReads;
         private double stimJump;  //Num. of indices to jump ahead during stim reads (make sure to round before using)

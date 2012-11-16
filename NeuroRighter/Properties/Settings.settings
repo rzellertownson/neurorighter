@@ -56,7 +56,7 @@
     <Setting Name="ChannelMapping" Type="System.String" Scope="User">
       <Value Profile="(Default)">invivo</Value>
     </Setting>
-    <Setting Name="DefaultNumChannels" Type="System.String" Scope="User">
+    <Setting Name="NumChannels" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="UseLFPs" Type="System.Boolean" Scope="User">
@@ -292,6 +292,19 @@
     </Setting>
     <Setting Name="StimVoltageControlled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+
+    <Setting Name="LFPSamplingRate" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
+    <Setting Name="MUASamplingRate" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2000</Value>
+    </Setting>
+    <Setting Name="A2Dgain" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="LFPgain" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">2</Value>
     </Setting>
   </Settings>
 </SettingsFile>

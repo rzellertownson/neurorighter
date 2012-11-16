@@ -111,7 +111,7 @@ namespace NeuroRighter.Server
             // 1. The raw server is always running
             rawElectrodeSrv = new RawDataSrv(
                 Properties.Settings.Default.RawSampleFrequency,
-                Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
+                Convert.ToInt32(Properties.Settings.Default.NumChannels),
                 bufferSizeSeconds,
                 ADCPollingPeriodSamples,
                 Properties.Settings.Default.numSpikeTasks);
@@ -121,7 +121,7 @@ namespace NeuroRighter.Server
             {
                 salpaElectrodeSrv = new RawDataSrv(
                     Properties.Settings.Default.RawSampleFrequency,
-                    Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
+                    Convert.ToInt32(Properties.Settings.Default.NumChannels),
                     bufferSizeSeconds,
                     ADCPollingPeriodSamples,
                     Properties.Settings.Default.numSpikeTasks);
@@ -134,7 +134,7 @@ namespace NeuroRighter.Server
             {
                 spikeBandSrv = new RawDataSrv(
                     Properties.Settings.Default.RawSampleFrequency,
-                    Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
+                    Convert.ToInt32(Properties.Settings.Default.NumChannels),
                     bufferSizeSeconds,
                     ADCPollingPeriodSamples,
                     Properties.Settings.Default.numSpikeTasks);
@@ -145,7 +145,7 @@ namespace NeuroRighter.Server
             {
                 lfpSrv = new RawDataSrv(
                     Properties.Settings.Default.LFPSampleFrequency,
-                    Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels),
+                    Convert.ToInt32(Properties.Settings.Default.NumChannels),
                     bufferSizeSeconds,
                     Convert.ToInt32(Properties.Settings.Default.LFPSampleFrequency *
                     (ADCPollingPeriodSamples / Properties.Settings.Default.RawSampleFrequency)),
@@ -181,7 +181,7 @@ namespace NeuroRighter.Server
                 ADCPollingPeriodSamples,
                 Properties.Settings.Default.numSpikeTasks, 
                 spikeLag, 
-                Convert.ToInt32(Properties.Settings.Default.DefaultNumChannels));
+                Convert.ToInt32(Properties.Settings.Default.NumChannels));
 
             //8. Auxiliary Digital data
             if (Properties.Settings.Default.useAuxDigitalInput)

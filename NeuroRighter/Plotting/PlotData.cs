@@ -40,7 +40,7 @@ namespace NeuroRighter
         protected Int32 readHead;  //Index of next sample to read
         protected Int32 numChannels;
         protected Int32[] numWrites; //Num samples written since last read
-        protected Int32 samplingRate;
+        protected double samplingRate;
         protected Double refreshTime; //In Seconds
         protected float boxHeight; //Height (amplitude) of each graph box
         protected Int32 numRows;  //For display data
@@ -52,7 +52,7 @@ namespace NeuroRighter
         internal delegate void dataAcquiredHandler(object sender);
         internal event dataAcquiredHandler dataAcquired;
 
-        internal PlotData(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
+        internal PlotData(Int32 numChannels, Int32 downsample, Int32 bufferLength, double samplingRate, float boxHeight,
             Int32 numRows, Int32 numCols, Double refreshTime, String channelMapping, double deviceRefreshRate)
         {
             this.numChannels = numChannels;

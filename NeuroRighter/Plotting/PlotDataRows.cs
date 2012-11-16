@@ -32,7 +32,7 @@ namespace NeuroRighter
         private Double plotLength; //Total length of plot, in seconds
         private Double deviceRefreshRate;
 
-        internal PlotDataRows(Int32 numChannels, Int32 downsample, Int32 bufferLength, Int32 samplingRate, float boxHeight,
+        internal PlotDataRows(Int32 numChannels, Int32 downsample, Int32 bufferLength, double samplingRate, float boxHeight,
             Double refresh, Double plotLength, double deviceRefreshRate)
             : base(numChannels, downsample, bufferLength, samplingRate, boxHeight,
                 numChannels, 1, refresh, "invivo", deviceRefreshRate) //Only 1 column

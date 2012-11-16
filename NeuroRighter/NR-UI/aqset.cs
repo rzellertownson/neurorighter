@@ -49,15 +49,15 @@ namespace NeuroRighter
     sealed internal partial class NeuroRighter
     {
         //Set gain for channels
-        private void setGain(Task myTask, ComboBox cb)
+        private void setGain(Task myTask, double cb)
         {
             for (int i = 0; i < myTask.AIChannels.Count; ++i)
             {
-                myTask.AIChannels[i].RangeHigh = 10.0 / Convert.ToDouble(cb.SelectedItem);
-                myTask.AIChannels[i].RangeLow = -10.0 / Convert.ToDouble(cb.SelectedItem);
+                myTask.AIChannels[i].RangeHigh = 10.0 / cb;
+                myTask.AIChannels[i].RangeLow = -10.0 / cb;
 
-                myTask.AIChannels[i].Maximum = 10.0 / Convert.ToDouble(cb.SelectedItem);
-                myTask.AIChannels[i].Minimum = -10.0 / Convert.ToDouble(cb.SelectedItem);
+                myTask.AIChannels[i].Maximum = 10.0 / cb;
+                myTask.AIChannels[i].Minimum = -10.0 / cb;
             }
         }
 
@@ -72,10 +72,8 @@ namespace NeuroRighter
         // Deal with changes to the number of selected input channels
         private void comboBox_numChannels_SelectedIndexChanged(object sender, EventArgs e)
         {
-            numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
-            Properties.Settings.Default.DefaultNumChannels = Convert.ToString(numChannels);
-            Properties.Settings.Default.Save();
-            numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
+
+            numChannelsPerDev = (Properties.Settings.Default.NumChannels < 32 ? Properties.Settings.Default.NumChannels : 32);
             spikeFilter = null;
             lfpFilter = null;
             resetSpikeFilter();
@@ -87,106 +85,35 @@ namespace NeuroRighter
             checkBox_SALPA.Checked = false;
 
             //Add more available stim channels
-            stimChannel.Maximum = Convert.ToInt32(comboBox_numChannels.SelectedItem);
-            numericUpDown_impChannel.Maximum = Convert.ToInt32(comboBox_numChannels.SelectedItem);
+            stimChannel.Maximum = Properties.Settings.Default.NumChannels;
+            numericUpDown_impChannel.Maximum = Properties.Settings.Default.NumChannels;
             listBox_stimChannels.Items.Clear();
-            for (int i = 0; i < Convert.ToInt32(comboBox_numChannels.SelectedItem); ++i)
+            for (int i = 0; i < Properties.Settings.Default.NumChannels; ++i)
             {
                 listBox_stimChannels.Items.Add(i + 1);
                 listBox_exptStimChannels.Items.Add(i + 1);
             }
 
-            //Ensure that sampling rates are okay
-            button_lfpSamplingRate_Click(null, null);
-            button_spikeSamplingRate_Click(null, null);
-
+           
             // Reset the spike detector if it exists
             if (spikeDet != null)
             {
                 spikeDet.Close();
-                spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
+                spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
                 spikeDet.SetSpikeDetector(spikeBufferLength);
             }
 
             resetReferencers();
         }
 
-        // Set LFP sampling rate
-        private void button_lfpSamplingRate_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                int maxFs;
+       
 
-                numChannels = Convert.ToInt32(comboBox_numChannels.SelectedItem);
-                maxFs = 1000000 / numChannels; //Valid for PCI-6259, not sure about other cards
-
-                int fs = Convert.ToInt32(textBox_lfpSamplingRate.Text);
-                if (fs < 1)
-                    textBox_lfpSamplingRate.Text = "4";
-                if (fs > 1000000 / numChannels)
-                    textBox_lfpSamplingRate.Text = maxFs.ToString();
-
-            }
-            catch  //This should happen if the user enters something inane
-            {
-                textBox_lfpSamplingRate.Text = "1000"; //Set to default of 1kHz
-            }
-        }
-
-        // Set spike sampling rate
-        private void button_spikeSamplingRate_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
-                int numChannelsPerDevice = (numChannels > 32 ? 32 : numChannels);
-                int maxFs = 1000000 / numChannelsPerDevice; //Valid for PCI-6259, not sure about other cards
-
-                int fs = Convert.ToInt32(textBox_spikeSamplingRate.Text);
-
-                // This constraint is worked out in the GUI min/max settings
-
-                //if (fs * Properties.Settings.Default.ADCPollingPeriodSec <= spikeDet.NumPre + spikeDet.NumPost + 1)
-                //{
-                //    int fsmin = (int)Math.Ceiling((spikeDet.NumPost + spikeDet.NumPre + 1) / Properties.Settings.Default.ADCPollingPeriodSec);
-                //    textBox_spikeSamplingRate.Text = Convert.ToString(fsmin);
-                //    fs = fsmin;
-                //}
-
-                if (fs > 1000000 / numChannelsPerDevice)
-                {
-                    textBox_spikeSamplingRate.Text = maxFs.ToString();
-                    fs = maxFs;
-                }
-
-                spikeSamplingRate = fs;
-
-            }
-            catch  //This should happen if the user enters something inane
-            {
-                textBox_spikeSamplingRate.Text = "25000"; //Set to default
-            }
-
-            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-            resetReferencers();
-
-            // Reset the spike detector if it exists
-            if (spikeDet != null)
-                spikeDet.SetSpikeDetector(spikeBufferLength);
-        }
-
-        //// Set number of samples to collect after each spike detection
-        //private void numPostSamples_ValueChanged(object sender, EventArgs e)
-        //{
-        //    numPost = Convert.ToInt32(spikeDet.numPostSamples.Value);
-        //}
+     
 
         // Train the SALPA filter
         private void button_Train_Click(object sender, EventArgs e)
         {
-            thrSALPA = new rawType[Convert.ToInt32(comboBox_numChannels.SelectedItem)];
-            spikeSamplingRate = Convert.ToInt32(textBox_spikeSamplingRate.Text);
+            thrSALPA = new rawType[Properties.Settings.Default.NumChannels];
 
             this.Cursor = Cursors.WaitCursor;
 
@@ -209,7 +136,7 @@ namespace NeuroRighter
 
             //Change gain based on comboBox values (1-100)
             for (int i = 0; i < spikeTask.Count; ++i)
-                setGain(spikeTask[i], comboBox_SpikeGain);
+                setGain(spikeTask[i], Properties.Settings.Default.A2Dgain);
 
             for (int i = 0; i < spikeTask.Count; ++i)
                 spikeTask[i].Timing.ReferenceClockSource = "OnboardClock";
@@ -233,7 +160,7 @@ namespace NeuroRighter
             int c = 0; //Last channel of 'data' written to
             for (int i = 0; i < readers.Count; ++i)
             {
-                double[,] tempData = readers[i].ReadMultiSample(NUM_SECONDS_TRAINING * spikeSamplingRate); //Get a few seconds of "noise"
+                double[,] tempData = readers[i].ReadMultiSample((int)(NUM_SECONDS_TRAINING * spikeSamplingRate)); //Get a few seconds of "noise"
                 for (int j = 0; j < tempData.GetLength(0); ++j)
                     data[c++] = ArrayOperation.CopyRow(tempData, j);
             }
@@ -414,7 +341,7 @@ namespace NeuroRighter
                 lock (spikeFilter)
                 {
                     for (int i = 0; i < spikeFilter.Length; ++i)
-                        spikeFilter[i].Reset((int)SpikeFiltOrder.Value, Convert.ToDouble(textBox_spikeSamplingRate.Text),
+                        spikeFilter[i].Reset((int)SpikeFiltOrder.Value, Properties.Settings.Default.RawSampleFrequency,
                             Convert.ToDouble(SpikeLowCut.Value), Convert.ToDouble(SpikeHighCut.Value), spikeBufferLength);
                 }
             }
@@ -422,7 +349,7 @@ namespace NeuroRighter
             {
                 spikeFilter = new ButterworthFilter[numChannels];
                 for (int i = 0; i < numChannels; ++i)
-                    spikeFilter[i] = new ButterworthFilter((int)SpikeFiltOrder.Value, Convert.ToDouble(textBox_spikeSamplingRate.Text),
+                    spikeFilter[i] = new ButterworthFilter((int)SpikeFiltOrder.Value, Properties.Settings.Default.RawSampleFrequency,
                         Convert.ToDouble(SpikeLowCut.Value), Convert.ToDouble(SpikeHighCut.Value), spikeBufferLength);
             }
         }
@@ -460,9 +387,9 @@ namespace NeuroRighter
         {
             rawType Fs;
             if (Properties.Settings.Default.SeparateLFPBoard)
-                Fs = Convert.ToDouble(textBox_lfpSamplingRate.Text);
+                Fs = Properties.Settings.Default.LFPSampleFrequency;
             else
-                Fs = Convert.ToDouble(textBox_spikeSamplingRate.Text);
+                Fs = Properties.Settings.Default.RawSampleFrequency;
 
             if (lfpFilter != null)
             {
@@ -487,10 +414,10 @@ namespace NeuroRighter
                     //lfpFilter[i] = new BesselBandpassFilter((int)LFPFiltOrder.Value, Convert.ToDouble(textBox_lfpSamplingRate.Text),
                     //    Convert.ToDouble(LFPLowCut.Value), Convert.ToDouble(LFPHighCut.Value));
                     if (Properties.Settings.Default.SeparateLFPBoard)
-                        lfpFilter[i] = new ButterworthFilter((int)LFPFiltOrder.Value, Convert.ToDouble(textBox_lfpSamplingRate.Text),
+                        lfpFilter[i] = new ButterworthFilter((int)LFPFiltOrder.Value, Properties.Settings.Default.LFPSampleFrequency,
                             Convert.ToDouble(LFPLowCut.Value), Convert.ToDouble(LFPHighCut.Value), lfpBufferLength);
                     else
-                        lfpFilter[i] = new ButterworthFilter((int)LFPFiltOrder.Value, Convert.ToDouble(textBox_lfpSamplingRate.Text),
+                        lfpFilter[i] = new ButterworthFilter((int)LFPFiltOrder.Value, Properties.Settings.Default.LFPSampleFrequency,
                             Convert.ToDouble(LFPLowCut.Value), Convert.ToDouble(LFPHighCut.Value), spikeBufferLength);
             }
         }
@@ -536,7 +463,7 @@ namespace NeuroRighter
             {
                 //lfpFilter = new BesselBandpassFilter[numChannels];
                 muaFilter = new Filters.MUAFilter(
-                            numChannels, spikeSamplingRate, spikeBufferLength, 
+                            numChannels, (double)spikeSamplingRate, spikeBufferLength, 
                             Properties.Settings.Default.MUAHighCutHz, 
                             Properties.Settings.Default.MUAFilterOrder, 
                             MUA_DOWNSAMPLE_FACTOR, 

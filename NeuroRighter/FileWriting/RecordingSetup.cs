@@ -160,7 +160,7 @@ namespace NeuroRighter.FileWriting
         }
 
         // For down-sampled, raw-type streams or streams that are potentially sub-tasks of other tasks
-        internal void Setup(string dataType, Task dataTask, int extraInt)
+        internal void Setup(string dataType, Task dataTask, double extraInt)
         {
             //Create the nessesary file writers
             switch (dataType)
@@ -170,15 +170,15 @@ namespace NeuroRighter.FileWriting
                     if (recordLFP)
                     {
                         if (Properties.Settings.Default.SeparateLFPBoard)
-                            lfpOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
+                            lfpOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
                                          "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
                         {
                             if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                                lfpOut = new FileOutputRemapped(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
+                                lfpOut = new FileOutputRemapped(fid, numElectrodes, extraInt, 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                             else
-                                lfpOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
+                                lfpOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                         }
                     }
@@ -188,10 +188,10 @@ namespace NeuroRighter.FileWriting
                     if (recordEEG)
                     {
                         if (numElectrodes == 64 && Properties.Settings.Default.ChannelMapping == "invitro")
-                            eegOut = new FileOutputRemapped(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
+                            eegOut = new FileOutputRemapped(fid, numElectrodes, extraInt, 1, dataTask,
                                 "." + dataType, Properties.Settings.Default.PreAmpGain);
                         else
-                            eegOut = new FileOutput(fid, numElectrodes, Convert.ToDouble(extraInt), 1, dataTask,
+                            eegOut = new FileOutput(fid, numElectrodes, extraInt, 1, dataTask,
                                     "." + dataType, Properties.Settings.Default.PreAmpGain);
                     }
                     break;
@@ -199,7 +199,7 @@ namespace NeuroRighter.FileWriting
                     // Check if we need to create this stream
                     if (recordAuxAnalog)
                     {
-                        auxAnalogOut = new FileOutput(fid, extraInt,
+                        auxAnalogOut = new FileOutput(fid, (int)extraInt,
                             dataTask.Timing.SampleClockRate, 0, dataTask,
                             "." + dataType, 1);
                     }

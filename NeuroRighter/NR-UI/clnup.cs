@@ -131,19 +131,13 @@ namespace NeuroRighter
             Console.WriteLine("reset: tasks disposed of");
             buttonStop.Enabled = false;
             buttonStart.Enabled = true;
-            comboBox_numChannels.Enabled = true;
-            comboBox_SpikeGain.Enabled = true;
             spikeDet.numPreSamples.Enabled = true;
             spikeDet.numPostSamples.Enabled = true;
             settingsToolStripMenuItem.Enabled = true;
-            comboBox_SpikeGain.Enabled = true;
             button_Train.Enabled = true;
             button_SetRecordingStreams.Enabled = true;
             switch_record.Enabled = true;
             //processingSettingsToolStripMenuItem.Enabled = true;
-            textBox_spikeSamplingRate.Enabled = true;
-            textBox_lfpSamplingRate.Enabled = true;
-            textBox_MUASamplingRate.Enabled = true;
             button_startStimFromFile.Enabled = true;
             button_startClosedLoopStim.Enabled = true;
             //numericUpDown_NumSnipsDisplayed.Enabled = true;
@@ -157,8 +151,7 @@ namespace NeuroRighter
                 comboBox_eegGain.Enabled = true;
                 textBox_eegSamplingRate.Enabled = true;
             }
-            if (Properties.Settings.Default.SeparateLFPBoard)
-                comboBox_LFPGain.Enabled = true;
+            
             Console.WriteLine("reset: gui updated");
             // Clean up data streams
             recordingSettings.Flush();
@@ -220,8 +213,8 @@ namespace NeuroRighter
             recordingSettings.RefreshForm();
 
             // Set spike buffer lengths
-            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_spikeSamplingRate.Text));
-            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Convert.ToDouble(textBox_lfpSamplingRate.Text));
+            spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
+            lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency);
 
             // Enable spike detector saving while stopped
             spikeDet.EnableFileMenu();
@@ -273,8 +266,6 @@ namespace NeuroRighter
                 }
                 else
                     checkBox_video.Enabled = false;
-
-                comboBox_LFPGain.Enabled = Properties.Settings.Default.SeparateLFPBoard;
 
                 try
                 {
@@ -389,10 +380,7 @@ namespace NeuroRighter
                     tabControl.TabPages.Remove(tabPage_diagnostics);
                 }
 
-                // Save sampling rates
-                Properties.Settings.Default.RawSampleFrequency = Convert.ToDouble(textBox_spikeSamplingRate.Text);
-                Properties.Settings.Default.LFPSampleFrequency = Convert.ToDouble(textBox_lfpSamplingRate.Text);
-                Properties.Settings.Default.MUASampleFrequency = Convert.ToDouble(textBox_MUASamplingRate.Text);
+               
                 Console.WriteLine("UpdateRecordingSettings finished");
             }
             catch (DaqException exception)

@@ -46,9 +46,10 @@ namespace NeuroRighter
             // Save window state in application data folder
             HWpersistWindowComponent.XMLFilePath = Properties.Settings.Default.persistWindowPath;
 
-            // Recall default settings
 
-            comboBox_analogInputDevice1.Items.AddRange(DaqSystem.Local.Devices);
+            string[] deviceNames = DaqSystem.Local.Devices;
+            comboBox_analogInputDevice1.Items.AddRange(deviceNames);
+            
             try
             {
                 if (comboBox_analogInputDevice1.Items.Count > 0)
@@ -439,6 +440,15 @@ namespace NeuroRighter
             checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
             checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseFloatingRef;
             checkBox_useBuffloader.Checked = !Properties.Settings.Default.UseBuffload;
+            //Properties.Settings.Default.Gain;
+
+            comboBox_numChannels.SelectedIndex = comboBox_numChannels.Items.IndexOf( (Convert.ToString(Properties.Settings.Default.NumChannels)));
+
+            comboBox_SpikeGain.SelectedIndex = comboBox_SpikeGain.Items.IndexOf(Convert.ToString(Properties.Settings.Default.A2Dgain));
+            comboBox_LFPGain.SelectedIndex = comboBox_LFPGain.Items.IndexOf(Convert.ToString(Properties.Settings.Default.LFPgain));
+            numericUpDown_samplingRate.Value = (decimal) Properties.Settings.Default.RawSampleFrequency;
+            numericUpDown_LFPrate.Value = (decimal)Properties.Settings.Default.LFPSampleFrequency;
+            numericUpDown_MUArate.Value = (decimal)Properties.Settings.Default.MUASampleFrequency;
 
             switch (Properties.Settings.Default.MUXChannels)
             {
@@ -579,6 +589,16 @@ namespace NeuroRighter
 
             Properties.Settings.Default.NumAnalogInDevices = (short)Properties.Settings.Default.AnalogInDevice.Count;
             Properties.Settings.Default.StimIvsVDevice = Convert.ToString(comboBox_IVControlDevice.SelectedItem);
+
+
+
+            Properties.Settings.Default.NumChannels =Convert.ToInt32(comboBox_numChannels.SelectedItem);
+            Properties.Settings.Default.A2Dgain =Convert.ToDouble(comboBox_SpikeGain.SelectedItem);
+            Properties.Settings.Default.LFPgain =Convert.ToDouble(comboBox_LFPGain.SelectedItem);
+            Properties.Settings.Default.RawSampleFrequency = (double)numericUpDown_samplingRate.Value;
+            Properties.Settings.Default.LFPSampleFrequency = (double)numericUpDown_LFPrate.Value;
+            Properties.Settings.Default.MUASampleFrequency = (double)numericUpDown_MUArate.Value;
+
 
             Properties.Settings.Default.Save();
             this.Close();
@@ -769,6 +789,11 @@ namespace NeuroRighter
         private void checkBox_EnableImpedanceMeasurements_CheckedChanged(object sender, EventArgs e)
         {
             comboBox_impedanceDevice.Enabled = checkBox_EnableImpedanceMeasurements.Checked;
+        }
+
+        private void comboBox_SpikeGain_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
 
        

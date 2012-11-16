@@ -790,12 +790,5 @@ namespace NeuroRighter
         {
             comboBox_impedanceDevice.Enabled = checkBox_EnableImpedanceMeasurements.Checked;
         }
-
-        private void comboBox_SpikeGain_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-       
     }
 }

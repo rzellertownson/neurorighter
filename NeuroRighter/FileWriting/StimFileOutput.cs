@@ -24,7 +24,7 @@ namespace NeuroRighter.FileWriting
         {
             DateTime dt = DateTime.Now; //Get current time (local to computer)
 
-            outStream.Write(BitConverter.GetBytes(samplingRate), 0, 8); //Int: Sampling rate
+            outStream.Write(BitConverter.GetBytes(Convert.ToDouble(samplingRate)), 0, 8); //Double: Sampling rate
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Year)), 0, 2); //Int: Year
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Month)), 0, 2); //Int: Month
             outStream.Write(BitConverter.GetBytes(Convert.ToInt16(dt.Day)), 0, 2); //Int: Day

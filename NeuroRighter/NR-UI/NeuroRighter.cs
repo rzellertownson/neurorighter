@@ -233,6 +233,7 @@ namespace NeuroRighter
                 {
                     try
                     {
+                        numChannels = Properties.Settings.Default.NumChannels;
                         this.Cursor = Cursors.WaitCursor;
                        if (switch_record.Value)
                         {

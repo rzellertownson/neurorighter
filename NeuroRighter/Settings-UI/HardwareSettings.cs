@@ -440,7 +440,6 @@ namespace NeuroRighter
             checkBox_EnableImpedanceMeasurements.Checked = Properties.Settings.Default.useImpedanceMeasurer;
             checkBox_UseFloatingRef.Checked = Properties.Settings.Default.UseFloatingRef;
             checkBox_useBuffloader.Checked = !Properties.Settings.Default.UseBuffload;
-            //Properties.Settings.Default.Gain;
 
             comboBox_numChannels.SelectedIndex = comboBox_numChannels.Items.IndexOf( (Convert.ToString(Properties.Settings.Default.NumChannels)));
 

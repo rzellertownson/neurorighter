@@ -9,8 +9,8 @@ function makeauxfile(filename, time, channel, voltage)
 %         channel     [N 1] vector specifying the channel on which
 %                     event i should be applied (0 to 3)
 %         voltage     [N 1] vector specifying the voltage that the
-%   `                 channel(i) should take at t(i) (-10 to 10 volts). 
-%                     Unless updated again, channel(i) will maintain 
+%   `                 channel(i) should take at t(i) (-10 to 10 volts).
+%                     Unless updated again, channel(i) will maintain
 %                     this voltage after time(i).
 %
 %    The program returns a .olaux file that specifies an open-loop
@@ -26,18 +26,26 @@ function makeauxfile(filename, time, channel, voltage)
 if nargin < 4
     error('Error:dim',' All four arguments are needed');
 end
-if size(time,2) > 1 || size(channel,2) > 1 || size(voltage,2) > 1
-    error(['Error:dim',' The time, channel ' ...
-          'and voltage vectors are column vectors']);
-end
+
+% Turn time, channel, and voltage vectors into columns
+time  = time(:);
+channel  = channel(:);
+voltage = voltage(:);
+
+% if size(time,2) > 1 || size(channel,2) > 1 || size(voltage,2) > 1
+%     error(['Error:dim',' The time, channel ' ...
+%           'and voltage vectors are column vectors']);
+% end
 if size(time,1) ~= size(channel,1) || size(time,1) ~= size(voltage,1)
     error(['Error:dim',' The non-singleton dimension of the time, channel ' ...
-          'and voltage vectors must be equal in size']);
+        'and voltage vectors must be equal in size']);
 end
 if min(time) < 0 || max(channel) >3 || min(channel) < 0 || min(voltage < -10) || max(voltage) > 10
-    error([ 'Error:InvalidData',' One or more of values occupying the time, channel and/or voltage ' ... 
-            'vectors is invalid. Type help makeolaux into matlab to see valid ranges']);
+    error([ 'Error:InvalidData',' One or more of values occupying the time, channel and/or voltage ' ...
+        'vectors is invalid. Type help makeolaux into matlab to see valid ranges']);
 end
+
+disp('Creating NeuroRighter open loop auxiliary analog output file. Please wait...');
 
 % open file and write header
 fid = fopen(strcat([filename,'.olaux']),'w');
@@ -74,7 +82,11 @@ for i = 1:numevent
     
     % save voltage
     fprintf(fid,cformat_v,voltage(i));
-        
+    
 end
 
 fclose(fid);
+
+disp('file created.');
+
+end

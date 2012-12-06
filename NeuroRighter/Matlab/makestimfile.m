@@ -29,14 +29,21 @@ end
 if nargin < 3
     error('Error:arg', 'Please provide at least the first three arguments');
 end
-if size(channel,1) ~= size(time,1) || size(time,2) > 1 || size(channel,2) > 1
-    error('Error:dim','Time and channel are column vectors. \n The number of indicies in the non-singleton dimension of the time and channel, \n must be equal since it is the number of stimuli to be delivered');
-end
+
+% Turn time and channel vectors into columns
+time  = time(:);
+channel  = channel(:);
+
+% if size(channel,1) ~= size(time,1) || size(time,2) > 1 || size(channel,2) > 1
+%     error('Error:dim','Time and channel are column vectors. \n The number of indicies in the non-singleton dimension of the time and channel, \n must be equal since it is the number of stimuli to be delivered');
+% end
 if ~isempty(waveform) && size(waveform,2) < 80
     error('Error:wavelength','The length of your stimulus waveforms Should be at least 80 Samples long so that its parameters can be encoded by the DAQ in four 20 sample chunks. For shorter stimuli, you can define multiple ones per line so they are effictively one stimulus.');
 elseif ~isempty(waveform) && size(waveform,1) ~= length(time)
     error('Error:dim','The number of indicies in the non-singleton dimension of the time and channel vectors \n and the first dimension of the waveform matrix must be equal since it is the number of stimuli to be delivered');
 end
+
+disp('Creating NeuroRighter open loop stimulation file. Please wait...');
 
 % open file and write header
 fid = fopen(strcat([filename,'.olstim']),'w');
@@ -88,3 +95,7 @@ for i = 1:numstim
 end
 
 fclose(fid);
+
+disp('file created.');
+
+end

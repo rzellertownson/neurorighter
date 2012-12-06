@@ -45,8 +45,13 @@ if nargin == 4
          error('Error:arguments','bit is an [NX1] array of binary values (0 or 1)');
     end
     
-    if size(bit,2) > 1 || size(t0,2) > 1 || size(t1,2) > 1 || size(bit,1) ~= size(t0,1) || size(t0,1) ~= size(t1,1)
-        error('Error:dim','bit, t0, and t1 are column vectors of equal length');
+    % Make sure bit, t0, and t1 are column vectors
+    bit = bit(:);
+    t0 = t0(:);
+    t1 = t1(:);
+    
+    if size(bit,1) ~= size(t0,1) || size(t0,1) ~= size(t1,1)
+        error('Error:dim','bit, t0, and t1 must be vectors of equal length');
     end
     
 elseif nargin == 3
@@ -63,13 +68,19 @@ elseif nargin == 3
     if max(int) > 2^32 || min(int) < 0
          error('Error:arguments','integer is an [NX1] array of usigned, 32 bit integer values');
     end
+    
+    % Turn int and tchange into column vectors
+    int = int(:);
+    tchange = tchange(:);
 
     if size(int,2) > 1 || size(tchange,2) > 1 || size(int,1) ~= size(tchange,1)
-        error('Error:dim','int and tchange are column vectors of equal length');
+        error('Error:dim','int and tchange must be vectors of equal length');
     end
 else
     error('Error:arguments','The number of arguments provided is invalid');
 end
+
+disp('Creating NeuroRighter open loop digital output file. Please wait...');
 
 % open file and write header
 fid = fopen(strcat([filename,'.oldig']),'w');
@@ -127,5 +138,7 @@ fprintf(fid,cformat_p,0);
 
 %close the file
 fclose(fid);
+
+disp('file created.');
 
 end

@@ -242,7 +242,7 @@ namespace NeuroRighter.Output
             {
                 line = olstimFile.ReadLine();
                 if (line == null)
-                    break;
+                    throw new Exception("error while loading stimuli from file " + olstimFile.ToString() + ": stim " + j + " of " + numStimToRead + " is missing. End of file: " + olstimFile.EndOfStream); 
                         
                 // load stim time
                 TimeVector[j] = Convert.ToUInt64(line);
@@ -255,6 +255,9 @@ namespace NeuroRighter.Output
                 if (cannedWaveform == null)
                 {
                     line = olstimFile.ReadLine();
+                    if (line == null)
+                        throw new Exception("error while loading stimuli from file " + olstimFile.ToString() + ": stim " + j + " of " + numStimToRead + " is missing. End of file: " + olstimFile.EndOfStream); 
+                
                     splitWave = line.Split(delimiter);
                     for (int i = 0; i < splitWave.Length; ++i)
                     {

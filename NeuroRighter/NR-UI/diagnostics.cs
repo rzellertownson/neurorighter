@@ -72,12 +72,14 @@ namespace NeuroRighter
             button_computeGain.Enabled = false;
             button_computeGain.Refresh();
             buttonStart.Refresh();
+            
             spikeTask = new List<Task>(Properties.Settings.Default.AnalogInDevice.Count);
             diagnosticsReaders = new List<AnalogMultiChannelReader>(Properties.Settings.Default.AnalogInDevice.Count);
             for (int i = 0; i < Properties.Settings.Default.AnalogInDevice.Count; ++i)
             {
                 spikeTask.Add(new Task("spikeTask_Diagnostics_" + i));
                 int numChannelsPerDevice = (numChannels < 32 ? numChannels : 32);
+            
                 for (int j = 0; j < numChannelsPerDevice; ++j)
                     spikeTask[i].AIChannels.CreateVoltageChannel(Properties.Settings.Default.AnalogInDevice[0] + "/ai" + j.ToString(), "",
                         AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
@@ -93,12 +95,26 @@ namespace NeuroRighter
                 diagnosticsReaders.Add(new AnalogMultiChannelReader(spikeTask[i].Stream));
             }
 
+            // Remove for NI-USB 621x DAQ system since it does not have access to Reference Clocks
+
+            // Designation of clock source for the spike task 
+
+            //spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
+            //for (int i = 1; i < spikeTask.Count; ++i)
+            //{
+            //    spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+            //    spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+            //}
+
+            
             spikeTask[0].Timing.ReferenceClockSource = "OnboardClock";
             for (int i = 1; i < spikeTask.Count; ++i)
             {
                 spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                 spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
             }
+
+
             stimPulseTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
             stimPulseTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
 

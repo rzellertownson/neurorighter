@@ -354,38 +354,39 @@ namespace NeuroRighter
                         spikeSamplingRate = Properties.Settings.Default.RawSampleFrequency; 
                         lfpSamplingRate = Properties.Settings.Default.LFPSampleFrequency; 
 
-                        //Version with videoTask as master clock
-                        if (Properties.Settings.Default.UseCineplex)
-                        {
-                            for (int i = 0; i < spikeTask.Count; ++i)
-                            {
-                                spikeTask[i].Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
-                                spikeTask[i].Timing.ReferenceClockRate = videoTask.Timing.ReferenceClockRate;
-                            }
-                        }
-                        else
-                        {
-                            string masterclock = "/" + Properties.Settings.Default.AnalogInDevice[0].ToString() + "/10MhzRefClock";//"OnboardClock";//
-                            if (!Properties.Settings.Default.UseStimulator)
-                            {
-                                //Deal with non M-series devices (these can't use "ReferenceClockSource"
-                                Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
+                        ////Version with videoTask as master clock
+                        //if (Properties.Settings.Default.UseCineplex)
+                        //{
+                        //    for (int i = 0; i < spikeTask.Count; ++i)
+                        //    {
+                        //        spikeTask[i].Timing.ReferenceClockSource = videoTask.Timing.ReferenceClockSource;
+                        //        spikeTask[i].Timing.ReferenceClockRate = videoTask.Timing.ReferenceClockRate;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    string masterclock = "/" + Properties.Settings.Default.AnalogInDevice[0].ToString() + "/10MhzRefClock";//"OnboardClock";//
+                        //    if (!Properties.Settings.Default.UseStimulator)
+                        //    {
+                        //        //Deal with non M-series devices (these can't use "ReferenceClockSource"
+                        //        Device analogInDevice = DaqSystem.Local.LoadDevice(Properties.Settings.Default.AnalogInDevice[0]);
 
-                                if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
-                                    spikeTask[0].Timing.ReferenceClockSource = masterclock; //This will be the master clock
-                            }
-                            else
-                            {
+                        //        if (analogInDevice.ProductCategory == ProductCategory.MSeriesDaq || analogInDevice.ProductCategory == ProductCategory.XSeriesDaq)
+                        //            spikeTask[0].Timing.ReferenceClockSource = masterclock; //This will be the master clock
+                        //    }
+                        //    else
+                        //    {
 
-                                spikeTask[0].Timing.ReferenceClockSource = masterclock;//stimPulseTask.Timing.ReferenceClockSource;
-                                spikeTask[0].Timing.ReferenceClockRate = 10000000.0; //stimPulseTask.Timing.ReferenceClockRate;
-                            }
-                            for (int i = 1; i < spikeTask.Count; ++i) //Set other analog in tasks to master clock
-                            {
-                                spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
-                                spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
-                            }
-                        }
+                        //        spikeTask[0].Timing.ReferenceClockSource = masterclock;//stimPulseTask.Timing.ReferenceClockSource;
+                        //        spikeTask[0].Timing.ReferenceClockRate = 10000000.0; //stimPulseTask.Timing.ReferenceClockRate;
+                        //    }
+                        //    for (int i = 1; i < spikeTask.Count; ++i) //Set other analog in tasks to master clock
+                        //    {
+                        //        spikeTask[i].Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
+                        //        spikeTask[i].Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
+                        //    }
+                        //}
+
                         spikeTask[0].Timing.ConfigureSampleClock("", spikeSamplingRate,
                                 SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency / 2));
                         for (int i = 1; i < spikeTask.Count; ++i)

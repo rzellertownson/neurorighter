@@ -745,7 +745,7 @@ namespace NeuroRighter
 
                         #region Setup_DataStorage
                         //Initialize data storing matrices
-                        numChannels = Properties.Settings.Default.NumChannels; 
+                      //  numChannels = Properties.Settings.Default.NumChannels; 
 
                         numSpikeReads = new int[spikeTask.Count];
 

@@ -211,6 +211,7 @@ namespace NeuroRighter
             this.button_accept.Text = "Accept";
             this.button_accept.UseVisualStyleBackColor = true;
             this.button_accept.Click += new System.EventHandler(this.button_accept_Click);
+            
             // 
             // button_cancel
             // 

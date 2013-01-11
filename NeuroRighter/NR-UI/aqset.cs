@@ -70,9 +70,9 @@ namespace NeuroRighter
         }
 
         // Deal with changes to the number of selected input channels
-        private void comboBox_numChannels_SelectedIndexChanged(object sender, EventArgs e)
+        private void updateChannelCount()
         {
-
+            numChannels = Properties.Settings.Default.NumChannels;
             numChannelsPerDev = (Properties.Settings.Default.NumChannels < 32 ? Properties.Settings.Default.NumChannels : 32);
             spikeFilter = null;
             lfpFilter = null;

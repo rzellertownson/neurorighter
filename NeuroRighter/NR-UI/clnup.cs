@@ -208,6 +208,8 @@ namespace NeuroRighter
         // Look at the recording hardware settings and create NI Tasks that reflect the user's choices
         private void UpdateRecordingSettings()
         {
+            //resets channel counts for input streams
+            updateChannelCount();
 
             // update the recordingSettings object
             recordingSettings.RefreshForm();
@@ -515,6 +517,7 @@ namespace NeuroRighter
         // Update all Settings
         private void updateSettings()
         {
+
             UpdateStimulationSettings();
             UpdateRecordingSettings();
         }

@@ -1145,6 +1145,30 @@ namespace NeuroRighter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseSpikeBandFilter {
+            get {
+                return ((bool)(this["UseSpikeBandFilter"]));
+            }
+            set {
+                this["UseSpikeBandFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StimVoltageControlled {
+            get {
+                return ((bool)(this["StimVoltageControlled"]));
+            }
+            set {
+                this["StimVoltageControlled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public double LFPSamplingRate {
             get {
@@ -1194,24 +1218,48 @@ namespace NeuroRighter.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseSpikeBandFilter {
+        public bool EEGUseFilter {
             get {
-                return ((bool)(this["UseSpikeBandFilter"]));
+                return ((bool)(this["EEGUseFilter"]));
             }
             set {
-                this["UseSpikeBandFilter"] = value;
+                this["EEGUseFilter"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool StimVoltageControlled {
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int EEGFilterOrder {
             get {
-                return ((bool)(this["StimVoltageControlled"]));
+                return ((int)(this["EEGFilterOrder"]));
             }
             set {
-                this["StimVoltageControlled"] = value;
+                this["EEGFilterOrder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double EEGHiCut {
+            get {
+                return ((double)(this["EEGHiCut"]));
+            }
+            set {
+                this["EEGHiCut"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double EEGLoCut {
+            get {
+                return ((double)(this["EEGLoCut"]));
+            }
+            set {
+                this["EEGLoCut"] = value;
             }
         }
     }

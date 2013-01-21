@@ -87,7 +87,8 @@ namespace NeuroRighter
             // Set spike buffer lengths
             spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
             lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency);
-
+            eegBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.EEGSamplingRate);
+            
             
             //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
             //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
@@ -115,25 +116,7 @@ namespace NeuroRighter
             recordingSettings.RecallDefaultSettings();
 
             
-            if (Properties.Settings.Default.UseEEG)
-            {
-                comboBox_eegGain.SelectedIndex = Properties.Settings.Default.EEGGain;
-                textBox_eegSamplingRate.Text = Properties.Settings.Default.EEGSamplingRate.ToString();
-                switch (Properties.Settings.Default.EEGNumChannels)
-                {
-                    case 1:
-                        comboBox_eegNumChannels.SelectedIndex = 0; break;
-                    case 2:
-                        comboBox_eegNumChannels.SelectedIndex = 1; break;
-                    case 3:
-                        comboBox_eegNumChannels.SelectedIndex = 2; break;
-                    case 4:
-                        comboBox_eegNumChannels.SelectedIndex = 3; break;
-                    default:
-                        comboBox_eegNumChannels.SelectedIndex = 1; break;
-                }
-                
-            }
+            
 
             // Recall default settings
             string[] deviceNames = DaqSystem.Local.Devices;
@@ -323,16 +306,14 @@ namespace NeuroRighter
                         //Add EEG channels, if configured
                         if (Properties.Settings.Default.UseEEG)
                         {
-                            comboBox_eegNumChannels.Enabled = false;
-                            comboBox_eegGain.Enabled = false;
-                            textBox_eegSamplingRate.Enabled = false;
+                           
                             eegTask = new Task("eegTask");
-                            for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
+                            for (int i = 0; i < Properties.Settings.Default.EEGNumChannels; ++i)
                                 eegTask.AIChannels.CreateVoltageChannel(Properties.Settings.Default.EEGDevice + "/ai" +
                                     (i).ToString(), "", AITerminalConfiguration.Nrse, -10.0, 10.0, AIVoltageUnits.Volts);
-                            setGain(eegTask, (double)comboBox_eegGain.SelectedItem);
+                            setGain(eegTask, (double)Properties.Settings.Default.EEGGain);
                             eegTask.Control(TaskAction.Verify);
-                            eegSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
+                            eegSamplingRate = Properties.Settings.Default.EEGSamplingRate;
                         }
 
                         //Add channel to control Cineplex, if configured
@@ -423,7 +404,7 @@ namespace NeuroRighter
                             eegTask.Timing.ReferenceClockSource = spikeTask[0].Timing.ReferenceClockSource;
                             eegTask.Timing.ReferenceClockRate = spikeTask[0].Timing.ReferenceClockRate;
                             eegTask.Timing.ConfigureSampleClock("", eegSamplingRate,
-                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 2));
+                                SampleClockActiveEdge.Rising, SampleQuantityMode.ContinuousSamples, Convert.ToInt32(Convert.ToDouble(Properties.Settings.Default.EEGSamplingRate) / 2));
                             
                             // Manually allocate buffer memory
                             //eegTask.Stream.Buffer.InputBufferSize = DAQ_BUFFER_SIZE_SAMPLES;
@@ -573,19 +554,7 @@ namespace NeuroRighter
 
                         numSnipsDisplayed = (int)numericUpDown_NumSnipsDisplayed.Value;
 
-                        if (Properties.Settings.Default.UseEEG)
-                        {
-                            eegGraph.ClearData();
-                            eegGraph.Plots.RemoveAll();
-                            eegGraph.Plots.Add();
-                            eegGraph.Plots.Item(1).YAxis.SetMinMax(eegTask.AIChannels.All.RangeLow * (Convert.ToInt32(comboBox_eegNumChannels.SelectedItem) * 2 - 1),
-                                eegTask.AIChannels.All.RangeHigh);
-                            eegDownsample = 2;
-                            eegDisplayGain = 1;
-                            eegBufferLength = Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) / 4);
-
-                            setupEEGOffset();
-                        }
+                       
 
                         #region PlotData_Buffers
                         //***********************
@@ -663,6 +632,18 @@ namespace NeuroRighter
                             muaPlotData.dataAcquired += new PlotData.dataAcquiredHandler(muaPlotData_dataAcquired);
                         }
 
+                        if (Properties.Settings.Default.UseEEG)
+                        {
+                            if (eegGraph != null) { eegGraph.Dispose(); eegGraph = null; }
+                            eegGraph = new RowGraph();
+                            eegGraph.setup(Properties.Settings.Default.EEGNumChannels, (int)((Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * eegSamplingRate / downsample) * (5 / Properties.Settings.Default.ADCPollingPeriodSec))),
+                                5.0, eegTask.AIChannels.All.RangeHigh * 2.0);
+                            eegGraph.setMinMax(0, 5 * (int)(Math.Ceiling(Properties.Settings.Default.ADCPollingPeriodSec * eegSamplingRate / downsample) / Properties.Settings.Default.ADCPollingPeriodSec) - 1,
+                                    (float)(eegTask.AIChannels.All.RangeLow * (Properties.Settings.Default.EEGNumChannels * 2 - 1)), (float)(eegTask.AIChannels.All.RangeHigh));
+                            eegGraph.Dock = DockStyle.Fill;
+                            eegGraph.Parent = tabPage_EEG;
+                        }
+
                         resetSpkWfm(); //Take care of spike waveform graph
 
                         double ampdec = (1 / Properties.Settings.Default.PreAmpGain);
@@ -699,9 +680,12 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.UseEEG)
                         {
-                            eegGraph.Plots.Item(1).XAxis.SetMinMax(1 / Convert.ToDouble(textBox_eegSamplingRate.Text), 5);
-                            eegPlotData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem),
-                                Convert.ToInt32(Convert.ToDouble(textBox_eegSamplingRate.Text) * 5 / eegDownsample)]; //five seconds of data
+                            eegPlotData = new PlotDataRows(Properties.Settings.Default.EEGNumChannels, downsample, (int)(eegSamplingRate * 5), eegSamplingRate,
+                                    (float)eegTask.AIChannels.All.RangeHigh * 2F, 0.5, 5, Properties.Settings.Default.ADCPollingPeriodSec);
+                            eegPlotData.setGain(Properties.Settings.Default.EEGDisplayGain);
+
+                            eegGraph.setDisplayGain(Properties.Settings.Default.EEGDisplayGain);
+                            eegPlotData.dataAcquired += new PlotData.dataAcquiredHandler(eegPlotData_dataAcquired);
                         }
 
                         if (Properties.Settings.Default.useAuxAnalogInput)
@@ -773,7 +757,8 @@ namespace NeuroRighter
 
                         if (Properties.Settings.Default.UseEEG)
                         {
-                            filtEEGData = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)][];
+                            
+                            filtEEGData = new double[Properties.Settings.Default.EEGNumChannels][];
                             for (int i = 0; i < filtEEGData.GetLength(0); ++i)
                             {
                                 filtEEGData[i] = new double[eegBufferLength];

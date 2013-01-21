@@ -161,6 +161,28 @@ namespace NeuroRighter
             else { pd.skipRead(); }
         }
 
+        void eegPlotData_dataAcquired(object sender)
+        {
+            //if (lfpGraph.InvokeRequired)
+            //{
+            //    lfpGraph.BeginInvoke(new plotData_dataAcquiredDelegate(lfpPlotData_dataAcquired), sender);
+            //}
+            //else
+            //{
+            PlotData pd = (PlotData)sender;
+            if (eegGraph.Visible && !checkBox_freeze.Checked)
+            {
+                float[][] data = pd.read();
+                for (int i = 0; i < data.Length; ++i)
+                    //lfpGraph.Plots.Item(i + 1).PlotY(data[i], (double)pd.downsample / (double)lfpSamplingRate,
+                    //    (double)pd.downsample / (double)lfpSamplingRate);
+                    eegGraph.plotY(data[i], 0F, 1F, NRBrainbow, i);
+                eegGraph.Invalidate();
+            }
+            else { pd.skipRead(); }
+            //}
+        }
+
         private void resetSpkWfm()
         {
             numSpkWfms = new int[numChannels];

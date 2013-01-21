@@ -549,7 +549,10 @@ namespace NeuroRighter
             if (checkBox_useProgRef.Checked)
                 Properties.Settings.Default.SerialPortDevice = Convert.ToString(comboBox_progRefSerialPort.SelectedItem);
             if (checkBox_useEEG.Checked)
+            {
                 Properties.Settings.Default.EEGDevice = Convert.ToString(comboBox_EEG.SelectedItem);
+                Properties.Settings.Default.EEGNumChannels = (int)EEGNoChannels.Value;
+            }
             if (radioButton_8Mux.Checked)
                 Properties.Settings.Default.MUXChannels = 8;
             else

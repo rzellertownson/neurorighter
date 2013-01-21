@@ -430,19 +430,19 @@ namespace NeuroRighter
                 lock (eegFilter)
                 {
                     for (int i = 0; i < eegFilter.Length; ++i)
-                        eegFilter[i].Reset((int)EEGFiltOrder.Value, Convert.ToDouble(textBox_eegSamplingRate.Text),
-                            Convert.ToDouble(EEGLowCut.Value), Convert.ToDouble(EEGHighCut.Value));
+                        eegFilter[i].Reset((int)EEGFiltOrder.Value, Convert.ToDouble(Properties.Settings.Default.EEGSamplingRate),
+                            (double)EEGLowCut.Value, (double)EEGHighCut.Value);
                 }
             }
             else //eegFilter is uninitialized
             {
                 //eegFilter = new ButterworthBandpassFilter[16];
-                eegFilter = new BesselBandpassFilter[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)];
-                for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
+                eegFilter = new BesselBandpassFilter[Properties.Settings.Default.EEGNumChannels];
+                for (int i = 0; i < Properties.Settings.Default.EEGNumChannels; ++i)
                     //eegFilter[i] = new ButterworthBandpassFilter((int)EEGFiltOrder.Value, Convert.ToDouble(textBox_eegSamplingRate.Text),
                     //    Convert.ToDouble(EEGLowCut.Value), Convert.ToDouble(EEGHighCut.Value));
-                    eegFilter[i] = new BesselBandpassFilter((int)EEGFiltOrder.Value, Convert.ToDouble(textBox_eegSamplingRate.Text),
-                        Convert.ToDouble(EEGLowCut.Value), Convert.ToDouble(EEGHighCut.Value));
+                    eegFilter[i] = new BesselBandpassFilter((int)EEGFiltOrder.Value, Convert.ToDouble(Properties.Settings.Default.EEGSamplingRate),
+                        (double)EEGLowCut.Value, (double)EEGHighCut.Value);
             }
         }
 

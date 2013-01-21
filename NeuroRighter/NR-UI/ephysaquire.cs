@@ -332,13 +332,13 @@ namespace NeuroRighter
                     if (switch_record.Value && recordingSettings.recordEEG)
                     {
                         for (int j = 0; j < eegBufferLength; ++j)
-                            for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
+                            for (int i = 0; i < Properties.Settings.Default.EEGNumChannels; ++i)
                                 recordingSettings.eegOut.read(eegData[i, j], i);
                     }
                     #endregion
 
                     //Convert to scaled double array
-                    for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
+                    for (int i = 0; i < Properties.Settings.Default.EEGNumChannels; ++i)
                     {
                         //filtLFPData[i] = new double[lfpBufferLength];
                         for (int j = 0; j < eegBufferLength; ++j)
@@ -350,8 +350,8 @@ namespace NeuroRighter
                     }
 
                     //Filter
-                    if (checkBox_eegFilter.Checked)
-                        for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
+                    if (Properties.Settings.Default.EEGUseFilter)
+                        for (int i = 0; i < Properties.Settings.Default.EEGNumChannels; ++i)
                             filtEEGData[i] = eegFilter[i].FilterData(filtEEGData[i]);
 
                     // Send to datSrv
@@ -359,31 +359,8 @@ namespace NeuroRighter
                         datSrv.EEGSrv.WriteToBuffer(filtEEGData, 0, Properties.Settings.Default.EEGNumChannels);
 
                     //Stacked plot (if the LFP tab is selected)
-                    int jMax = eegPlotData.GetLength(1) - eegBufferLength / eegDownsample;
-                    for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)  //for each channel
-                    {
-                        //first, move old data down in array
-                        for (int j = 0; j < jMax; ++j)
-                            eegPlotData[i, j] = eegPlotData[i, j + eegBufferLength / eegDownsample];
-
-                        //now, scale new data by stacking offset; add to end of array
-                        //double offset = 2 * i * lfpTask.AIChannels.All.RangeHigh;
-                        for (int j = jMax; j < eegPlotData.GetLength(1); ++j)
-                        {
-                            //lfpPlotData[i, j] = finalLFPData[i][(j - jMax) * lfpDownsample] * lfpDisplayGain - lfpOffset[i];
-                            temp = filtEEGData[i][(j - jMax) * eegDownsample] * eegDisplayGain;
-                            if (temp > rangeHigh)
-                                temp = rangeHigh;
-                            else if (temp < rangeLow)
-                                temp = rangeLow;
-                            eegPlotData[i, j] = temp - eegOffset[i];
-                        }
-                    }
-                    if (tabControl.SelectedTab.Text == "EEG" && !checkBox_freeze.Checked)
-                    {
-                        eegGraph.PlotY(eegPlotData, (double)eegDownsample / (double)eegSamplingRate, (double)eegDownsample / (double)eegSamplingRate, true);
-                    }
-
+                     eegPlotData.write(filtEEGData, 0, Properties.Settings.Default.EEGNumChannels);
+                   
                     //Setup next callback
                     eegReader.BeginReadInt16(eegBufferLength, eegCallback, eegReader);
                 }
@@ -395,14 +372,7 @@ namespace NeuroRighter
                 reset();
             }
         }
-        private void setupEEGOffset()
-        {
-            eegOffset = new double[Convert.ToInt32(comboBox_eegNumChannels.SelectedItem)];
-            double rangeHigh;
-            rangeHigh = eegTask.AIChannels.All.RangeHigh;
-            for (int i = 0; i < Convert.ToInt32(comboBox_eegNumChannels.SelectedItem); ++i)
-                eegOffset[i] = 2 * i * rangeHigh;
-        }
+       
         #endregion
 
         // Aux Data Aquisition

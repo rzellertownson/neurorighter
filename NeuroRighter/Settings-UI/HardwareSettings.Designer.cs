@@ -161,6 +161,8 @@ namespace NeuroRighter
             this.HWpersistWindowComponent = new Mowog.PersistWindowComponent(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label27 = new System.Windows.Forms.Label();
+            this.EEGNoChannels = new System.Windows.Forms.NumericUpDown();
             this.tabPage_misc.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -199,6 +201,7 @@ namespace NeuroRighter
             this.groupBox10.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EEGNoChannels)).BeginInit();
             this.SuspendLayout();
             // 
             // button_accept
@@ -211,7 +214,6 @@ namespace NeuroRighter
             this.button_accept.Text = "Accept";
             this.button_accept.UseVisualStyleBackColor = true;
             this.button_accept.Click += new System.EventHandler(this.button_accept_Click);
-            
             // 
             // button_cancel
             // 
@@ -404,8 +406,8 @@ namespace NeuroRighter
             this.label25.Size = new System.Drawing.Size(329, 83);
             this.label25.TabIndex = 10;
             this.label25.Text = "Disabling the double buffering system will prevent closed-loop applications from " +
-                "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
-                " \'Loop()\' method.  ";
+    "using the \'StimSrv\' interface to your NI-DAQ hardware, and will also disable the" +
+    " \'Loop()\' method.  ";
             // 
             // checkBox_useBuffloader
             // 
@@ -652,7 +654,7 @@ namespace NeuroRighter
             this.tabPage_input.Location = new System.Drawing.Point(4, 25);
             this.tabPage_input.Name = "tabPage_input";
             this.tabPage_input.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_input.Size = new System.Drawing.Size(349, 667);
+            this.tabPage_input.Size = new System.Drawing.Size(349, 715);
             this.tabPage_input.TabIndex = 0;
             this.tabPage_input.Text = "Neural Input";
             this.tabPage_input.UseVisualStyleBackColor = true;
@@ -838,7 +840,7 @@ namespace NeuroRighter
             // 
             this.groupBox24.Controls.Add(this.checkBox_processMUA);
             this.groupBox24.Controls.Add(this.checkBox_processLFPs);
-            this.groupBox24.Location = new System.Drawing.Point(6, 615);
+            this.groupBox24.Location = new System.Drawing.Point(3, 660);
             this.groupBox24.Name = "groupBox24";
             this.groupBox24.Size = new System.Drawing.Size(335, 47);
             this.groupBox24.TabIndex = 17;
@@ -997,12 +999,14 @@ namespace NeuroRighter
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.EEGNoChannels);
+            this.groupBox6.Controls.Add(this.label27);
             this.groupBox6.Controls.Add(this.checkBox_useEEG);
             this.groupBox6.Controls.Add(this.comboBox_EEG);
             this.groupBox6.Controls.Add(this.label6);
             this.groupBox6.Location = new System.Drawing.Point(6, 538);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(334, 71);
+            this.groupBox6.Size = new System.Drawing.Size(334, 99);
             this.groupBox6.TabIndex = 9;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "EEG";
@@ -1022,7 +1026,7 @@ namespace NeuroRighter
             // 
             this.comboBox_EEG.Enabled = false;
             this.comboBox_EEG.FormattingEnabled = true;
-            this.comboBox_EEG.Location = new System.Drawing.Point(222, 41);
+            this.comboBox_EEG.Location = new System.Drawing.Point(164, 41);
             this.comboBox_EEG.Name = "comboBox_EEG";
             this.comboBox_EEG.Size = new System.Drawing.Size(97, 24);
             this.comboBox_EEG.TabIndex = 3;
@@ -1129,7 +1133,7 @@ namespace NeuroRighter
             this.tabControl1.Location = new System.Drawing.Point(5, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(357, 696);
+            this.tabControl1.Size = new System.Drawing.Size(357, 744);
             this.tabControl1.TabIndex = 16;
             // 
             // tabPag_Gen
@@ -1686,14 +1690,45 @@ namespace NeuroRighter
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 37);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(381, 525);
+            this.panel2.Size = new System.Drawing.Size(381, 541);
             this.panel2.TabIndex = 18;
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(6, 69);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(127, 16);
+            this.label27.TabIndex = 8;
+            this.label27.Text = "number of channels:";
+            // 
+            // EEGNoChannels
+            // 
+            this.EEGNoChannels.Location = new System.Drawing.Point(148, 67);
+            this.EEGNoChannels.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+            this.EEGNoChannels.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.EEGNoChannels.Name = "EEGNoChannels";
+            this.EEGNoChannels.Size = new System.Drawing.Size(41, 22);
+            this.EEGNoChannels.TabIndex = 18;
+            this.EEGNoChannels.Value = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
             // 
             // HardwareSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(381, 562);
+            this.ClientSize = new System.Drawing.Size(381, 578);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1762,6 +1797,7 @@ namespace NeuroRighter
             this.groupBox10.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.EEGNoChannels)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1900,5 +1936,7 @@ namespace NeuroRighter
         private System.Windows.Forms.NumericUpDown numericUpDown_samplingRate;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.NumericUpDown EEGNoChannels;
+        private System.Windows.Forms.Label label27;
     }
 }

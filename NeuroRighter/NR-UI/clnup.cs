@@ -145,13 +145,7 @@ namespace NeuroRighter
             button_startClosedLoopStim.Enabled = true;
             checkBox_SALPA.Enabled = true;
 
-            if (Properties.Settings.Default.UseEEG)
-            {
-                comboBox_eegNumChannels.Enabled = true;
-                comboBox_eegGain.Enabled = true;
-                textBox_eegSamplingRate.Enabled = true;
-            }
-            
+                       
             Console.WriteLine("reset: gui updated");
             // Clean up data streams
             recordingSettings.Flush();
@@ -217,7 +211,7 @@ namespace NeuroRighter
             // Set spike buffer lengths
             spikeBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.RawSampleFrequency);
             lfpBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.LFPSampleFrequency);
-
+            eegBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.EEGSamplingRate);
             // Enable spike detector saving while stopped
             spikeDet.EnableFileMenu();
 

@@ -397,22 +397,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="AxCWUIControlsLib">
-      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>6</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>aximp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="CWUIControlsLib">
-      <Guid>{D940E4E4-6079-11CE-88CB-0020AF6845F6}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>6</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
     <COMReference Include="GUSILib">
       <Guid>{6E9D01D8-FDF2-11D6-90EF-00C0F04C1E46}</Guid>
       <VersionMajor>1</VersionMajor>

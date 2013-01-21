@@ -82,7 +82,8 @@ namespace NeuroRighter
                     muaGraph.setDisplayGain(muaPlotData.getGain());
                     break;
                 case "EEG":
-                    eegDisplayGain /= 2;
+                    eegPlotData.setGain(eegPlotData.getGain() * 0.5F);
+                    eegGraph.setDisplayGain(eegPlotData.getGain());
                     break;
                 default:
                     break;
@@ -111,7 +112,8 @@ namespace NeuroRighter
                     muaGraph.setDisplayGain(muaPlotData.getGain());
                     break;
                 case "EEG":
-                    eegDisplayGain *= 2;
+                    eegPlotData.setGain(eegPlotData.getGain() * 2F);
+                    eegGraph.setDisplayGain(eegPlotData.getGain());
                     break;
                 default:
                     break;

@@ -227,14 +227,7 @@ namespace NeuroRighter
             Properties.Settings.Default.LFPHighCut = Convert.ToDouble(LFPHighCut.Value);
             Properties.Settings.Default.LFPNumPoles = Convert.ToUInt16(LFPFiltOrder.Value);
 
-            //Save EEG settings
-            if (Properties.Settings.Default.UseEEG)
-            {
-                Properties.Settings.Default.EEGGain = comboBox_eegGain.SelectedIndex;
-                Properties.Settings.Default.EEGNumChannels = Convert.ToInt32(comboBox_eegNumChannels.SelectedItem);
-                Properties.Settings.Default.EEGSamplingRate = Convert.ToInt32(textBox_eegSamplingRate.Text);
-            }
-
+            
             //Save Settings
             Properties.Settings.Default.Save();
         }

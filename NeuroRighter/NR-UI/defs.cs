@@ -98,7 +98,6 @@ namespace NeuroRighter
         private List<AnalogWaveform<double>[]> spikeData;
         //private AnalogWaveform<double>[] stimDataTmp;
         private double[,] auxAnData;
-        private double[,] eegPlotData;
         private int spikeBufferLength;  //How much data is acquired per read
         private int lfpBufferLength;
         private int eegBufferLength;
@@ -152,6 +151,7 @@ namespace NeuroRighter
         private PlotData spikePlotData;
         private PlotData lfpPlotData;
         private PlotData muaPlotData;
+        private PlotData eegPlotData;
         private EventPlotData waveformPlotData;
         private Filters.Referencer referncer;
         private DateTime experimentStartTime;
@@ -172,6 +172,7 @@ namespace NeuroRighter
         private SnipGridGraph spkWfmGraph;
         private RowGraph lfpGraph;
         private RowGraph muaGraph;
+        private RowGraph eegGraph;
         private ScatterGraphController auxInputGraphController;
         private short recordingLEDState = 0;
         private delegate void plotData_dataAcquiredDelegate(object item); //Used for plotting callbacks, thread-safety

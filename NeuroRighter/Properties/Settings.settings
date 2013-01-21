@@ -293,7 +293,6 @@
     <Setting Name="StimVoltageControlled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-
     <Setting Name="LFPSamplingRate" Type="System.Double" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
@@ -305,6 +304,18 @@
     </Setting>
     <Setting Name="LFPgain" Type="System.Double" Scope="User">
       <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="EEGUseFilter" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EEGFilterOrder" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="EEGHiCut" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="EEGLoCut" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

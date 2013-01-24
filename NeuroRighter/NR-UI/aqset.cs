@@ -99,8 +99,7 @@ namespace NeuroRighter
             if (spikeDet != null)
             {
                 spikeDet.Close();
-                spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
-                spikeDet.SetSpikeDetector(spikeBufferLength);
+                setSpikeDetector();
             }
 
             resetReferencers();
@@ -352,6 +351,13 @@ namespace NeuroRighter
                     spikeFilter[i] = new ButterworthFilter((int)SpikeFiltOrder.Value, Properties.Settings.Default.RawSampleFrequency,
                         Convert.ToDouble(SpikeLowCut.Value), Convert.ToDouble(SpikeHighCut.Value), spikeBufferLength);
             }
+        }
+
+        private void setSpikeDetector()
+        {
+            spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
+            spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
+            spikeDet.SetSpikeDetector(spikeBufferLength);
         }
 
         //Reset SALPA filter

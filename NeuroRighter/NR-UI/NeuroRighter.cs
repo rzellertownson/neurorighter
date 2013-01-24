@@ -100,9 +100,7 @@ namespace NeuroRighter
             nrConsole = new ConsoleControl();
 
             // Create a new spike detection form so we can access its parameters
-            spikeDet = new SpikeDetSettings(spikeBufferLength, numChannels);
-            spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
-            spikeDet.SetSpikeDetector(spikeBufferLength);
+            setSpikeDetector();
 
             // Create a raw-scaler so that we can store the doubles produced by the NI tasks as 16-bit integers
             neuralDataScaler = new RawScale();

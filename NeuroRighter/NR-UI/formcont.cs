@@ -68,9 +68,7 @@ namespace NeuroRighter
                 nc_s.ShowDialog();
                 updateSettings();
 
-                spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
-                spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
-                spikeDet.SetSpikeDetector(spikeBufferLength);
+                setSpikeDetector();
             }
         }
 

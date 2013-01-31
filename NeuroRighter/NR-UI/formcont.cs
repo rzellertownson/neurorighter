@@ -68,7 +68,7 @@ namespace NeuroRighter
                 nc_s.ShowDialog();
                 updateSettings();
 
-                setSpikeDetector();
+                setSpikeDetectorSettings();
             }
         }
 

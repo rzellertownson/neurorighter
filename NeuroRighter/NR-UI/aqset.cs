@@ -72,37 +72,42 @@ namespace NeuroRighter
         // Deal with changes to the number of selected input channels
         private void updateChannelCount()
         {
-            numChannels = Properties.Settings.Default.NumChannels;
-            numChannelsPerDev = (Properties.Settings.Default.NumChannels < 32 ? Properties.Settings.Default.NumChannels : 32);
-            spikeFilter = null;
-            lfpFilter = null;
-            resetSpikeFilter();
-            resetLFPFilter();
-            thrSALPA = null;
-            label_noise.Text = "Noise levels have not been trained.";
-            label_noise.ForeColor = Color.Red;
-            checkBox_SALPA.Enabled = false;
-            checkBox_SALPA.Checked = false;
-
-            //Add more available stim channels
-            stimChannel.Maximum = Properties.Settings.Default.NumChannels;
-            numericUpDown_impChannel.Maximum = Properties.Settings.Default.NumChannels;
-            listBox_stimChannels.Items.Clear();
-            for (int i = 0; i < Properties.Settings.Default.NumChannels; ++i)
+            bool countChanged = (numChannels != Properties.Settings.Default.NumChannels);
+            if (countChanged)
             {
-                listBox_stimChannels.Items.Add(i + 1);
-                listBox_exptStimChannels.Items.Add(i + 1);
-            }
+                numChannels = Properties.Settings.Default.NumChannels;
+                numChannelsPerDev = (Properties.Settings.Default.NumChannels < 32 ? Properties.Settings.Default.NumChannels : 32);
+                spikeFilter = null;
+                lfpFilter = null;
+                resetSpikeFilter();
+                resetLFPFilter();
+                thrSALPA = null;
+                label_noise.Text = "Noise levels have not been trained.";
+                label_noise.ForeColor = Color.Red;
+                checkBox_SALPA.Enabled = false;
+                checkBox_SALPA.Checked = false;
+
+                //Add more available stim channels
+                stimChannel.Maximum = Properties.Settings.Default.NumChannels;
+                numericUpDown_impChannel.Maximum = Properties.Settings.Default.NumChannels;
+                listBox_stimChannels.Items.Clear();
+                for (int i = 0; i < Properties.Settings.Default.NumChannels; ++i)
+                {
+                    listBox_stimChannels.Items.Add(i + 1);
+                    listBox_exptStimChannels.Items.Add(i + 1);
+                }
 
            
-            // Reset the spike detector if it exists
-            if (spikeDet != null)
-            {
-                spikeDet.Close();
-                setSpikeDetector();
-            }
+                // Reset the spike detector if it exists
+                if (spikeDet != null)
+                {
+                    spikeDet.Close();
+                    setSpikeDetectorSettings();
+                }
+           
 
-            resetReferencers();
+                resetReferencers();
+            }
         }
 
        
@@ -353,10 +358,15 @@ namespace NeuroRighter
             }
         }
 
-        private void setSpikeDetector()
+        private void setSpikeDetectorSettings() //resets both the spike detector settings gui (which is also used for the spike sorter), as well as the spike detector itself
         {
             spikeDet = new SpikeDetSettings(spikeBufferLength, Properties.Settings.Default.NumChannels);
             spikeDet.SettingsHaveChanged += new SpikeDetSettings.resetSpkDetSettingsHandler(spikeDet_SettingsHaveChanged);
+            setSpikeDetector();
+        }
+
+        private void setSpikeDetector() //just reset the spike detector- use if need to retrain
+        {
             spikeDet.SetSpikeDetector(spikeBufferLength);
         }
 

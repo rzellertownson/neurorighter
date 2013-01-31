@@ -90,8 +90,7 @@ namespace NeuroRighter
             eegBufferLength = Convert.ToInt32(Properties.Settings.Default.ADCPollingPeriodSec * Properties.Settings.Default.EEGSamplingRate);
             
             
-            //Properties.Settings.Default.ADCPollingPeriodSec = Properties.Settings.Default.ADCPollingPeriodSec;
-            //this.comboBox_numChannels.SelectedIndex = 0; //Default of 16 channels
+            
             this.numChannels =Properties.Settings.Default.NumChannels;
             this.numChannelsPerDev = (numChannels < 32 ? numChannels : 32);
             this.currentRef = new int[2];
@@ -100,7 +99,7 @@ namespace NeuroRighter
             nrConsole = new ConsoleControl();
 
             // Create a new spike detection form so we can access its parameters
-            setSpikeDetector();
+            setSpikeDetectorSettings();
 
             // Create a raw-scaler so that we can store the doubles produced by the NI tasks as 16-bit integers
             neuralDataScaler = new RawScale();
@@ -184,7 +183,7 @@ namespace NeuroRighter
             //Ensure that, if recording is setup, that it has been done properly
             //Retrain Spike detector if required
             if (checkBox_RetrainOnRestart.Checked)
-                spikeDet.SetSpikeDetector(spikeBufferLength);
+                setSpikeDetector();
 
             // Call the recording setup/start functions
             bool recordingCancelled = true;
@@ -214,7 +213,7 @@ namespace NeuroRighter
                 {
                     try
                     {
-                        numChannels = Properties.Settings.Default.NumChannels;
+                        
                         this.Cursor = Cursors.WaitCursor;
                        if (switch_record.Value)
                         {
@@ -781,9 +780,9 @@ namespace NeuroRighter
                         if (checkBox_SALPA.Checked)
                             resetSALPA();
                         if (spikeDet != null && isNormalRecording)
-                            spikeDet.SetSpikeDetector(spikeBufferLength);
+                            setSpikeDetector();
                         if (spikeDet.spikeDetector == null)
-                            spikeDet.SetSpikeDetector(spikeBufferLength);
+                            setSpikeDetector();
 
                         #endregion
 
@@ -1129,5 +1128,7 @@ namespace NeuroRighter
         {
             nrConsole.ShowConsole();
         }
+
+        
     }
 }

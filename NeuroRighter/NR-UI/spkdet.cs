@@ -57,12 +57,12 @@ namespace NeuroRighter
 
         private void button_TrainSpkDet_Click(object sender, EventArgs e)
         {
-            spikeDet.SetSpikeDetector(spikeBufferLength);
+            setSpikeDetector();
         }
 
         internal void spikeDet_SettingsHaveChanged(object sender, EventArgs e)
         {
-            spikeDet.SetSpikeDetector(spikeBufferLength);
+            setSpikeDetector();
         }
     }
 }

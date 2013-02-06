@@ -286,12 +286,15 @@ namespace NeuroRighter
 
                 lock (voltageTimeLabelLock)
                 {
+                    voltageTimeLabel = "";
                     if (displayVoltage >= 1)
                         voltageTimeLabel = @"+-" + Math.Ceiling(displayVoltage) + " V, ";
                     else if (displayVoltage * 1000 >= 1)
                         voltageTimeLabel = @"+-" + Math.Ceiling(displayVoltage * 1000) + " mV, ";
                     else if (displayVoltage * 1E6 >= 1)
                         voltageTimeLabel = @"+-" + Math.Ceiling(displayVoltage * 1E6) + " uV, ";
+                    else
+                        voltageTimeLabel = @"+-" + Math.Ceiling(displayVoltage * 1E9) + " nV, ";
 
                     voltageTimeLabel += timeRange * 1000 + " ms";
 

@@ -115,9 +115,8 @@ namespace NeuroRighter.Server
                     dataBuffer.Buffer.RemoveAll(x => x.SampleIndex < (minCurrentSample - (ulong)bufferSizeInSamples));
                 }
 
-                // Add new data to main and NewData buffer
+                // Add new data to main buffer
                 dataBuffer.Buffer.AddRange(newData.Buffer);
-                newDataBuffer.Buffer.AddRange(newData.Buffer);
 
                 // Update current read-head position
                 currentSample[taskNo] += (ulong)numSamplesPerWrite;
@@ -129,11 +128,17 @@ namespace NeuroRighter.Server
                     minCurrentSample = 0;
 
                 // Fire the new data event (only fire if the incoming buffer was not empty and somebody is listening)
-                if (NewData != null && taskNo == 0)
+                if (NewData != null)
                 {
-                    eventArgs = new NewEventDataEventArgs<T>(newDataBuffer);
-                    NewData(this, eventArgs);
-                    newDataBuffer.Buffer.Clear();
+                    // Create space to sore new data
+                    newDataBuffer.Buffer.AddRange(newData.Buffer);
+
+                    if (taskNo == 0)
+                    {
+                        eventArgs = new NewEventDataEventArgs<T>(newDataBuffer);
+                        NewData(this, eventArgs);
+                        newDataBuffer.Buffer.Clear();
+                    }
                 }
             }
         }
@@ -163,7 +168,12 @@ namespace NeuroRighter.Server
                     T tmp = (T)newData.Buffer[i].DeepClone();
                     tmp.SampleIndex = tmp.SampleIndex + currentSample[taskNo];
                     dataBuffer.Buffer.Add(tmp);
-                    newDataBuffer.Buffer.Add(tmp);
+
+                    // Only add to the NewData buffer it is going to be cleared later
+                    if (NewData != null)
+                    {
+                        newDataBuffer.Buffer.Add(tmp);
+                    }
                 }
 
                 // Update current read-head position

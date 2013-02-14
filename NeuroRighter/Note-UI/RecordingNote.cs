@@ -111,7 +111,7 @@ namespace NeuroRighter
             // Raw input settings
             textBox_Note.Text += "\r\n";
             textBox_Note.Text += "** Raw Voltage Input ** \r\n";
-            textBox_Note.Text += "  No. Channels: " + Properties.Settings.Default.NumChannels + "\r\n";
+            textBox_Note.Text += "  No. Channels:                   " + Properties.Settings.Default.NumChannels + "\r\n";
             textBox_Note.Text += "  Samp. Freq (Hz):                " + Properties.Settings.Default.RawSampleFrequency + "\r\n";
             textBox_Note.Text += "  Amplifier Gain:                 " + Properties.Settings.Default.PreAmpGain + "\r\n";
             textBox_Note.Text += "  A/D Gain:                       " + Properties.Settings.Default.A2Dgain + "X \r\n";

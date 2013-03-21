@@ -18,7 +18,7 @@
  *
  * y = LOADRAW(filename, ch, timespan, FLAG1, FLAG2, ...) uses FLAGs to
  *     define additional options.  Available flags are:
- *         1) SuppressText
+ *         1) suppresstext
  *
  * [y, t] = LOADRAW(filename, ...) additionally returns the time stamps of
  *     the acquired samples in a 1xN vector (in seconds).
@@ -157,7 +157,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
         flag = mxArrayToString(prhs[0]);
         if (flag == NULL)
             mexErrMsgTxt("Could not convert FLAG input to string.");
-        if (strcmpi(flag, "suppresstext"))
+        if (strcmp(flag, "suppresstext"))
             suppressText = 1;
         mxFree(flag);
     }

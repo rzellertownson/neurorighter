@@ -78,6 +78,11 @@ namespace NRSpikeSort
         public Hashtable spikesCollectedPerChannel;
 
         /// <summary>
+        /// See what channel generated a particular unit
+        /// </summary>
+        public Dictionary<int, int> unit2Channel;
+
+        /// <summary>
         /// The type of projection to produce sortable pixels.
         /// "Maximum Voltage Inflection" - peak aligned maximum voltage from spike waveforms
         /// "PCA" - Principle component projection of spike waveforms
@@ -242,6 +247,9 @@ namespace NRSpikeSort
             // Add the zero unit to the dictionary
             unitDictionary.Add(0, 0);
 
+            // Clear the old unit2channel map
+            unit2Channel = new Dictionary<int, int>();
+
             // Set the inflection sample
             inflectionSample = peakSample;
             secondInflectionIndex = peakSample + (int)(sampleFreqHz * (mSecToSecondSample / 1000));
@@ -284,6 +292,7 @@ namespace NRSpikeSort
                     for (int k = 1; k <= thisChannelModel.K; ++k)
                     {
                         unitDictionary.Add(totalNumberOfUnits + k, k);
+                        unit2Channel.Add(totalNumberOfUnits + k, i);
                     }
 
                     totalNumberOfUnits += thisChannelModel.K;
@@ -315,6 +324,9 @@ namespace NRSpikeSort
 
             // Add the zero unit to the dictionary
             unitDictionary.Add(0, 0);
+
+            // Clear the old unit2channel map
+            unit2Channel = new Dictionary<int, int>();
 
             // Set the inflection sample
             inflectionSample = peakSample;
@@ -357,6 +369,7 @@ namespace NRSpikeSort
                     for (int k = 1; k <= thisChannelModel.K; ++k)
                     {
                         unitDictionary.Add(totalNumberOfUnits + k, k);
+                        unit2Channel.Add(totalNumberOfUnits + k, i);
                     }
 
                     totalNumberOfUnits += thisChannelModel.K;
@@ -387,6 +400,9 @@ namespace NRSpikeSort
 
             // Add the zero unit to the dictionary
             unitDictionary.Add(0, 0);
+
+            // Clear the old unit2channel map
+            unit2Channel = new Dictionary<int, int>();
 
             // Make sure we have something in the training matrix
             if (trainingSpikes.Buffer.Count == 0)
@@ -428,6 +444,7 @@ namespace NRSpikeSort
                     for (int k = 1; k <= thisChannelModel.K; ++k)
                     {
                         unitDictionary.Add(totalNumberOfUnits + k, k);
+                        unit2Channel.Add(totalNumberOfUnits + k, i);
                     }
 
                     totalNumberOfUnits += thisChannelModel.K;
@@ -572,6 +589,13 @@ namespace NRSpikeSort
             this.totalNumberOfUnits = (int)info.GetValue("totalNumberOfUnits", typeof(int));
             this.pValue = (double)info.GetValue("pValue", typeof(double));
             this.secondInflectionIndex = (int)info.GetValue("secondInflectionIndex", typeof(int));
+            try
+            {
+                this.unit2Channel = (Dictionary<int, int>)info.GetValue("unit2Channel", typeof(Dictionary<int, int>));
+            }
+            catch
+            {
+            }
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
@@ -592,6 +616,7 @@ namespace NRSpikeSort
             info.AddValue("totalNumberOfUnits", this.totalNumberOfUnits);
             info.AddValue("pValue", this.pValue);
             info.AddValue("secondInflectionIndex", this.secondInflectionIndex);
+            info.AddValue("unit2Channel", this.unit2Channel);
         }
 
         #endregion

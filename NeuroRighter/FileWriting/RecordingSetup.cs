@@ -359,6 +359,8 @@ namespace NeuroRighter.FileWriting
                 checkBox_RecordSpikes.Checked = Properties.Settings.Default.recordSpikes;
             if (checkBox_RecordSALPA.Enabled)
                 checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
+            if (checkBox_RecordRaw.Enabled)
+                checkBox_RecordRaw.Checked = Properties.Settings.Default.recordRaw;
             if (checkBox_RecordSpikeFilt.Enabled)
                 checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
             if (checkBox_RecordLFP.Enabled)
@@ -537,6 +539,7 @@ namespace NeuroRighter.FileWriting
             Properties.Settings.Default.recordRawSpikes = checkBox_RecordRawSpikes.Checked;
             Properties.Settings.Default.recordSalpaSpikes = checkBox_RecordSalpaSpikes.Checked;
             Properties.Settings.Default.recordSalpa = checkBox_RecordSALPA.Checked;
+            Properties.Settings.Default.recordRaw = checkBox_RecordRaw.Checked;
             Properties.Settings.Default.recordSpikeFilt = checkBox_RecordSpikeFilt.Checked;
             Properties.Settings.Default.recordLFP = checkBox_RecordLFP.Checked;
             Properties.Settings.Default.recordEEG = checkBox_RecordEEG.Checked;
@@ -566,6 +569,7 @@ namespace NeuroRighter.FileWriting
             checkBox_RecordRawSpikes.Checked = Properties.Settings.Default.recordRawSpikes;
             checkBox_RecordSalpaSpikes.Checked = Properties.Settings.Default.recordSalpaSpikes;
             checkBox_RecordSALPA.Checked = Properties.Settings.Default.recordSalpa;
+            checkBox_RecordRaw.Checked = Properties.Settings.Default.recordRaw;
             checkBox_RecordSpikeFilt.Checked = Properties.Settings.Default.recordSpikeFilt;
             checkBox_RecordLFP.Checked = Properties.Settings.Default.recordLFP;
             checkBox_RecordEEG.Checked = Properties.Settings.Default.recordEEG;

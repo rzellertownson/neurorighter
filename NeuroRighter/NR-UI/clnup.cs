@@ -145,7 +145,7 @@ namespace NeuroRighter
             button_startClosedLoopStim.Enabled = true;
             checkBox_SALPA.Enabled = true;
 
-                       
+
             Console.WriteLine("reset: gui updated");
             // Clean up data streams
             recordingSettings.Flush();
@@ -278,7 +278,7 @@ namespace NeuroRighter
                         groupBox_plexonProgRef.Visible = false;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("There was a problem when setting up the serial communicaiton port to the Plexon device:\r\n\r\n" + ex.Message);
                     groupBox_plexonProgRef.Visible = false;
@@ -319,21 +319,23 @@ namespace NeuroRighter
                 else if (!Properties.Settings.Default.UseEEG && tabControl.TabPages.Contains(tabPage_EEG))
                     tabControl.TabPages.Remove(tabPage_EEG);
 
-                //Add Aux tab, if applicable
-                if ((Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
-                    && !tabControl.TabPages.Contains(tabPage_AuxInput))
-                {
-                    int pageNum = 2;
-                    if (Properties.Settings.Default.UseLFPs)
-                        pageNum++;
-                    if (Properties.Settings.Default.ProcessMUA)
-                        pageNum++;
-                    if (Properties.Settings.Default.UseEEG)
-                        pageNum++;
-                    tabControl.TabPages.Insert(pageNum, tabPage_AuxInput);
-                }
-                else if (!(Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
-                    && tabControl.TabPages.Contains(tabPage_AuxInput))
+                ////Add Aux tab, if applicable
+                //if ((Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                //    && !tabControl.TabPages.Contains(tabPage_AuxInput))
+                //{
+                //    int pageNum = 2;
+                //    if (Properties.Settings.Default.UseLFPs)
+                //        pageNum++;
+                //    if (Properties.Settings.Default.ProcessMUA)
+                //        pageNum++;
+                //    if (Properties.Settings.Default.UseEEG)
+                //        pageNum++;
+                //    tabControl.TabPages.Insert(pageNum, tabPage_AuxInput);
+                //}
+                //else if (!(Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                //    && tabControl.TabPages.Contains(tabPage_AuxInput))
+                //    tabControl.TabPages.Remove(tabPage_AuxInput);
+                if (tabControl.TabPages.Contains(tabPage_AuxInput))
                     tabControl.TabPages.Remove(tabPage_AuxInput);
 
                 //Add Referencing tab, if applicable
@@ -347,7 +349,7 @@ namespace NeuroRighter
                         pageNum++;
                     if (Properties.Settings.Default.UseEEG)
                         pageNum++;
-                    if (Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput) 
+                    if (Properties.Settings.Default.useAuxAnalogInput || Properties.Settings.Default.useAuxDigitalInput)
                         pageNum++;
 
                     pageNum++; // Account for stimulation page
@@ -376,7 +378,7 @@ namespace NeuroRighter
                     tabControl.TabPages.Remove(tabPage_diagnostics);
                 }
 
-               
+
                 Console.WriteLine("UpdateRecordingSettings finished");
             }
             catch (DaqException exception)

@@ -703,8 +703,8 @@ namespace NeuroRighter
                             auxInputGraphController = new ScatterGraphController(ref scatterGraph_AuxAnalogData);
 
                             // Make history selector reflect current limits on input
-                            slide_AnalogDispMaxVoltage.Range = new Range(0.05, 10);
-                            slide_AnalogDispWidth.Range = new Range(2*Properties.Settings.Default.ADCPollingPeriodSec, Properties.Settings.Default.datSrvBufferSizeSec);
+                            //slide_AnalogDispMaxVoltage.Range = new Range(0.05, 10);
+                            //slide_AnalogDispWidth.Range = new Range(2*Properties.Settings.Default.ADCPollingPeriodSec, Properties.Settings.Default.datSrvBufferSizeSec);
 
                         }
                         #endregion
@@ -906,7 +906,7 @@ namespace NeuroRighter
 
                     // Set the number of units if appropriate
                     if (spikeDet.spikeSorter != null)
-                        datSrv.SetNumberOfUnits(spikeDet.spikeSorter.totalNumberOfUnits);
+                        datSrv.SetNumberOfUnits(spikeDet.spikeSorter.totalNumberOfUnits, spikeDet.spikeSorter.unit2Channel);
 
                     Debugger = new Logger();
                     Debugger.GrabTimer(spikeTask[0]);

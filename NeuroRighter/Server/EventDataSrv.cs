@@ -66,6 +66,7 @@ namespace NeuroRighter.Server
         private double sampleFrequencyHz;
         private int channelCount;
         private int numUnits = 0;
+        private Dictionary<int, int> unit2Channel;
 
         // Internal variables
         internal int numDataCollectionTasks; // number of daq data colleciton tasks
@@ -202,6 +203,11 @@ namespace NeuroRighter.Server
             numUnits = numberOfUnits;
         }
 
+        internal void SetUnit2ChannelMap(Dictionary<int, int> u2C)
+        {
+            unit2Channel = u2C;
+        }
+
         /// <summary>
         /// Estimate the avialable samples in the buffer. This can be used to inform
         /// the user of good arguments for the ReadFromBuffer method.
@@ -287,6 +293,18 @@ namespace NeuroRighter.Server
             get
             {
                 return numUnits;
+            }
+
+        }
+
+        /// <summary>
+        /// In the case that this is the spike server, this returns the unit2channel mapping.
+        /// </summary>
+        public Dictionary<int, int> Unit2Channel
+        {
+            get
+            {
+                return unit2Channel;
             }
 
         }

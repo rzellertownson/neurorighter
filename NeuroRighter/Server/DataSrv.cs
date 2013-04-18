@@ -207,10 +207,14 @@ namespace NeuroRighter.Server
         /// If there is a spike sorter, us this  to set the number of units that have been detected.
         /// </summary>
         /// <param name="numberOfUnits">The Number of units found by the spike sorter.</param>
-        internal void SetNumberOfUnits(int numberOfUnits)
+        internal void SetNumberOfUnits(int numberOfUnits, Dictionary<int, int> unit2Channel)
         {
             if (spikeSrv != null)
+            {
                 spikeSrv.SetNumberOfUnits(numberOfUnits);
+                spikeSrv.SetUnit2ChannelMap(unit2Channel);
+            }
+
         }
 
         # region public accessors

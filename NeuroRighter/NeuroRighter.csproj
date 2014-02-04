@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>NeuroRighter</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <RootNamespace>NeuroRighter</RootNamespace>
     <ApplicationIcon>NeuroRighter_v04.ico</ApplicationIcon>
@@ -53,6 +53,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -64,6 +65,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\NeuroRighter.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
@@ -120,6 +122,7 @@
     <Compile Include="DataTypes\RawMultiChannelBuffer.cs" />
     <Compile Include="DataTypes\EventBuffer.cs" />
     <Compile Include="Debug\ExecptDBG.cs" />
+    <Compile Include="ExtentionMethods\ObjectCloning.cs" />
     <Compile Include="Plotting\GraphicsDeviceService.cs" />
     <Compile Include="Server\DataSrv.cs" />
     <Compile Include="Server\DigitalEventSrv.cs" />

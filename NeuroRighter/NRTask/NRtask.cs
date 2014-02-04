@@ -67,7 +67,7 @@ namespace NeuroRighter.NeuroRighterTask
         /// </summary>
         internal protected void Stop()
         {
-            NR.killClosedLoop();
+            NR.KillClosedLoop();
         }
 
         /// <summary>

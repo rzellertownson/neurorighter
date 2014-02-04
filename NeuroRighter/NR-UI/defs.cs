@@ -162,6 +162,7 @@ namespace NeuroRighter
         private double[][] muaData;
         private int SALPA_WIDTH;
         private bool isNormalRecording = true;
+        private bool isCLRecording = false;
         private bool[] bwIsRunning;
 
         //Plots

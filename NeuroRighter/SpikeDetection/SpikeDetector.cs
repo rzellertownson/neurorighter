@@ -160,7 +160,7 @@ namespace NeuroRighter.SpikeDetection
                 // Define starting position in current data buffer
                 // Define position in current data buffer
                 int i = numPre + initialSamplesToSkip[channel];
-                int icts  = initialSamplesToSkip[channel].DeepClone();
+                int icts  = (int)initialSamplesToSkip[channel].DeepClone();
                 initialSamplesToSkip[channel] = 0;
 
                 // Create the current data buffer

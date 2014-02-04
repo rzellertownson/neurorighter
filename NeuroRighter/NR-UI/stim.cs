@@ -851,6 +851,7 @@ namespace NeuroRighter
 
             // Set the recording type to non-normal since this is a CL protocol
             isNormalRecording = false;
+            isCLRecording = true;
 
             // Start the protocol
             startClosedLoopStim();
@@ -902,33 +903,36 @@ namespace NeuroRighter
         private void button_stopClosedLoopStim_Click(object sender, EventArgs e)
         {
 
-            killClosedLoop();
-
+            KillClosedLoop();
             //AppDomain.Unload(NewAppDomain);
 
         }
 
-        internal void killClosedLoop()
+        internal void KillClosedLoop()
         {
             lock (this)
             {
                 this.Invoke((MethodInvoker)delegate //this code is executed on the main thread
                 {
-                    Console.WriteLine("Closed loop stimulation stop initiated");
+                    Console.WriteLine("Closed-loop stimulation stop initiated");
 
                     NROutputShutdown();
-                    Console.WriteLine("output buffers successfully shut down.  Goodbye.");
+                    Console.WriteLine("Output buffers successfully shut down.");
 
-                    Debugger.Write("Closed loop stimulation stop initiated");
+                    Debugger.Write("Closed-loop stimulation stop initiated...");
                     closedLoopSynchronizedOutput.Stop();
-                    Console.WriteLine("closed loop code has indicated it has completed.");
+                    Console.WriteLine("Closed-loop code has indicated it has completed.");
                     this.buttonStop.Enabled = true;
                     buttonStop.PerformClick();
-                    Console.WriteLine("Closed loop stimulation closed mid process");
+                    Console.WriteLine("Closed-loop stimulation closed mid process");
 
                     // Get rid of old CL objects
                     RefreshCLComboBox();
                 });
+
+
+                isCLRecording = false;
+
             }
         }
         #endregion

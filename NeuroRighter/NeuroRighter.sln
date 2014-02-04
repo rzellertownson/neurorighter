@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuroRighter", "NeuroRighter.csproj", "{BB2A4100-DBDA-4A63-8708-8A7F9F6810E0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csmatio", "..\csmatio\csmatio.csproj", "{D6EB17BF-9074-484F-9950-E06169A3C39D}"
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accord.Statistics", "..\NRSpikeSort\Accord.Statistics\Accord.Statistics.csproj", "{FD8101DD-C95D-42D6-AD44-AE01C25F2811}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRSpikeSort", "..\NRSpikeSort\NRSpikeSort\NRSpikeSort.csproj", "{DB1F126A-30AB-4530-B328-1987DEB4AA52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optoclamp", "..\..\..\Documents\git\nr-plugs\Optoclamp\Optoclamp\Optoclamp.csproj", "{6E347EAD-F3B8-431D-A25C-FB00EE17E118}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +163,24 @@ Global
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|x86.ActiveCfg = Release|Any CPU
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|Xbox 360.ActiveCfg = Release|Any CPU
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52}.Release|Zune.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Debug|Zune.ActiveCfg = Debug|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|x64.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|x86.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{6E347EAD-F3B8-431D-A25C-FB00EE17E118}.Release|Zune.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,6 +191,9 @@ Global
 		{F718E9A8-DB62-4785-8C49-4333A60D256A} = {1DAA161F-28EC-41F0-8EE9-DB075F729049}
 		{FD8101DD-C95D-42D6-AD44-AE01C25F2811} = {1DAA161F-28EC-41F0-8EE9-DB075F729049}
 		{DB1F126A-30AB-4530-B328-1987DEB4AA52} = {1DAA161F-28EC-41F0-8EE9-DB075F729049}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

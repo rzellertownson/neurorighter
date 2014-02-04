@@ -155,7 +155,7 @@ namespace NeuroRighter
         {
             lock (waveforms)
             {
-                List<PlotSpikeWaveform> output = waveforms.DeepClone();
+                List<PlotSpikeWaveform> output = (List<PlotSpikeWaveform>)waveforms.DeepClone();
                 //for (int i = 0; i < waveforms.Count; ++i) output.Add(waveforms[i]);
                 //output = 
                 waveforms.Clear();

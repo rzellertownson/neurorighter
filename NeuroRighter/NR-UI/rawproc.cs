@@ -643,8 +643,11 @@ namespace NeuroRighter
                     }
                     else
                     {
-                        buttonStop_Click(null, null);
-                        //buttonStop.PerformClick();
+                        if (isCLRecording)
+                            KillClosedLoop();
+                        else
+                            buttonStop_Click(null, null);
+                        
                     }
                 }
             }

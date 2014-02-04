@@ -10,12 +10,14 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 
+
 namespace ExtensionMethods
 {
     /// <summary>
     /// Extension Methods for NeuroRighter
     /// </summary>
     /// <author> Jon Newman</author>
+    /// 
     public static class NRExtensionMethods
     {
 
@@ -77,16 +79,16 @@ namespace ExtensionMethods
         /// <typeparam name="T"> type of object to clone</typeparam>
         /// <param name="a">object to copy</param>
         /// <returns> Deep copy of </returns>
-        public static T DeepClone<T>(this T a)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, a);
-                stream.Position = 0;
-                return (T)formatter.Deserialize(stream);
-            }
-        }
+        //public static T DeepClone<T>(this T a)
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        BinaryFormatter formatter = new BinaryFormatter();
+        //        formatter.Serialize(stream, a);
+        //        stream.Position = 0;
+        //        return (T)formatter.Deserialize(stream);
+        //    }
+        //}
 
         /// <summary>
         /// Method for geneating the default color map for NR plotting

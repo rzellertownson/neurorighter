@@ -54,6 +54,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>..\..\Release\Accord.xml</DocumentationFile>
     <CodeAnalysisRuleSet>..\Accord.NET.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

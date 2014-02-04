@@ -134,8 +134,8 @@ namespace NeuroRighter.SpikeDetection
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
 
-                    spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone();
+                    spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
+                    spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
 
                     break;
                 case 1:  //RMS Adaptive
@@ -143,8 +143,8 @@ namespace NeuroRighter.SpikeDetection
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
 
-                    spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone();
+                    spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
+                    spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
 
                     break;
                 case 2:  //Limada
@@ -152,8 +152,8 @@ namespace NeuroRighter.SpikeDetection
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
                         maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency));
 
-                    spikeDetectorRaw = spikeDetector.DeepClone();
-                    spikeDetectorSalpa = spikeDetector.DeepClone();
+                    spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
+                    spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
 
                     break;
                 default:

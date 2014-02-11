@@ -47,9 +47,9 @@ namespace NeuroRighter.SpikeDetection
 
         public LimAda(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength, int numPostIn,
             int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp
-            , double minSpikeSlope, int spikeIntegrationTime, int spikeSamplingRateIn) : 
+            , double minSpikeSlope, int spikeIntegrationTime, int spikeSamplingRateIn, int threshPolarity) : 
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
-            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope)
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, threshPolarity)
         {
             chunkSize = (int)(0.01 * (rawType)spikeSamplingRateIn); //Big enough for 10ms of data
             numChunks = spikeBufferLength / chunkSize;
@@ -187,8 +187,7 @@ namespace NeuroRighter.SpikeDetection
 
                     if (!inASpike[channel] && i < indiciesToSearchForCross)
                     {
-                        if (spikeDetectionBuffer[i] < currentThreshold &&
-                            spikeDetectionBuffer[i] > -currentThreshold)
+                        if (WithinThreshold(spikeDetectionBuffer[i], currentThreshold, threshPolarity))
                         {
                             continue; // not above threshold, next point please
                         }

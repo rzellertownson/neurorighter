@@ -39,9 +39,9 @@ namespace NeuroRighter.SpikeDetection
 
         public RMSThresholdFixed(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength,
             int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth
-            , double maxSpikeAmp, double minSpikeSlope, int spikeIntegrationTime, double deviceRefresh) :
+            , double maxSpikeAmp, double minSpikeSlope, int spikeIntegrationTime, double deviceRefresh, int threshPolarity) :
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
-            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope) 
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, threshPolarity) 
         {
             numUpdatesForTrain = (int)Math.Round(10/deviceRefresh); // ten seconds worth of data used in training
             threshold = new rawType[1, numChannels];

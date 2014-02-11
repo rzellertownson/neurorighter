@@ -60,6 +60,7 @@ namespace NeuroRighter.SpikeDetection
             this.comboBox_spikeDetAlg.SelectedIndex = 0;
             this.numPre = (int)((double)numPreSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
             this.numPost = (int)((double)numPostSamples.Value / 1e6 * Properties.Settings.Default.RawSampleFrequency);
+            this.comboBox_ThresholdPolarity.SelectedIndex = 0;
 
             // Set the pre/post sample coversion label
             label_PreSampConv.Text =
@@ -88,6 +89,7 @@ namespace NeuroRighter.SpikeDetection
             detectorParameters.MaxSpikeWidth = numericUpDown_MaxSpikeWidth.Value;
             detectorParameters.NumPre = numPreSamples.Value;
             detectorParameters.NumPost = numPostSamples.Value;
+            detectorParameters.ThresholdPolarity = comboBox_ThresholdPolarity.SelectedIndex;
 
             Flush();
         }
@@ -104,6 +106,7 @@ namespace NeuroRighter.SpikeDetection
                 (double)numericUpDown_MaxSpikeWidth.Value / 1.0e6);
             double maxSpikeAmp = (double)numericUpDown_MaxSpkAmp.Value / 1.0e6;
             double minSpikeSlope = (double)numericUpDown_MinSpikeSlope.Value / 1.0e6;
+            int threshPolarity = detectorParameters.ThresholdPolarity;
 
             // Repopulate conversion table
             label_deadTimeSamp.Text = detectionDeadTime + " sample(s)";
@@ -132,7 +135,7 @@ namespace NeuroRighter.SpikeDetection
                 case 0:  //RMS Fixed
                     spikeDetector = new RMSThresholdFixed(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
-                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
+                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec, threshPolarity);
 
                     spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
                     spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
@@ -141,7 +144,7 @@ namespace NeuroRighter.SpikeDetection
                 case 1:  //RMS Adaptive
                     spikeDetector = new AdaptiveRMSThreshold(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
-                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec);
+                        maxSpikeAmp, minSpikeSlope, spikeIntegrationTime, Properties.Settings.Default.ADCPollingPeriodSec, threshPolarity);
 
                     spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
                     spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
@@ -150,7 +153,7 @@ namespace NeuroRighter.SpikeDetection
                 case 2:  //Limada
                     spikeDetector = new LimAda(spikeBufferLength, numChannels, 2, numPre + numPost + 1, numPost,
                         numPre, (rawType)Convert.ToDouble(thresholdMultiplier.Value), detectionDeadTime, minSpikeWidth, maxSpikeWidth,
-                        maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency));
+                        maxSpikeWidth, minSpikeSlope, spikeIntegrationTime, Convert.ToInt32(Properties.Settings.Default.RawSampleFrequency), threshPolarity);
 
                     spikeDetectorRaw = (SpikeDetector)spikeDetector.DeepClone();
                     spikeDetectorSalpa = (SpikeDetector)spikeDetector.DeepClone();
@@ -488,6 +491,15 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
+        private void comboBox_ThresholdPolarity_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SettingsHaveChanged != null)
+            {
+                detectorParameters.ThresholdPolarity = comboBox_ThresholdPolarity.SelectedIndex;
+                SettingsHaveChanged(this, e);
+            }
+        }
+
         private void numericUpDown_maxK_ValueChanged(object sender, EventArgs e)
         {
             if (spikeSorter != null)
@@ -759,6 +771,7 @@ namespace NeuroRighter.SpikeDetection
                     numericUpDown_MaxSpikeWidth.Value = detectorParameters.MaxSpikeWidth;
                     numPreSamples.Value = detectorParameters.NumPre;
                     numPostSamples.Value = detectorParameters.NumPost;
+                    comboBox_ThresholdPolarity.SelectedIndex = detectorParameters.ThresholdPolarity;
 
                     if (detectorParameters.SS != null)
                     {
@@ -860,5 +873,8 @@ namespace NeuroRighter.SpikeDetection
         }
 
         # endregion
+
+
+
     }
 }

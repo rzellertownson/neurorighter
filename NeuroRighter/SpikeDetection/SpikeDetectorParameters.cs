@@ -27,6 +27,7 @@ namespace NeuroRighter.SpikeDetection
         private decimal threshold;
         private decimal deadTime;
         private decimal maxSpikeAmp;
+        private int thresholdPolarity;
         private SpikeSorter ss;
 
         /// <summary>
@@ -178,6 +179,18 @@ namespace NeuroRighter.SpikeDetection
             }
         }
 
+        internal int ThresholdPolarity
+        {
+            get
+            {
+                return thresholdPolarity;
+            }
+            set
+            {
+                thresholdPolarity = value;
+            }
+        }
+
         internal SpikeDetectorParameters(SerializationInfo info, StreamingContext ctxt)
         {
             this.ss = (SpikeSorter)info.GetValue("ss", typeof(SpikeSorter));
@@ -192,6 +205,7 @@ namespace NeuroRighter.SpikeDetection
             this.spikeDetectionLag = (decimal)info.GetValue("spikeDetectionLag", typeof(decimal));
             this.detectorType = (int)info.GetValue("detectorType", typeof(int));
             this.noiseAlgType = (int)info.GetValue("noiseAlgType", typeof(int));
+            this.thresholdPolarity = (int)info.GetValue("thresholdPolarity", typeof(int));
 
         }
 
@@ -209,6 +223,7 @@ namespace NeuroRighter.SpikeDetection
             info.AddValue("minSpikeWidth", this.minSpikeWidth);
             info.AddValue("maxSpikeWidth", this.maxSpikeWidth);
             info.AddValue("noiseAlgType", this.noiseAlgType);
+            info.AddValue("thresholdPolarity", this.thresholdPolarity);
         }
     }
 }

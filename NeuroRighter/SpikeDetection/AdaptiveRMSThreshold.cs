@@ -47,9 +47,9 @@ namespace NeuroRighter.SpikeDetection
 
         public AdaptiveRMSThreshold(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn, int spikeWaveformLength,
             int numPostIn, int numPreIn, rawType threshMult, int detectionDeadTime, int minSpikeWidth, int maxSpikeWidth
-            , double maxSpikeAmp, double minSpikeSlope, int spikeIntegrationTime, double deviceRefresh) :
+            , double maxSpikeAmp, double minSpikeSlope, int spikeIntegrationTime, double deviceRefresh, int threshPolarity) :
             base(spikeBufferLengthIn, numChannelsIn, downsampleIn, spikeWaveformLength, numPostIn, numPreIn, threshMult, detectionDeadTime,
-            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope)
+            minSpikeWidth, maxSpikeWidth, maxSpikeAmp, minSpikeSlope, threshPolarity)
         {
             numUpdatesForTrain = (int)Math.Round(updateBlockLengthSec / deviceRefresh); // 1 second worth of data used for estimating each RMS point to be feed into the exp filter
             filterHalfLife = filterHalfLifeSec / updateBlockLengthSec; // seconds

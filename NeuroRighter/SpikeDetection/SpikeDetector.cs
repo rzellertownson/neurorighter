@@ -58,6 +58,7 @@ namespace NeuroRighter.SpikeDetection
             get { return _thresholdMultiplier; }
             set { _thresholdMultiplier = value; }
         }
+        protected int threshPolarity;
 
         // Parameters for spike validation
         protected int[] enterSpikeIndex;
@@ -76,7 +77,7 @@ namespace NeuroRighter.SpikeDetection
 
         public SpikeDetector(int spikeBufferLengthIn, int numChannelsIn, int downsampleIn,
             int spikeWaveformLength, int numPostIn, int numPreIn, double threshMult, int detectionDeadTime,
-            int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp, double minSpikeSlope)
+            int minSpikeWidth, int maxSpikeWidth, double maxSpikeAmp, double minSpikeSlope, int threshPolarity)
         {
             this.spikeBufferLength = spikeBufferLengthIn;
             this.numChannels = numChannelsIn;
@@ -95,6 +96,7 @@ namespace NeuroRighter.SpikeDetection
             this.minSpikeSlope = minSpikeSlope;
             this.enterSpikeIndex = new int[numChannels];
             this.exitSpikeIndex = new int[numChannels];
+            this.threshPolarity = threshPolarity;
 
             this.carryOverLength = numPre + maxSpikeWidth + numPost;
 
@@ -160,7 +162,7 @@ namespace NeuroRighter.SpikeDetection
                 // Define starting position in current data buffer
                 // Define position in current data buffer
                 int i = numPre + initialSamplesToSkip[channel];
-                int icts  = (int)initialSamplesToSkip[channel].DeepClone();
+                int icts = (int)initialSamplesToSkip[channel].DeepClone();
                 initialSamplesToSkip[channel] = 0;
 
                 // Create the current data buffer
@@ -203,8 +205,7 @@ namespace NeuroRighter.SpikeDetection
                     //peak detection- just requires one sample
                     if (!inASpike[channel] && i < indiciesToSearchForCross)
                     {
-                        if (spikeDetectionBuffer[i] < currentThreshold &&
-                            spikeDetectionBuffer[i] > -currentThreshold)
+                        if (WithinThreshold(spikeDetectionBuffer[i],currentThreshold,threshPolarity))
                         {
                             waitToComeDown[channel] = false;
                             continue; // not above threshold, next point please
@@ -345,8 +346,7 @@ namespace NeuroRighter.SpikeDetection
                 currentThreshold = threshold[0, channel];
                 for (; i < indiciesToSearchForCross; ++i)
                 {
-                    if (spikeDetectionBuffer[i] < currentThreshold &&
-                        spikeDetectionBuffer[i] > -currentThreshold)
+                    if (WithinThreshold(spikeDetectionBuffer[i],currentThreshold,threshPolarity))
                     {
                         continue; // not above threshold, next point please
                     }
@@ -586,5 +586,25 @@ namespace NeuroRighter.SpikeDetection
 
             return null;
         }
+
+        protected bool WithinThreshold(double channelVoltage, double thisThreshold, int threshPolarity)
+        {
+
+            switch(threshPolarity)
+            {
+                case 0:
+                    return channelVoltage < thisThreshold && channelVoltage > -thisThreshold;
+
+                case 1:
+                    return channelVoltage > -thisThreshold;
+
+                case 2:
+                    return channelVoltage < thisThreshold;
+
+                default:
+                    return channelVoltage < thisThreshold && channelVoltage > -thisThreshold;
+            }
+        }
+
     }
 }
